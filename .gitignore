@@ -2,3 +2,6 @@
 dist
 .tox
 __pycache__
+
+# MkDocs
+site
