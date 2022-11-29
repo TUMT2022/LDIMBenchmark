@@ -1,0 +1,44 @@
+[tool.poetry]
+name = "ldimbench"
+version = "0.1.0"
+description = ""
+authors = ["DanielHabenicht <daniel-habenicht@outlook.de>"]
+readme = "README.md"
+
+[tool.poetry.dependencies]
+python = "^3.8"
+
+[tool.poetry.group.dev.dependencies]
+tox = "^3.27.1"
+mkdocs-material = "^8.5.10"
+black = "^22.10.0"
+pytest = "^7.2.0"
+
+
+[tool.poetry.group.ci.dependencies]
+tox-gh-actions = "^2.11.0"
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
+
+[tool.tox]
+legacy_tox_ini = """
+[tox]
+isolated_build = True
+envlist = py38,py39,py310
+
+[gh-actions]
+python =
+    3.8: py38
+    3.9: py39
+    3.10: py310
+
+[testenv]
+deps =
+    black
+    pytest
+commands =
+    black --check ldimbench
+    pytest .
+"""
