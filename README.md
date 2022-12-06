@@ -1,4 +1,4 @@
-# LDIMBench
+# LDIMBenchmark
 
 Leakage Detection and Isolation Methods Benchmark
 
@@ -15,8 +15,9 @@ https://python-poetry.org/docs/basic-usage/
 
 ```bash
 # Use Environment
+poetry config virtualenvs.in-project true
 poetry shell
-poetry install --without ci
+poetry install --without ci # --with ci
 
 ```
 
