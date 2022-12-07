@@ -4,6 +4,7 @@ Main Module
 
 
 from .benchmark import *
+from .classes import *
 
 if __name__ == "__main__":
 
@@ -77,3 +78,18 @@ if __name__ == "__main__":
     )
 
     args = parser.parse_args()
+
+
+# parser = ArgumentParser()
+# parser.add_argument("-d", "--datasets", dest="datasets",  default=None, action="extend", nargs="+", type=str,
+#                     help="datasets to include in analysis")
+# parser.add_argument("-f", "--datasetsFolder", dest="datasetsFolder", default="./",
+#                     help="folder with the datasets")
+# parser.add_argument("-o", "--outFolder", dest="outFolder", default="datasets-analysis",
+#                     help="folder to put analysis results")
+
+# if not is_notebook():
+#     args = parser.parse_args()
+# else:
+#     args = parser.parse_args([
+#         "--datasetsFolder", "../datasets", "--outFolder", "../datasets-analysis"])

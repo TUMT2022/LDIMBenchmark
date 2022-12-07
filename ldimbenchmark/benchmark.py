@@ -14,92 +14,8 @@ from ldimbenchmark.constants import LDIM_BENCHMARK_CACHE_DIR
 from glob import glob
 from ldimbenchmark.benchmark_evaluation import evaluate_leakages
 from tabulate import tabulate
-
-
-class BenchmarkLeakageResult(TypedDict):
-    pipe_id: str
-    leak_start: datetime
-    leak_end: datetime
-    leak_peak: datetime
-    leak_area: float
-    leak_diameter: float
-    leak_max_flow: float
-
-
-class LDIMMethodBase(ABC):
-    """
-    Skeleton for implementing an instance of a leakage detection method.
-    Should implement the following methods:
-     - train(): If needed, to train the algorithm
-     - detect(): To run the algorithm
-
-    Usage CustomAlgorithm(BenchmarkAlgorithm):
-    """
-
-    def __init__(
-        self, name: str, version: str, additional_output_path=None, hyperparameters={}
-    ):
-        """
-        Initialize the Leakage Detection Method
-        additional_output_path: Path to the output folder of the benchmark. Only use if set.
-        """
-        self.name = name
-        self.version = version
-        self.logging = True if additional_output_path != None else False
-        self.additional_output_path = additional_output_path
-        self.hyperparameters = hyperparameters
-
-    def init_with_benchmark_params(
-        self, additional_output_path=None, hyperparameters={}
-    ):
-        """
-        Used for initializing the method in the runner (not needed if run manually).
-
-        :param hyperparameters: Hyperparameters for the method
-        :param stages: List of stages that should be executed. Possible stages: "train", "detect", "detect_datapoint"
-        :param goal: Goal of the benchmark. Possible goals: "detection", "location"
-        :param method: Method that should be executed. Possible methods: "offline", "online"
-        """
-        self.additional_output_path = additional_output_path
-        if not hasattr(self, "hyperparameters"):
-            self.hyperparameters = {}
-        self.hyperparameters.update(hyperparameters)
-        pass
-
-    @abstractmethod
-    def train(self, data: BenchmarkData):
-        """
-        Train the algorithm on Test data (if needed)
-
-        The only metric calculated will be the time your model needs to train.
-
-        The Train Data will be an object (BenchmarkData)
-
-        """
-        raise NotImplementedError("Please Implement this method")
-
-    @abstractmethod
-    def detect(self, data: BenchmarkData) -> list[BenchmarkLeakageResult]:
-        """
-        Detect Leakages on never before seen data. (BenchmarkData)
-
-        This method should return an array of leakages.
-
-        """
-        raise NotImplementedError("Please Implement this method")
-
-    @abstractmethod
-    def detect_datapoint(self, evaluation_data) -> BenchmarkLeakageResult:
-        """
-        Detect Leakage on never before seen datapoint.
-        This method is called multiple times for each datapoint in the evaluation data.
-        It is your responsibility to store the new datapoint, if you want to use it for refinining your model.
-
-        The Model will still be initialized by calling the `train()` Method (with the Train Dataset) before.
-
-        This method should return a single BenchmarkLeakageResult or None if there is no leak at this datapoint.
-        """
-        raise NotImplementedError("Please Implement this method")
+from ldimbenchmark.benchmark_complexity import run_benchmark_complexity
+from ldimbenchmark.classes import LDIMMethodBase
 
 
 class MethodRunner(ABC):
@@ -245,8 +161,9 @@ class LDIMBenchmark:
         self,
         hyperparameters,
         datasets,
+        debug=False,
         results_dir: str = None,
-        cache_folder: str = LDIM_BENCHMARK_CACHE_DIR,
+        cache_dir: str = LDIM_BENCHMARK_CACHE_DIR,
     ):
         # validate dataset types and edit them to LoadedDataset
         self.hyperparameters = hyperparameters
@@ -254,12 +171,16 @@ class LDIMBenchmark:
         self.datasets = datasets
         self.experiments: list[MethodRunner] = []
         self.results = {}
-        self.cache_folder = cache_folder
+        self.cache_dir = cache_dir
         self.results_dir = results_dir
         self.runner_results_dir = os.path.join(self.results_dir, "runner_results")
         self.evaluation_results_dir = os.path.join(
             self.results_dir, "evaluation_results"
         )
+        self.complexity_results_dir = os.path.join(
+            self.results_dir, "complexity_results"
+        )
+        self.debug = debug
 
     def add_local_methods(self, methods, goal="detect_offline"):
         """
@@ -291,6 +212,30 @@ class LDIMBenchmark:
                 self.experiments.append(
                     DockerMethodRunner(method, dataset, self.hyperparameters)
                 )
+
+    def run_complexity_analysis(
+        self,
+        methods,
+        style: Literal["time", "junctions"],
+    ):
+        complexity_results_path = os.path.join(self.complexity_results_dir, style)
+        os.makedirs(complexity_results_path, exist_ok=True)
+        if style == "time":
+            run_benchmark_complexity(
+                methods,
+                dataset_dir=os.path.join(self.cache_dir, "synthetic-days"),
+                out_folder=complexity_results_path,
+                style="time",
+                additionalOutput=self.debug,
+            )
+        if style == "junctions":
+            run_benchmark_complexity(
+                methods,
+                dataset_dir=os.path.join(self.cache_dir, "synthetic-j"),
+                out_folder=complexity_results_path,
+                style="junctions",
+                additionalOutput=self.debug,
+            )
 
     def run_benchmark(self, parallel=False):
         """

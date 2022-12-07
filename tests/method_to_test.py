@@ -1,10 +1,11 @@
 from ldimbenchmark import (
-    LDIMMethodBase,
     BenchmarkData,
     BenchmarkLeakageResult,
     FileBasedMethodRunner,
 )
 from ldimbenchmark.datasets import Dataset
+
+from ldimbenchmark.classes import LDIMMethodBase
 
 
 class YourCustomLDIMMethod(LDIMMethodBase):

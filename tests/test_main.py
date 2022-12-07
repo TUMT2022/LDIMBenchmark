@@ -24,7 +24,30 @@ from ldimbenchmark.methods import LILA
 #     pass
 
 
-def test_benchmark():
+# def test_benchmark():
+#     dataset = Dataset("test/battledim")
+
+#     local_methods = [YourCustomLDIMMethod()]  # , LILA()]
+
+#     hyperparameter = {}
+
+#     benchmark = LDIMBenchmark(
+#         hyperparameter, [dataset], results_dir="./benchmark-results"
+#     )
+#     benchmark.add_local_methods(local_methods)
+
+#     # .add_docker_methods(methods)
+
+#     # execute benchmark
+#     benchmark.run_benchmark(
+#         # parallel=True,
+#     )
+
+#     benchmark.evaluate()
+#     assert False
+
+
+def test_complexity():
     dataset = Dataset("test/battledim")
 
     local_methods = [YourCustomLDIMMethod()]  # , LILA()]
@@ -39,11 +62,13 @@ def test_benchmark():
     # .add_docker_methods(methods)
 
     # execute benchmark
-    benchmark.run_benchmark(
+    benchmark.run_complexity_analysis(
+        methods=local_methods,
+        style="time",
         # parallel=True,
     )
 
-    benchmark.evaluate()
+    # benchmark.evaluate()
     assert False
 
 
