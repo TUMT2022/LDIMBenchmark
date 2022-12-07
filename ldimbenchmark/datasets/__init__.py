@@ -2,6 +2,7 @@
 dataset_library.py
 """
 
+
 from enum import Enum
 import tempfile
 from ldimbenchmark.datasets.load_battledim import BattledimDatasetLoader
@@ -50,13 +51,6 @@ class Dataset:
 
     def load(self):
         return LoadedDataset(self)
-
-
-class UnfittingDatasetConverter:
-    """
-    Converts a dataset which does not conform to the standard
-     format to a dataset which does
-    """
 
 
 class _LoadedDatasetPart:
