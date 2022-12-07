@@ -18,15 +18,6 @@ class DatasetAnalyzer:
         Compare the datasets
         """
 
-    def analyze(self, datasets: Dataset | list[Dataset]):
-        """
-        Analyze the dataset
-        """
-        if datasets is not list:
-            dataset_list: list[Dataset] = [datasets]
-        else:
-            dataset_list = datasets
-
         # original_dataset = pd.read_csv(dataset_source_dir, index_col="Timestamp")
 
         # plot = original_dataset["J-02"].plot()
@@ -50,6 +41,15 @@ class DatasetAnalyzer:
         #     linewidth=2,
         #     color="r",
         # )
+
+    def analyze(self, datasets: Dataset | list[Dataset]):
+        """
+        Analyze the dataset
+        """
+        if datasets is not list:
+            dataset_list: list[Dataset] = [datasets]
+        else:
+            dataset_list = datasets
 
         os.makedirs(self.analyisis_out_dir, exist_ok=True)
 
@@ -84,3 +84,5 @@ class DatasetAnalyzer:
         overview.style.to_latex(
             os.path.join(self.analyisis_out_dir, "network_model_details.tex")
         )
+
+        # TODO: add total flow analysis

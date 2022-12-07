@@ -5,6 +5,10 @@ from ldimbenchmark.datasets import Dataset
 import numpy as np
 import scipy.stats as stats
 
+from typing import Literal
+
+from collections.abc import Sequence
+
 
 class DatasetDerivator:
     """
@@ -19,13 +23,21 @@ class DatasetDerivator:
     def __init__(self, datasets: Dataset | list[Dataset], out_path: str):
 
         # TODO: Check if datasets is a list or a single dataset
-
-        self.datasets = datasets
+        if isinstance(datasets, Sequence):
+            self.datasets: list[Dataset] = datasets
+        else:
+            self.datasets: list[Dataset] = [datasets]
         self.out_path = out_path
 
-    # TODO: Add more derivations, like elevation
+    # TODO: Add more derivations, like junction elevation
 
-    def derive(self, derivation: str, values: list):
+    def derive_model(
+        self,
+        apply_to: Literal["junctions", "patterns"],
+        property: Literal["elevation"],
+        derivation: str,
+        values: list,
+    ):
         """
         Derives a new dataset from the original one.
 
@@ -37,13 +49,67 @@ class DatasetDerivator:
         for dataset in self.datasets:
 
             if derivation == "noise":
-                loadedDataset = dataset.load()
+
+                for value in values:
+                    loadedDataset = dataset.load()
+                    junctions = loadedDataset.model.junction_name_list
+                    noise = DatasetDerivator.__get_random_norm(value, len(junctions))
+                    for index, junction in enumerate(junctions):
+                        loadedDataset.model.get_node(junction).elevation += noise[index]
+
+                    derivedDatasetPath = os.path.join(
+                        self.out_path,
+                        f"{dataset.name}-{apply_to}-{property}-{derivation}-{value}/",
+                    )
+
+                    loadedDataset.info["derivations"] = {}
+                    loadedDataset.info["derivations"]["model"] = {}
+                    loadedDataset.info["derivations"]["model"]["element"] = apply_to
+                    loadedDataset.info["derivations"]["model"]["property"] = property
+
+                    os.makedirs(os.path.dirname(derivedDatasetPath), exist_ok=True)
+                    loadedDataset.exportTo(derivedDatasetPath)
+
+                    # TODO write to dataser_info.yml and add keys with derivation properties
+                    newDatasets.append(Dataset(derivedDatasetPath))
+
+    def derive_data(
+        self,
+        apply_to: Literal["demands", "levels", "pressures", "flows"],
+        derivation: str,
+        values: list,
+    ):
+        """
+        Derives a new dataset from the original one.
+
+        :param derivation: Name of derivation that should be applied
+        :param values: Values for the derivation
+        """
+
+        newDatasets = []
+        for dataset in self.datasets:
+
+            if derivation == "noise":
                 # TODO Implement derivates
                 for value in values:
+                    loadedDataset = dataset.load()
+
+                    if apply_to == "demands":
+                        noise = DatasetDerivator.__get_random_norm(
+                            value, loadedDataset.demands.index.shape
+                        )
+
+                        # TODO; move below for derviation
+                        loadedDataset.demands = loadedDataset.demands.mul(
+                            1 + noise, axis=0
+                        )
+
                     derivedDatasetPath = os.path.join(
-                        self.out_path, f"{dataset.name}-{derivation}-{value}"
+                        self.out_path,
+                        f"{dataset.name}-{apply_to}-{derivation}-{value}/",
                     )
                     os.makedirs(os.path.dirname(derivedDatasetPath), exist_ok=True)
+                    loadedDataset.exportTo(derivedDatasetPath)
 
                     newDatasets.append(Dataset(derivedDatasetPath))
 
@@ -63,7 +129,6 @@ class DatasetDerivator:
             (lower - mu) / sigma, (upper - mu) / sigma, loc=mu, scale=sigma
         )
         noise = X.rvs(dataset.index.shape)
-        dataset = dataset.mul(1 + noise, axis=0)
         return dataset, noise
 
     def _generateUniformDistributedNoise(dataset, noiseLevel):
@@ -77,3 +142,14 @@ class DatasetDerivator:
 
         dataset = dataset.mul(1 + noise, axis=0)
         return dataset, noise
+
+    def __get_random_norm(noise_level: float, size: int):
+        """
+        Generate a random normal distribution with a given noise level
+        """
+        lower, upper = -noise_level, noise_level
+        mu, sigma = 0, noise_level / 3
+        X = stats.truncnorm(
+            (lower - mu) / sigma, (upper - mu) / sigma, loc=mu, scale=sigma
+        )
+        return X.rvs(size)

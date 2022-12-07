@@ -11,7 +11,8 @@ import numpy as np
 import pandas as pd
 import os
 import yaml
-from wntr.network.io import read_inpfile
+from wntr.network.io import read_inpfile, write_inpfile
+from wntr.network import WaterNetworkModel
 from glob import glob
 from datetime import datetime
 import json
@@ -98,7 +99,13 @@ class LoadedDataset(Dataset):
         self.name = dataset.name
         self.info = dataset.info
 
+        self.pressures = pd.DataFrame()
+        self.demands = pd.DataFrame()
+        self.flows = pd.DataFrame()
+        self.levels = pd.DataFrame()
+
         # TODO: Cache dataset
+        # TODO load full dataset here and only split into training and evaluation on demand
         (training_dataset, evaluation_dataset) = DatasetTransformer(
             dataset, dataset.info
         ).splitIntoTrainingEvaluationDatasets()
@@ -144,7 +151,9 @@ class LoadedDataset(Dataset):
         # TODO: Run checks as to confirm that the dataset_info.yaml information are right
         # eg. check start and end times
 
-        self.model = read_inpfile(os.path.join(self.path, self.info["inp_file"]))
+        self.model: WaterNetworkModel = read_inpfile(
+            os.path.join(self.path, self.info["inp_file"])
+        )
 
     def getTrainingBenchmarkData(self):
         return BenchmarkData(
@@ -163,6 +172,18 @@ class LoadedDataset(Dataset):
             levels=self.evaluation.levels,
             model=self.model,
         )
+
+    def exportTo(self, folder: str):
+        """
+        Exports the dataset to a given folder
+        """
+        write_inpfile(self.model, os.path.join(folder, self.info["inp_file"]))
+        self.pressures.to_csv(os.path.join(folder, "pressures.csv"))
+        self.demands.to_csv(os.path.join(folder, "demands.csv"))
+        self.flows.to_csv(os.path.join(folder, "flows.csv"))
+        self.levels.to_csv(os.path.join(folder, "levels.csv"))
+        with open(os.path.join(folder, f"dataset_info.yaml"), "w") as f:
+            yaml.dump(self.info, f)
 
 
 class DatasetLibrary:
