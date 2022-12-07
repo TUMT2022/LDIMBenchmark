@@ -19,6 +19,13 @@ poetry config virtualenvs.in-project true
 poetry shell
 poetry install --without ci # --with ci
 
+
+# Test
+poetry build
+cp -r dist tests/dist
+cd tests
+docker build . -t testmethod
+pytest
 ```
 
 ### Documentation
