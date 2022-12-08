@@ -1,5 +1,8 @@
 # Leakage Detection and Isolation Method Benchmark
 
+> We recommend lowercase names for datasets and methods (`[a-z0-9_]`)
+> TODO: Enforce
+
 ## Design
 
 Execute Algorithm locally, => Code Interface designed after file interface
@@ -137,5 +140,3 @@ DockerMethodRunner(
 image: str,
 config: Union[str, dict] # Either provide a path to a config file or a dict with the config
 )
-
-

@@ -45,3 +45,7 @@ Try it out with single algorithm, then shape the API after it
 TODOS:
 
 - https://squidfunk.github.io/mkdocs-material/reference/tooltips/#adding-abbreviations
+- Rename Dataset files to lowercase "Pressure.csv" => "pressure.csv"
+- maybe use gc.collect() after loading / generating BenchmarkDatasets
+- cli: https://stackoverflow.com/questions/49969605/python-argparse-list-individual-choices-in-the-usage/49999185#49999185
+  https://blog.nem.ec/code-snippets/python-argparse-multiple-commands-verbs/
