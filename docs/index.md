@@ -1,6 +1,6 @@
 # Leakage Detection and Isolation Method Benchmark
 
-> We recommend lowercase names for datasets and methods (`[a-z0-9_]`)
+> We recommend lowercase names for datasets and methods (`[a-z0-9_]`). They must be globally unique.
 > TODO: Enforce
 
 ## Design

@@ -29,7 +29,7 @@ class MethodRunner(ABC):
         goal: str,
         stage: str,
         method: str,
-        additional_output_path: str = None,
+        debug: bool = False,
         resultsFolder: str = None,
     ):
         """
@@ -42,7 +42,7 @@ class MethodRunner(ABC):
         self.goal = goal
         self.stages = stage
         self.method = method
-        self.additional_output_path = additional_output_path
+        self.debug = debug
         self.resultsFolder = resultsFolder
 
     @abstractmethod
@@ -66,7 +66,7 @@ class LocalMethodRunner(MethodRunner):
         goal: Literal["detection"] | Literal["location"] = "detection",
         stage="train",  # train, detect
         method="offline",  # offline, online
-        additional_output_path=None,
+        debug=False,
         resultsFolder=None,
     ):
         self.id = f"{detection_method.name}_{dataset.name}_parameterTODO"  # TODO: Hash of hyperparameters
@@ -78,7 +78,7 @@ class LocalMethodRunner(MethodRunner):
             resultsFolder=(
                 None if resultsFolder == None else os.path.join(resultsFolder, self.id)
             ),
-            additional_output_path=additional_output_path,
+            debug=debug,
         )
         if dataset is str:
             self.dataset = Dataset(dataset).loadDataset().loadBenchmarkData()
@@ -90,8 +90,10 @@ class LocalMethodRunner(MethodRunner):
 
         # test compatibility (stages)
         self.detection_method.init_with_benchmark_params(
-            self.additional_output_path,
-            self.hyperparameters,
+            additional_output_path=(
+                os.path.join(self.resultsFolder, "debug") if self.debug else None
+            ),
+            hyperparameters=self.hyperparameters,
         )
         start = time.time()
 
@@ -199,6 +201,7 @@ class LDIMBenchmark:
                         dataset,
                         self.hyperparameters,
                         resultsFolder=self.runner_results_dir,
+                        debug=self.debug,
                     )
                 )
 
@@ -225,7 +228,7 @@ class LDIMBenchmark:
         if style == "time":
             run_benchmark_complexity(
                 methods,
-                dataset_dir=os.path.join(self.cache_dir, "synthetic-days"),
+                cache_dir=os.path.join(self.cache_dir, "datagen"),
                 out_folder=complexity_results_path,
                 style="time",
                 additionalOutput=self.debug,
@@ -233,7 +236,7 @@ class LDIMBenchmark:
         if style == "junctions":
             run_benchmark_complexity(
                 methods,
-                dataset_dir=os.path.join(self.cache_dir, "synthetic-j"),
+                cache_dir=os.path.join(self.cache_dir, "datagen"),
                 out_folder=complexity_results_path,
                 style="junctions",
                 additionalOutput=self.debug,
@@ -352,7 +355,7 @@ class DockerMethodRunner(MethodRunner):
         goal: Literal["detection"] | Literal["location"] = "detection",
         stage="train",  # train, detect
         method="offline",  # offline, online
-        additional_output_path=None,
+        debug=False,
         resultsFolder=None,
     ):
         super().__init__(
@@ -361,7 +364,7 @@ class DockerMethodRunner(MethodRunner):
             stage=stage,
             method=method,
             resultsFolder=resultsFolder,
-            additional_output_path=additional_output_path,
+            debug=debug,
         )
         self.image = image
         self.dataset = dataset
@@ -409,7 +412,7 @@ class FileBasedMethodRunner(MethodRunner):
         detection_method: LDIMMethodBase,
         inputFolder: str = "/input",
         outputFolder: str = "/output",
-        additional_output_path=None,
+        debug=False,
     ):
         # TODO Read from input Folder
         with open(os.path.join(inputFolder, "options.yml")) as f:
@@ -421,16 +424,18 @@ class FileBasedMethodRunner(MethodRunner):
             stage=parameters["stage"],
             method=parameters["method"],
             resultsFolder=outputFolder,
-            additional_output_path=additional_output_path,
+            debug=debug,
         )
         self.detection_method = detection_method
-        self.dataset = Dataset(inputFolder).loadDataset()
+        self.dataset = Dataset(inputFolder).loadDataset().loadBenchmarkData()
         self.id = f"{self.dataset.name}"
 
     def run(self):
         self.detection_method.init_with_benchmark_params(
-            self.additional_output_path,
-            self.hyperparameters,
+            additional_output_path=(
+                os.path.join(self.resultsFolder, "debug") if self.debug else None
+            ),
+            hyperparameters=self.hyperparameters,
         )
         start = time.time()
 

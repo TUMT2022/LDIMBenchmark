@@ -230,7 +230,7 @@ class DatasetGenerator:
         leak_values = pd.DataFrame(index=self.time_stamps)
         # leak_values.index = self.time_stamps
         for index, leak in self.leak_dataframe.iterrows():
-            leak_values[leak["leak_pipe"]] = self.results.node["demand"][
+            leak_values[leak["leak_pipe_id"]] = self.results.node["demand"][
                 leak["leak_node"]
             ].values[: len(self.time_stamps)]
 

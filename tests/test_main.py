@@ -38,29 +38,28 @@ def test_benchmark():
     assert False
 
 
-# def test_complexity():
-#     dataset = Dataset("test/battledim")
+def test_complexity():
+    dataset = Dataset(TEST_DATA_FOLDER_BATTLEDIM)
 
-#     local_methods = [YourCustomLDIMMethod()]  # , LILA()]
+    local_methods = [YourCustomLDIMMethod()]  # , LILA()]
 
-#     hyperparameter = {}
+    hyperparameter = {}
 
-#     benchmark = LDIMBenchmark(
-#         hyperparameter, [dataset], results_dir="./benchmark-results"
-#     )
-#     benchmark.add_local_methods(local_methods)
+    benchmark = LDIMBenchmark(
+        hyperparameter, [dataset], results_dir="./benchmark-results"
+    )
+    benchmark.add_local_methods(local_methods)
 
-#     # .add_docker_methods(methods)
+    # .add_docker_methods(methods)
 
-#     # execute benchmark
-#     benchmark.run_complexity_analysis(
-#         methods=local_methods,
-#         style="time",
-#         # parallel=True,
-#     )
+    # execute benchmark
+    benchmark.run_complexity_analysis(
+        methods=local_methods,
+        style="time",
+        # parallel=True,
+    )
 
-#     # benchmark.evaluate()
-#     assert False
+    # benchmark.evaluate()
 
 
 def test_single_run_local():
@@ -83,13 +82,13 @@ def test_single_run_docker():
 def test_method():
     trainData = (
         Dataset(TEST_DATA_FOLDER_BATTLEDIM)
-        .loadBenchmarkData()
+        .loadDataset()
         .loadBenchmarkData()
         .getTrainingBenchmarkData()
     )
     evaluationData = (
         Dataset(TEST_DATA_FOLDER_BATTLEDIM)
-        .loadBenchmarkData()
+        .loadDataset()
         .loadBenchmarkData()
         .getEvaluationBenchmarkData()
     )

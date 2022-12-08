@@ -4,6 +4,7 @@ import time
 from datetime import datetime
 from glob import glob
 import logging
+from ldimbenchmark.constants import LDIM_BENCHMARK_CACHE_DIR
 from ldimbenchmark.datasets import Dataset
 from ldimbenchmark.generator import (
     generateDatasetsForTimespan,
@@ -21,7 +22,7 @@ import matplotlib as mpl
 
 
 def loadDataset_local(dataset_path):
-    dataset = Dataset(dataset_path).loadDataset()
+    dataset = Dataset(dataset_path).loadDataset().loadBenchmarkData()
     number = int(os.path.basename(os.path.normpath(dataset_path)).split("-")[-1])
     return (
         number,
@@ -32,7 +33,7 @@ def loadDataset_local(dataset_path):
 
 def run_benchmark_complexity(
     methods: list[LDIMMethodBase],
-    dataset_dir,
+    cache_dir=os.path.join(LDIM_BENCHMARK_CACHE_DIR, "datagen"),
     out_folder="out/complexity",
     style=None,
     additionalOutput=False,
@@ -44,22 +45,19 @@ def run_benchmark_complexity(
 
     if not os.path.exists(out_folder):
         os.mkdir(out_folder)
-    dataset_dirs = glob(dataset_dir + "/*/")
-    print(len(dataset_dirs))
-    datasets = {}
     logging.info("Complexity Analysis:")
-
     logging.info(" > Generating Datasets")
     if style == "time":
-        generateDatasetsForTimespan(
-            1, 61, os.path.join(LDIM_BENCHMARK_CACHE_DIR, "synthetic-days")
-        )
+        datasets_dir = os.path.join(cache_dir, "synthetic-days")
+        generateDatasetsForTimespan(1, 61, datasets_dir)
     if style == "junctions":
-        generateDatasetsForJunctions(
-            4, 59, os.path.join(LDIM_BENCHMARK_CACHE_DIR, "synthetic-junctions")
-        )
+        datasets_dir = os.path.join(cache_dir, "synthetic-junctions")
+        generateDatasetsForJunctions(4, 59, datasets_dir)
+
+    dataset_dirs = glob(datasets_dir + "/*/")
 
     logging.info(" > Loading Data")
+    datasets = {}
     with Pool(processes=cpu_count() - 1) as p:
         max_ = len(dataset_dirs)
         with tqdm(total=max_) as pbar:
@@ -90,14 +88,6 @@ def run_benchmark_complexity(
 
     logging.info(" > Starting Complexity analyis")
     for method in methods:
-
-        trainData = Dataset("test/battledim").loadDataset().getTrainingBenchmarkData()
-        evaluationData = (
-            Dataset("test/battledim").loadDataset().getEvaluationBenchmarkData()
-        )
-
-        method.train(trainData)
-        method.detect(evaluationData)
 
         logging.info(f" - {method.name}")
 

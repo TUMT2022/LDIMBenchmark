@@ -53,9 +53,9 @@ class DatasetLibrary:
                 print("Dataset already downloaded")
                 datasets.append(Dataset(dataset_download_path))
                 continue
-            shutil.rmtree(dataset_download_path)
+            shutil.rmtree(dataset_download_path, ignore_errors=True)
             if dataset == DATASETS.BATTLEDIM:
-                # BattledimDatasetLoader.download_dataset(tempdir_path)
+                BattledimDatasetLoader.download_dataset(tempdir_path)
                 BattledimDatasetLoader.prepare_dataset(
                     tempdir_path, dataset_download_path
                 )
