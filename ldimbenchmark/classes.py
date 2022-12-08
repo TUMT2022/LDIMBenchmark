@@ -80,6 +80,7 @@ class LDIMMethodBase(ABC):
         :param method: Method that should be executed. Possible methods: "offline", "online"
         """
         self.additional_output_path = additional_output_path
+        self.logging = True if additional_output_path is not None else False
         if not hasattr(self, "hyperparameters"):
             self.hyperparameters = {}
         self.hyperparameters.update(hyperparameters)

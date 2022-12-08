@@ -88,11 +88,18 @@ class LocalMethodRunner(MethodRunner):
 
     def run(self):
 
+        logging.info(f"Running {self.id}")
+        if not self.resultsFolder and self.debug:
+            raise Exception("Debug mode requires a results folder.")
+        elif self.debug == True:
+            additional_output_path = os.path.join(self.resultsFolder, "debug")
+            os.makedirs(additional_output_path, exist_ok=True)
+        else:
+            additional_output_path = None
+
         # test compatibility (stages)
         self.detection_method.init_with_benchmark_params(
-            additional_output_path=(
-                os.path.join(self.resultsFolder, "debug") if self.debug else None
-            ),
+            additional_output_path=additional_output_path,
             hyperparameters=self.hyperparameters,
         )
         start = time.time()
@@ -431,12 +438,19 @@ class FileBasedMethodRunner(MethodRunner):
         self.id = f"{self.dataset.name}"
 
     def run(self):
+        if not self.resultsFolder and self.debug:
+            raise Exception("Debug mode requires a results folder.")
+        elif self.debug == True:
+            additional_output_path = os.path.join(self.resultsFolder, "debug")
+            os.makedirs(additional_output_path, exist_ok=True)
+        else:
+            additional_output_path = None
+
         self.detection_method.init_with_benchmark_params(
-            additional_output_path=(
-                os.path.join(self.resultsFolder, "debug") if self.debug else None
-            ),
+            additional_output_path=additional_output_path,
             hyperparameters=self.hyperparameters,
         )
+
         start = time.time()
 
         self.detection_method.train(self.dataset.getTrainingBenchmarkData())
