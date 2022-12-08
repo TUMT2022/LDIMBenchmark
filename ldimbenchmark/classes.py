@@ -35,51 +35,11 @@ class BenchmarkData:
         """Metadata of the System. e.g. Metering zones and included sensors."""
 
 
-class DatasetInfoDatasetOverwrites(TypedDict):
-    """
-    Dataset Config.yml representation
-    """
-
-    file_path: str
-    index_column: str
-    decimal: str
-    delimiter: str
-
-
-class DatasetInfoDatasetObject(TypedDict):
-    """
-    Dataset Config.yml representation
-    """
-
-    start: datetime
-    end: datetime
-    overwrites: DatasetInfoDatasetOverwrites
-
-
-class DatasetInfoDatasetProperty(TypedDict):
-    """
-    Dataset Config.yml representation
-    """
-
-    evaluation: DatasetInfoDatasetObject
-    training: DatasetInfoDatasetObject
-
-
-class DatasetInfo(TypedDict):
-    """
-    Dataset Config.yml representation
-    """
-
-    name: str
-    dataset: DatasetInfoDatasetProperty
-    inp_file: str
-
-
 class BenchmarkLeakageResult(TypedDict):
-    pipe_id: str
-    leak_start: datetime
-    leak_end: datetime
-    leak_peak: datetime
+    leak_pipe_id: str
+    leak_time_start: datetime
+    leak_time_end: datetime
+    leak_time_peak: datetime
     leak_area: float
     leak_diameter: float
     leak_max_flow: float

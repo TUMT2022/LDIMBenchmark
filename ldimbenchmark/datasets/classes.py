@@ -11,12 +11,51 @@ import pandas as pd
 import os
 from glob import glob
 import json
-from typing import Literal
+from typing import Literal, TypedDict
 from ldimbenchmark.constants import LDIM_BENCHMARK_CACHE_DIR
-from ldimbenchmark.classes import DatasetInfo
 import shutil
 import hashlib
-import numpy as np
+from pandas import DataFrame
+
+
+class DatasetInfoDatasetOverwrites(TypedDict):
+    """
+    Dataset Config.yml representation
+    """
+
+    file_path: str
+    index_column: str
+    decimal: str
+    delimiter: str
+
+
+class DatasetInfoDatasetObject(TypedDict):
+    """
+    Dataset Config.yml representation
+    """
+
+    start: datetime
+    end: datetime
+
+
+class DatasetInfoDatasetProperty(TypedDict):
+    """
+    Dataset Config.yml representation
+    """
+
+    evaluation: DatasetInfoDatasetObject
+    training: DatasetInfoDatasetObject
+    overwrites: DatasetInfoDatasetOverwrites
+
+
+class DatasetInfo(TypedDict):
+    """
+    Dataset Config.yml representation
+    """
+
+    name: str
+    dataset: DatasetInfoDatasetProperty
+    inp_file: str
 
 
 class Dataset:
@@ -32,11 +71,11 @@ class Dataset:
         self.path = path
         # Read dataset_info.yaml
         with open(os.path.join(path, "dataset_info.yaml")) as f:
-            self.info = yaml.safe_load(f)
+            self.info: DatasetInfo = yaml.safe_load(f)
 
         self.name = self.info["name"]
 
-    def load(self):
+    def loadBenchmarkData(self):
         return LoadedDataset(self)
 
 
@@ -45,14 +84,15 @@ class _LoadedDatasetPart:
     A sub-dataset of a loaded dataset (e.g. training or evaluation)
     """
 
-    def __init__(self, dict: dict):
-        self.pressures: np.DataFrame = dict["pressures"]
-        self.demands = dict["demands"]
-        self.flows = dict["flows"]
-        self.levels = dict["levels"]
+    def __init__(self, dict: dict[str, DataFrame]):
+        self.pressures: DataFrame = dict["pressures"]
+        self.demands: DataFrame = dict["demands"]
+        self.flows: DataFrame = dict["flows"]
+        self.levels: DataFrame = dict["levels"]
+        self.leaks: DataFrame = dict["leaks"]
 
 
-class LoadedDataset(Dataset):
+class LoadedDataset(Dataset, _LoadedDatasetPart):
     """
     The heavy dataset class (data loaded)
     Represents the Low Level Interface as Code + Some Convience Methods
@@ -85,61 +125,55 @@ class LoadedDataset(Dataset):
         self.name = dataset.name
         self.info = dataset.info
 
-        self.pressures = pd.DataFrame()
-        self.demands = pd.DataFrame()
-        self.flows = pd.DataFrame()
-        self.levels = pd.DataFrame()
+        super(Dataset, self).__init__(
+            dict=DatasetTransformer._loadDatasetsDirectly(
+                dataset.path, self.info["dataset"]["overwrites"]
+            )
+        )
 
         # TODO: Cache dataset
-        # TODO load full dataset here and only split into training and evaluation on demand
-        (training_dataset, evaluation_dataset) = DatasetTransformer(
-            dataset, dataset.info
-        ).splitIntoTrainingEvaluationDatasets()
-        # Load Data
-        self.train = _LoadedDatasetPart(training_dataset)
-        self.evaluation = _LoadedDatasetPart(evaluation_dataset)
-
-        # Load Leaks
-        # TODO: make leaks load from .csv
-        train_dataset_leakages = []
-        evaluation_dataset_leakages = []
-        for leak in self.info["leakages"]:
-            startTime = datetime.fromisoformat(leak["leak_start_time"])
-            leak = {
-                "pipe_id": leak["leak_pipe"],
-                "leak_start": datetime.fromisoformat(leak["leak_start_time"]),
-                "leak_end": datetime.fromisoformat(leak["leak_end_time"]),
-                "leak_peak": datetime.fromisoformat(leak["leak_peak_time"]),
-                "leak_area": leak["leak_area"] if "leak_area" in leak else 0,
-                "leak_diameter": leak["leak_diameter"]
-                if "leak_diameter" in leak
-                else 0,
-                "leak_max_flow": leak["leak_max_flow"]
-                if "leak_max_flow" in leak
-                else 0,
-            }
-
-            if (
-                startTime > self.train.pressures.index[0]
-                and startTime < self.train.pressures.index[-1]
-            ):
-                train_dataset_leakages.append(leak)
-
-            if (
-                startTime > self.evaluation.pressures.index[0]
-                and startTime < self.evaluation.pressures.index[-1]
-            ):
-                evaluation_dataset_leakages.append(leak)
-
-        self.leaks_evaluation = evaluation_dataset_leakages
-        self.leaks_train = train_dataset_leakages
-
         # TODO: Run checks as to confirm that the dataset_info.yaml information are right
         # eg. check start and end times
 
         self.model: WaterNetworkModel = read_inpfile(
             os.path.join(self.path, self.info["inp_file"])
         )
+
+    def loadBenchmarkData(self):
+        return BenchmarkDatasets(self)
+
+    def exportTo(self, folder: str):
+        """
+        Exports the dataset to a given folder
+        """
+        write_inpfile(self.model, os.path.join(folder, self.info["inp_file"]))
+        # TODO: Speed up by multiprocessing
+        self.pressures.to_csv(os.path.join(folder, "pressures.csv"))
+        self.demands.to_csv(os.path.join(folder, "demands.csv"))
+        self.flows.to_csv(os.path.join(folder, "flows.csv"))
+        self.levels.to_csv(os.path.join(folder, "levels.csv"))
+        with open(os.path.join(folder, f"dataset_info.yaml"), "w") as f:
+            yaml.dump(self.info, f)
+
+
+class BenchmarkDatasets(LoadedDataset):
+    """
+    A dataset that contains the benchmark data for the training and evaluation dataset
+    """
+
+    def __init__(self, dataset: LoadedDataset):
+        """
+        Loads the benchmark data for the training and evaluation dataset
+        """
+        (training_dataset, evaluation_dataset) = DatasetTransformer(
+            dataset, dataset.info
+        ).splitIntoTrainingEvaluationDatasets()
+        self.name = dataset.name
+        self.model = dataset.model
+
+        # Load Data
+        self.train = _LoadedDatasetPart(training_dataset)
+        self.evaluation = _LoadedDatasetPart(evaluation_dataset)
 
     def getTrainingBenchmarkData(self):
         return BenchmarkData(
@@ -158,18 +192,6 @@ class LoadedDataset(Dataset):
             levels=self.evaluation.levels,
             model=self.model,
         )
-
-    def exportTo(self, folder: str):
-        """
-        Exports the dataset to a given folder
-        """
-        write_inpfile(self.model, os.path.join(folder, self.info["inp_file"]))
-        self.pressures.to_csv(os.path.join(folder, "pressures.csv"))
-        self.demands.to_csv(os.path.join(folder, "demands.csv"))
-        self.flows.to_csv(os.path.join(folder, "flows.csv"))
-        self.levels.to_csv(os.path.join(folder, "levels.csv"))
-        with open(os.path.join(folder, f"dataset_info.yaml"), "w") as f:
-            yaml.dump(self.info, f)
 
 
 class DatasetTransformer:
@@ -198,106 +220,89 @@ class DatasetTransformer:
     ):
         if type != "training" and type != "evaluation":
             raise ValueError("type must be either 'training' or 'evaluation'")
-
+        # TODO: Speed up by multiprocessing
         specific_dataset_dir = os.path.join(self.dataset_dir, type)
         os.makedirs(specific_dataset_dir, exist_ok=True)
 
-        index_column = "Timestamp"
-        delimiter = ","
-        decimal = "."
-        base_path = os.path.join(self.dataset.path)
+        full_dataset = DatasetTransformer._loadDatasetsDirectly(
+            self.dataset.path, self.config["dataset"]["overwrites"]
+        )
 
-        overwrites_key = "overwrites"
-        if overwrites_key in self.config["dataset"][type]:
-            config_name = "filePath"
-            if config_name in self.config["dataset"][type][overwrites_key]:
-                base_path = (
-                    os.path.join(
-                        base_path,
-                        self.config["dataset"][type][overwrites_key][config_name],
-                    )
-                    + "/"
-                )
-
-            config_name = "index_column"
-            if config_name in self.config["dataset"][type][overwrites_key]:
-                index_column = self.config["dataset"][type][overwrites_key][config_name]
-            config_name = "delimiter"
-            if config_name in self.config["dataset"][type][overwrites_key]:
-                delimiter = self.config["dataset"][type][overwrites_key][config_name]
-            config_name = "decimal"
-            if config_name in self.config["dataset"][type][overwrites_key]:
-                decimal = self.config["dataset"][type][overwrites_key][config_name]
-
-        if not os.path.exists(self.cache_dir):
-            os.makedirs(self.cache_dir)
-
-        dataset = {}
-        for file in glob(base_path + "*.csv"):
-            dataset[os.path.basename(file).lower()[:-4]] = pd.read_csv(
-                file,
-                index_col="Timestamp",
-                parse_dates=True,
-                delimiter=delimiter,
-                decimal=decimal,
-            )
-
-        pressures = dataset["pressures"].loc[
+        pressures = full_dataset["pressures"].loc[
             self.config["dataset"][type]["start"] : self.config["dataset"][type]["end"]
         ]
         pressures.to_csv(os.path.join(specific_dataset_dir, "pressures.csv"))
-        demands = dataset["demands"].loc[
+        demands = full_dataset["demands"].loc[
             self.config["dataset"][type]["start"] : self.config["dataset"][type]["end"]
         ]
         demands.to_csv(os.path.join(specific_dataset_dir, "demands.csv"))
-        flows = dataset["flows"].loc[
+        flows = full_dataset["flows"].loc[
             self.config["dataset"][type]["start"] : self.config["dataset"][type]["end"]
         ]
         flows.to_csv(os.path.join(specific_dataset_dir, "flows.csv"))
-        levels = dataset["levels"].loc[
+        levels = full_dataset["levels"].loc[
             self.config["dataset"][type]["start"] : self.config["dataset"][type]["end"]
         ]
         levels.to_csv(os.path.join(specific_dataset_dir, "levels.csv"))
 
+        mask = (
+            full_dataset["leaks"]["leak_time_start"]
+            > self.config["dataset"][type]["start"]
+        ) & (
+            full_dataset["leaks"]["leak_time_start"]
+            < self.config["dataset"][type]["end"]
+        )
+        leaks = full_dataset["leaks"][mask]
+        levels.to_csv(os.path.join(specific_dataset_dir, "leaks.csv"))
+
         return {
             "pressures": pressures,
             "demands": demands,
             "flows": flows,
             "levels": levels,
+            "leaks": leaks,
         }
 
-    def loadDatasetsDirectly(self, type: str):
+    @staticmethod
+    def _loadDatasetsDirectly(
+        datastet_dir: str, overwrites: DatasetInfoDatasetOverwrites = {}
+    ):
         """
         Load the dataset directly from the files
         """
-        specific_dataset_dir = os.path.join(self.dataset_dir, type)
-        pressures = pd.read_csv(
-            os.path.join(specific_dataset_dir, "pressures.csv"),
-            index_col="Timestamp",
-            parse_dates=True,
-        )
-        demands = pd.read_csv(
-            os.path.join(specific_dataset_dir, "demands.csv"),
-            index_col="Timestamp",
-            parse_dates=True,
-        )
-        flows = pd.read_csv(
-            os.path.join(specific_dataset_dir, "flows.csv"),
-            index_col="Timestamp",
-            parse_dates=True,
-        )
-        levels = pd.read_csv(
-            os.path.join(specific_dataset_dir, "levels.csv"),
-            index_col="Timestamp",
-            parse_dates=True,
-        )
+        index_column = "Timestamp"
+        delimiter = ","
+        decimal = "."
 
-        return {
-            "pressures": pressures,
-            "demands": demands,
-            "flows": flows,
-            "levels": levels,
-        }
+        config_name = "index_column"
+        if config_name in overwrites:
+            index_column = overwrites[config_name]
+        config_name = "delimiter"
+        if config_name in overwrites:
+            delimiter = overwrites[config_name]
+        config_name = "decimal"
+        if config_name in overwrites:
+            decimal = overwrites[config_name]
+
+        dataset = {}
+        for file in filter(
+            lambda x: not "leaks" in os.path.basename(x),
+            glob(os.path.join(datastet_dir + "/" + "*.csv")),
+        ):
+            dataset[os.path.basename(file).lower()[:-4]] = pd.read_csv(
+                file,
+                index_col=index_column,
+                parse_dates=True,
+                delimiter=delimiter,
+                decimal=decimal,
+            )
+        dataset["leaks"] = pd.read_csv(
+            os.path.join(datastet_dir, "leaks.csv"),
+            parse_dates=True,
+            delimiter=delimiter,
+            decimal=decimal,
+        )
+        return dataset
 
     def splitIntoTrainingEvaluationDatasets(
         self,
@@ -320,8 +325,12 @@ class DatasetTransformer:
                 existing_hash = f.read()
                 if existing_hash == dataset_config_hash:
                     # is equal, no need to transform, just load
-                    training_data = self.loadDatasetsDirectly("training")
-                    evaluation_data = self.loadDatasetsDirectly("evaluation")
+                    training_data = DatasetTransformer._loadDatasetsDirectly(
+                        os.path.join(self.dataset_dir, "training"),
+                    )
+                    evaluation_data = DatasetTransformer._loadDatasetsDirectly(
+                        os.path.join(self.dataset_dir, "evaluation")
+                    )
                 return (training_data, evaluation_data)
 
         # is not equal, remove old dataset

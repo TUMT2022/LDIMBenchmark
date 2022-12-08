@@ -10,3 +10,4 @@ site
 .ldim_benchmark_cache
 benchmark-results
 test
+tests/test_data

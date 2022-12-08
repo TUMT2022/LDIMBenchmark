@@ -11,6 +11,8 @@ import shutil
 import glob
 import logging
 from ldimbenchmark.datasets.loaders.load_dataset_base import _LoadDatasetBase
+import pandas as pd
+from ldimbenchmark.classes import BenchmarkLeakageResult
 
 
 def download_file(args):
@@ -25,7 +27,8 @@ def download_file(args):
 
 
 class BattledimDatasetLoader(_LoadDatasetBase):
-    def downloadBattledimDataset(downloadPath=None):
+    @staticmethod
+    def download_dataset(downloadPath=None):
         # Download Battledim Data
 
         URLs = {
@@ -57,7 +60,8 @@ class BattledimDatasetLoader(_LoadDatasetBase):
                 for result in p.imap_unordered(download_file, args):
                     pbar.update()
 
-    def prepareBattledimDataset(unpreparedDatasetPath=None, preparedDatasetPath=None):
+    @staticmethod
+    def prepare_dataset(unpreparedDatasetPath=None, preparedDatasetPath=None):
         # Preprocess Battledim Data
 
         os.makedirs(preparedDatasetPath, exist_ok=True)
@@ -67,17 +71,20 @@ class BattledimDatasetLoader(_LoadDatasetBase):
         )
         wntr.network.write_inpfile(wn, path.join(preparedDatasetPath, "L-TOWN.inp"))
 
-        folder = path.join(preparedDatasetPath, "2018")
-        os.makedirs(folder, exist_ok=True)
         copyfiles = glob.glob(path.join(unpreparedDatasetPath, "2018") + "/*.csv")
         for file in copyfiles:
-            shutil.copy(file, folder)
+            shutil.copy(
+                file, os.path.join(preparedDatasetPath, os.path.basename(file).lower())
+            )
 
-        folder = path.join(preparedDatasetPath, "2019")
-        os.makedirs(folder, exist_ok=True)
         copyfiles = glob.glob(path.join(unpreparedDatasetPath, "2019") + "/*.csv")
         for file in copyfiles:
-            shutil.copy(file, folder)
+            with open(file, "r") as file_from:
+                with open(
+                    os.path.join(preparedDatasetPath, os.path.basename(file).lower()),
+                    "a",
+                ) as file_to:
+                    file_to.writelines(file_from.readlines()[1:])
 
         new_leakages = []
         with open(
@@ -91,38 +98,43 @@ class BattledimDatasetLoader(_LoadDatasetBase):
                 splits = leak.split(",")
                 new_leakages.append(
                     {
-                        "leak_pipe": splits[0].strip(),
-                        "leak_start_time": splits[1].strip(),
-                        "leak_end_time": splits[2].strip(),
+                        "leak_pipe_id": splits[0].strip(),
+                        "leak_time_start": splits[1].strip(),
+                        "leak_time_end": splits[2].strip(),
+                        "leak_time_peak": splits[5].strip(),
                         "leak_max_flow": float(splits[3].strip()),
-                        "leak_peak_time": splits[5].strip(),
                     }
                 )
+        # TODO: Extract leak area and diameter
 
         dataset_info = """
 name: battledim
 dataset:
-  evaluation:
-      start: 2019-01-01 00:00
-      end: 2019-12-31 23:55
-      overwrites:
-        filePath: "2019"
+  overwrites:
         index_column: Timestamp
         decimal: ','
         delimiter: ;
+  evaluation:
+      start: 2019-01-01 00:00
+      end: 2019-12-31 23:55
   training:
       start: 2018-01-01 00:00
       end: 2019-12-31 23:55
-      overwrites:
-        filePath: "2018"
-        index_column: Timestamp 
-        decimal: ','
-        delimiter: ;
 inp_file: L-TOWN.inp
         """
         # Convert info to yaml dictionary
         dataset_info = yaml.safe_load(dataset_info)
-        dataset_info["leakages"] = new_leakages
+
+        pd.DataFrame(
+            new_leakages,
+            columns=list(BenchmarkLeakageResult.__annotations__.keys()),
+        ).to_csv(
+            os.path.join(preparedDatasetPath, "leaks.csv"),
+            index=False,
+            date_format="%Y-%m-%d %H:%M:%S",
+            sep=";",
+            decimal=",",
+        )
 
         # Write info to file
         with open(os.path.join(preparedDatasetPath, f"dataset_info.yaml"), "w") as f:

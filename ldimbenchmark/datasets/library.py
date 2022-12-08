@@ -6,6 +6,8 @@ import os
 from ldimbenchmark.datasets.classes import Dataset
 import numpy as np
 
+import shutil
+
 
 class DATASETS(Enum):
     """
@@ -43,15 +45,17 @@ class DatasetLibrary:
         for dataset in dataset_name:
             print("Downloading dataset: " + dataset.value)
             tempdir = tempfile.TemporaryDirectory()
+            tempdir_path = tempdir.name
             dataset_download_path = os.path.join(self.path, dataset.value)
             if os.path.exists(dataset_download_path) and not force:
                 print("Dataset already downloaded")
                 datasets.append(Dataset(dataset_download_path))
                 continue
+            shutil.rmtree(dataset_download_path)
             if dataset == DATASETS.BATTLEDIM:
-                BattledimDatasetLoader.downloadBattledimDataset(tempdir.name)
-                BattledimDatasetLoader.prepareBattledimDataset(
-                    tempdir.name, dataset_download_path
+                # BattledimDatasetLoader.download_dataset(tempdir_path)
+                BattledimDatasetLoader.prepare_dataset(
+                    tempdir_path, dataset_download_path
                 )
 
                 datasets.append(Dataset(dataset_download_path))

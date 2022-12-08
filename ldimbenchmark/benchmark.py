@@ -15,7 +15,7 @@ from glob import glob
 from ldimbenchmark.benchmark_evaluation import evaluate_leakages
 from tabulate import tabulate
 from ldimbenchmark.benchmark_complexity import run_benchmark_complexity
-from ldimbenchmark.classes import LDIMMethodBase
+from ldimbenchmark.classes import LDIMMethodBase, BenchmarkLeakageResult
 
 
 class MethodRunner(ABC):
@@ -75,13 +75,15 @@ class LocalMethodRunner(MethodRunner):
             goal=goal,
             stage=stage,
             method=method,
-            resultsFolder=os.path.join(resultsFolder, self.id),
+            resultsFolder=(
+                None if resultsFolder == None else os.path.join(resultsFolder, self.id)
+            ),
             additional_output_path=additional_output_path,
         )
         if dataset is str:
-            self.dataset = Dataset(dataset).load()
+            self.dataset = Dataset(dataset).loadBenchmarkData().loadBenchmarkData()
         else:
-            self.dataset = dataset.load()
+            self.dataset = dataset.loadBenchmarkData().loadBenchmarkData()
         self.detection_method = detection_method
 
     def run(self):
@@ -128,7 +130,7 @@ class LocalMethodRunner(MethodRunner):
                 date_format="%Y-%m-%d %H:%M:%S",
             )
             pd.DataFrame(
-                self.dataset.leaks_evaluation,
+                self.dataset.evaluation.leaks,
                 columns=list(BenchmarkLeakageResult.__annotations__.keys()),
             ).to_csv(
                 os.path.join(self.resultsFolder, "should_have_detected_leaks.csv"),
@@ -153,7 +155,7 @@ class LocalMethodRunner(MethodRunner):
                 date_format="%Y-%m-%d %H:%M:%S",
             )
 
-        return detected_leaks, self.dataset.leaks_evaluation
+        return detected_leaks, self.dataset.evaluation.leaks
 
 
 class LDIMBenchmark:
@@ -422,7 +424,7 @@ class FileBasedMethodRunner(MethodRunner):
             additional_output_path=additional_output_path,
         )
         self.detection_method = detection_method
-        self.dataset = Dataset(inputFolder).load()
+        self.dataset = Dataset(inputFolder).loadBenchmarkData()
         self.id = f"{self.dataset.name}"
 
     def run(self):
