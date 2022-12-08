@@ -72,6 +72,8 @@ class Dataset:
         # Read dataset_info.yaml
         with open(os.path.join(path, "dataset_info.yaml")) as f:
             self.info: DatasetInfo = yaml.safe_load(f)
+            if "overwrites" not in self.info["dataset"]:
+                self.info["dataset"]["overwrites"] = {}
 
         self.name = self.info["name"]
 
