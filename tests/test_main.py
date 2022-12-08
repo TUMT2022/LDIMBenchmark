@@ -6,7 +6,7 @@ from ldimbenchmark import (
     FileBasedMethodRunner,
 )
 from tests.method_to_test import YourCustomLDIMMethod
-from ldimbenchmark.methods import LILA
+from ldimbenchmark.methods import LILA, MNF
 
 from tests.shared import (
     TEST_DATA_FOLDER,
@@ -16,14 +16,19 @@ from tests.shared import (
 
 
 def test_benchmark():
-    dataset = Dataset(TEST_DATA_FOLDER_BATTLEDIM)
+    # dataset = Dataset(TEST_DATA_FOLDER_BATTLEDIM)
 
-    local_methods = [YourCustomLDIMMethod()]  # , LILA()]
+    local_methods = [MNF()]  # , LILA()]
 
     hyperparameter = {}
 
     benchmark = LDIMBenchmark(
-        hyperparameter, [dataset], results_dir="./benchmark-results"
+        hyperparameter,
+        [
+            # dataset,
+            Dataset(".ldim_benchmark_cache/datagen/synthetic-days/synthetic-days-60"),
+        ],
+        results_dir="./benchmark-results",
     )
     benchmark.add_local_methods(local_methods)
 

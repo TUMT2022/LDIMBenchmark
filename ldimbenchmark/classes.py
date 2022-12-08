@@ -45,6 +45,18 @@ class BenchmarkLeakageResult(TypedDict):
     leak_max_flow: float
 
 
+class Hyperparameter(TypedDict):
+    name: str
+    type: type
+    default: str
+    description: str
+
+
+class MethodMetadata(TypedDict):
+    data_needed: list[str]
+    hyperparameters: list[Hyperparameter]
+
+
 class LDIMMethodBase(ABC):
     """
     Skeleton for implementing an instance of a leakage detection method.
@@ -56,7 +68,11 @@ class LDIMMethodBase(ABC):
     """
 
     def __init__(
-        self, name: str, version: str, additional_output_path=None, hyperparameters={}
+        self,
+        name: str,
+        version: str,
+        metadata: MethodMetadata,
+        additional_output_path=None,
     ):
         """
         Initialize the Leakage Detection Method
@@ -64,9 +80,12 @@ class LDIMMethodBase(ABC):
         """
         self.name = name
         self.version = version
+        self.metadata = metadata
         self.logging = True if additional_output_path != None else False
         self.additional_output_path = additional_output_path
-        self.hyperparameters = hyperparameters
+        self.hyperparameters = {}
+        for hyperparameter in metadata["hyperparameters"]:
+            self.hyperparameters[hyperparameter["name"]] = hyperparameter["default"]
 
     def init_with_benchmark_params(
         self, additional_output_path=None, hyperparameters={}
