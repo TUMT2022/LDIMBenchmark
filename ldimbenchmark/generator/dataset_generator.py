@@ -10,6 +10,7 @@ import math
 from pydantic import BaseModel
 from typing import List, Union
 from wntr.network import write_inpfile
+from ldimbenchmark.classes import BenchmarkLeakageResult
 
 
 class DatasetGeneratorConfigModel(BaseModel):
@@ -154,17 +155,17 @@ class DatasetGenerator:
             leak_pipe_nodes = [pipe_id.start_node_name, pipe_id.end_node_name]
 
             self.leaks.append(
-                {
-                    "leak_pipe": str(pipe_id),
-                    "leak_pipe_nodes": leak_pipe_nodes,
-                    "leak_node": str(leak_node),
-                    "leak_diameter": leak_diameter,
-                    "leak_area": leak_area,
-                    "leak_type": leak_type,
-                    "leak_start_time": leak_start_time_string,
-                    "leak_peak_time": leak_peak_time_string,
-                    "leak_end_time": leak_end_time_string,
-                }
+                BenchmarkLeakageResult(
+                    leak_pipe_id=str(pipe_id),
+                    leak_pipe_nodes=leak_pipe_nodes,
+                    leak_node=str(leak_node),
+                    leak_diameter=leak_diameter,
+                    leak_area=leak_area,
+                    leak_type=leak_type,
+                    leak_time_start=leak_start_time_string,
+                    leak_time_peak=leak_peak_time_string,
+                    leak_time_end=leak_end_time_string,
+                )
             )
 
         # Save the water network model to a file before using it in a simulation
