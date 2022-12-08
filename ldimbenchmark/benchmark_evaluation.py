@@ -33,10 +33,10 @@ def evaluate_leakages(expected_leaks: pd.DataFrame, detected_leaks: pd.DataFrame
     # Make sure dates are the same
 
     expected_leaks = expected_leaks.astype(
-        {"leak_start": "datetime64[ns]", "leak_end": "datetime64[ns]"}
+        {"leak_time_start": "datetime64[ns]", "leak_time_end": "datetime64[ns]"}
     )
     detected_leaks = detected_leaks.astype(
-        {"leak_start": "datetime64[ns]", "leak_end": "datetime64[ns]"}
+        {"leak_time_start": "datetime64[ns]", "leak_time_end": "datetime64[ns]"}
     )
 
     # Match detected Leaks with existing Leaks
@@ -46,13 +46,13 @@ def evaluate_leakages(expected_leaks: pd.DataFrame, detected_leaks: pd.DataFrame
     detected_leaks_times["type"] = "detected"
 
     list_of_all = pd.concat([expected_leaks_times, detected_leaks_times])
-    list_of_all = list_of_all.sort_values(by="leak_start")
+    list_of_all = list_of_all.sort_values(by="leak_time_start")
     list_of_all["used"] = 0
     list_of_all["index"] = list_of_all.index
     list_of_all = list_of_all.reset_index()
     # print(list_of_all)
     [D1, D2] = np.meshgrid(
-        expected_leaks_times["leak_start"], detected_leaks_times["leak_start"]
+        expected_leaks_times["leak_time_start"], detected_leaks_times["leak_time_start"]
     )
     # Get Distance between expected and detected Leaks (with positive values if the detected leak is after the expected leak)
     dist_mat = pd.DataFrame(D2 - D1)
