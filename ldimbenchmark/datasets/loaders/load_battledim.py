@@ -10,7 +10,7 @@ import yaml
 import shutil
 import glob
 import logging
-from ldimbenchmark.datasets.load_dataset_base import _LoadDatasetBase
+from ldimbenchmark.datasets.loaders.load_dataset_base import _LoadDatasetBase
 
 
 def download_file(args):

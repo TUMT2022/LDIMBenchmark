@@ -1,4 +1,4 @@
-from ldimbenchmark.datasets import Dataset
+from ldimbenchmark.datasets.classes import Dataset
 import os
 import pandas as pd
 import wntr

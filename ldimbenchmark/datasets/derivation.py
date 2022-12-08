@@ -12,7 +12,8 @@ from collections.abc import Sequence
 
 class DatasetDerivator:
     """
-    Chaos Monkey for your Dataset
+    Chaos Monkey for your Dataset.
+    It changes the values of the dataset (in contrast to DatasetTransformer, which changes only structure of the dataset)
 
     Generate Noise, make sensors fail, skew certain dataseries
 
@@ -115,6 +116,7 @@ class DatasetDerivator:
 
         return newDatasets
 
+    @staticmethod
     def _generateNormalDistributedNoise(dataset, noiseLevel):
         """
         generate noise in a gaussian way between the low and high level of noiseLevel
@@ -131,6 +133,7 @@ class DatasetDerivator:
         noise = X.rvs(dataset.index.shape)
         return dataset, noise
 
+    @staticmethod
     def _generateUniformDistributedNoise(dataset, noiseLevel):
         """
         generate noise in a uniform way between the low and high level of noiseLevel
@@ -143,6 +146,7 @@ class DatasetDerivator:
         dataset = dataset.mul(1 + noise, axis=0)
         return dataset, noise
 
+    @staticmethod
     def __get_random_norm(noise_level: float, size: int):
         """
         Generate a random normal distribution with a given noise level
