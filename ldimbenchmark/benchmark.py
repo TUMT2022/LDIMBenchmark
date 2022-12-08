@@ -339,11 +339,46 @@ class LDIMBenchmark:
             results["precision"] + results["recall (TPR)"]
         )
 
-        print(tabulate(results, headers="keys", showindex="never"))
+        results = results.set_index(["dataset", "method"])
 
         os.makedirs(self.evaluation_results_dir, exist_ok=True)
+
+        columns = [
+            "TP",
+            "FP",
+            "TN",
+            "FN",
+            "TTD",
+            "wrongpipe",
+            "score",
+            "precision",
+            "recall (TPR)",
+            "TNR",
+            "FPR",
+            "FNR",
+            "F1",
+        ]
+        results.columns = columns
+
+        print(tabulate(results, headers="keys"))
         results.to_csv(os.path.join(self.evaluation_results_dir, "results.csv"))
-        results.style.to_latex(os.path.join(self.evaluation_results_dir, "results.tex"))
+
+        results.style.format(escape="latex").set_table_styles(
+            [
+                # {'selector': 'toprule', 'props': ':hline;'},
+                {"selector": "midrule", "props": ":hline;"},
+                # {'selector': 'bottomrule', 'props': ':hline;'},
+            ],
+            overwrite=False,
+        ).relabel_index(columns, axis="columns").to_latex(
+            os.path.join(self.evaluation_results_dir, "results.tex"),
+            position_float="centering",
+            clines="all;data",
+            column_format="ll|" + "r" * len(columns),
+            position="H",
+            label="table:benchmark_results",
+            caption="Overview of the benchmark results.",
+        )
 
         pass
 

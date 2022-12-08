@@ -60,6 +60,7 @@ def evaluate_leakages(expected_leaks: pd.DataFrame, detected_leaks: pd.DataFrame
     # print(dist_mat)
 
     matched_list = []
+    # TODO: Make sure that the table index (int) is used and not the pipe_id
     for index, leak in list_of_all.iterrows():
         if list_of_all["used"][index] == 1:
             continue
@@ -115,15 +116,15 @@ def evaluate_leakages(expected_leaks: pd.DataFrame, detected_leaks: pd.DataFrame
             continue
         # print(detected_leak.pipe_id, expected_leak.pipe_id)
         if (
-            detected_leak.leak_start >= expected_leak.leak_start
-            and detected_leak.leak_end <= expected_leak.leak_end
+            detected_leak.leak_time_start >= expected_leak.leak_time_start
+            and detected_leak.leak_time_end <= expected_leak.leak_time_end
         ):
             right_leak_detected += 1
             # Calculate TimeSpan Between Detections
             time_to_detection = (
-                detected_leak.leak_start - expected_leak.leak_start
+                detected_leak.leak_time_start - expected_leak.leak_time_start
             ).total_seconds()
-            if expected_leak.pipe_id == detected_leak.pipe_id:
+            if expected_leak.leak_pipe_id == detected_leak.leak_pipe_id:
                 pass
             else:
                 wrong_pipe_detected += 1
