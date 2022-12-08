@@ -136,6 +136,8 @@ def run_benchmark_complexity(
         }
     )
     results.to_csv(os.path.join(out_folder, "results.csv"), index=False)
+
+    # TODO: Escape complexity formula into math mode
     results.style.hide(axis="index").to_latex(os.path.join(out_folder, "results.tex"))
 
     result_measures = pd.concat(result_measures, axis=1)

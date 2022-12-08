@@ -55,13 +55,21 @@ class DatasetAnalyzer:
 
         network_models = {}
         network_model_details = {}
+        network_model_details_medium = {}
+        network_model_details_fine = {}
 
         for dataset in dataset_list:
             loadedDataset = dataset.loadDataset()
 
             network_models[dataset.name] = loadedDataset
-            network_model_details[dataset.name] = pd.json_normalize(
-                loadedDataset.model.describe(3)
+            network_model_details[dataset] = pd.json_normalize(
+                loadedDataset.model.describe()
+            )
+            network_model_details_medium[dataset] = pd.json_normalize(
+                loadedDataset.model.describe(1)
+            )
+            network_model_details_fine[dataset] = pd.json_normalize(
+                loadedDataset.model.describe(2)
             )
 
             fig, ax = plt.subplots(1, 1, figsize=(60, 40))
@@ -78,11 +86,76 @@ class DatasetAnalyzer:
             )
 
         overview = pd.concat(network_model_details)
+        overview_medium = pd.concat(network_model_details_medium)
+        overview_fine = pd.concat(network_model_details_fine)
+
+        overview = overview.reset_index(level=1, drop=True)
+        overview_medium = overview_medium.reset_index(level=1, drop=True)
+        overview_fine = overview_fine.reset_index(level=1, drop=True)
+
         overview.to_csv(
             os.path.join(self.analyisis_out_dir, "network_model_details.csv")
         )
-        overview.style.to_latex(
-            os.path.join(self.analyisis_out_dir, "network_model_details.tex")
+        overview_medium.to_csv(
+            os.path.join(self.analyisis_out_dir, "network_model_details_medium.csv")
+        )
+        overview_fine.to_csv(
+            os.path.join(self.analyisis_out_dir, "network_model_details_fine.csv")
+        )
+
+        overview_table = pd.concat(
+            [
+                overview[["Controls"]],
+                overview_medium[
+                    [
+                        "Nodes.Junctions",
+                        "Nodes.Tanks",
+                        "Nodes.Reservoirs",
+                        "Links.Pipes",
+                        "Links.Pumps",
+                        "Links.Valves",
+                    ]
+                ],
+            ],
+            axis=1,
+        )
+        # overview_table.index = overview_table.index.rename("LDM")
+        # overview_table.index.rename("LDM", inplace=True)
+
+        overview_table = overview_table.rename(
+            columns={
+                "Controls": "Controls",
+                "Nodes.Junctions": "Junctions",
+                "Nodes.Tanks": "Tanks",
+                "Nodes.Reservoirs": "Reservoirs",
+                "Links.Pipes": "Pipes",
+                "Links.Pumps": "Pumps",
+                "Links.Valves": "Valves",
+            }
+        )
+
+        # .hide(axis="index") \
+        # .set_table_styles([
+        #     {'selector': 'toprule', 'props': ':hline;'},
+        #     {'selector': 'midrule', 'props': ':hline;'},
+        #     {'selector': 'bottomrule', 'props': ':hline;'},
+        # ], overwrite=False) \
+        overview_table.style.format(escape="latex").set_table_styles(
+            [
+                # {'selector': 'toprule', 'props': ':hline;'},
+                {"selector": "midrule", "props": ":hline;"},
+                # {'selector': 'bottomrule', 'props': ':hline;'},
+            ],
+            overwrite=False,
+        ).to_latex(
+            # .relabel_index(["", "B", "C"], axis="columns") \
+            os.path.join(self.analyisis_out_dir, "network_model_details.tex"),
+            position_float="centering",
+            clines="all;data",
+            column_format="l|rrrrrrr",
+            position="H",
+            label="table:networks_overview",
+            caption="Overview of the water networks.",
         )
 
         # TODO: add total flow analysis

@@ -467,3 +467,6 @@ class FileBasedMethodRunner(MethodRunner):
         )
         # TODO write to outputFolder
         return detected_leaks, self.dataset.leaks_evaluation
+
+
+# TODO: Generate overlaying graphs of leak size and detection times (and additional output)
