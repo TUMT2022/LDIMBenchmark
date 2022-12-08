@@ -50,10 +50,10 @@ datasets = DatasetLibrary("datasets").download(DATASETS.BATTLEDIM)
 
 local_methods = [YourCustomLDIMMethod()]
 
-hyperparameter = {}
+hyperparameters = {}
 
 benchmark = LDIMBenchmark(
-    hyperparameter, datasets, results_dir="./benchmark-results"
+    hyperparameters, datasets, results_dir="./benchmark-results"
 )
 benchmark.add_local_methods(local_methods)
 
