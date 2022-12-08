@@ -57,7 +57,7 @@ class DatasetAnalyzer:
         network_model_details = {}
 
         for dataset in dataset_list:
-            loadedDataset = dataset.loadBenchmarkData()
+            loadedDataset = dataset.loadDataset()
 
             network_models[dataset.name] = loadedDataset
             network_model_details[dataset.name] = pd.json_normalize(

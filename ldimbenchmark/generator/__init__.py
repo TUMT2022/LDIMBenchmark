@@ -308,3 +308,30 @@ def generateDatasetsForTimespan(
 #     # wntr.graphics.plot_network(leak_wn, node_attribute=results.node['pressure'].loc[8000*300, :], link_attribute=results.link['flowrate'].loc[8000*300, :].abs(
 #     # ), node_size=100, node_colorbar_label='Pressure', link_colorbar_label="Flowrate")
 #     generator.write_generated_data(results_folder)
+
+
+# TODO: make generator work as CLI
+
+# model:
+#   startTime: 2022-01-01 00:00
+#   endTime: 2022-03-01 00:00
+#   timestep: 5min
+
+# leakages:
+#   - linkID: P-03
+#     startTime: 2022-02-01 00:00
+#     peakTime: 2022-02-15 12:00
+#     endTime: 2022-03-01 00:00
+#     leakDiameter: 0.011843  # (m)
+
+# pressure_sensors: 'all'
+
+# flow_sensors:
+# - P-01
+
+# level_sensors: []
+
+# amrs:
+# - J-03
+
+# python 2-dataset-generator/generate_synthetic_datasets.py --outputFolder 'datasets/synthetic/' --configurationFile '2-dataset-generator/dataset_configuration.yml'

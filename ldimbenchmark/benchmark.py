@@ -81,9 +81,9 @@ class LocalMethodRunner(MethodRunner):
             additional_output_path=additional_output_path,
         )
         if dataset is str:
-            self.dataset = Dataset(dataset).loadBenchmarkData().loadBenchmarkData()
+            self.dataset = Dataset(dataset).loadDataset().loadBenchmarkData()
         else:
-            self.dataset = dataset.loadBenchmarkData().loadBenchmarkData()
+            self.dataset = dataset.loadDataset().loadBenchmarkData()
         self.detection_method = detection_method
 
     def run(self):
@@ -424,7 +424,7 @@ class FileBasedMethodRunner(MethodRunner):
             additional_output_path=additional_output_path,
         )
         self.detection_method = detection_method
-        self.dataset = Dataset(inputFolder).loadBenchmarkData()
+        self.dataset = Dataset(inputFolder).loadDataset()
         self.id = f"{self.dataset.name}"
 
     def run(self):

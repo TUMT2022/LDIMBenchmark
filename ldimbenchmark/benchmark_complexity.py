@@ -21,7 +21,7 @@ import matplotlib as mpl
 
 
 def loadDataset_local(dataset_path):
-    dataset = Dataset(dataset_path).loadBenchmarkData()
+    dataset = Dataset(dataset_path).loadDataset()
     number = int(os.path.basename(os.path.normpath(dataset_path)).split("-")[-1])
     return (
         number,
@@ -91,11 +91,9 @@ def run_benchmark_complexity(
     logging.info(" > Starting Complexity analyis")
     for method in methods:
 
-        trainData = (
-            Dataset("test/battledim").loadBenchmarkData().getTrainingBenchmarkData()
-        )
+        trainData = Dataset("test/battledim").loadDataset().getTrainingBenchmarkData()
         evaluationData = (
-            Dataset("test/battledim").loadBenchmarkData().getEvaluationBenchmarkData()
+            Dataset("test/battledim").loadDataset().getEvaluationBenchmarkData()
         )
 
         method.train(trainData)

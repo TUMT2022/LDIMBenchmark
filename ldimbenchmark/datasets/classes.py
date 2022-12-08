@@ -75,7 +75,7 @@ class Dataset:
 
         self.name = self.info["name"]
 
-    def loadBenchmarkData(self):
+    def loadDataset(self):
         return LoadedDataset(self)
 
 
