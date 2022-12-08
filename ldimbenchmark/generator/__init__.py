@@ -114,16 +114,13 @@ from functools import partial
 def generateDatasetForJunctionNumber(
     junctions: int, out_dir: str = LDIM_BENCHMARK_CACHE_DIR
 ):
-    # print(junctions)
-    results_folder = os.path.join(out_dir, "synthetic-j", f"synthetic-j-{junctions}/")
-    if os.path.exists(results_folder):
+    if os.path.exists(out_dir):
         # print(f"Skipping {junctions} as it already exists")
         return
-    os.makedirs(results_folder, exist_ok=True)
+    os.makedirs(out_dir, exist_ok=True)
 
     wn = generatePoulakisNetwork(network_size=0, max_junctions=junctions)
-    wn.write_inpfile(os.path.join(results_folder, f"poulakis-j-{junctions}.inp"))
-    # print(wn.describe())
+
     fig, ax = plt.subplots(1, 1, figsize=(12, 10))
     ax = wntr.graphics.plot_network(
         wn,
@@ -132,7 +129,7 @@ def generateDatasetForJunctionNumber(
         node_labels=True,
         link_labels=True,
     )  # node_attribute='elevation',)
-    fig.savefig(os.path.join(results_folder, f"network_poulakis-j-{junctions}.png"))
+    fig.savefig(os.path.join(out_dir, f"network_poulakis-j-{junctions}.png"))
 
     yaml_example = """
     model:
@@ -161,31 +158,16 @@ def generateDatasetForJunctionNumber(
     config = yaml.safe_load(yaml_example)
     # Call leak dataset creator
     generator = DatasetGenerator(wn, config)
-    # Create scenario one-by-one
     generator.generate()
-
-    # wntr.graphics.plot_network(leak_wn, node_attribute=results.node['pressure'].loc[8000*300, :], link_attribute=results.link['flowrate'].loc[8000*300, :].abs(
-    # ), node_size=100, node_colorbar_label='Pressure', link_colorbar_label="Flowrate")
-    generator.write_generated_data(results_folder, f"synthetic-j-{junctions}")
+    generator.write_generated_data(out_dir, f"synthetic-j-{junctions}")
 
 
-def generateDatasetForTimeSpanDays(days: str, out_dir: str = LDIM_BENCHMARK_CACHE_DIR):
-    results_folder = os.path.join(out_dir, "synthetic-days", f"synthetic-days-{days}/")
-    if os.path.exists(results_folder):
-        # print(f"Skipping {results_folder} as it already exists")
+def generateDatasetForTimeSpanDays(days: int, out_dir: str):
+    if os.path.exists(out_dir):
+        # print(f"Skipping {out_dir} as it already exists")
         return
-    os.makedirs(results_folder, exist_ok=True)
+    os.makedirs(out_dir, exist_ok=True)
     wn = generatePoulakisNetwork()
-
-    fig, ax = plt.subplots(1, 1, figsize=(12, 10))
-    ax = wntr.graphics.plot_network(
-        wn,
-        ax=ax,
-        title="Poulakis Network",
-        node_labels=True,
-        link_labels=True,
-    )  # node_attribute='elevation',)
-    # fig.savefig(os.path.join(results_folder, "model.png"))
 
     startDate = np.datetime64("2022-01-01 00:00")
     endDate = startDate + np.timedelta64(days, "D")
@@ -228,12 +210,8 @@ def generateDatasetForTimeSpanDays(days: str, out_dir: str = LDIM_BENCHMARK_CACH
 
     # Call leak dataset creator
     generator = DatasetGenerator(wn, config)
-    # Create scenario one-by-one
     generator.generate()
-
-    # wntr.graphics.plot_network(leak_wn, node_attribute=results.node['pressure'].loc[8000*300, :], link_attribute=results.link['flowrate'].loc[8000*300, :].abs(
-    # ), node_size=100, node_colorbar_label='Pressure', link_colorbar_label="Flowrate")
-    generator.write_generated_data(results_folder, f"synthetic-days-{days}")
+    generator.write_generated_data(out_dir, f"synthetic-days-{days}")
 
 
 def generateDatasetsForJunctions(
@@ -243,15 +221,22 @@ def generateDatasetsForJunctions(
 ):
     parallel = True
     if parallel == True:
-        days = range(junction_count_low, junction_count_high)
+        junctions = range(junction_count_low, junction_count_high)
+        arguments_list = zip(
+            junctions,
+            [
+                os.path.join(out_dir, f"synthetic-j-{junction}")
+                for junction in junctions
+            ],
+        )
+
         with Pool(processes=cpu_count() - 1) as p:
-            max_ = len(days)
-            with tqdm(total=max_) as pbar:
-                for result in p.starmap(
-                    generateDatasetForJunctionNumber, zip(days, repeat(out_dir))
-                ):
-                    # p.imap_unordered(generateDatasetForJunctionNumber, ):
-                    pbar.update()
+            jobs = [
+                p.apply_async(func=generateDatasetForJunctionNumber, args=arguments)
+                for arguments in arguments_list
+            ]
+            for job in tqdm(jobs):
+                job.get()  # wait for job to complete
 
 
 def generateDatasetsForTimespan(
@@ -259,17 +244,18 @@ def generateDatasetsForTimespan(
 ):
     parallel = True
     if parallel == True:
-        days = range(1, 61)
+        days = range(days_low, days_high)
+        arguments_list = zip(
+            days, [os.path.join(out_dir, f"synthetic-days-{day}") for day in days]
+        )
+
         with Pool(processes=cpu_count() - 1) as p:
-            max_ = len(days)
-            with tqdm(total=max_) as pbar:
-                for result in p.imap_unordered(
-                    partial(generateDatasetForTimeSpanDays, out_dir=out_dir), days
-                ):
-                    # p.starmap(
-                    #     generateDatasetForTimeSpanDays, zip(days, repeat(out_dir))
-                    # ):
-                    pbar.update()
+            jobs = [
+                p.apply_async(func=generateDatasetForTimeSpanDays, args=arguments)
+                for arguments in arguments_list
+            ]
+            for job in tqdm(jobs):
+                job.get()  # wait for job to complete
 
 
 # if args.variations == "junctions":

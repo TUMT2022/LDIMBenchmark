@@ -7,7 +7,7 @@ import logging
 from ldimbenchmark.datasets import Dataset
 from ldimbenchmark.generator import (
     generateDatasetsForTimespan,
-    generateDatasetForJunctionNumber,
+    generateDatasetsForJunctions,
 )
 from ldimbenchmark.classes import LDIMMethodBase
 import numpy as np
@@ -51,9 +51,13 @@ def run_benchmark_complexity(
 
     logging.info(" > Generating Datasets")
     if style == "time":
-        generateDatasetsForTimespan(1, 61)
+        generateDatasetsForTimespan(
+            1, 61, os.path.join(LDIM_BENCHMARK_CACHE_DIR, "synthetic-days")
+        )
     if style == "junctions":
-        generateDatasetForJunctionNumber(4, 59)
+        generateDatasetsForJunctions(
+            4, 59, os.path.join(LDIM_BENCHMARK_CACHE_DIR, "synthetic-junctions")
+        )
 
     logging.info(" > Loading Data")
     with Pool(processes=cpu_count() - 1) as p:

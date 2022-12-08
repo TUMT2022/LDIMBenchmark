@@ -38,6 +38,8 @@ class DatasetGeneratorConfig(BaseModel):
 class DatasetGenerator:
     def __init__(self, water_network_model, configVar):
         config = DatasetGeneratorConfig(**configVar)
+        # TODO: Check that leaks are withing timeframe
+
         # Statics
         # demand-driven (DD) or pressure dependent demand (PDD)
         self.mode_simulation = "PDD"  # 'PDD'#'PDD'
@@ -192,6 +194,8 @@ class DatasetGenerator:
         if self.results == None:
             print("Run the 'dataset_generator()' Function before. No results to write.")
             return
+
+        # TODO: Use Dataset.exportTo() function
         # Create CSV files
         decimal_size = 4
 
@@ -213,6 +217,7 @@ class DatasetGenerator:
         # Convert info to yaml dictionary
         dataset_info = yaml.safe_load(dataset_info)
         dataset_info["leakages"] = self.leak_dataframe.to_dict("records")
+        self.leak_dataframe.to_csv(os.path.join(results_folder, "leaks.csv"))
 
         # Write info to file
         with open(os.path.join(results_folder, f"dataset_info.yaml"), "w") as f:
@@ -229,7 +234,7 @@ class DatasetGenerator:
             ].values[: len(self.time_stamps)]
 
         leak_values.round(decimal_size).to_csv(
-            os.path.join(results_folder, f"Leakages_Demand.csv"),
+            os.path.join(results_folder, f"leakages_demand.csv"),
             index_label="Timestamp",
         )
 
@@ -274,14 +279,14 @@ class DatasetGenerator:
 
         # Pressures (m), Demands (m^3/s), Flows (m^3/s), Levels (m)
         total_pressures.round(decimal_size).to_csv(
-            os.path.join(results_folder, "Pressures.csv"), index_label="Timestamp"
+            os.path.join(results_folder, "pressures.csv"), index_label="Timestamp"
         )
         total_demands.round(decimal_size).to_csv(
-            os.path.join(results_folder, "Demands.csv"), index_label="Timestamp"
+            os.path.join(results_folder, "demands.csv"), index_label="Timestamp"
         )
         total_flows.round(decimal_size).to_csv(
-            os.path.join(results_folder, "Flows.csv"), index_label="Timestamp"
+            os.path.join(results_folder, "flows.csv"), index_label="Timestamp"
         )
         total_levels.round(decimal_size).to_csv(
-            os.path.join(results_folder, "Levels.csv"), index_label="Timestamp"
+            os.path.join(results_folder, "levels.csv"), index_label="Timestamp"
         )

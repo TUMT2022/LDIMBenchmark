@@ -152,6 +152,7 @@ class LoadedDataset(Dataset, _LoadedDatasetPart):
         self.demands.to_csv(os.path.join(folder, "demands.csv"))
         self.flows.to_csv(os.path.join(folder, "flows.csv"))
         self.levels.to_csv(os.path.join(folder, "levels.csv"))
+        self.leaks.to_csv(os.path.join(folder, "leaks.csv"))
         with open(os.path.join(folder, f"dataset_info.yaml"), "w") as f:
             yaml.dump(self.info, f)
 
@@ -253,7 +254,7 @@ class DatasetTransformer:
             < self.config["dataset"][type]["end"]
         )
         leaks = full_dataset["leaks"][mask]
-        levels.to_csv(os.path.join(specific_dataset_dir, "leaks.csv"))
+        leaks.to_csv(os.path.join(specific_dataset_dir, "leaks.csv"))
 
         return {
             "pressures": pressures,

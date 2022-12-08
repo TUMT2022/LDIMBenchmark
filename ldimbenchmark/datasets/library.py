@@ -25,7 +25,9 @@ class DatasetLibrary:
     def __init__(self, download_path: str):
         self.path = download_path
 
-    def download(self, dataset_name: str | list[str], force=False) -> list[Dataset]:
+    def download(
+        self, dataset_name: str | list[str] | DATASETS | list[DATASETS], force=False
+    ) -> list[Dataset]:
         """
         Downloads a dataset from the internet
 
