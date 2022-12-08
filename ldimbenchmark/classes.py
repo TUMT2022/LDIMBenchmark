@@ -84,10 +84,9 @@ class LDIMMethodBase(ABC):
         if not hasattr(self, "hyperparameters"):
             self.hyperparameters = {}
         self.hyperparameters.update(hyperparameters)
-        pass
 
     @abstractmethod
-    def train(self, data: BenchmarkData):
+    def train(self, train_data: BenchmarkData) -> None:
         """
         Train the algorithm on Test data (if needed)
 
@@ -99,7 +98,7 @@ class LDIMMethodBase(ABC):
         raise NotImplementedError("Please Implement this method")
 
     @abstractmethod
-    def detect(self, data: BenchmarkData) -> list[BenchmarkLeakageResult]:
+    def detect(self, evaluation_data: BenchmarkData) -> list[BenchmarkLeakageResult]:
         """
         Detect Leakages on never before seen data. (BenchmarkData)
 
