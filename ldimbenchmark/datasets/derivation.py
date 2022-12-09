@@ -100,15 +100,15 @@ class DatasetDerivator:
                 for value in values:
                     loadedDataset = dataset.loadDataset()
 
-                    if apply_to == "demands":
-                        noise = DatasetDerivator.__get_random_norm(
-                            value, loadedDataset.demands.index.shape
-                        )
+                    data = getattr(loadedDataset, apply_to)
+                    noise = DatasetDerivator.__get_random_norm(
+                        value, dataset.index.shape
+                    )
 
-                        # TODO; move below for derviation
-                        loadedDataset.demands = loadedDataset.demands.mul(
-                            1 + noise, axis=0
-                        )
+                    # TODO; move below for derviation
+                    dataset = dataset.mul(1 + noise, axis=0)
+
+                    setattr(loadedDataset, apply_to, data)
 
                     loadedDataset.info["derivations"] = {}
                     loadedDataset.info["derivations"]["data"] = []
