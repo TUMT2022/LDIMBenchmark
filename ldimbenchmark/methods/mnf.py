@@ -61,22 +61,24 @@ class MNF(LDIMMethodBase):
         if evaluation_data.flows.index[-1] - evaluation_data.flows.index[0] < window:
             return []
 
+        evaluation_start_date = Timestamp = evaluation_data.flows.index[0]
+
         start_date: Timestamp = evaluation_data.flows.index[0].replace(
             hour=12, minute=0, second=0, microsecond=0, nanosecond=0
         )
         # TODO: find better cut interval function
-        end_date: Timestamp = evaluation_data.flows.index[-2].replace(
+        end_date: Timestamp = evaluation_data.flows.index[-100].replace(
             hour=12, minute=0, second=0, microsecond=0, nanosecond=0
         )
         previous_data = self.train_Data.flows
-        mask = (previous_data.index > (start_date - window)) & (
-            previous_data.index <= start_date
+        mask = (previous_data.index >= (start_date - window)) & (
+            previous_data.index < evaluation_start_date
         )
         previous_data = self.train_Data.flows.loc[mask]
 
         all_flows = pd.concat([previous_data, evaluation_data.flows], axis=0)
         all_flows = all_flows.loc[all_flows.index < end_date]
-        # TODO: For now lets say it starts at midnight
+        # TODO: For now lets say it starts at noon
         hour_24_end = start_date + timedelta(days=1)
 
         entries_per_day = (
