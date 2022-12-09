@@ -77,7 +77,7 @@ class LocalMethodRunner(MethodRunner):
             json.dumps(hyperparameters, sort_keys=True).encode("utf-8")
         ).hexdigest()
 
-        self.id = f"{detection_method.name}_{dataset.name}_{hyperparameter_hash}"  # TODO: Hash of hyperparameters
+        self.id = f"{detection_method.name}_{dataset.id}_{hyperparameter_hash}"  # TODO: Hash of hyperparameters
         super().__init__(
             hyperparameters=hyperparameters,
             goal=goal,
