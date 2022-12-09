@@ -1,5 +1,8 @@
-from ldimbenchmark import LDIMMethodBase, BenchmarkLeakageResult
-
+from ldimbenchmark.classes import LDIMMethodBase, MethodMetadata, Hyperparameter
+from ldimbenchmark import (
+    BenchmarkData,
+    BenchmarkLeakageResult,
+)
 
 from datetime import timedelta
 from sklearn.linear_model import LinearRegression
@@ -92,11 +95,36 @@ class LILA(LDIMMethodBase):
     def __init__(self):
         super().__init__(
             name="LILA",
-            version="1.0",
-            hyperparameters={"est_length": "3 days", "C_threshold": 3, "delta": 4},
+            version="0.1.0",
+            metadata=MethodMetadata(
+                data_needed=["pressures", "flows"],
+                hyperparameters=[
+                    Hyperparameter(
+                        name="est_length",
+                        description="Length of the estimation period",
+                        default="3 days",
+                        type=str,
+                    ),
+                    Hyperparameter(
+                        name="C_threshold",
+                        description="Threshold for the CUSUM statistic",
+                        default=3,
+                        type=int,
+                    ),
+                    Hyperparameter(
+                        name="delta",
+                        description="Delta for the CUSUM statistic",
+                        default=4,
+                        type=int,
+                    ),
+                ],
+            ),
         )
 
-    def train(self, train_data):
+    # TODO: Add DMA specific implementation (and hyperparameters)
+
+    def train(self, train_data: BenchmarkData):
+        # TODO: implement sensor level data loading
         # Load Data
         scada_data = SCADA_data()
 
@@ -135,7 +163,7 @@ class LILA(LDIMMethodBase):
 
             ref_node.set_models(models)
 
-    def detect(self, evaluation_data, additional_output_path=""):
+    def detect(self, evaluation_data: BenchmarkData) -> list[BenchmarkLeakageResult]:
         scada_data = SCADA_data()
 
         scada_data.pressures = evaluation_data.pressures
@@ -236,7 +264,7 @@ class LILA(LDIMMethodBase):
             )
         return results
 
-    def detect_datapoint(self, evaluation_data):
+    def detect_datapoint(self, evaluation_data) -> BenchmarkLeakageResult:
         scada_data = SCADA_data()
 
         scada_data.pressures = evaluation_data.pressures
