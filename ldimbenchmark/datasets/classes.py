@@ -170,6 +170,11 @@ class LoadedDataset(Dataset, _LoadedDatasetPart):
         """
         Exports the dataset to a given folder
         """
+
+        reset_overwrite_keys = ["index_column", "decimal", "delimiter"]
+        for key in reset_overwrite_keys:
+            if key in self.info["dataset"]["overwrites"]:
+                del self.info["dataset"]["overwrites"][key]
         write_inpfile(self.model, os.path.join(folder, self.info["inp_file"]))
         # TODO: Speed up by multiprocessing
         self.pressures.to_csv(os.path.join(folder, "pressures.csv"))
