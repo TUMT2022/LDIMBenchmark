@@ -16,6 +16,8 @@ from ldimbenchmark.constants import LDIM_BENCHMARK_CACHE_DIR
 import shutil
 import hashlib
 from pandas import DataFrame
+import json
+import hashlib
 
 
 class DatasetInfoDatasetOverwrites(TypedDict):
@@ -56,6 +58,7 @@ class DatasetInfo(TypedDict):
     name: str
     dataset: DatasetInfoDatasetProperty
     inp_file: str
+    derivations: dict[str, str]
 
 
 class Dataset:
@@ -76,9 +79,22 @@ class Dataset:
                 self.info["dataset"]["overwrites"] = {}
 
         self.name = self.info["name"]
+        self._update_id()
 
     def loadDataset(self):
         return LoadedDataset(self)
+
+    def _update_id(self):
+        if "derivations" in self.info:
+            derivations_hash = (
+                "-"
+                + hashlib.md5(
+                    json.dumps(self.info["derivations"], sort_keys=True).encode("utf-8")
+                ).hexdigest()
+            )
+        else:
+            derivations_hash = ""
+        self.id = self.info["name"] + derivations_hash
 
 
 class _LoadedDatasetPart:

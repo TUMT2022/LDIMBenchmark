@@ -16,6 +16,8 @@ from ldimbenchmark.benchmark_evaluation import evaluate_leakages
 from tabulate import tabulate
 from ldimbenchmark.benchmark_complexity import run_benchmark_complexity
 from ldimbenchmark.classes import LDIMMethodBase, BenchmarkLeakageResult
+import json
+import hashlib
 
 
 class MethodRunner(ABC):
@@ -69,7 +71,11 @@ class LocalMethodRunner(MethodRunner):
         debug=False,
         resultsFolder=None,
     ):
-        self.id = f"{detection_method.name}_{dataset.name}_parameterTODO"  # TODO: Hash of hyperparameters
+        hyperparameter_hash = hashlib.md5(
+            json.dumps(hyperparameters, sort_keys=True).encode("utf-8")
+        ).hexdigest()
+
+        self.id = f"{detection_method.name}_{dataset.name}_{hyperparameter_hash}"  # TODO: Hash of hyperparameters
         super().__init__(
             hyperparameters=hyperparameters,
             goal=goal,
@@ -151,6 +157,7 @@ class LocalMethodRunner(MethodRunner):
                     {
                         "method": self.detection_method.name,
                         "dataset": self.dataset.name,
+                        "dataset_id": self.dataset.id,
                         "hyperparameters": self.hyperparameters,
                         "goal": self.goal,
                         "stage": self.stages,

@@ -35,7 +35,7 @@ class DatasetDerivator:
     def derive_model(
         self,
         apply_to: Literal["junctions", "patterns"],
-        property: Literal["elevation"],
+        change_property: Literal["elevation"],
         derivation: str,
         values: list,
     ):
@@ -58,15 +58,17 @@ class DatasetDerivator:
                     for index, junction in enumerate(junctions):
                         loadedDataset.model.get_node(junction).elevation += noise[index]
 
-                    derivedDatasetPath = os.path.join(
-                        self.out_path,
-                        f"{dataset.name}-{apply_to}-{property}-{derivation}-{value}/",
-                    )
-
                     loadedDataset.info["derivations"] = {}
                     loadedDataset.info["derivations"]["model"] = {}
                     loadedDataset.info["derivations"]["model"]["element"] = apply_to
-                    loadedDataset.info["derivations"]["model"]["property"] = property
+                    loadedDataset.info["derivations"]["model"][
+                        "property"
+                    ] = change_property
+                    loadedDataset._update_id()
+
+                    derivedDatasetPath = os.path.join(
+                        self.out_path, loadedDataset.id, "/"
+                    )
 
                     os.makedirs(os.path.dirname(derivedDatasetPath), exist_ok=True)
                     loadedDataset.exportTo(derivedDatasetPath)
@@ -105,10 +107,15 @@ class DatasetDerivator:
                             1 + noise, axis=0
                         )
 
+                    loadedDataset.info["derivations"] = {}
+                    loadedDataset.info["derivations"]["data"] = {}
+                    loadedDataset.info["derivations"]["data"]["to"] = apply_to
+                    loadedDataset.info["derivations"]["data"]["kind"] = derivation
+                    loadedDataset._update_id()
                     derivedDatasetPath = os.path.join(
-                        self.out_path,
-                        f"{dataset.name}-{apply_to}-{derivation}-{value}/",
+                        self.out_path, loadedDataset.id + "/"
                     )
+
                     os.makedirs(os.path.dirname(derivedDatasetPath), exist_ok=True)
                     loadedDataset.exportTo(derivedDatasetPath)
 
