@@ -297,7 +297,7 @@ class DatasetTransformer:
 
     @staticmethod
     def _loadDatasetsDirectly(
-        datastet_dir: str, overwrites: DatasetInfoDatasetOverwrites = {}
+        datastet_dir: str, overwrites: DatasetInfoDatasetOverwrites = None
     ):
         """
         Load the dataset directly from the files
@@ -305,16 +305,16 @@ class DatasetTransformer:
         index_column = "Timestamp"
         delimiter = ","
         decimal = "."
-
-        config_name = "index_column"
-        if config_name in overwrites:
-            index_column = overwrites[config_name]
-        config_name = "delimiter"
-        if config_name in overwrites:
-            delimiter = overwrites[config_name]
-        config_name = "decimal"
-        if config_name in overwrites:
-            decimal = overwrites[config_name]
+        if overwrites is not None:
+            config_name = "index_column"
+            if config_name in overwrites:
+                index_column = overwrites[config_name]
+            config_name = "delimiter"
+            if config_name in overwrites:
+                delimiter = overwrites[config_name]
+            config_name = "decimal"
+            if config_name in overwrites:
+                decimal = overwrites[config_name]
 
         dataset = {}
         for file in filter(
@@ -363,7 +363,7 @@ class DatasetTransformer:
                     evaluation_data = DatasetTransformer._loadDatasetsDirectly(
                         os.path.join(self.dataset_dir, "evaluation")
                     )
-                return (training_data, evaluation_data)
+                    return (training_data, evaluation_data)
 
         # is not equal, remove old dataset
         shutil.rmtree(self.dataset_dir, ignore_errors=True)
