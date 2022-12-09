@@ -52,7 +52,8 @@ class DatasetDerivator:
             if derivation == "noise":
 
                 for value in values:
-                    loadedDataset = dataset.loadDataset()
+
+                    loadedDataset = Dataset(dataset.path).loadDataset()
                     junctions = loadedDataset.model.junction_name_list
                     noise = DatasetDerivator.__get_random_norm(value, len(junctions))
                     for index, junction in enumerate(junctions):
@@ -98,7 +99,7 @@ class DatasetDerivator:
             if derivation == "noise":
                 # TODO Implement derivates
                 for value in values:
-                    loadedDataset = dataset.loadDataset()
+                    loadedDataset = Dataset(dataset.path).loadDataset()
 
                     data = getattr(loadedDataset, apply_to)
                     noise = DatasetDerivator.__get_random_norm(
