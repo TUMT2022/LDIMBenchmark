@@ -80,6 +80,69 @@ if __name__ == "__main__":
     args = parser.parse_args()
 
 
+# # Enable loading from yaml
+# if os.path.exists(args.config):
+#     print(f"Loading config from file '{args.config}'")
+#     data = yaml.load(open(args.config), Loader=yaml.FullLoader)
+#     arg_dict = args.__dict__
+#     opt = vars(args)
+#     arg_dict = data
+#     opt.update(arg_dict)
+
+# print("arguments: {}".format(str(args)))
+
+# if not args.debug:
+#     args.resultsFolder = os.path.join(
+#         args.resultsFolder, datetime.now().strftime("%Y_%m_%d_%H_%M"))
+
+# os.makedirs(os.path.join(args.resultsFolder), exist_ok=True)
+
+# numeric_level = getattr(logging, args.loglevel.upper(), None)
+# if not isinstance(numeric_level, int):
+#     raise ValueError('Invalid log level: %s' % args.loglevel)
+
+# fileLogger = logging.FileHandler(os.path.join(
+#     args.resultsFolder, "benchmark.log"), mode='w')
+# dateFormatter = logging.Formatter(
+#     "[%(asctime)s] %(levelname)s:%(name)s:%(message)s",
+# )
+# fileLogger.setFormatter(dateFormatter)
+# logging.basicConfig(
+#     level=numeric_level,
+#     handlers=[
+#         fileLogger,
+#         logging.StreamHandler()
+#     ]
+# )
+# logging.getLogger().setLevel(numeric_level)
+
+
+# algorithms_dir = "./benchmark/algorithms"
+# # algorithms = [os.path.join(algorithms_dir, a) for a in args.algorithms]
+# algorithms = args.algorithms
+# logging.info(f"Using algorithms: {algorithms}")
+# algorithm_imports = {}
+# for algorithm in algorithms:
+#     algorithm_imports[algorithm] = importlib.import_module(
+#         "algorithms." + algorithm[:-3]
+#     ).CustomAlgorithm
+
+# # Loading datasets
+# datasets = glob(args.datasetsFolder + "/*/")
+
+# # Filter datasets list by list given in arguments
+# if args.datasets is not None:
+#     datasets = [
+#         dataset for dataset in datasets if dataset.split("/")[-2] in args.datasets
+#     ]
+
+# logging.info(f"Using datasets: {datasets}")
+# # Ensure the dataset paths are folders
+# datasets = [os.path.join(path) for path in datasets]
+
+
+## Analysis:
+
 # parser = ArgumentParser()
 # parser.add_argument("-d", "--datasets", dest="datasets",  default=None, action="extend", nargs="+", type=str,
 #                     help="datasets to include in analysis")

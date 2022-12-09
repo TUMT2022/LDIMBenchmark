@@ -204,6 +204,12 @@ class DatasetGenerator:
             self.simulation_start_time
             + (self.leakages[0].startTime - self.simulation_start_time) / 2
         )
+        # TODO: Fix start and end times to be exclusive, should be (instead of same day for training and evaluation)
+        #     start: 2019-01-01 00:00
+        #     end: 2019-12-31 23:55
+        #   training:
+        #     start: 2018-01-01 00:00
+        #     end: 2019-12-31 23:55
         dataset_info = f"""
         name: {model_name}
         inp_file: model.inp

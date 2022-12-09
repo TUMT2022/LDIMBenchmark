@@ -32,6 +32,9 @@ class DatasetDerivator:
 
     # TODO: Add more derivations, like junction elevation
 
+    # TODO: Caching
+    # TODO: cross product of derivations
+
     def derive_model(
         self,
         apply_to: Literal["junctions", "patterns"],
