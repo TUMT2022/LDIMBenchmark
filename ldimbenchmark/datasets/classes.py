@@ -50,6 +50,11 @@ class DatasetInfoDatasetProperty(TypedDict):
     overwrites: DatasetInfoDatasetOverwrites
 
 
+class DatasetInfoDerivations(TypedDict):
+    model: list
+    data: list
+
+
 class DatasetInfo(TypedDict):
     """
     Dataset Config.yml representation
@@ -58,7 +63,7 @@ class DatasetInfo(TypedDict):
     name: str
     dataset: DatasetInfoDatasetProperty
     inp_file: str
-    derivations: dict[str, str]
+    derivations: DatasetInfoDerivations
 
 
 class Dataset:

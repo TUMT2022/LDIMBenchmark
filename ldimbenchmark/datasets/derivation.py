@@ -59,11 +59,14 @@ class DatasetDerivator:
                         loadedDataset.model.get_node(junction).elevation += noise[index]
 
                     loadedDataset.info["derivations"] = {}
-                    loadedDataset.info["derivations"]["model"] = {}
-                    loadedDataset.info["derivations"]["model"]["element"] = apply_to
-                    loadedDataset.info["derivations"]["model"][
-                        "property"
-                    ] = change_property
+                    loadedDataset.info["derivations"]["model"] = []
+                    loadedDataset.info["derivations"]["model"].append(
+                        {
+                            "element": apply_to,
+                            "property": change_property,
+                            "value": value,
+                        }
+                    )
                     loadedDataset._update_id()
 
                     derivedDatasetPath = os.path.join(
@@ -108,9 +111,14 @@ class DatasetDerivator:
                         )
 
                     loadedDataset.info["derivations"] = {}
-                    loadedDataset.info["derivations"]["data"] = {}
-                    loadedDataset.info["derivations"]["data"]["to"] = apply_to
-                    loadedDataset.info["derivations"]["data"]["kind"] = derivation
+                    loadedDataset.info["derivations"]["data"] = []
+                    loadedDataset.info["derivations"]["data"].append(
+                        {
+                            "to": apply_to,
+                            "kind": derivation,
+                            "value": value,
+                        }
+                    )
                     loadedDataset._update_id()
                     derivedDatasetPath = os.path.join(
                         self.out_path, loadedDataset.id + "/"
