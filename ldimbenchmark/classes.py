@@ -48,7 +48,7 @@ class BenchmarkLeakageResult(TypedDict):
 class Hyperparameter(TypedDict):
     name: str
     type: type
-    default: str
+    default: str | int | float | bool
     description: str
 
 

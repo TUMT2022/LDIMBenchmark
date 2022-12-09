@@ -1,4 +1,5 @@
 from ldimbenchmark import LDIMMethodBase, BenchmarkData, BenchmarkLeakageResult
+from ldimbenchmark.classes import MethodMetadata
 
 
 class NullLeakagedDetectionMethod(LDIMMethodBase):
@@ -10,6 +11,10 @@ class NullLeakagedDetectionMethod(LDIMMethodBase):
         super().__init__(
             name="Null",
             version="1.0",
+            metadata=MethodMetadata(
+                data_needed=["pressures", "demands", "flows", "levels"],
+                hyperparameters=[],
+            )
             # hyperparameters={"est_length": "3 days", "C_threshold": 3, "delta": 4},
         )
 
