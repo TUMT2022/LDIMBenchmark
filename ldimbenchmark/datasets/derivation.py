@@ -70,7 +70,7 @@ class DatasetDerivator:
                     loadedDataset._update_id()
 
                     derivedDatasetPath = os.path.join(
-                        self.out_path, loadedDataset.id, "/"
+                        self.out_path, loadedDataset.id + "/"
                     )
 
                     os.makedirs(os.path.dirname(derivedDatasetPath), exist_ok=True)
