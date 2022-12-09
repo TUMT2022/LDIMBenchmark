@@ -3,7 +3,7 @@ from ldimbenchmark.classes import BenchmarkData
 from abc import ABC, abstractmethod
 import pandas as pd
 from datetime import datetime, timedelta
-from typing import Literal, TypedDict
+from typing import Literal, TypedDict, Union
 import os
 import time
 import logging
@@ -63,7 +63,7 @@ class LocalMethodRunner(MethodRunner):
         self,
         detection_method: LDIMMethodBase,
         dataset: Dataset | str,
-        hyperparameters: dict = {},
+        hyperparameters: dict = None,
         # TODO: Rename goal stage method to more meaningful names
         goal: Literal["detection"] | Literal["location"] = "detection",
         stage="train",  # train, detect
@@ -71,6 +71,8 @@ class LocalMethodRunner(MethodRunner):
         debug=False,
         resultsFolder=None,
     ):
+        if hyperparameters is None:
+            hyperparameters = {}
         hyperparameter_hash = hashlib.md5(
             json.dumps(hyperparameters, sort_keys=True).encode("utf-8")
         ).hexdigest()
@@ -94,7 +96,7 @@ class LocalMethodRunner(MethodRunner):
 
     def run(self):
 
-        logging.info(f"Running {self.id}")
+        logging.info(f"Running {self.id} with params {self.hyperparameters}")
         if not self.resultsFolder and self.debug:
             raise Exception("Debug mode requires a results folder.")
         elif self.debug == True:
@@ -184,7 +186,7 @@ class LDIMBenchmark:
         cache_dir: str = LDIM_BENCHMARK_CACHE_DIR,
     ):
         # validate dataset types and edit them to LoadedDataset
-        self.hyperparameters = hyperparameters
+        self.hyperparameters: dict = hyperparameters
         # validate dataset types and edit them to LoadedDataset
         self.datasets = datasets
         self.experiments: list[MethodRunner] = []
@@ -208,12 +210,18 @@ class LDIMBenchmark:
         """
         for dataset in self.datasets:
             for method in methods:
+                hyperparameters = None
+                if method.name in self.hyperparameters:
+                    if dataset.name in self.hyperparameters[method.name]:
+                        hyperparameters = self.hyperparameters[method.name][
+                            dataset.name
+                        ]
                 # TODO: Use right hyperparameters
                 self.experiments.append(
                     LocalMethodRunner(
                         method,
                         dataset,
-                        self.hyperparameters,
+                        hyperparameters=hyperparameters,
                         resultsFolder=self.runner_results_dir,
                         debug=self.debug,
                     )

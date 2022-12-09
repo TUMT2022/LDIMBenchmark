@@ -13,22 +13,39 @@ from tests.shared import (
     TEST_DATA_FOLDER_BATTLEDIM,
     TEST_DATA_FOLDER_DATASETS,
 )
+import logging
 
 
 def test_benchmark():
     # dataset = Dataset(TEST_DATA_FOLDER_BATTLEDIM)
+    logLevel = "INFO"
 
-    local_methods = [MNF()]  # , LILA()]
+    numeric_level = getattr(logging, logLevel, None)
+    if not isinstance(numeric_level, int):
+        raise ValueError("Invalid log level: %s" % logLevel)
 
-    hyperparameter = {}
+    logging.basicConfig(level=numeric_level, handlers=[logging.StreamHandler()])
+    logging.getLogger().setLevel(numeric_level)
+
+    local_methods = [MNF(), LILA()]
+
+    hyperparameters = {
+        "LILA": {
+            "synthetic-days-60": {
+                "window": "10 days",
+                "gamma": 0.1,
+            }
+        }
+    }
 
     benchmark = LDIMBenchmark(
-        hyperparameter,
+        hyperparameters,
         [
             # dataset,
             Dataset(".ldim_benchmark_cache/datagen/synthetic-days/synthetic-days-60"),
         ],
         results_dir="./benchmark-results",
+        debug=True,
     )
     benchmark.add_local_methods(local_methods)
 

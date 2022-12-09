@@ -147,6 +147,7 @@ class LoadedDataset(Dataset, _LoadedDatasetPart):
         self.path = dataset.path
         self.name = dataset.name
         self.info = dataset.info
+        self.id = dataset.id
 
         super(Dataset, self).__init__(
             dict=DatasetTransformer._loadDatasetsDirectly(
@@ -194,6 +195,8 @@ class BenchmarkDatasets(LoadedDataset):
         ).splitIntoTrainingEvaluationDatasets()
         self.name = dataset.name
         self.model = dataset.model
+        self.info = dataset.info
+        self.id = dataset.id
 
         # Load Data
         self.train = _LoadedDatasetPart(training_dataset)
