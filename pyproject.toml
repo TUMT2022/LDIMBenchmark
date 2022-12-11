@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "ldimbenchmark"
-version = "0.1.8"
+version = "0.1.12"
 description = ""
 authors = ["DanielHabenicht <daniel-habenicht@outlook.de>"]
 readme = "README.md"
@@ -21,6 +21,8 @@ tox = "^3.27.1"
 mkdocs-material = "^8.5.10"
 black = "^22.10.0"
 pytest = "^7.2.0"
+syrupy = "^3.0.5"
+pytest-xdist = "^3.1.0"
 
 
 [tool.poetry.group.ci.dependencies]
