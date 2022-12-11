@@ -93,6 +93,7 @@ cp -r dist tests/dist
 cd tests
 docker build . -t testmethod
 pytest -s -o log_cli=true
+pytest tests/test_derivation.py -k 'test_mything'
 
 # Test-Publish
 poetry config repositories.testpypi https://test.pypi.org/legacy/
