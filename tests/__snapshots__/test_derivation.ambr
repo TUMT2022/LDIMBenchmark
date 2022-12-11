@@ -1,0 +1,1879 @@
+# name: test_derivator_data_demands
+  '''
+  Timestamp,a
+  2018-01-01 00:00:00,0.9757778548654408
+  2018-01-01 00:01:00,1.0276965647705505
+  2018-01-01 00:02:00,1.026623626441905
+  2018-01-01 00:03:00,1.020185989275543
+  2018-01-01 00:04:00,0.979213837350742
+  2018-01-01 00:05:00,1.001212011122164
+  2018-01-01 00:06:00,0.9940979726503864
+  2018-01-01 00:07:00,1.0109373304758764
+  2018-01-01 00:08:00,1.0946293376257945
+  2018-01-01 00:09:00,0.994296468350392
+  2018-01-01 00:10:00,0.9621990368715252
+  2018-01-01 00:11:00,0.9829043020249318
+  2018-01-01 00:12:00,1.0310202778528008
+  2018-01-01 00:13:00,1.030910440527457
+  2018-01-01 00:14:00,1.0002173255567963
+  2018-01-01 00:15:00,0.9891175517330903
+  2018-01-01 00:16:00,1.007830575356661
+  2018-01-01 00:17:00,0.9918444339146129
+  2018-01-01 00:18:00,1.0143503121798627
+  2018-01-01 00:19:00,1.0257870543944476
+  
+  '''
+# ---
+# name: test_derivator_data_flows
+  '''
+  Timestamp,a
+  2018-01-01 00:00:00,0.9757778548654408
+  2018-01-01 00:01:00,1.0276965647705505
+  2018-01-01 00:02:00,1.026623626441905
+  2018-01-01 00:03:00,1.020185989275543
+  2018-01-01 00:04:00,0.979213837350742
+  2018-01-01 00:05:00,1.001212011122164
+  2018-01-01 00:06:00,0.9940979726503864
+  2018-01-01 00:07:00,1.0109373304758764
+  2018-01-01 00:08:00,1.0946293376257945
+  2018-01-01 00:09:00,0.994296468350392
+  2018-01-01 00:10:00,0.9621990368715252
+  2018-01-01 00:11:00,0.9829043020249318
+  2018-01-01 00:12:00,1.0310202778528008
+  2018-01-01 00:13:00,1.030910440527457
+  2018-01-01 00:14:00,1.0002173255567963
+  2018-01-01 00:15:00,0.9891175517330903
+  2018-01-01 00:16:00,1.007830575356661
+  2018-01-01 00:17:00,0.9918444339146129
+  2018-01-01 00:18:00,1.0143503121798627
+  2018-01-01 00:19:00,1.0257870543944476
+  
+  '''
+# ---
+# name: test_derivator_data_levels
+  '''
+  Timestamp,a
+  2018-01-01 00:00:00,0.9757778548654408
+  2018-01-01 00:01:00,1.0276965647705505
+  2018-01-01 00:02:00,1.026623626441905
+  2018-01-01 00:03:00,1.020185989275543
+  2018-01-01 00:04:00,0.979213837350742
+  2018-01-01 00:05:00,1.001212011122164
+  2018-01-01 00:06:00,0.9940979726503864
+  2018-01-01 00:07:00,1.0109373304758764
+  2018-01-01 00:08:00,1.0946293376257945
+  2018-01-01 00:09:00,0.994296468350392
+  2018-01-01 00:10:00,0.9621990368715252
+  2018-01-01 00:11:00,0.9829043020249318
+  2018-01-01 00:12:00,1.0310202778528008
+  2018-01-01 00:13:00,1.030910440527457
+  2018-01-01 00:14:00,1.0002173255567963
+  2018-01-01 00:15:00,0.9891175517330903
+  2018-01-01 00:16:00,1.007830575356661
+  2018-01-01 00:17:00,0.9918444339146129
+  2018-01-01 00:18:00,1.0143503121798627
+  2018-01-01 00:19:00,1.0257870543944476
+  
+  '''
+# ---
+# name: test_derivator_data_pressures
+  '''
+  Timestamp,a
+  2018-01-01 00:00:00,0.9757778548654408
+  2018-01-01 00:01:00,1.0276965647705505
+  2018-01-01 00:02:00,1.026623626441905
+  2018-01-01 00:03:00,1.020185989275543
+  2018-01-01 00:04:00,0.979213837350742
+  2018-01-01 00:05:00,1.001212011122164
+  2018-01-01 00:06:00,0.9940979726503864
+  2018-01-01 00:07:00,1.0109373304758764
+  2018-01-01 00:08:00,1.0946293376257945
+  2018-01-01 00:09:00,0.994296468350392
+  2018-01-01 00:10:00,0.9621990368715252
+  2018-01-01 00:11:00,0.9829043020249318
+  2018-01-01 00:12:00,1.0310202778528008
+  2018-01-01 00:13:00,1.030910440527457
+  2018-01-01 00:14:00,1.0002173255567963
+  2018-01-01 00:15:00,0.9891175517330903
+  2018-01-01 00:16:00,1.007830575356661
+  2018-01-01 00:17:00,0.9918444339146129
+  2018-01-01 00:18:00,1.0143503121798627
+  2018-01-01 00:19:00,1.0257870543944476
+  
+  '''
+# ---
+# name: test_derivator_model
+  dict({
+    'comment': 'WaterNetworkModel - all values given in SI units',
+    'controls': list([
+    ]),
+    'curves': list([
+    ]),
+    'links': list([
+      dict({
+        'bulk_coeff': None,
+        'check_valve': False,
+        'diameter': 0.6,
+        'end_node_name': 'J-02',
+        'initial_setting': None,
+        'initial_status': 'Open',
+        'length': 1000.0,
+        'link_type': 'Pipe',
+        'minor_loss': 0.0,
+        'name': 'P-02',
+        'roughness': 127.0,
+        'start_node_name': 'J-03',
+        'tag': None,
+        'vertices': list([
+        ]),
+        'wall_coeff': None,
+      }),
+      dict({
+        'bulk_coeff': None,
+        'check_valve': False,
+        'diameter': 0.45,
+        'end_node_name': 'J-03',
+        'initial_setting': None,
+        'initial_status': 'Open',
+        'length': 1000.0,
+        'link_type': 'Pipe',
+        'minor_loss': 0.0,
+        'name': 'P-03',
+        'roughness': 127.0,
+        'start_node_name': 'J-04',
+        'tag': None,
+        'vertices': list([
+        ]),
+        'wall_coeff': None,
+      }),
+      dict({
+        'bulk_coeff': None,
+        'check_valve': False,
+        'diameter': 0.45,
+        'end_node_name': 'J-04',
+        'initial_setting': None,
+        'initial_status': 'Open',
+        'length': 1000.0,
+        'link_type': 'Pipe',
+        'minor_loss': 0.0,
+        'name': 'P-04',
+        'roughness': 127.0,
+        'start_node_name': 'J-05',
+        'tag': None,
+        'vertices': list([
+        ]),
+        'wall_coeff': None,
+      }),
+      dict({
+        'bulk_coeff': None,
+        'check_valve': False,
+        'diameter': 0.3,
+        'end_node_name': 'J-05',
+        'initial_setting': None,
+        'initial_status': 'Open',
+        'length': 1000.0,
+        'link_type': 'Pipe',
+        'minor_loss': 0.0,
+        'name': 'P-05',
+        'roughness': 127.0,
+        'start_node_name': 'J-06',
+        'tag': None,
+        'vertices': list([
+        ]),
+        'wall_coeff': None,
+      }),
+      dict({
+        'bulk_coeff': None,
+        'check_valve': False,
+        'diameter': 0.3,
+        'end_node_name': 'J-06',
+        'initial_setting': None,
+        'initial_status': 'Open',
+        'length': 1000.0,
+        'link_type': 'Pipe',
+        'minor_loss': 0.0,
+        'name': 'P-06',
+        'roughness': 127.0,
+        'start_node_name': 'J-07',
+        'tag': None,
+        'vertices': list([
+        ]),
+        'wall_coeff': None,
+      }),
+      dict({
+        'bulk_coeff': None,
+        'check_valve': False,
+        'diameter': 0.6,
+        'end_node_name': 'J-02',
+        'initial_setting': None,
+        'initial_status': 'Open',
+        'length': 2000.0,
+        'link_type': 'Pipe',
+        'minor_loss': 0.0,
+        'name': 'P-07',
+        'roughness': 127.0,
+        'start_node_name': 'J-08',
+        'tag': None,
+        'vertices': list([
+        ]),
+        'wall_coeff': None,
+      }),
+      dict({
+        'bulk_coeff': None,
+        'check_valve': False,
+        'diameter': 0.45,
+        'end_node_name': 'J-03',
+        'initial_setting': None,
+        'initial_status': 'Open',
+        'length': 2000.0,
+        'link_type': 'Pipe',
+        'minor_loss': 0.0,
+        'name': 'P-08',
+        'roughness': 127.0,
+        'start_node_name': 'J-09',
+        'tag': None,
+        'vertices': list([
+        ]),
+        'wall_coeff': None,
+      }),
+      dict({
+        'bulk_coeff': None,
+        'check_valve': False,
+        'diameter': 0.45,
+        'end_node_name': 'J-08',
+        'initial_setting': None,
+        'initial_status': 'Open',
+        'length': 1000.0,
+        'link_type': 'Pipe',
+        'minor_loss': 0.0,
+        'name': 'P-13',
+        'roughness': 127.0,
+        'start_node_name': 'J-09',
+        'tag': None,
+        'vertices': list([
+        ]),
+        'wall_coeff': None,
+      }),
+      dict({
+        'bulk_coeff': None,
+        'check_valve': False,
+        'diameter': 0.45,
+        'end_node_name': 'J-04',
+        'initial_setting': None,
+        'initial_status': 'Open',
+        'length': 2000.0,
+        'link_type': 'Pipe',
+        'minor_loss': 0.0,
+        'name': 'P-09',
+        'roughness': 127.0,
+        'start_node_name': 'J-10',
+        'tag': None,
+        'vertices': list([
+        ]),
+        'wall_coeff': None,
+      }),
+      dict({
+        'bulk_coeff': None,
+        'check_valve': False,
+        'diameter': 0.45,
+        'end_node_name': 'J-09',
+        'initial_setting': None,
+        'initial_status': 'Open',
+        'length': 1000.0,
+        'link_type': 'Pipe',
+        'minor_loss': 0.0,
+        'name': 'P-14',
+        'roughness': 127.0,
+        'start_node_name': 'J-10',
+        'tag': None,
+        'vertices': list([
+        ]),
+        'wall_coeff': None,
+      }),
+      dict({
+        'bulk_coeff': None,
+        'check_valve': False,
+        'diameter': 0.3,
+        'end_node_name': 'J-05',
+        'initial_setting': None,
+        'initial_status': 'Open',
+        'length': 2000.0,
+        'link_type': 'Pipe',
+        'minor_loss': 0.0,
+        'name': 'P-10',
+        'roughness': 127.0,
+        'start_node_name': 'J-11',
+        'tag': None,
+        'vertices': list([
+        ]),
+        'wall_coeff': None,
+      }),
+      dict({
+        'bulk_coeff': None,
+        'check_valve': False,
+        'diameter': 0.3,
+        'end_node_name': 'J-10',
+        'initial_setting': None,
+        'initial_status': 'Open',
+        'length': 1000.0,
+        'link_type': 'Pipe',
+        'minor_loss': 0.0,
+        'name': 'P-15',
+        'roughness': 127.0,
+        'start_node_name': 'J-11',
+        'tag': None,
+        'vertices': list([
+        ]),
+        'wall_coeff': None,
+      }),
+      dict({
+        'bulk_coeff': None,
+        'check_valve': False,
+        'diameter': 0.3,
+        'end_node_name': 'J-06',
+        'initial_setting': None,
+        'initial_status': 'Open',
+        'length': 2000.0,
+        'link_type': 'Pipe',
+        'minor_loss': 0.0,
+        'name': 'P-11',
+        'roughness': 127.0,
+        'start_node_name': 'J-12',
+        'tag': None,
+        'vertices': list([
+        ]),
+        'wall_coeff': None,
+      }),
+      dict({
+        'bulk_coeff': None,
+        'check_valve': False,
+        'diameter': 0.3,
+        'end_node_name': 'J-11',
+        'initial_setting': None,
+        'initial_status': 'Open',
+        'length': 1000.0,
+        'link_type': 'Pipe',
+        'minor_loss': 0.0,
+        'name': 'P-16',
+        'roughness': 127.0,
+        'start_node_name': 'J-12',
+        'tag': None,
+        'vertices': list([
+        ]),
+        'wall_coeff': None,
+      }),
+      dict({
+        'bulk_coeff': None,
+        'check_valve': False,
+        'diameter': 0.3,
+        'end_node_name': 'J-07',
+        'initial_setting': None,
+        'initial_status': 'Open',
+        'length': 2000.0,
+        'link_type': 'Pipe',
+        'minor_loss': 0.0,
+        'name': 'P-12',
+        'roughness': 127.0,
+        'start_node_name': 'J-13',
+        'tag': None,
+        'vertices': list([
+        ]),
+        'wall_coeff': None,
+      }),
+      dict({
+        'bulk_coeff': None,
+        'check_valve': False,
+        'diameter': 0.3,
+        'end_node_name': 'J-12',
+        'initial_setting': None,
+        'initial_status': 'Open',
+        'length': 1000.0,
+        'link_type': 'Pipe',
+        'minor_loss': 0.0,
+        'name': 'P-17',
+        'roughness': 127.0,
+        'start_node_name': 'J-13',
+        'tag': None,
+        'vertices': list([
+        ]),
+        'wall_coeff': None,
+      }),
+      dict({
+        'bulk_coeff': None,
+        'check_valve': False,
+        'diameter': 0.45,
+        'end_node_name': 'J-08',
+        'initial_setting': None,
+        'initial_status': 'Open',
+        'length': 2000.0,
+        'link_type': 'Pipe',
+        'minor_loss': 0.0,
+        'name': 'P-18',
+        'roughness': 127.0,
+        'start_node_name': 'J-14',
+        'tag': None,
+        'vertices': list([
+        ]),
+        'wall_coeff': None,
+      }),
+      dict({
+        'bulk_coeff': None,
+        'check_valve': False,
+        'diameter': 0.45,
+        'end_node_name': 'J-09',
+        'initial_setting': None,
+        'initial_status': 'Open',
+        'length': 2000.0,
+        'link_type': 'Pipe',
+        'minor_loss': 0.0,
+        'name': 'P-19',
+        'roughness': 127.0,
+        'start_node_name': 'J-15',
+        'tag': None,
+        'vertices': list([
+        ]),
+        'wall_coeff': None,
+      }),
+      dict({
+        'bulk_coeff': None,
+        'check_valve': False,
+        'diameter': 0.45,
+        'end_node_name': 'J-14',
+        'initial_setting': None,
+        'initial_status': 'Open',
+        'length': 1000.0,
+        'link_type': 'Pipe',
+        'minor_loss': 0.0,
+        'name': 'P-24',
+        'roughness': 127.0,
+        'start_node_name': 'J-15',
+        'tag': None,
+        'vertices': list([
+        ]),
+        'wall_coeff': None,
+      }),
+      dict({
+        'bulk_coeff': None,
+        'check_valve': False,
+        'diameter': 0.3,
+        'end_node_name': 'J-10',
+        'initial_setting': None,
+        'initial_status': 'Open',
+        'length': 2000.0,
+        'link_type': 'Pipe',
+        'minor_loss': 0.0,
+        'name': 'P-20',
+        'roughness': 127.0,
+        'start_node_name': 'J-16',
+        'tag': None,
+        'vertices': list([
+        ]),
+        'wall_coeff': None,
+      }),
+      dict({
+        'bulk_coeff': None,
+        'check_valve': False,
+        'diameter': 0.3,
+        'end_node_name': 'J-15',
+        'initial_setting': None,
+        'initial_status': 'Open',
+        'length': 1000.0,
+        'link_type': 'Pipe',
+        'minor_loss': 0.0,
+        'name': 'P-25',
+        'roughness': 127.0,
+        'start_node_name': 'J-16',
+        'tag': None,
+        'vertices': list([
+        ]),
+        'wall_coeff': None,
+      }),
+      dict({
+        'bulk_coeff': None,
+        'check_valve': False,
+        'diameter': 0.3,
+        'end_node_name': 'J-11',
+        'initial_setting': None,
+        'initial_status': 'Open',
+        'length': 2000.0,
+        'link_type': 'Pipe',
+        'minor_loss': 0.0,
+        'name': 'P-21',
+        'roughness': 127.0,
+        'start_node_name': 'J-17',
+        'tag': None,
+        'vertices': list([
+        ]),
+        'wall_coeff': None,
+      }),
+      dict({
+        'bulk_coeff': None,
+        'check_valve': False,
+        'diameter': 0.3,
+        'end_node_name': 'J-16',
+        'initial_setting': None,
+        'initial_status': 'Open',
+        'length': 1000.0,
+        'link_type': 'Pipe',
+        'minor_loss': 0.0,
+        'name': 'P-26',
+        'roughness': 127.0,
+        'start_node_name': 'J-17',
+        'tag': None,
+        'vertices': list([
+        ]),
+        'wall_coeff': None,
+      }),
+      dict({
+        'bulk_coeff': None,
+        'check_valve': False,
+        'diameter': 0.3,
+        'end_node_name': 'J-12',
+        'initial_setting': None,
+        'initial_status': 'Open',
+        'length': 2000.0,
+        'link_type': 'Pipe',
+        'minor_loss': 0.0,
+        'name': 'P-22',
+        'roughness': 127.0,
+        'start_node_name': 'J-18',
+        'tag': None,
+        'vertices': list([
+        ]),
+        'wall_coeff': None,
+      }),
+      dict({
+        'bulk_coeff': None,
+        'check_valve': False,
+        'diameter': 0.3,
+        'end_node_name': 'J-17',
+        'initial_setting': None,
+        'initial_status': 'Open',
+        'length': 1000.0,
+        'link_type': 'Pipe',
+        'minor_loss': 0.0,
+        'name': 'P-27',
+        'roughness': 127.0,
+        'start_node_name': 'J-18',
+        'tag': None,
+        'vertices': list([
+        ]),
+        'wall_coeff': None,
+      }),
+      dict({
+        'bulk_coeff': None,
+        'check_valve': False,
+        'diameter': 0.3,
+        'end_node_name': 'J-13',
+        'initial_setting': None,
+        'initial_status': 'Open',
+        'length': 2000.0,
+        'link_type': 'Pipe',
+        'minor_loss': 0.0,
+        'name': 'P-23',
+        'roughness': 127.0,
+        'start_node_name': 'J-19',
+        'tag': None,
+        'vertices': list([
+        ]),
+        'wall_coeff': None,
+      }),
+      dict({
+        'bulk_coeff': None,
+        'check_valve': False,
+        'diameter': 0.3,
+        'end_node_name': 'J-18',
+        'initial_setting': None,
+        'initial_status': 'Open',
+        'length': 1000.0,
+        'link_type': 'Pipe',
+        'minor_loss': 0.0,
+        'name': 'P-28',
+        'roughness': 127.0,
+        'start_node_name': 'J-19',
+        'tag': None,
+        'vertices': list([
+        ]),
+        'wall_coeff': None,
+      }),
+      dict({
+        'bulk_coeff': None,
+        'check_valve': False,
+        'diameter': 0.45,
+        'end_node_name': 'J-14',
+        'initial_setting': None,
+        'initial_status': 'Open',
+        'length': 2000.0,
+        'link_type': 'Pipe',
+        'minor_loss': 0.0,
+        'name': 'P-29',
+        'roughness': 127.0,
+        'start_node_name': 'J-20',
+        'tag': None,
+        'vertices': list([
+        ]),
+        'wall_coeff': None,
+      }),
+      dict({
+        'bulk_coeff': None,
+        'check_valve': False,
+        'diameter': 0.3,
+        'end_node_name': 'J-15',
+        'initial_setting': None,
+        'initial_status': 'Open',
+        'length': 2000.0,
+        'link_type': 'Pipe',
+        'minor_loss': 0.0,
+        'name': 'P-30',
+        'roughness': 127.0,
+        'start_node_name': 'J-21',
+        'tag': None,
+        'vertices': list([
+        ]),
+        'wall_coeff': None,
+      }),
+      dict({
+        'bulk_coeff': None,
+        'check_valve': False,
+        'diameter': 0.3,
+        'end_node_name': 'J-20',
+        'initial_setting': None,
+        'initial_status': 'Open',
+        'length': 1000.0,
+        'link_type': 'Pipe',
+        'minor_loss': 0.0,
+        'name': 'P-35',
+        'roughness': 127.0,
+        'start_node_name': 'J-21',
+        'tag': None,
+        'vertices': list([
+        ]),
+        'wall_coeff': None,
+      }),
+      dict({
+        'bulk_coeff': None,
+        'check_valve': False,
+        'diameter': 0.3,
+        'end_node_name': 'J-16',
+        'initial_setting': None,
+        'initial_status': 'Open',
+        'length': 2000.0,
+        'link_type': 'Pipe',
+        'minor_loss': 0.0,
+        'name': 'P-31',
+        'roughness': 127.0,
+        'start_node_name': 'J-22',
+        'tag': None,
+        'vertices': list([
+        ]),
+        'wall_coeff': None,
+      }),
+      dict({
+        'bulk_coeff': None,
+        'check_valve': False,
+        'diameter': 0.3,
+        'end_node_name': 'J-21',
+        'initial_setting': None,
+        'initial_status': 'Open',
+        'length': 1000.0,
+        'link_type': 'Pipe',
+        'minor_loss': 0.0,
+        'name': 'P-36',
+        'roughness': 127.0,
+        'start_node_name': 'J-22',
+        'tag': None,
+        'vertices': list([
+        ]),
+        'wall_coeff': None,
+      }),
+      dict({
+        'bulk_coeff': None,
+        'check_valve': False,
+        'diameter': 0.3,
+        'end_node_name': 'J-17',
+        'initial_setting': None,
+        'initial_status': 'Open',
+        'length': 2000.0,
+        'link_type': 'Pipe',
+        'minor_loss': 0.0,
+        'name': 'P-32',
+        'roughness': 127.0,
+        'start_node_name': 'J-23',
+        'tag': None,
+        'vertices': list([
+        ]),
+        'wall_coeff': None,
+      }),
+      dict({
+        'bulk_coeff': None,
+        'check_valve': False,
+        'diameter': 0.3,
+        'end_node_name': 'J-22',
+        'initial_setting': None,
+        'initial_status': 'Open',
+        'length': 1000.0,
+        'link_type': 'Pipe',
+        'minor_loss': 0.0,
+        'name': 'P-37',
+        'roughness': 127.0,
+        'start_node_name': 'J-23',
+        'tag': None,
+        'vertices': list([
+        ]),
+        'wall_coeff': None,
+      }),
+      dict({
+        'bulk_coeff': None,
+        'check_valve': False,
+        'diameter': 0.3,
+        'end_node_name': 'J-18',
+        'initial_setting': None,
+        'initial_status': 'Open',
+        'length': 2000.0,
+        'link_type': 'Pipe',
+        'minor_loss': 0.0,
+        'name': 'P-33',
+        'roughness': 127.0,
+        'start_node_name': 'J-24',
+        'tag': None,
+        'vertices': list([
+        ]),
+        'wall_coeff': None,
+      }),
+      dict({
+        'bulk_coeff': None,
+        'check_valve': False,
+        'diameter': 0.3,
+        'end_node_name': 'J-23',
+        'initial_setting': None,
+        'initial_status': 'Open',
+        'length': 1000.0,
+        'link_type': 'Pipe',
+        'minor_loss': 0.0,
+        'name': 'P-38',
+        'roughness': 127.0,
+        'start_node_name': 'J-24',
+        'tag': None,
+        'vertices': list([
+        ]),
+        'wall_coeff': None,
+      }),
+      dict({
+        'bulk_coeff': None,
+        'check_valve': False,
+        'diameter': 0.3,
+        'end_node_name': 'J-19',
+        'initial_setting': None,
+        'initial_status': 'Open',
+        'length': 2000.0,
+        'link_type': 'Pipe',
+        'minor_loss': 0.0,
+        'name': 'P-34',
+        'roughness': 127.0,
+        'start_node_name': 'J-25',
+        'tag': None,
+        'vertices': list([
+        ]),
+        'wall_coeff': None,
+      }),
+      dict({
+        'bulk_coeff': None,
+        'check_valve': False,
+        'diameter': 0.3,
+        'end_node_name': 'J-24',
+        'initial_setting': None,
+        'initial_status': 'Open',
+        'length': 1000.0,
+        'link_type': 'Pipe',
+        'minor_loss': 0.0,
+        'name': 'P-39',
+        'roughness': 127.0,
+        'start_node_name': 'J-25',
+        'tag': None,
+        'vertices': list([
+        ]),
+        'wall_coeff': None,
+      }),
+      dict({
+        'bulk_coeff': None,
+        'check_valve': False,
+        'diameter': 0.3,
+        'end_node_name': 'J-20',
+        'initial_setting': None,
+        'initial_status': 'Open',
+        'length': 2000.0,
+        'link_type': 'Pipe',
+        'minor_loss': 0.0,
+        'name': 'P-40',
+        'roughness': 127.0,
+        'start_node_name': 'J-26',
+        'tag': None,
+        'vertices': list([
+        ]),
+        'wall_coeff': None,
+      }),
+      dict({
+        'bulk_coeff': None,
+        'check_valve': False,
+        'diameter': 0.3,
+        'end_node_name': 'J-21',
+        'initial_setting': None,
+        'initial_status': 'Open',
+        'length': 2000.0,
+        'link_type': 'Pipe',
+        'minor_loss': 0.0,
+        'name': 'P-41',
+        'roughness': 127.0,
+        'start_node_name': 'J-27',
+        'tag': None,
+        'vertices': list([
+        ]),
+        'wall_coeff': None,
+      }),
+      dict({
+        'bulk_coeff': None,
+        'check_valve': False,
+        'diameter': 0.3,
+        'end_node_name': 'J-26',
+        'initial_setting': None,
+        'initial_status': 'Open',
+        'length': 1000.0,
+        'link_type': 'Pipe',
+        'minor_loss': 0.0,
+        'name': 'P-46',
+        'roughness': 127.0,
+        'start_node_name': 'J-27',
+        'tag': None,
+        'vertices': list([
+        ]),
+        'wall_coeff': None,
+      }),
+      dict({
+        'bulk_coeff': None,
+        'check_valve': False,
+        'diameter': 0.3,
+        'end_node_name': 'J-22',
+        'initial_setting': None,
+        'initial_status': 'Open',
+        'length': 2000.0,
+        'link_type': 'Pipe',
+        'minor_loss': 0.0,
+        'name': 'P-42',
+        'roughness': 127.0,
+        'start_node_name': 'J-28',
+        'tag': None,
+        'vertices': list([
+        ]),
+        'wall_coeff': None,
+      }),
+      dict({
+        'bulk_coeff': None,
+        'check_valve': False,
+        'diameter': 0.3,
+        'end_node_name': 'J-27',
+        'initial_setting': None,
+        'initial_status': 'Open',
+        'length': 1000.0,
+        'link_type': 'Pipe',
+        'minor_loss': 0.0,
+        'name': 'P-47',
+        'roughness': 127.0,
+        'start_node_name': 'J-28',
+        'tag': None,
+        'vertices': list([
+        ]),
+        'wall_coeff': None,
+      }),
+      dict({
+        'bulk_coeff': None,
+        'check_valve': False,
+        'diameter': 0.3,
+        'end_node_name': 'J-23',
+        'initial_setting': None,
+        'initial_status': 'Open',
+        'length': 2000.0,
+        'link_type': 'Pipe',
+        'minor_loss': 0.0,
+        'name': 'P-43',
+        'roughness': 127.0,
+        'start_node_name': 'J-29',
+        'tag': None,
+        'vertices': list([
+        ]),
+        'wall_coeff': None,
+      }),
+      dict({
+        'bulk_coeff': None,
+        'check_valve': False,
+        'diameter': 0.3,
+        'end_node_name': 'J-28',
+        'initial_setting': None,
+        'initial_status': 'Open',
+        'length': 1000.0,
+        'link_type': 'Pipe',
+        'minor_loss': 0.0,
+        'name': 'P-48',
+        'roughness': 127.0,
+        'start_node_name': 'J-29',
+        'tag': None,
+        'vertices': list([
+        ]),
+        'wall_coeff': None,
+      }),
+      dict({
+        'bulk_coeff': None,
+        'check_valve': False,
+        'diameter': 0.3,
+        'end_node_name': 'J-24',
+        'initial_setting': None,
+        'initial_status': 'Open',
+        'length': 2000.0,
+        'link_type': 'Pipe',
+        'minor_loss': 0.0,
+        'name': 'P-44',
+        'roughness': 127.0,
+        'start_node_name': 'J-30',
+        'tag': None,
+        'vertices': list([
+        ]),
+        'wall_coeff': None,
+      }),
+      dict({
+        'bulk_coeff': None,
+        'check_valve': False,
+        'diameter': 0.3,
+        'end_node_name': 'J-29',
+        'initial_setting': None,
+        'initial_status': 'Open',
+        'length': 1000.0,
+        'link_type': 'Pipe',
+        'minor_loss': 0.0,
+        'name': 'P-49',
+        'roughness': 127.0,
+        'start_node_name': 'J-30',
+        'tag': None,
+        'vertices': list([
+        ]),
+        'wall_coeff': None,
+      }),
+      dict({
+        'bulk_coeff': None,
+        'check_valve': False,
+        'diameter': 0.3,
+        'end_node_name': 'J-25',
+        'initial_setting': None,
+        'initial_status': 'Open',
+        'length': 2000.0,
+        'link_type': 'Pipe',
+        'minor_loss': 0.0,
+        'name': 'P-45',
+        'roughness': 127.0,
+        'start_node_name': 'J-31',
+        'tag': None,
+        'vertices': list([
+        ]),
+        'wall_coeff': None,
+      }),
+      dict({
+        'bulk_coeff': None,
+        'check_valve': False,
+        'diameter': 0.3,
+        'end_node_name': 'J-30',
+        'initial_setting': None,
+        'initial_status': 'Open',
+        'length': 1000.0,
+        'link_type': 'Pipe',
+        'minor_loss': 0.0,
+        'name': 'P-50',
+        'roughness': 127.0,
+        'start_node_name': 'J-31',
+        'tag': None,
+        'vertices': list([
+        ]),
+        'wall_coeff': None,
+      }),
+      dict({
+        'bulk_coeff': None,
+        'check_valve': False,
+        'diameter': 0.6,
+        'end_node_name': 'J-02',
+        'initial_setting': None,
+        'initial_status': 'Open',
+        'length': 100.0,
+        'link_type': 'Pipe',
+        'minor_loss': 0.0,
+        'name': 'P-01',
+        'roughness': 127.0,
+        'start_node_name': 'J-01',
+        'tag': None,
+        'vertices': list([
+        ]),
+        'wall_coeff': None,
+      }),
+    ]),
+    'name': 'test_data/datasets/test-de831ae21f3701a51624961798c8b6d8/model.inp',
+    'nodes': list([
+      dict({
+        'coordinates': tuple(
+          2.0,
+          -1.0,
+        ),
+        'demand_timeseries_list': list([
+          dict({
+            'base_val': 0.05,
+            'category': None,
+            'pattern_name': '',
+          }),
+        ]),
+        'elevation': -0.024222145135,
+        'emitter_coefficient': None,
+        'initial_quality': 0.0,
+        'minimum_pressure': None,
+        'name': 'J-02',
+        'node_type': 'Junction',
+        'pressure_exponent': None,
+        'required_pressure': None,
+        'tag': None,
+      }),
+      dict({
+        'coordinates': tuple(
+          2.0,
+          -2.0,
+        ),
+        'demand_timeseries_list': list([
+          dict({
+            'base_val': 0.05,
+            'category': None,
+            'pattern_name': '',
+          }),
+        ]),
+        'elevation': 0.027696564771,
+        'emitter_coefficient': None,
+        'initial_quality': 0.0,
+        'minimum_pressure': None,
+        'name': 'J-03',
+        'node_type': 'Junction',
+        'pressure_exponent': None,
+        'required_pressure': None,
+        'tag': None,
+      }),
+      dict({
+        'coordinates': tuple(
+          2.0,
+          -3.0,
+        ),
+        'demand_timeseries_list': list([
+          dict({
+            'base_val': 0.05,
+            'category': None,
+            'pattern_name': '',
+          }),
+        ]),
+        'elevation': 0.026623626442,
+        'emitter_coefficient': None,
+        'initial_quality': 0.0,
+        'minimum_pressure': None,
+        'name': 'J-04',
+        'node_type': 'Junction',
+        'pressure_exponent': None,
+        'required_pressure': None,
+        'tag': None,
+      }),
+      dict({
+        'coordinates': tuple(
+          2.0,
+          -4.0,
+        ),
+        'demand_timeseries_list': list([
+          dict({
+            'base_val': 0.05,
+            'category': None,
+            'pattern_name': '',
+          }),
+        ]),
+        'elevation': 0.020185989276,
+        'emitter_coefficient': None,
+        'initial_quality': 0.0,
+        'minimum_pressure': None,
+        'name': 'J-05',
+        'node_type': 'Junction',
+        'pressure_exponent': None,
+        'required_pressure': None,
+        'tag': None,
+      }),
+      dict({
+        'coordinates': tuple(
+          2.0,
+          -5.0,
+        ),
+        'demand_timeseries_list': list([
+          dict({
+            'base_val': 0.05,
+            'category': None,
+            'pattern_name': '',
+          }),
+        ]),
+        'elevation': -0.020786162649,
+        'emitter_coefficient': None,
+        'initial_quality': 0.0,
+        'minimum_pressure': None,
+        'name': 'J-06',
+        'node_type': 'Junction',
+        'pressure_exponent': None,
+        'required_pressure': None,
+        'tag': None,
+      }),
+      dict({
+        'coordinates': tuple(
+          2.0,
+          -6.0,
+        ),
+        'demand_timeseries_list': list([
+          dict({
+            'base_val': 0.05,
+            'category': None,
+            'pattern_name': '',
+          }),
+        ]),
+        'elevation': 0.0012120111222,
+        'emitter_coefficient': None,
+        'initial_quality': 0.0,
+        'minimum_pressure': None,
+        'name': 'J-07',
+        'node_type': 'Junction',
+        'pressure_exponent': None,
+        'required_pressure': None,
+        'tag': None,
+      }),
+      dict({
+        'coordinates': tuple(
+          4.0,
+          -1.0,
+        ),
+        'demand_timeseries_list': list([
+          dict({
+            'base_val': 0.05,
+            'category': None,
+            'pattern_name': '',
+          }),
+        ]),
+        'elevation': -0.0059020273496,
+        'emitter_coefficient': None,
+        'initial_quality': 0.0,
+        'minimum_pressure': None,
+        'name': 'J-08',
+        'node_type': 'Junction',
+        'pressure_exponent': None,
+        'required_pressure': None,
+        'tag': None,
+      }),
+      dict({
+        'coordinates': tuple(
+          4.0,
+          -2.0,
+        ),
+        'demand_timeseries_list': list([
+          dict({
+            'base_val': 0.05,
+            'category': None,
+            'pattern_name': '',
+          }),
+        ]),
+        'elevation': 0.010937330476,
+        'emitter_coefficient': None,
+        'initial_quality': 0.0,
+        'minimum_pressure': None,
+        'name': 'J-09',
+        'node_type': 'Junction',
+        'pressure_exponent': None,
+        'required_pressure': None,
+        'tag': None,
+      }),
+      dict({
+        'coordinates': tuple(
+          4.0,
+          -3.0,
+        ),
+        'demand_timeseries_list': list([
+          dict({
+            'base_val': 0.05,
+            'category': None,
+            'pattern_name': '',
+          }),
+        ]),
+        'elevation': 0.094629337626,
+        'emitter_coefficient': None,
+        'initial_quality': 0.0,
+        'minimum_pressure': None,
+        'name': 'J-10',
+        'node_type': 'Junction',
+        'pressure_exponent': None,
+        'required_pressure': None,
+        'tag': None,
+      }),
+      dict({
+        'coordinates': tuple(
+          4.0,
+          -4.0,
+        ),
+        'demand_timeseries_list': list([
+          dict({
+            'base_val': 0.05,
+            'category': None,
+            'pattern_name': '',
+          }),
+        ]),
+        'elevation': -0.0057035316496,
+        'emitter_coefficient': None,
+        'initial_quality': 0.0,
+        'minimum_pressure': None,
+        'name': 'J-11',
+        'node_type': 'Junction',
+        'pressure_exponent': None,
+        'required_pressure': None,
+        'tag': None,
+      }),
+      dict({
+        'coordinates': tuple(
+          4.0,
+          -5.0,
+        ),
+        'demand_timeseries_list': list([
+          dict({
+            'base_val': 0.05,
+            'category': None,
+            'pattern_name': '',
+          }),
+        ]),
+        'elevation': -0.037800963128,
+        'emitter_coefficient': None,
+        'initial_quality': 0.0,
+        'minimum_pressure': None,
+        'name': 'J-12',
+        'node_type': 'Junction',
+        'pressure_exponent': None,
+        'required_pressure': None,
+        'tag': None,
+      }),
+      dict({
+        'coordinates': tuple(
+          4.0,
+          -6.0,
+        ),
+        'demand_timeseries_list': list([
+          dict({
+            'base_val': 0.05,
+            'category': None,
+            'pattern_name': '',
+          }),
+        ]),
+        'elevation': -0.017095697975,
+        'emitter_coefficient': None,
+        'initial_quality': 0.0,
+        'minimum_pressure': None,
+        'name': 'J-13',
+        'node_type': 'Junction',
+        'pressure_exponent': None,
+        'required_pressure': None,
+        'tag': None,
+      }),
+      dict({
+        'coordinates': tuple(
+          6.0,
+          -1.0,
+        ),
+        'demand_timeseries_list': list([
+          dict({
+            'base_val': 0.05,
+            'category': None,
+            'pattern_name': '',
+          }),
+        ]),
+        'elevation': 0.031020277853,
+        'emitter_coefficient': None,
+        'initial_quality': 0.0,
+        'minimum_pressure': None,
+        'name': 'J-14',
+        'node_type': 'Junction',
+        'pressure_exponent': None,
+        'required_pressure': None,
+        'tag': None,
+      }),
+      dict({
+        'coordinates': tuple(
+          6.0,
+          -2.0,
+        ),
+        'demand_timeseries_list': list([
+          dict({
+            'base_val': 0.05,
+            'category': None,
+            'pattern_name': '',
+          }),
+        ]),
+        'elevation': 0.030910440527,
+        'emitter_coefficient': None,
+        'initial_quality': 0.0,
+        'minimum_pressure': None,
+        'name': 'J-15',
+        'node_type': 'Junction',
+        'pressure_exponent': None,
+        'required_pressure': None,
+        'tag': None,
+      }),
+      dict({
+        'coordinates': tuple(
+          6.0,
+          -3.0,
+        ),
+        'demand_timeseries_list': list([
+          dict({
+            'base_val': 0.05,
+            'category': None,
+            'pattern_name': '',
+          }),
+        ]),
+        'elevation': 0.0002173255568,
+        'emitter_coefficient': None,
+        'initial_quality': 0.0,
+        'minimum_pressure': None,
+        'name': 'J-16',
+        'node_type': 'Junction',
+        'pressure_exponent': None,
+        'required_pressure': None,
+        'tag': None,
+      }),
+      dict({
+        'coordinates': tuple(
+          6.0,
+          -4.0,
+        ),
+        'demand_timeseries_list': list([
+          dict({
+            'base_val': 0.05,
+            'category': None,
+            'pattern_name': '',
+          }),
+        ]),
+        'elevation': -0.010882448267,
+        'emitter_coefficient': None,
+        'initial_quality': 0.0,
+        'minimum_pressure': None,
+        'name': 'J-17',
+        'node_type': 'Junction',
+        'pressure_exponent': None,
+        'required_pressure': None,
+        'tag': None,
+      }),
+      dict({
+        'coordinates': tuple(
+          6.0,
+          -5.0,
+        ),
+        'demand_timeseries_list': list([
+          dict({
+            'base_val': 0.05,
+            'category': None,
+            'pattern_name': '',
+          }),
+        ]),
+        'elevation': 0.0078305753567,
+        'emitter_coefficient': None,
+        'initial_quality': 0.0,
+        'minimum_pressure': None,
+        'name': 'J-18',
+        'node_type': 'Junction',
+        'pressure_exponent': None,
+        'required_pressure': None,
+        'tag': None,
+      }),
+      dict({
+        'coordinates': tuple(
+          6.0,
+          -6.0,
+        ),
+        'demand_timeseries_list': list([
+          dict({
+            'base_val': 0.05,
+            'category': None,
+            'pattern_name': '',
+          }),
+        ]),
+        'elevation': -0.0081555660854,
+        'emitter_coefficient': None,
+        'initial_quality': 0.0,
+        'minimum_pressure': None,
+        'name': 'J-19',
+        'node_type': 'Junction',
+        'pressure_exponent': None,
+        'required_pressure': None,
+        'tag': None,
+      }),
+      dict({
+        'coordinates': tuple(
+          8.0,
+          -1.0,
+        ),
+        'demand_timeseries_list': list([
+          dict({
+            'base_val': 0.05,
+            'category': None,
+            'pattern_name': '',
+          }),
+        ]),
+        'elevation': 0.01435031218,
+        'emitter_coefficient': None,
+        'initial_quality': 0.0,
+        'minimum_pressure': None,
+        'name': 'J-20',
+        'node_type': 'Junction',
+        'pressure_exponent': None,
+        'required_pressure': None,
+        'tag': None,
+      }),
+      dict({
+        'coordinates': tuple(
+          8.0,
+          -2.0,
+        ),
+        'demand_timeseries_list': list([
+          dict({
+            'base_val': 0.05,
+            'category': None,
+            'pattern_name': '',
+          }),
+        ]),
+        'elevation': 0.025787054394,
+        'emitter_coefficient': None,
+        'initial_quality': 0.0,
+        'minimum_pressure': None,
+        'name': 'J-21',
+        'node_type': 'Junction',
+        'pressure_exponent': None,
+        'required_pressure': None,
+        'tag': None,
+      }),
+      dict({
+        'coordinates': tuple(
+          8.0,
+          -3.0,
+        ),
+        'demand_timeseries_list': list([
+          dict({
+            'base_val': 0.05,
+            'category': None,
+            'pattern_name': '',
+          }),
+        ]),
+        'elevation': -0.0011102502902,
+        'emitter_coefficient': None,
+        'initial_quality': 0.0,
+        'minimum_pressure': None,
+        'name': 'J-22',
+        'node_type': 'Junction',
+        'pressure_exponent': None,
+        'required_pressure': None,
+        'tag': None,
+      }),
+      dict({
+        'coordinates': tuple(
+          8.0,
+          -4.0,
+        ),
+        'demand_timeseries_list': list([
+          dict({
+            'base_val': 0.05,
+            'category': None,
+            'pattern_name': '',
+          }),
+        ]),
+        'elevation': 0.0068753760983,
+        'emitter_coefficient': None,
+        'initial_quality': 0.0,
+        'minimum_pressure': None,
+        'name': 'J-23',
+        'node_type': 'Junction',
+        'pressure_exponent': None,
+        'required_pressure': None,
+        'tag': None,
+      }),
+      dict({
+        'coordinates': tuple(
+          8.0,
+          -5.0,
+        ),
+        'demand_timeseries_list': list([
+          dict({
+            'base_val': 0.05,
+            'category': None,
+            'pattern_name': '',
+          }),
+        ]),
+        'elevation': -0.021948593471,
+        'emitter_coefficient': None,
+        'initial_quality': 0.0,
+        'minimum_pressure': None,
+        'name': 'J-24',
+        'node_type': 'Junction',
+        'pressure_exponent': None,
+        'required_pressure': None,
+        'tag': None,
+      }),
+      dict({
+        'coordinates': tuple(
+          8.0,
+          -6.0,
+        ),
+        'demand_timeseries_list': list([
+          dict({
+            'base_val': 0.05,
+            'category': None,
+            'pattern_name': '',
+          }),
+        ]),
+        'elevation': 0.0030251599001,
+        'emitter_coefficient': None,
+        'initial_quality': 0.0,
+        'minimum_pressure': None,
+        'name': 'J-25',
+        'node_type': 'Junction',
+        'pressure_exponent': None,
+        'required_pressure': None,
+        'tag': None,
+      }),
+      dict({
+        'coordinates': tuple(
+          10.0,
+          -1.0,
+        ),
+        'demand_timeseries_list': list([
+          dict({
+            'base_val': 0.05,
+            'category': None,
+            'pattern_name': '',
+          }),
+        ]),
+        'elevation': 0.0067356519854,
+        'emitter_coefficient': None,
+        'initial_quality': 0.0,
+        'minimum_pressure': None,
+        'name': 'J-26',
+        'node_type': 'Junction',
+        'pressure_exponent': None,
+        'required_pressure': None,
+        'tag': None,
+      }),
+      dict({
+        'coordinates': tuple(
+          10.0,
+          -2.0,
+        ),
+        'demand_timeseries_list': list([
+          dict({
+            'base_val': 0.05,
+            'category': None,
+            'pattern_name': '',
+          }),
+        ]),
+        'elevation': -0.036480591596,
+        'emitter_coefficient': None,
+        'initial_quality': 0.0,
+        'minimum_pressure': None,
+        'name': 'J-27',
+        'node_type': 'Junction',
+        'pressure_exponent': None,
+        'required_pressure': None,
+        'tag': None,
+      }),
+      dict({
+        'coordinates': tuple(
+          10.0,
+          -3.0,
+        ),
+        'demand_timeseries_list': list([
+          dict({
+            'base_val': 0.05,
+            'category': None,
+            'pattern_name': '',
+          }),
+        ]),
+        'elevation': -0.01120385886,
+        'emitter_coefficient': None,
+        'initial_quality': 0.0,
+        'minimum_pressure': None,
+        'name': 'J-28',
+        'node_type': 'Junction',
+        'pressure_exponent': None,
+        'required_pressure': None,
+        'tag': None,
+      }),
+      dict({
+        'coordinates': tuple(
+          10.0,
+          -4.0,
+        ),
+        'demand_timeseries_list': list([
+          dict({
+            'base_val': 0.05,
+            'category': None,
+            'pattern_name': '',
+          }),
+        ]),
+        'elevation': 0.040737333371,
+        'emitter_coefficient': None,
+        'initial_quality': 0.0,
+        'minimum_pressure': None,
+        'name': 'J-29',
+        'node_type': 'Junction',
+        'pressure_exponent': None,
+        'required_pressure': None,
+        'tag': None,
+      }),
+      dict({
+        'coordinates': tuple(
+          10.0,
+          -5.0,
+        ),
+        'demand_timeseries_list': list([
+          dict({
+            'base_val': 0.05,
+            'category': None,
+            'pattern_name': '',
+          }),
+        ]),
+        'elevation': -0.025145180034,
+        'emitter_coefficient': None,
+        'initial_quality': 0.0,
+        'minimum_pressure': None,
+        'name': 'J-30',
+        'node_type': 'Junction',
+        'pressure_exponent': None,
+        'required_pressure': None,
+        'tag': None,
+      }),
+      dict({
+        'coordinates': tuple(
+          10.0,
+          -6.0,
+        ),
+        'demand_timeseries_list': list([
+          dict({
+            'base_val': 0.05,
+            'category': None,
+            'pattern_name': '',
+          }),
+        ]),
+        'elevation': -0.050377901799,
+        'emitter_coefficient': None,
+        'initial_quality': 0.0,
+        'minimum_pressure': None,
+        'name': 'J-31',
+        'node_type': 'Junction',
+        'pressure_exponent': None,
+        'required_pressure': None,
+        'tag': None,
+      }),
+      dict({
+        'base_head': 52.0,
+        'coordinates': tuple(
+          0.0,
+          1.0,
+        ),
+        'head_pattern_name': None,
+        'initial_quality': 0.0,
+        'name': 'J-01',
+        'node_type': 'Reservoir',
+        'tag': None,
+      }),
+    ]),
+    'options': dict({
+      'energy': dict({
+        'demand_charge': None,
+        'global_efficiency': None,
+        'global_pattern': None,
+        'global_price': 0.0,
+      }),
+      'graphics': dict({
+        'dimensions': list([
+          '0',
+          '0',
+          '10',
+          '10',
+        ]),
+        'image_filename': None,
+        'map_filename': None,
+        'offset': None,
+        'units': 'NONE',
+      }),
+      'hydraulic': dict({
+        'accuracy': 1e-09,
+        'checkfreq': 2,
+        'damplimit': 0.0,
+        'demand_model': 'DDA',
+        'demand_multiplier': 1.0,
+        'emitter_exponent': 1.0,
+        'flowchange': 0.0,
+        'headerror': 0.0,
+        'headloss': 'H-W',
+        'hydraulics': None,
+        'hydraulics_filename': None,
+        'inpfile_pressure_units': None,
+        'inpfile_units': 'LPS',
+        'maxcheck': 10,
+        'minimum_pressure': 0.0,
+        'pattern': None,
+        'pressure_exponent': 0.5,
+        'required_pressure': 0.07,
+        'specific_gravity': 1.0,
+        'trials': 40,
+        'unbalanced': 'STOP',
+        'unbalanced_value': None,
+        'viscosity': 1.0,
+      }),
+      'quality': dict({
+        'chemical_name': 'CHEMICAL',
+        'diffusivity': 1.0,
+        'inpfile_units': 'mg/L',
+        'parameter': 'NONE',
+        'tolerance': 0.01,
+        'trace_node': None,
+      }),
+      'reaction': dict({
+        'bulk_coeff': 0.0,
+        'bulk_order': 1.0,
+        'limiting_potential': None,
+        'roughness_correl': None,
+        'tank_order': 1.0,
+        'wall_coeff': 0.0,
+        'wall_order': 1.0,
+      }),
+      'report': dict({
+        'energy': 'NO',
+        'links': False,
+        'nodes': False,
+        'pagesize': None,
+        'param_opts': dict({
+          'demand': dict({
+          }),
+          'diameter': dict({
+          }),
+          'elevation': dict({
+          }),
+          'f-factor': dict({
+          }),
+          'flow': dict({
+          }),
+          'head': dict({
+          }),
+          'headloss': dict({
+          }),
+          'length': dict({
+          }),
+          'position': dict({
+          }),
+          'pressure': dict({
+          }),
+          'quality': dict({
+          }),
+          'reaction': dict({
+          }),
+          'setting': dict({
+          }),
+          'velocity': dict({
+          }),
+        }),
+        'report_filename': None,
+        'report_params': dict({
+          'demand': True,
+          'diameter': False,
+          'elevation': False,
+          'f-factor': False,
+          'flow': True,
+          'head': True,
+          'headloss': True,
+          'length': False,
+          'position': False,
+          'pressure': True,
+          'quality': True,
+          'reaction': False,
+          'setting': False,
+          'velocity': True,
+        }),
+        'status': 'NO',
+        'summary': 'YES',
+      }),
+      'time': dict({
+        'duration': 0.0,
+        'hydraulic_timestep': 3600,
+        'pattern_interpolation': False,
+        'pattern_start': 0.0,
+        'pattern_timestep': 3600,
+        'quality_timestep': 360,
+        'report_start': 0.0,
+        'report_timestep': 3600,
+        'rule_timestep': 360,
+        'start_clocktime': 0.0,
+        'statistic': 'NONE',
+      }),
+      'user': dict({
+      }),
+    }),
+    'patterns': list([
+    ]),
+    'sources': list([
+    ]),
+    'version': 'wntr-0.5.0',
+  })
+# ---
+# name: test_mything
+  '''
+  Timestamp,a
+  2018-01-01 00:00:00,0.9757778548654408
+  2018-01-01 00:01:00,1.0276965647705505
+  2018-01-01 00:02:00,1.026623626441905
+  2018-01-01 00:03:00,1.020185989275543
+  2018-01-01 00:04:00,0.979213837350742
+  2018-01-01 00:05:00,1.001212011122164
+  2018-01-01 00:06:00,0.9940979726503864
+  2018-01-01 00:07:00,1.0109373304758764
+  2018-01-01 00:08:00,1.0946293376257945
+  2018-01-01 00:09:00,0.994296468350392
+  2018-01-01 00:10:00,0.9621990368715252
+  2018-01-01 00:11:00,0.9829043020249318
+  2018-01-01 00:12:00,1.0310202778528008
+  2018-01-01 00:13:00,1.030910440527457
+  2018-01-01 00:14:00,1.0002173255567963
+  2018-01-01 00:15:00,0.9891175517330903
+  2018-01-01 00:16:00,1.007830575356661
+  2018-01-01 00:17:00,0.9918444339146129
+  2018-01-01 00:18:00,1.0143503121798627
+  2018-01-01 00:19:00,1.0257870543944476
+  
+  '''
+# ---
+# name: test_mything2
+  '''
+  Timestamp,a
+  2018-01-01 00:00:00,0.9757778548654408
+  2018-01-01 00:01:00,1.0276965647705505
+  2018-01-01 00:02:00,1.026623626441905
+  2018-01-01 00:03:00,1.020185989275543
+  2018-01-01 00:04:00,0.979213837350742
+  2018-01-01 00:05:00,1.001212011122164
+  2018-01-01 00:06:00,0.9940979726503864
+  2018-01-01 00:07:00,1.0109373304758764
+  2018-01-01 00:08:00,1.0946293376257945
+  2018-01-01 00:09:00,0.994296468350392
+  2018-01-01 00:10:00,0.9621990368715252
+  2018-01-01 00:11:00,0.9829043020249318
+  2018-01-01 00:12:00,1.0310202778528008
+  2018-01-01 00:13:00,1.030910440527457
+  2018-01-01 00:14:00,1.0002173255567963
+  2018-01-01 00:15:00,0.9891175517330903
+  2018-01-01 00:16:00,1.007830575356661
+  2018-01-01 00:17:00,0.9918444339146129
+  2018-01-01 00:18:00,1.0143503121798627
+  2018-01-01 00:19:00,1.0257870543944476
+  
+  '''
+# ---

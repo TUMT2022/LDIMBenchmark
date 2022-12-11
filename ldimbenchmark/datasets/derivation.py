@@ -8,6 +8,7 @@ import scipy.stats as stats
 from typing import Literal
 
 from collections.abc import Sequence
+from numpy.random import Generator, PCG64
 
 
 class DatasetDerivator:
@@ -29,6 +30,10 @@ class DatasetDerivator:
         else:
             self.datasets: list[Dataset] = [datasets]
         self.out_path = out_path
+
+        # TODO: should we always use the same seed?
+        seed = 27565124760782368551060429849508057759
+        self.random_gen = Generator(PCG64(seed))
 
     # TODO: Add more derivations, like junction elevation
 
@@ -58,7 +63,7 @@ class DatasetDerivator:
 
                     loadedDataset = Dataset(dataset.path).loadDataset()
                     junctions = loadedDataset.model.junction_name_list
-                    noise = DatasetDerivator.__get_random_norm(value, len(junctions))
+                    noise = self.__get_random_norm(value, len(junctions))
                     for index, junction in enumerate(junctions):
                         loadedDataset.model.get_node(junction).elevation += noise[index]
 
@@ -82,6 +87,7 @@ class DatasetDerivator:
 
                     # TODO write to dataser_info.yml and add keys with derivation properties
                     newDatasets.append(Dataset(derivedDatasetPath))
+        return newDatasets
 
     def derive_data(
         self,
@@ -105,12 +111,10 @@ class DatasetDerivator:
                     loadedDataset = Dataset(dataset.path).loadDataset()
 
                     data = getattr(loadedDataset, apply_to)
-                    noise = DatasetDerivator.__get_random_norm(
-                        value, dataset.index.shape
-                    )
+                    noise = self.__get_random_norm(value, data.index.shape)
 
                     # TODO; move below for derviation
-                    dataset = dataset.mul(1 + noise, axis=0)
+                    data = data.mul(1 + noise, axis=0)
 
                     setattr(loadedDataset, apply_to, data)
 
@@ -135,8 +139,7 @@ class DatasetDerivator:
 
         return newDatasets
 
-    @staticmethod
-    def _generateNormalDistributedNoise(dataset, noiseLevel):
+    def _generateNormalDistributedNoise(self, dataset, noiseLevel):
         """
         generate noise in a gaussian way between the low and high level of noiseLevel
         sigma is choosen so that 99.7% of the data is within the noiseLevel bounds
@@ -152,8 +155,7 @@ class DatasetDerivator:
         noise = X.rvs(dataset.index.shape)
         return dataset, noise
 
-    @staticmethod
-    def _generateUniformDistributedNoise(dataset, noiseLevel):
+    def _generateUniformDistributedNoise(self, dataset, noiseLevel):
         """
         generate noise in a uniform way between the low and high level of noiseLevel
 
@@ -165,14 +167,21 @@ class DatasetDerivator:
         dataset = dataset.mul(1 + noise, axis=0)
         return dataset, noise
 
-    @staticmethod
-    def __get_random_norm(noise_level: float, size: int):
+    def __get_random_norm(self, noise_level: float, size: int):
         """
         Generate a random normal distribution with a given noise level
         """
         lower, upper = -noise_level, noise_level
         mu, sigma = 0, noise_level / 3
+        # truncnorm_gen =
+        # truncnorm_gen.random_state =
         X = stats.truncnorm(
-            (lower - mu) / sigma, (upper - mu) / sigma, loc=mu, scale=sigma
+            (lower - mu) / sigma,
+            (upper - mu) / sigma,
+            loc=mu,
+            scale=sigma,
         )
-        return X.rvs(size)
+        return X.rvs(
+            size,
+            random_state=self.random_gen,
+        )
