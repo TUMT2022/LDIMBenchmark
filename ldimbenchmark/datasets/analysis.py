@@ -1,3 +1,4 @@
+from math import nan
 from ldimbenchmark.datasets.classes import Dataset
 import os
 import pandas as pd
@@ -12,11 +13,48 @@ class DatasetAnalyzer:
 
     def __init__(self, analyisis_out_dir: str):
         self.analyisis_out_dir = analyisis_out_dir
+        os.makedirs(self.analyisis_out_dir, exist_ok=True)
 
     def compare(self, datasets: list[Dataset]):
         """
-        Compare the datasets
+        Compare the datasets, e.g. especially helpful when comparing the original dataset with derived ones.
         """
+        if type(datasets) is not list:
+            dataset_list: list[Dataset] = [datasets]
+        else:
+            dataset_list = datasets
+
+        datasets_info = {}
+        for dataset in dataset_list:
+            datasets_info[dataset.id] = pd.json_normalize(dataset.info, max_level=0)
+
+        datasets_info = pd.concat(datasets_info)
+        datasets_info = datasets_info.reset_index(level=1, drop=True)
+
+        original_dataset_frame = datasets_info[datasets_info["derivations"].isnull()]
+        if original_dataset_frame.shape[0] > 1:
+            raise Exception("More than one original dataset found")
+        original_dataset_id = original_dataset_frame.index[0]
+
+        loaded_datasets = {}
+        for dataset in dataset_list:
+            loadedDataset = dataset.loadDataset()
+            loaded_datasets[dataset.id] = loadedDataset
+
+        original_dataset = loaded_datasets[original_dataset_id]
+        del loaded_datasets[original_dataset_id]
+
+        # Plot each time series
+        for data_name in ["demands", "pressures", "flows", "levels"]:
+            data = getattr(loadedDataset, data_name)
+            if data.shape[1] > 0:
+                data.columns = [f"[Original] {col}" for col in data.columns]
+                DatasetAnalyzer._plot_time_series(
+                    data,
+                    data_name,
+                    self.analyisis_out_dir,
+                    [getattr(ldata, data_name) for i, ldata in loaded_datasets.items()],
+                )
 
         # original_dataset = pd.read_csv(dataset_source_dir, index_col="Timestamp")
 
@@ -42,36 +80,63 @@ class DatasetAnalyzer:
         #     color="r",
         # )
 
+    def _plot_time_series(
+        df: pd.DataFrame,
+        title: str,
+        out_dir: str,
+        compare_df: list[pd.DataFrame] = None,
+    ):
+        fig, ax = plt.subplots(1, 1, figsize=(20, 10))
+        ax.set_title(title)
+
+        if compare_df is not None:
+            for compare in compare_df:
+                compare.plot(ax=ax, label="Derived", alpha=0.5)
+            df.plot(ax=ax, label="Original")
+            ax.legend()
+        else:
+            df.plot(ax=ax)
+
+        fig.savefig(os.path.join(out_dir, f"{title}.png"))
+
     def analyze(self, datasets: Dataset | list[Dataset]):
         """
         Analyze the dataset
         """
-        if datasets is not list:
+        if type(datasets) is not list:
             dataset_list: list[Dataset] = [datasets]
         else:
             dataset_list = datasets
 
-        os.makedirs(self.analyisis_out_dir, exist_ok=True)
+        datasets_table = {}
 
-        network_models = {}
         network_model_details = {}
         network_model_details_medium = {}
         network_model_details_fine = {}
 
         for dataset in dataset_list:
             loadedDataset = dataset.loadDataset()
+            datasets_table[dataset.id] = pd.json_normalize(loadedDataset.info)
 
-            network_models[dataset.name] = loadedDataset
-            network_model_details[dataset] = pd.json_normalize(
+            network_model_details[dataset.id] = pd.json_normalize(
                 loadedDataset.model.describe()
             )
-            network_model_details_medium[dataset] = pd.json_normalize(
+            network_model_details_medium[dataset.id] = pd.json_normalize(
                 loadedDataset.model.describe(1)
             )
-            network_model_details_fine[dataset] = pd.json_normalize(
+            network_model_details_fine[dataset.id] = pd.json_normalize(
                 loadedDataset.model.describe(2)
             )
 
+            # Plot each time series
+            for data_name in ["demands", "pressures", "flows", "levels"]:
+                data = getattr(loadedDataset, data_name)
+                if data.shape[1] > 0:
+                    DatasetAnalyzer._plot_time_series(
+                        data, f"{dataset.id}: {data_name}", self.analyisis_out_dir
+                    )
+
+            # Plot Network
             fig, ax = plt.subplots(1, 1, figsize=(60, 40))
             ax = wntr.graphics.plot_network(
                 loadedDataset.model,
@@ -82,20 +147,19 @@ class DatasetAnalyzer:
                 link_labels=True,
             )
             fig.savefig(
-                os.path.join(self.analyisis_out_dir, f"{dataset.name}_network.png")
+                os.path.join(self.analyisis_out_dir, f"network_{dataset.id}.png")
             )
 
+        datasets_table = pd.concat(datasets_table)
         overview = pd.concat(network_model_details)
         overview_medium = pd.concat(network_model_details_medium)
         overview_fine = pd.concat(network_model_details_fine)
 
+        datasets_table = datasets_table.reset_index(level=1, drop=True)
         overview = overview.reset_index(level=1, drop=True)
         overview_medium = overview_medium.reset_index(level=1, drop=True)
         overview_fine = overview_fine.reset_index(level=1, drop=True)
 
-        overview.to_csv(
-            os.path.join(self.analyisis_out_dir, "network_model_details.csv")
-        )
         overview_medium.to_csv(
             os.path.join(self.analyisis_out_dir, "network_model_details_medium.csv")
         )
@@ -105,6 +169,7 @@ class DatasetAnalyzer:
 
         overview_table = pd.concat(
             [
+                datasets_table[["name"]],
                 overview[["Controls"]],
                 overview_medium[
                     [
@@ -132,6 +197,10 @@ class DatasetAnalyzer:
                 "Links.Pumps": "Pumps",
                 "Links.Valves": "Valves",
             }
+        )
+
+        overview_table.to_csv(
+            os.path.join(self.analyisis_out_dir, "network_model_details.csv")
         )
 
         # .hide(axis="index") \
