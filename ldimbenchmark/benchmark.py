@@ -327,6 +327,8 @@ class LDIMBenchmark:
             )
             logging.info(evaluation_results)
 
+            # TODO: Draw plots with leaks and detected leaks
+
         results = pd.DataFrame(results)
         # https://towardsdatascience.com/performance-metrics-confusion-matrix-precision-recall-and-f1-score-a8fe076a2262
         results["precision"] = results["true_positives"] / (
@@ -394,8 +396,6 @@ class LDIMBenchmark:
             label="table:benchmark_results",
             caption="Overview of the benchmark results.",
         )
-
-        pass
 
 
 class DockerMethodRunner(MethodRunner):
