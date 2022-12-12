@@ -8,6 +8,9 @@ watch:
 
 nav:
 - Index: index.md
+- Story: 
+  - story/index.md
+  - Testing: story/testing.md
 - Design: design.md
 - Guides:
   - Docker: user-guides/docker.md
@@ -29,6 +32,13 @@ markdown_extensions:
   - pymdownx.highlight:
       anchor_linenums: true
   - pymdownx.inlinehilite
-  - pymdownx.snippets
-  - pymdownx.superfences
-  - pymdownx.snippets
+  - pymdownx.superfences:
+      custom_fences:
+        - name: mermaid
+          class: mermaid
+          format: !!python/name:pymdownx.superfences.fence_code_format
+  - abbr
+  - attr_list
+  - pymdownx.snippets:
+      auto_append:
+        - includes/abbreviations.md

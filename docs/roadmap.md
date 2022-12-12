@@ -12,24 +12,6 @@ Split into steps:
 
 Publish as Python Package: LDIMBench - Leakage Detection and Isolation Method Benchmark
 
-```mermaid
-graph TD;
-  subgraph Benchmark
-    download[Dataset Download]-->preprocessing[Preprocessing];
-    preprocessing-->dataset[Benchmark Dataset];
-    generator[Data Generator]-->dataset;
-    dataset-->dataset_noise[Noisy];
-    dataset_noise-->dataset;
-    dataset-->benchmark[Benchmark];
-
-    benchmark-->results[Results];
-    results-->evaluation[Evaluation];
-    evaluation-->plot[Plotting];
-  end
-    download-->analysis[Data Analysis];
-    dataset-->analysis;
-```
-
 https://pypi.org/project/poetry-multiproject-plugin/
 
 Try it out with single algorithm, then shape the API after it
@@ -46,7 +28,6 @@ Try it out with single algorithm, then shape the API after it
 
 TODOS:
 
-- https://squidfunk.github.io/mkdocs-material/reference/tooltips/#adding-abbreviations
 - Rename Dataset files to lowercase "Pressure.csv" => "pressure.csv"
 - maybe use gc.collect() after loading / generating BenchmarkDatasets
 - cli: https://stackoverflow.com/questions/49969605/python-argparse-list-individual-choices-in-the-usage/49999185#49999185
