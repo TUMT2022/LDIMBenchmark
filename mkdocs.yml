@@ -10,7 +10,7 @@ nav:
 - Index: index.md
 - Story: 
   - story/index.md
-  - Testing: story/testing.md
+  - Testing: story/testing.ipynb
 - Design: design.md
 - Guides:
   - Docker: user-guides/docker.md
@@ -19,6 +19,11 @@ nav:
 
 plugins:
   - search
+  - mkdocs-jupyter:
+      # execute: True
+      allow_errors: false
+      kernel_name: python3
+      show_input: False
   - gen-files:
       scripts:
       - docs/gen_ref_pages.py

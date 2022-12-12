@@ -3,6 +3,8 @@
 > We recommend lowercase names for datasets and methods (`[a-z0-9_]`). They must be globally unique.
 > TODO: Enforce
 
+> All measurements need to be in SI units as described in WNTR.
+
 ## Design
 
 Execute Algorithm locally, => Code Interface designed after file interface

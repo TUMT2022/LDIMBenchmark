@@ -5,6 +5,7 @@ __pycache__
 
 # MkDocs
 site
+docs/reference
 
 # LDIMBench
 .ldim_benchmark_cache
