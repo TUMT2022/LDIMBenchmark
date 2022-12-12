@@ -111,7 +111,7 @@ poetry config pypi-token.pypi pypi-your-token-here
 
 ### Documentation
 
-https://squidfunk.github.io/mkdocs-material/setup/changing-the-colors/
+https://squidfunk.github.io/mkdocs-material/
 
 ```
 mkdocs serve
