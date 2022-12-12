@@ -1,4 +1,4 @@
-https://mathspp.com/blog/how-to-create-a-python-package-in-2022https://mathspp.com/blog/how-to-create-a-python-package-in-2022
+https://mathspp.com/blog/how-to-create-a-python-package-in-2022
 
 Split into steps:
 

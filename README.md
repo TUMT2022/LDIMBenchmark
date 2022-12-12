@@ -94,6 +94,10 @@ cd tests
 docker build . -t testmethod
 pytest -s -o log_cli=true
 pytest tests/test_derivation.py -k 'test_mything'
+# Pytest watch
+ptw
+ptw -- --testmon
+
 
 # Test-Publish
 poetry config repositories.testpypi https://test.pypi.org/legacy/
