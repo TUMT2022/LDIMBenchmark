@@ -1,3 +1,7 @@
+"""
+Something
+"""
+
 import requests
 from os import path
 import os
@@ -16,6 +20,9 @@ from ldimbenchmark.classes import BenchmarkLeakageResult
 
 
 def download_file(args):
+    """
+    Download a file from a URL and save it to a given path
+    """
     url, out_file_path = args
     res = requests.get(url)
     os.makedirs(path.dirname(out_file_path), exist_ok=True)

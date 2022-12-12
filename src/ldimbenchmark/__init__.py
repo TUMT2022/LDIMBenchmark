@@ -1,4 +1,4 @@
-"""
+"""ldimbenchmark
 Main Module
 """
 
