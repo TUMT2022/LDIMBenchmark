@@ -11,7 +11,7 @@ import pandas as pd
 import os
 from glob import glob
 import json
-from typing import Literal, TypedDict
+from typing import Literal, TypedDict, Dict
 from ldimbenchmark.constants import LDIM_BENCHMARK_CACHE_DIR
 import shutil
 import hashlib
@@ -107,7 +107,7 @@ class _LoadedDatasetPart:
     A sub-dataset of a loaded dataset (e.g. training or evaluation)
     """
 
-    def __init__(self, dict: dict[str, DataFrame]):
+    def __init__(self, dict: Dict[str, DataFrame]):
         self.pressures: DataFrame = dict["pressures"]
         self.demands: DataFrame = dict["demands"]
         self.flows: DataFrame = dict["flows"]

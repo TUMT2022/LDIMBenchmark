@@ -1,6 +1,6 @@
 from pandas import DataFrame
 from wntr.network import WaterNetworkModel
-from typing import Literal, TypedDict
+from typing import Literal, TypedDict, Dict
 from datetime import datetime, timedelta
 from abc import ABC, abstractmethod
 
@@ -12,10 +12,10 @@ class BenchmarkData:
 
     def __init__(
         self,
-        pressures: dict[str, DataFrame],
-        demands: dict[str, DataFrame],
-        flows: dict[str, DataFrame],
-        levels: dict[str, DataFrame],
+        pressures: Dict[str, DataFrame],
+        demands: Dict[str, DataFrame],
+        flows: Dict[str, DataFrame],
+        levels: Dict[str, DataFrame],
         model: WaterNetworkModel,
     ):
         """
