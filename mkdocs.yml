@@ -1,6 +1,9 @@
 site_name: LDIMBenchmark
+repo_url: https://github.com/TUMT2022/LDIMBench.git
 theme:
   name: material
+  icon:
+    logo: fontawesome/solid/gauge-high
 
 watch:
  - docs/
@@ -35,6 +38,10 @@ plugins:
   - section-index
   - autorefs
   - mkdocstrings
+  - git-revision-date-localized:
+      enable_creation_date: true
+      exclude:
+          - reference/*
 
 markdown_extensions:
   - pymdownx.highlight:
