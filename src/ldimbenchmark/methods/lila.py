@@ -12,6 +12,7 @@ import math
 from typing import List
 import numpy as np
 import pandas as pd
+import os
 
 
 class Ref_node:
@@ -243,8 +244,8 @@ class LILA(LDIMMethodBase):
             est_length=self.hyperparameters["est_length"],
         )
 
-        if self.logging:
-            MRE.to_csv(self.additional_output_path + "mre.csv")
+        if self.debug:
+            MRE.to_csv(os.path.join(self.additional_output_path, "mre.csv"))
             # print(MRE)
             # for sensor in MRE.columns:
             #     MRE_single = MRE[[sensor]]
@@ -253,19 +254,19 @@ class LILA(LDIMMethodBase):
             #     print(CUSUM_DATA[0])
             # print(leaks)
             # print(rawdata)
-            cusum_data.to_csv(self.additional_output_path + "cusum.csv")
+            cusum_data.to_csv(os.path.join(self.additional_output_path, "cusum.csv"))
 
         # Overall MRE is not good for detection, so we just keep these Nodes as Sensors to Consider in the next Step
 
         results = []
         for leak_pipe, leak_start in zip(leaks.index, leaks):
             results.append(
-                {
-                    "pipe_id": leak_pipe,
-                    "leak_start": leak_start,
-                    "leak_end": leak_start,
-                    "leak_peak": leak_start,
-                }
+                BenchmarkLeakageResult(
+                    leak_pipe_id=leak_pipe,
+                    leak_time_start=leak_start,
+                    leak_time_end=leak_start,
+                    leak_time_peak=leak_start,
+                )
             )
         return results
 
@@ -339,7 +340,7 @@ class LILA(LDIMMethodBase):
         MRE = pd.DataFrame(res.T, index=scada_data.pressures.index, columns=nodes)
         leaks, cusum_data = cusum(MRE)
 
-        if self.logging:
+        if self.debug:
             MRE.to_csv(self.additional_output_path + "mre.csv")
             # print(MRE)
             # for sensor in MRE.columns:
@@ -356,12 +357,12 @@ class LILA(LDIMMethodBase):
         results = []
         for leak_pipe, leak_start in zip(leaks.index, leaks):
             results.append(
-                {
-                    "pipe_id": leak_pipe,
-                    "leak_start": leak_start,
-                    "leak_end": leak_start,
-                    "leak_peak": leak_start,
-                }
+                BenchmarkLeakageResult(
+                    leak_pipe_id=leak_pipe,
+                    leak_time_start=leak_start,
+                    leak_time_end=leak_start,
+                    leak_time_peak=leak_start,
+                )
             )
         return results
 
