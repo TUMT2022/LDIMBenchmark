@@ -1,5 +1,6 @@
 from ldimbenchmark import LDIMMethodBase, BenchmarkData, BenchmarkLeakageResult
 from ldimbenchmark.classes import MethodMetadata
+from typing import List
 
 
 class NullLeakagedDetectionMethod(LDIMMethodBase):
@@ -21,7 +22,7 @@ class NullLeakagedDetectionMethod(LDIMMethodBase):
     def train(self, train_data: BenchmarkData) -> None:
         return
 
-    def detect(self, evaluation_data: BenchmarkData) -> list[BenchmarkLeakageResult]:
+    def detect(self, evaluation_data: BenchmarkData) -> List[BenchmarkLeakageResult]:
         return []
 
     def detect_datapoint(self, evaluation_data) -> BenchmarkLeakageResult:

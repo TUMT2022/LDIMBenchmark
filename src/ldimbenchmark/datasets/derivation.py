@@ -5,7 +5,7 @@ from ldimbenchmark.datasets import Dataset
 import numpy as np
 import scipy.stats as stats
 
-from typing import Literal
+from typing import Literal, Union, List
 
 from collections.abc import Sequence
 from numpy.random import Generator, PCG64
@@ -22,13 +22,13 @@ class DatasetDerivator:
 
     """
 
-    def __init__(self, datasets: Dataset | list[Dataset], out_path: str):
+    def __init__(self, datasets: Union[Dataset, List[Dataset]], out_path: str):
 
         # TODO: Check if datasets is a list or a single dataset
         if isinstance(datasets, Sequence):
-            self.datasets: list[Dataset] = datasets
+            self.datasets: List[Dataset] = datasets
         else:
-            self.datasets: list[Dataset] = [datasets]
+            self.datasets: List[Dataset] = [datasets]
         self.out_path = out_path
 
         # TODO: should we always use the same seed?
@@ -93,7 +93,7 @@ class DatasetDerivator:
         self,
         apply_to: Literal["demands", "levels", "pressures", "flows"],
         derivation: str,
-        options_list: list[dict] | list[float],
+        options_list: Union[List[dict], List[float]],
     ):
         """
         Derives a new dataset from the original one.

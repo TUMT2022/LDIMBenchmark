@@ -4,6 +4,7 @@ import os
 import pandas as pd
 import wntr
 import matplotlib.pyplot as plt
+from typing import Union, List
 
 
 class DatasetAnalyzer:
@@ -15,12 +16,12 @@ class DatasetAnalyzer:
         self.analyisis_out_dir = analyisis_out_dir
         os.makedirs(self.analyisis_out_dir, exist_ok=True)
 
-    def compare(self, datasets: list[Dataset]):
+    def compare(self, datasets: List[Dataset]):
         """
         Compare the datasets, e.g. especially helpful when comparing the original dataset with derived ones.
         """
         if type(datasets) is not list:
-            dataset_list: list[Dataset] = [datasets]
+            dataset_list: List[Dataset] = [datasets]
         else:
             dataset_list = datasets
 
@@ -84,7 +85,7 @@ class DatasetAnalyzer:
         df: pd.DataFrame,
         title: str,
         out_dir: str,
-        compare_df: list[pd.DataFrame] = None,
+        compare_df: List[pd.DataFrame] = None,
     ):
         fig, ax = plt.subplots(1, 1, figsize=(20, 10))
         ax.set_title(title)
@@ -99,12 +100,12 @@ class DatasetAnalyzer:
 
         fig.savefig(os.path.join(out_dir, f"{title}.png"))
 
-    def analyze(self, datasets: Dataset | list[Dataset]):
+    def analyze(self, datasets: Union[Dataset, List[Dataset]]):
         """
         Analyze the dataset
         """
         if type(datasets) is not list:
-            dataset_list: list[Dataset] = [datasets]
+            dataset_list: List[Dataset] = [datasets]
         else:
             dataset_list = datasets
 

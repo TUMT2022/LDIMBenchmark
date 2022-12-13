@@ -1,5 +1,5 @@
 """
-Something
+Module containing the loader for the Battledim dataset.
 """
 
 import requests

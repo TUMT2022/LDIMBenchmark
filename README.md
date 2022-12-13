@@ -20,7 +20,7 @@ from ldimbenchmark import (
     BenchmarkLeakageResult,
 )
 from ldimbenchmark.classes import LDIMMethodBase
-
+from typing import List
 
 class YourCustomLDIMMethod(LDIMMethodBase):
     def __init__(self):
@@ -32,7 +32,7 @@ class YourCustomLDIMMethod(LDIMMethodBase):
     def train(self, data: BenchmarkData):
         pass
 
-    def detect(self, data: BenchmarkData) -> list[BenchmarkLeakageResult]:
+    def detect(self, data: BenchmarkData) -> List[BenchmarkLeakageResult]:
         return [
             {
                 "leak_start": "2020-01-01",

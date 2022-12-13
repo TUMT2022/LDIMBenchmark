@@ -5,9 +5,7 @@ from ldimbenchmark import (
     DockerMethodRunner,
     FileBasedMethodRunner,
 )
-from tests.method_to_test import YourCustomLDIMMethod
-from ldimbenchmark.methods import LILA
 
 
-def test_download():
-    DatasetLibrary("test_data/datasets").download(DATASETS.BATTLEDIM)
+# def test_download():
+#     DatasetLibrary("test_data/datasets").download(DATASETS.BATTLEDIM)

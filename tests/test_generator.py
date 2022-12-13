@@ -5,24 +5,30 @@ from ldimbenchmark.generator import (
     generateDatasetForJunctionNumber,
 )
 from tests.shared import (
-    TEST_DATA_FOLDER,
-    TEST_DATA_FOLDER_BATTLEDIM,
-    TEST_DATA_FOLDER_DATASETS,
+    TEST_DATA_FOLDER_DATASETS_GENERATED,
 )
 import os
 
 
 def test_generator_time():
-    generateDatasetForTimeSpanDays(90, os.path.join(TEST_DATA_FOLDER, "generated"))
+    generateDatasetForTimeSpanDays(
+        90, os.path.join(TEST_DATA_FOLDER_DATASETS_GENERATED)
+    )
 
 
 def test_generator_junction():
-    generateDatasetForJunctionNumber(30, os.path.join(TEST_DATA_FOLDER, "generated"))
+    generateDatasetForJunctionNumber(
+        30, os.path.join(TEST_DATA_FOLDER_DATASETS_GENERATED)
+    )
 
 
 def test_generator_set_time():
-    generateDatasetsForTimespan(1, 10, os.path.join(TEST_DATA_FOLDER, "generated"))
+    generateDatasetsForTimespan(
+        1, 10, os.path.join(TEST_DATA_FOLDER_DATASETS_GENERATED)
+    )
 
 
 def test_generator_set_junctions():
-    generateDatasetsForJunctions(4, 10, os.path.join(TEST_DATA_FOLDER, "generated"))
+    generateDatasetsForJunctions(
+        4, 10, os.path.join(TEST_DATA_FOLDER_DATASETS_GENERATED)
+    )

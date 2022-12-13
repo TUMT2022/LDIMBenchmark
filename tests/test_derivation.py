@@ -6,7 +6,7 @@ from ldimbenchmark.datasets.classes import (
 )
 from ldimbenchmark.generator.poulakis_network import generatePoulakisNetwork
 from ldimbenchmark.datasets.derivation import DatasetDerivator
-from tests.shared import TEST_DATA_FOLDER_BATTLEDIM, TEST_DATA_FOLDER_DATASETS
+from tests.shared import TEST_DATA_FOLDER_DATASETS_BATTLEDIM, TEST_DATA_FOLDER_DATASETS
 
 from unittest.mock import Mock
 import pytest
@@ -18,42 +18,6 @@ from wntr.network import write_inpfile, to_dict
 from pandas.testing import assert_frame_equal
 
 
-@pytest.fixture
-def mocked_dataset():
-    temp_dir = tempfile.TemporaryDirectory()
-
-    with open(temp_dir.name + "/dataset_info.yaml", "w") as f:
-        f.write(
-            yaml.dump(
-                DatasetInfo(
-                    name="test",
-                    inp_file="model.inp",
-                    dataset=DatasetInfoDatasetProperty(
-                        evaluation=DatasetInfoDatasetObject(
-                            start="2018-01-01 00:10:00",
-                            end="2018-01-01 00:19:00",
-                        ),
-                        training=DatasetInfoDatasetObject(
-                            start="2018-01-01 00:00:00",
-                            end="2018-01-1 00:09:00",
-                        ),
-                    ),
-                )
-            )
-        )
-
-    for dataset in ["leaks", "demands", "levels", "flows", "pressures"]:
-        pd.DataFrame(
-            {
-                "a": np.ones(20),
-            },
-            index=pd.date_range(
-                start="2018-01-01 00:00:00", end="2018-01-01 00:19:00", freq="T"
-            ),
-        ).to_csv(temp_dir.name + "/" + dataset + ".csv", index_label="Timestamp")
-    write_inpfile(generatePoulakisNetwork(), temp_dir.name + "/model.inp")
-    yield Dataset(temp_dir.name)
-    temp_dir.cleanup()
 
 
 def test_derivator_model(snapshot, mocked_dataset: Dataset):

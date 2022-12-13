@@ -19,6 +19,7 @@ import big_o
 from multiprocessing import Pool, cpu_count
 from tqdm import tqdm
 import matplotlib as mpl
+from typing import List
 
 
 def loadDataset_local(dataset_path):
@@ -32,7 +33,7 @@ def loadDataset_local(dataset_path):
 
 
 def run_benchmark_complexity(
-    methods: list[LDIMMethodBase],
+    methods: List[LDIMMethodBase],
     cache_dir=os.path.join(LDIM_BENCHMARK_CACHE_DIR, "datagen"),
     out_folder="out/complexity",
     style=None,

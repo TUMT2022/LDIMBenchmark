@@ -9,7 +9,7 @@ from sklearn.linear_model import LinearRegression
 import sklearn
 import pickle
 import math
-
+from typing import List
 import numpy as np
 import pandas as pd
 
@@ -132,7 +132,10 @@ class LILA(LDIMMethodBase):
         nodes = train_data.pressures.keys()
 
         flows = train_data.flows
-        flows = flows.rename(columns={"P-01": "PUMP_1", "Inflow [l/s]": "PUMP_1"})
+        # TODO: Remove this to be generalized:
+        flows = flows.rename(
+            columns={"P-01": "PUMP_1", "a": "PUMP_1", "Inflow [l/s]": "PUMP_1"}
+        )
         scada_data.flows = flows
 
         N = len(nodes)
@@ -163,7 +166,7 @@ class LILA(LDIMMethodBase):
 
             ref_node.set_models(models)
 
-    def detect(self, evaluation_data: BenchmarkData) -> list[BenchmarkLeakageResult]:
+    def detect(self, evaluation_data: BenchmarkData) -> List[BenchmarkLeakageResult]:
         scada_data = SCADA_data()
 
         scada_data.pressures = evaluation_data.pressures
@@ -171,7 +174,9 @@ class LILA(LDIMMethodBase):
 
         flows = evaluation_data.flows
         # TODO: Make algorithm independent of pump name
-        flows = flows.rename(columns={"P-01": "PUMP_1", "Inflow [l/s]": "PUMP_1"})
+        flows = flows.rename(
+            columns={"P-01": "PUMP_1", "a": "PUMP_1", "Inflow [l/s]": "PUMP_1"}
+        )
         scada_data.flows = flows
 
         # Leak Analyiss Fuction

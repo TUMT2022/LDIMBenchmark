@@ -1,6 +1,6 @@
 from pandas import DataFrame
 from wntr.network import WaterNetworkModel
-from typing import Literal, TypedDict, Dict
+from typing import Literal, TypedDict, Dict, Union, List
 from datetime import datetime, timedelta
 from abc import ABC, abstractmethod
 
@@ -48,13 +48,13 @@ class BenchmarkLeakageResult(TypedDict):
 class Hyperparameter(TypedDict):
     name: str
     type: type
-    default: str | int | float | bool
+    default: Union[str, int, float, bool]
     description: str
 
 
 class MethodMetadata(TypedDict):
-    data_needed: list[str]
-    hyperparameters: list[Hyperparameter]
+    data_needed: List[str]
+    hyperparameters: List[Hyperparameter]
 
 
 class LDIMMethodBase(ABC):
@@ -117,7 +117,7 @@ class LDIMMethodBase(ABC):
         raise NotImplementedError("Please Implement this method")
 
     @abstractmethod
-    def detect(self, evaluation_data: BenchmarkData) -> list[BenchmarkLeakageResult]:
+    def detect(self, evaluation_data: BenchmarkData) -> List[BenchmarkLeakageResult]:
         """
         Detect Leakages on never before seen data. (BenchmarkData)
 

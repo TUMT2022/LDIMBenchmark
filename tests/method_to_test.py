@@ -6,21 +6,25 @@ from ldimbenchmark import (
 from ldimbenchmark.datasets import Dataset
 
 from ldimbenchmark.classes import LDIMMethodBase
+from typing import List
+from ldimbenchmark.classes import MethodMetadata
 
 
 class YourCustomLDIMMethod(LDIMMethodBase):
-    def __init__(self, additional_output_path="", hyperparameters={}):
+    def __init__(self, additional_output_path=""):
         super().__init__(
             name="YourCustomLDIMMethod",
             version="0.1",
-            additional_output_path=additional_output_path,
-            hyperparameters=hyperparameters,
+            metadata=MethodMetadata(
+                data_needed=["pressures", "demands", "flows", "levels"],
+                hyperparameters=[],
+            )
         )
 
     def train(self, data: BenchmarkData):
         pass
 
-    def detect(self, data: BenchmarkData) -> list[BenchmarkLeakageResult]:
+    def detect(self, data: BenchmarkData) -> List[BenchmarkLeakageResult]:
         return [
             {
                 "leak_start": "2020-01-01",

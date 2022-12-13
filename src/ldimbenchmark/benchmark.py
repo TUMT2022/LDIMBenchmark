@@ -3,7 +3,7 @@ from ldimbenchmark.classes import BenchmarkData
 from abc import ABC, abstractmethod
 import pandas as pd
 from datetime import datetime, timedelta
-from typing import Literal, TypedDict, Union
+from typing import Literal, TypedDict, Union, List
 import os
 import time
 import logging
@@ -62,10 +62,10 @@ class LocalMethodRunner(MethodRunner):
     def __init__(
         self,
         detection_method: LDIMMethodBase,
-        dataset: Dataset | str,
+        dataset: Union[Dataset, str],
         hyperparameters: dict = None,
         # TODO: Rename goal stage method to more meaningful names
-        goal: Literal["detection"] | Literal["location"] = "detection",
+        goal: Literal["detection", "location"] = "detection",
         stage="train",  # train, detect
         method="offline",  # offline, online
         debug=False,
@@ -188,8 +188,10 @@ class LDIMBenchmark:
         # validate dataset types and edit them to LoadedDataset
         self.hyperparameters: dict = hyperparameters
         # validate dataset types and edit them to LoadedDataset
+        if not isinstance(datasets, list):
+            datasets = [datasets]
         self.datasets = datasets
-        self.experiments: list[MethodRunner] = []
+        self.experiments: List[MethodRunner] = []
         self.results = {}
         self.cache_dir = cache_dir
         self.results_dir = results_dir
@@ -227,7 +229,7 @@ class LDIMBenchmark:
                     )
                 )
 
-    def add_docker_methods(self, methods: list[str]):
+    def add_docker_methods(self, methods: List[str]):
         """
         Adds docker methods to the benchmark.
 
@@ -407,9 +409,9 @@ class DockerMethodRunner(MethodRunner):
     def __init__(
         self,
         image: str,
-        dataset: Dataset | str,
+        dataset: Union[Dataset, str],
         hyperparameters: dict = {},
-        goal: Literal["detection"] | Literal["location"] = "detection",
+        goal: Literal["detection", "location"] = "detection",
         stage="train",  # train, detect
         method="offline",  # offline, online
         debug=False,

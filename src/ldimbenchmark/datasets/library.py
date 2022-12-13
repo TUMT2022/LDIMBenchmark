@@ -1,5 +1,6 @@
 from enum import Enum
 import tempfile
+from typing import Union, List
 from ldimbenchmark.datasets.loaders.load_battledim import BattledimDatasetLoader
 
 import os
@@ -26,8 +27,8 @@ class DatasetLibrary:
         self.path = download_path
 
     def download(
-        self, dataset_name: str | list[str] | DATASETS | list[DATASETS], force=False
-    ) -> list[Dataset]:
+        self, dataset_name: Union[str, List[str], DATASETS, List[DATASETS]], force=False
+    ) -> List[Dataset]:
         """
         Downloads a dataset from the internet
 

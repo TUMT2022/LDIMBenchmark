@@ -10,13 +10,11 @@ from ldimbenchmark.methods import LILA, MNF
 
 from tests.shared import (
     TEST_DATA_FOLDER,
-    TEST_DATA_FOLDER_BATTLEDIM,
-    TEST_DATA_FOLDER_DATASETS,
 )
 import logging
 
 
-def test_benchmark():
+def test_benchmark(mocked_dataset: Dataset):
     # dataset = Dataset(TEST_DATA_FOLDER_BATTLEDIM)
     logLevel = "INFO"
 
@@ -40,10 +38,7 @@ def test_benchmark():
 
     benchmark = LDIMBenchmark(
         hyperparameters,
-        [
-            # dataset,
-            Dataset(".ldim_benchmark_cache/datagen/synthetic-days/synthetic-days-60"),
-        ],
+        mocked_dataset,
         results_dir="./benchmark-results",
         debug=True,
     )
@@ -57,62 +52,51 @@ def test_benchmark():
     )
 
     benchmark.evaluate()
-    assert False
 
 
-def test_complexity():
-    dataset = Dataset(TEST_DATA_FOLDER_BATTLEDIM)
+# def test_complexity():
+#     local_methods = [YourCustomLDIMMethod()]  # , LILA()]
 
-    local_methods = [YourCustomLDIMMethod()]  # , LILA()]
+#     hyperparameter = {}
 
-    hyperparameter = {}
+#     benchmark = LDIMBenchmark(hyperparameter, [], results_dir="./benchmark-results")
+#     benchmark.add_local_methods(local_methods)
 
-    benchmark = LDIMBenchmark(
-        hyperparameter, [dataset], results_dir="./benchmark-results"
-    )
-    benchmark.add_local_methods(local_methods)
+#     # .add_docker_methods(methods)
 
-    # .add_docker_methods(methods)
+#     # execute benchmark
+#     benchmark.run_complexity_analysis(
+#         methods=local_methods,
+#         style="time",
+#         # parallel=True,
+#     )
 
-    # execute benchmark
-    benchmark.run_complexity_analysis(
-        methods=local_methods,
-        style="time",
-        # parallel=True,
-    )
-
-    # benchmark.evaluate()
+#     # benchmark.evaluate()
 
 
-def test_single_run_local():
-    dataset = Dataset(TEST_DATA_FOLDER_BATTLEDIM)
+def test_single_run_local(mocked_dataset: Dataset):
     runner = LocalMethodRunner(
-        YourCustomLDIMMethod(), dataset, {}, resultsFolder=TEST_DATA_FOLDER
+        YourCustomLDIMMethod(), mocked_dataset, {}, resultsFolder=TEST_DATA_FOLDER
     )
     runner.run()
 
     pass
 
 
-def test_single_run_docker():
-    dataset = Dataset(TEST_DATA_FOLDER_BATTLEDIM)
-    runner = DockerMethodRunner("testmethod", dataset, resultsFolder=TEST_DATA_FOLDER)
-    (detected_leaks) = runner.run()
-    assert detected_leaks == True
+# def test_single_run_docker(mocked_dataset: Dataset):
+#     runner = DockerMethodRunner(
+#         "testmethod", mocked_dataset, resultsFolder=TEST_DATA_FOLDER
+#     )
+#     (detected_leaks) = runner.run()
+#     assert detected_leaks == True
 
 
-def test_method():
+def test_method(mocked_dataset: Dataset):
     trainData = (
-        Dataset(TEST_DATA_FOLDER_BATTLEDIM)
-        .loadDataset()
-        .loadBenchmarkData()
-        .getTrainingBenchmarkData()
+        mocked_dataset.loadDataset().loadBenchmarkData().getTrainingBenchmarkData()
     )
     evaluationData = (
-        Dataset(TEST_DATA_FOLDER_BATTLEDIM)
-        .loadDataset()
-        .loadBenchmarkData()
-        .getEvaluationBenchmarkData()
+        mocked_dataset.loadDataset().loadBenchmarkData().getEvaluationBenchmarkData()
     )
 
     method = YourCustomLDIMMethod()
