@@ -60,6 +60,6 @@ deps =
     black
     pytest
 commands =
-    black --check ldimbenchmark
+    black --check src/ldimbenchmark
     pytest .
 """
