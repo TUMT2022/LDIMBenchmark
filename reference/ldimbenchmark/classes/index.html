@@ -1263,10 +1263,10 @@
 <a id="__codelineno-0-12" name="__codelineno-0-12"></a>
 <a id="__codelineno-0-13" name="__codelineno-0-13"></a>    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
 <a id="__codelineno-0-14" name="__codelineno-0-14"></a>        <span class="bp">self</span><span class="p">,</span>
-<a id="__codelineno-0-15" name="__codelineno-0-15"></a>        <span class="n">pressures</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">DataFrame</span><span class="p">],</span>
-<a id="__codelineno-0-16" name="__codelineno-0-16"></a>        <span class="n">demands</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">DataFrame</span><span class="p">],</span>
-<a id="__codelineno-0-17" name="__codelineno-0-17"></a>        <span class="n">flows</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">DataFrame</span><span class="p">],</span>
-<a id="__codelineno-0-18" name="__codelineno-0-18"></a>        <span class="n">levels</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">DataFrame</span><span class="p">],</span>
+<a id="__codelineno-0-15" name="__codelineno-0-15"></a>        <span class="n">pressures</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">DataFrame</span><span class="p">],</span>
+<a id="__codelineno-0-16" name="__codelineno-0-16"></a>        <span class="n">demands</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">DataFrame</span><span class="p">],</span>
+<a id="__codelineno-0-17" name="__codelineno-0-17"></a>        <span class="n">flows</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">DataFrame</span><span class="p">],</span>
+<a id="__codelineno-0-18" name="__codelineno-0-18"></a>        <span class="n">levels</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">DataFrame</span><span class="p">],</span>
 <a id="__codelineno-0-19" name="__codelineno-0-19"></a>        <span class="n">model</span><span class="p">:</span> <span class="n">WaterNetworkModel</span><span class="p">,</span>
 <a id="__codelineno-0-20" name="__codelineno-0-20"></a>    <span class="p">):</span>
 <a id="__codelineno-0-21" name="__codelineno-0-21"></a>        <span class="sd">&quot;&quot;&quot;</span>
@@ -1465,10 +1465,10 @@
 <span class="normal"><a href="#__codelineno-0-34">34</a></span>
 <span class="normal"><a href="#__codelineno-0-35">35</a></span></pre></div></td><td class="code"><div><pre><span></span><code><a id="__codelineno-0-13" name="__codelineno-0-13"></a><span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
 <a id="__codelineno-0-14" name="__codelineno-0-14"></a>    <span class="bp">self</span><span class="p">,</span>
-<a id="__codelineno-0-15" name="__codelineno-0-15"></a>    <span class="n">pressures</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">DataFrame</span><span class="p">],</span>
-<a id="__codelineno-0-16" name="__codelineno-0-16"></a>    <span class="n">demands</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">DataFrame</span><span class="p">],</span>
-<a id="__codelineno-0-17" name="__codelineno-0-17"></a>    <span class="n">flows</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">DataFrame</span><span class="p">],</span>
-<a id="__codelineno-0-18" name="__codelineno-0-18"></a>    <span class="n">levels</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">DataFrame</span><span class="p">],</span>
+<a id="__codelineno-0-15" name="__codelineno-0-15"></a>    <span class="n">pressures</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">DataFrame</span><span class="p">],</span>
+<a id="__codelineno-0-16" name="__codelineno-0-16"></a>    <span class="n">demands</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">DataFrame</span><span class="p">],</span>
+<a id="__codelineno-0-17" name="__codelineno-0-17"></a>    <span class="n">flows</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">DataFrame</span><span class="p">],</span>
+<a id="__codelineno-0-18" name="__codelineno-0-18"></a>    <span class="n">levels</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">DataFrame</span><span class="p">],</span>
 <a id="__codelineno-0-19" name="__codelineno-0-19"></a>    <span class="n">model</span><span class="p">:</span> <span class="n">WaterNetworkModel</span><span class="p">,</span>
 <a id="__codelineno-0-20" name="__codelineno-0-20"></a><span class="p">):</span>
 <a id="__codelineno-0-21" name="__codelineno-0-21"></a>    <span class="sd">&quot;&quot;&quot;</span>
