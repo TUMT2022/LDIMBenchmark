@@ -1,3 +1,53 @@
-site_name: LDIMBench
+site_name: LDIMBenchmark
 theme:
   name: material
+
+watch:
+ - docs/
+ - src/
+
+nav:
+- Index: index.md
+- Story: 
+  - story/index.md
+  - Testing: story/testing.ipynb
+- Design: 
+  - design/index.md
+  - Dataset: design/datasets.md
+- Guides:
+  - Own Dataset: user-guides/run-on-your-dataset.ipynb
+  - Own Method: user-guides/run-your-method.ipynb
+  - Docker: user-guides/docker.md
+- Roadmap: roadmap.md
+- Code Reference: reference/
+
+plugins:
+  - search
+  - mkdocs-jupyter:
+      # execute: True
+      allow_errors: false
+      kernel_name: python3
+      show_input: True
+  - gen-files:
+      scripts:
+      - docs/gen_ref_pages.py
+  - literate-nav:
+      nav_file: SUMMARY.md
+  - section-index
+  - autorefs
+  - mkdocstrings
+
+markdown_extensions:
+  - pymdownx.highlight:
+      anchor_linenums: true
+  - pymdownx.inlinehilite
+  - pymdownx.superfences:
+      custom_fences:
+        - name: mermaid
+          class: mermaid
+          format: !!python/name:pymdownx.superfences.fence_code_format
+  - abbr
+  - attr_list
+  - pymdownx.snippets:
+      auto_append:
+        - includes/abbreviations.md

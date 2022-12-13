@@ -1,0 +1,20 @@
+algorithms: 
+ - dual-model.py
+ - null.py
+ - lila.py
+
+datasets:
+- battledim
+- synthetic
+- graz-ragnitz
+
+
+# complexity: junctions
+# complexity: time
+
+
+hyperparameters:
+  - method: "lila.py"
+    dataset: "synthetic"
+    parameters: 
+      est_length: 10T
