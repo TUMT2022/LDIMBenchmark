@@ -1161,9 +1161,7 @@
 
         <details class="quote">
           <summary>Source code in <code>ldimbenchmark/benchmark.py</code></summary>
-          <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-0-401">401</a></span>
-<span class="normal"><a href="#__codelineno-0-402">402</a></span>
-<span class="normal"><a href="#__codelineno-0-403">403</a></span>
+          <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-0-403">403</a></span>
 <span class="normal"><a href="#__codelineno-0-404">404</a></span>
 <span class="normal"><a href="#__codelineno-0-405">405</a></span>
 <span class="normal"><a href="#__codelineno-0-406">406</a></span>
@@ -1223,69 +1221,71 @@
 <span class="normal"><a href="#__codelineno-0-460">460</a></span>
 <span class="normal"><a href="#__codelineno-0-461">461</a></span>
 <span class="normal"><a href="#__codelineno-0-462">462</a></span>
-<span class="normal"><a href="#__codelineno-0-463">463</a></span></pre></div></td><td class="code"><div><pre><span></span><code><a id="__codelineno-0-401" name="__codelineno-0-401"></a><span class="k">class</span> <span class="nc">DockerMethodRunner</span><span class="p">(</span><span class="n">MethodRunner</span><span class="p">):</span>
-<a id="__codelineno-0-402" name="__codelineno-0-402"></a>    <span class="sd">&quot;&quot;&quot;</span>
-<a id="__codelineno-0-403" name="__codelineno-0-403"></a><span class="sd">    Runs a leakaged detection method in a docker container.</span>
-<a id="__codelineno-0-404" name="__codelineno-0-404"></a><span class="sd">    &quot;&quot;&quot;</span>
-<a id="__codelineno-0-405" name="__codelineno-0-405"></a>
-<a id="__codelineno-0-406" name="__codelineno-0-406"></a>    <span class="c1"># TODO: add support for bind mount parameters? or just define as standard?</span>
-<a id="__codelineno-0-407" name="__codelineno-0-407"></a>    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
-<a id="__codelineno-0-408" name="__codelineno-0-408"></a>        <span class="bp">self</span><span class="p">,</span>
-<a id="__codelineno-0-409" name="__codelineno-0-409"></a>        <span class="n">image</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
-<a id="__codelineno-0-410" name="__codelineno-0-410"></a>        <span class="n">dataset</span><span class="p">:</span> <span class="n">Dataset</span> <span class="o">|</span> <span class="nb">str</span><span class="p">,</span>
-<a id="__codelineno-0-411" name="__codelineno-0-411"></a>        <span class="n">hyperparameters</span><span class="p">:</span> <span class="nb">dict</span> <span class="o">=</span> <span class="p">{},</span>
-<a id="__codelineno-0-412" name="__codelineno-0-412"></a>        <span class="n">goal</span><span class="p">:</span> <span class="n">Literal</span><span class="p">[</span><span class="s2">&quot;detection&quot;</span><span class="p">]</span> <span class="o">|</span> <span class="n">Literal</span><span class="p">[</span><span class="s2">&quot;location&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;detection&quot;</span><span class="p">,</span>
-<a id="__codelineno-0-413" name="__codelineno-0-413"></a>        <span class="n">stage</span><span class="o">=</span><span class="s2">&quot;train&quot;</span><span class="p">,</span>  <span class="c1"># train, detect</span>
-<a id="__codelineno-0-414" name="__codelineno-0-414"></a>        <span class="n">method</span><span class="o">=</span><span class="s2">&quot;offline&quot;</span><span class="p">,</span>  <span class="c1"># offline, online</span>
-<a id="__codelineno-0-415" name="__codelineno-0-415"></a>        <span class="n">debug</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
-<a id="__codelineno-0-416" name="__codelineno-0-416"></a>        <span class="n">resultsFolder</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
-<a id="__codelineno-0-417" name="__codelineno-0-417"></a>    <span class="p">):</span>
-<a id="__codelineno-0-418" name="__codelineno-0-418"></a>        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span>
-<a id="__codelineno-0-419" name="__codelineno-0-419"></a>            <span class="n">hyperparameters</span><span class="o">=</span><span class="n">hyperparameters</span><span class="p">,</span>
-<a id="__codelineno-0-420" name="__codelineno-0-420"></a>            <span class="n">goal</span><span class="o">=</span><span class="n">goal</span><span class="p">,</span>
-<a id="__codelineno-0-421" name="__codelineno-0-421"></a>            <span class="n">stage</span><span class="o">=</span><span class="n">stage</span><span class="p">,</span>
-<a id="__codelineno-0-422" name="__codelineno-0-422"></a>            <span class="n">method</span><span class="o">=</span><span class="n">method</span><span class="p">,</span>
-<a id="__codelineno-0-423" name="__codelineno-0-423"></a>            <span class="n">resultsFolder</span><span class="o">=</span><span class="n">resultsFolder</span><span class="p">,</span>
-<a id="__codelineno-0-424" name="__codelineno-0-424"></a>            <span class="n">debug</span><span class="o">=</span><span class="n">debug</span><span class="p">,</span>
-<a id="__codelineno-0-425" name="__codelineno-0-425"></a>        <span class="p">)</span>
-<a id="__codelineno-0-426" name="__codelineno-0-426"></a>        <span class="bp">self</span><span class="o">.</span><span class="n">image</span> <span class="o">=</span> <span class="n">image</span>
-<a id="__codelineno-0-427" name="__codelineno-0-427"></a>        <span class="bp">self</span><span class="o">.</span><span class="n">dataset</span> <span class="o">=</span> <span class="n">dataset</span>
-<a id="__codelineno-0-428" name="__codelineno-0-428"></a>        <span class="bp">self</span><span class="o">.</span><span class="n">id</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">image</span><span class="si">}</span><span class="s2">_</span><span class="si">{</span><span class="n">dataset</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2">&quot;</span>
-<a id="__codelineno-0-429" name="__codelineno-0-429"></a>
-<a id="__codelineno-0-430" name="__codelineno-0-430"></a>    <span class="k">def</span> <span class="nf">run</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-<a id="__codelineno-0-431" name="__codelineno-0-431"></a>        <span class="n">outputFolder</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">resultsFolder</span>
-<a id="__codelineno-0-432" name="__codelineno-0-432"></a>        <span class="k">if</span> <span class="n">outputFolder</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-<a id="__codelineno-0-433" name="__codelineno-0-433"></a>            <span class="n">tempfolder</span> <span class="o">=</span> <span class="n">tempfile</span><span class="o">.</span><span class="n">TemporaryDirectory</span><span class="p">()</span>
-<a id="__codelineno-0-434" name="__codelineno-0-434"></a>            <span class="n">outputFolder</span> <span class="o">=</span> <span class="n">tempfolder</span><span class="o">.</span><span class="n">name</span>
-<a id="__codelineno-0-435" name="__codelineno-0-435"></a>        <span class="c1"># download image</span>
-<a id="__codelineno-0-436" name="__codelineno-0-436"></a>        <span class="c1"># test compatibility (stages)</span>
-<a id="__codelineno-0-437" name="__codelineno-0-437"></a>        <span class="n">client</span> <span class="o">=</span> <span class="n">docker</span><span class="o">.</span><span class="n">from_env</span><span class="p">()</span>
-<a id="__codelineno-0-438" name="__codelineno-0-438"></a>        <span class="c1"># run docker container</span>
-<a id="__codelineno-0-439" name="__codelineno-0-439"></a>        <span class="nb">print</span><span class="p">(</span>
-<a id="__codelineno-0-440" name="__codelineno-0-440"></a>            <span class="n">client</span><span class="o">.</span><span class="n">containers</span><span class="o">.</span><span class="n">run</span><span class="p">(</span>
-<a id="__codelineno-0-441" name="__codelineno-0-441"></a>                <span class="bp">self</span><span class="o">.</span><span class="n">image</span><span class="p">,</span>
-<a id="__codelineno-0-442" name="__codelineno-0-442"></a>                <span class="c1"># [&quot;echo&quot;, &quot;hello&quot;, &quot;world&quot;],</span>
-<a id="__codelineno-0-443" name="__codelineno-0-443"></a>                <span class="n">volumes</span><span class="o">=</span><span class="p">{</span>
-<a id="__codelineno-0-444" name="__codelineno-0-444"></a>                    <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">abspath</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">dataset</span><span class="o">.</span><span class="n">path</span><span class="p">):</span> <span class="p">{</span>
-<a id="__codelineno-0-445" name="__codelineno-0-445"></a>                        <span class="s2">&quot;bind&quot;</span><span class="p">:</span> <span class="s2">&quot;/input/&quot;</span><span class="p">,</span>
-<a id="__codelineno-0-446" name="__codelineno-0-446"></a>                        <span class="s2">&quot;mode&quot;</span><span class="p">:</span> <span class="s2">&quot;ro&quot;</span><span class="p">,</span>
-<a id="__codelineno-0-447" name="__codelineno-0-447"></a>                    <span class="p">},</span>
-<a id="__codelineno-0-448" name="__codelineno-0-448"></a>                    <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">abspath</span><span class="p">(</span><span class="n">outputFolder</span><span class="p">):</span> <span class="p">{</span><span class="s2">&quot;bind&quot;</span><span class="p">:</span> <span class="s2">&quot;/output/&quot;</span><span class="p">,</span> <span class="s2">&quot;mode&quot;</span><span class="p">:</span> <span class="s2">&quot;rw&quot;</span><span class="p">},</span>
-<a id="__codelineno-0-449" name="__codelineno-0-449"></a>                <span class="p">},</span>
-<a id="__codelineno-0-450" name="__codelineno-0-450"></a>            <span class="p">)</span>
-<a id="__codelineno-0-451" name="__codelineno-0-451"></a>        <span class="p">)</span>
-<a id="__codelineno-0-452" name="__codelineno-0-452"></a>        <span class="c1"># mount folder in docker container</span>
-<a id="__codelineno-0-453" name="__codelineno-0-453"></a>
-<a id="__codelineno-0-454" name="__codelineno-0-454"></a>        <span class="c1"># TODO: Read results from output folder</span>
+<span class="normal"><a href="#__codelineno-0-463">463</a></span>
+<span class="normal"><a href="#__codelineno-0-464">464</a></span>
+<span class="normal"><a href="#__codelineno-0-465">465</a></span></pre></div></td><td class="code"><div><pre><span></span><code><a id="__codelineno-0-403" name="__codelineno-0-403"></a><span class="k">class</span> <span class="nc">DockerMethodRunner</span><span class="p">(</span><span class="n">MethodRunner</span><span class="p">):</span>
+<a id="__codelineno-0-404" name="__codelineno-0-404"></a>    <span class="sd">&quot;&quot;&quot;</span>
+<a id="__codelineno-0-405" name="__codelineno-0-405"></a><span class="sd">    Runs a leakaged detection method in a docker container.</span>
+<a id="__codelineno-0-406" name="__codelineno-0-406"></a><span class="sd">    &quot;&quot;&quot;</span>
+<a id="__codelineno-0-407" name="__codelineno-0-407"></a>
+<a id="__codelineno-0-408" name="__codelineno-0-408"></a>    <span class="c1"># TODO: add support for bind mount parameters? or just define as standard?</span>
+<a id="__codelineno-0-409" name="__codelineno-0-409"></a>    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
+<a id="__codelineno-0-410" name="__codelineno-0-410"></a>        <span class="bp">self</span><span class="p">,</span>
+<a id="__codelineno-0-411" name="__codelineno-0-411"></a>        <span class="n">image</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+<a id="__codelineno-0-412" name="__codelineno-0-412"></a>        <span class="n">dataset</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">Dataset</span><span class="p">,</span> <span class="nb">str</span><span class="p">],</span>
+<a id="__codelineno-0-413" name="__codelineno-0-413"></a>        <span class="n">hyperparameters</span><span class="p">:</span> <span class="nb">dict</span> <span class="o">=</span> <span class="p">{},</span>
+<a id="__codelineno-0-414" name="__codelineno-0-414"></a>        <span class="n">goal</span><span class="p">:</span> <span class="n">Literal</span><span class="p">[</span><span class="s2">&quot;detection&quot;</span><span class="p">,</span> <span class="s2">&quot;location&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;detection&quot;</span><span class="p">,</span>
+<a id="__codelineno-0-415" name="__codelineno-0-415"></a>        <span class="n">stage</span><span class="o">=</span><span class="s2">&quot;train&quot;</span><span class="p">,</span>  <span class="c1"># train, detect</span>
+<a id="__codelineno-0-416" name="__codelineno-0-416"></a>        <span class="n">method</span><span class="o">=</span><span class="s2">&quot;offline&quot;</span><span class="p">,</span>  <span class="c1"># offline, online</span>
+<a id="__codelineno-0-417" name="__codelineno-0-417"></a>        <span class="n">debug</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+<a id="__codelineno-0-418" name="__codelineno-0-418"></a>        <span class="n">resultsFolder</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+<a id="__codelineno-0-419" name="__codelineno-0-419"></a>    <span class="p">):</span>
+<a id="__codelineno-0-420" name="__codelineno-0-420"></a>        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span>
+<a id="__codelineno-0-421" name="__codelineno-0-421"></a>            <span class="n">hyperparameters</span><span class="o">=</span><span class="n">hyperparameters</span><span class="p">,</span>
+<a id="__codelineno-0-422" name="__codelineno-0-422"></a>            <span class="n">goal</span><span class="o">=</span><span class="n">goal</span><span class="p">,</span>
+<a id="__codelineno-0-423" name="__codelineno-0-423"></a>            <span class="n">stage</span><span class="o">=</span><span class="n">stage</span><span class="p">,</span>
+<a id="__codelineno-0-424" name="__codelineno-0-424"></a>            <span class="n">method</span><span class="o">=</span><span class="n">method</span><span class="p">,</span>
+<a id="__codelineno-0-425" name="__codelineno-0-425"></a>            <span class="n">resultsFolder</span><span class="o">=</span><span class="n">resultsFolder</span><span class="p">,</span>
+<a id="__codelineno-0-426" name="__codelineno-0-426"></a>            <span class="n">debug</span><span class="o">=</span><span class="n">debug</span><span class="p">,</span>
+<a id="__codelineno-0-427" name="__codelineno-0-427"></a>        <span class="p">)</span>
+<a id="__codelineno-0-428" name="__codelineno-0-428"></a>        <span class="bp">self</span><span class="o">.</span><span class="n">image</span> <span class="o">=</span> <span class="n">image</span>
+<a id="__codelineno-0-429" name="__codelineno-0-429"></a>        <span class="bp">self</span><span class="o">.</span><span class="n">dataset</span> <span class="o">=</span> <span class="n">dataset</span>
+<a id="__codelineno-0-430" name="__codelineno-0-430"></a>        <span class="bp">self</span><span class="o">.</span><span class="n">id</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">image</span><span class="si">}</span><span class="s2">_</span><span class="si">{</span><span class="n">dataset</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2">&quot;</span>
+<a id="__codelineno-0-431" name="__codelineno-0-431"></a>
+<a id="__codelineno-0-432" name="__codelineno-0-432"></a>    <span class="k">def</span> <span class="nf">run</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<a id="__codelineno-0-433" name="__codelineno-0-433"></a>        <span class="n">outputFolder</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">resultsFolder</span>
+<a id="__codelineno-0-434" name="__codelineno-0-434"></a>        <span class="k">if</span> <span class="n">outputFolder</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+<a id="__codelineno-0-435" name="__codelineno-0-435"></a>            <span class="n">tempfolder</span> <span class="o">=</span> <span class="n">tempfile</span><span class="o">.</span><span class="n">TemporaryDirectory</span><span class="p">()</span>
+<a id="__codelineno-0-436" name="__codelineno-0-436"></a>            <span class="n">outputFolder</span> <span class="o">=</span> <span class="n">tempfolder</span><span class="o">.</span><span class="n">name</span>
+<a id="__codelineno-0-437" name="__codelineno-0-437"></a>        <span class="c1"># download image</span>
+<a id="__codelineno-0-438" name="__codelineno-0-438"></a>        <span class="c1"># test compatibility (stages)</span>
+<a id="__codelineno-0-439" name="__codelineno-0-439"></a>        <span class="n">client</span> <span class="o">=</span> <span class="n">docker</span><span class="o">.</span><span class="n">from_env</span><span class="p">()</span>
+<a id="__codelineno-0-440" name="__codelineno-0-440"></a>        <span class="c1"># run docker container</span>
+<a id="__codelineno-0-441" name="__codelineno-0-441"></a>        <span class="nb">print</span><span class="p">(</span>
+<a id="__codelineno-0-442" name="__codelineno-0-442"></a>            <span class="n">client</span><span class="o">.</span><span class="n">containers</span><span class="o">.</span><span class="n">run</span><span class="p">(</span>
+<a id="__codelineno-0-443" name="__codelineno-0-443"></a>                <span class="bp">self</span><span class="o">.</span><span class="n">image</span><span class="p">,</span>
+<a id="__codelineno-0-444" name="__codelineno-0-444"></a>                <span class="c1"># [&quot;echo&quot;, &quot;hello&quot;, &quot;world&quot;],</span>
+<a id="__codelineno-0-445" name="__codelineno-0-445"></a>                <span class="n">volumes</span><span class="o">=</span><span class="p">{</span>
+<a id="__codelineno-0-446" name="__codelineno-0-446"></a>                    <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">abspath</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">dataset</span><span class="o">.</span><span class="n">path</span><span class="p">):</span> <span class="p">{</span>
+<a id="__codelineno-0-447" name="__codelineno-0-447"></a>                        <span class="s2">&quot;bind&quot;</span><span class="p">:</span> <span class="s2">&quot;/input/&quot;</span><span class="p">,</span>
+<a id="__codelineno-0-448" name="__codelineno-0-448"></a>                        <span class="s2">&quot;mode&quot;</span><span class="p">:</span> <span class="s2">&quot;ro&quot;</span><span class="p">,</span>
+<a id="__codelineno-0-449" name="__codelineno-0-449"></a>                    <span class="p">},</span>
+<a id="__codelineno-0-450" name="__codelineno-0-450"></a>                    <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">abspath</span><span class="p">(</span><span class="n">outputFolder</span><span class="p">):</span> <span class="p">{</span><span class="s2">&quot;bind&quot;</span><span class="p">:</span> <span class="s2">&quot;/output/&quot;</span><span class="p">,</span> <span class="s2">&quot;mode&quot;</span><span class="p">:</span> <span class="s2">&quot;rw&quot;</span><span class="p">},</span>
+<a id="__codelineno-0-451" name="__codelineno-0-451"></a>                <span class="p">},</span>
+<a id="__codelineno-0-452" name="__codelineno-0-452"></a>            <span class="p">)</span>
+<a id="__codelineno-0-453" name="__codelineno-0-453"></a>        <span class="p">)</span>
+<a id="__codelineno-0-454" name="__codelineno-0-454"></a>        <span class="c1"># mount folder in docker container</span>
 <a id="__codelineno-0-455" name="__codelineno-0-455"></a>
-<a id="__codelineno-0-456" name="__codelineno-0-456"></a>        <span class="n">detected_leaks</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_csv</span><span class="p">(</span>
-<a id="__codelineno-0-457" name="__codelineno-0-457"></a>            <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">outputFolder</span><span class="p">,</span> <span class="s2">&quot;detected_leaks.csv&quot;</span><span class="p">),</span>
-<a id="__codelineno-0-458" name="__codelineno-0-458"></a>            <span class="n">parse_dates</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
-<a id="__codelineno-0-459" name="__codelineno-0-459"></a>        <span class="p">)</span><span class="o">.</span><span class="n">to_dict</span><span class="p">(</span><span class="s2">&quot;records&quot;</span><span class="p">)</span>
-<a id="__codelineno-0-460" name="__codelineno-0-460"></a>        <span class="c1"># if tempfolder:</span>
-<a id="__codelineno-0-461" name="__codelineno-0-461"></a>        <span class="c1">#     tempfolder.cleanup()</span>
-<a id="__codelineno-0-462" name="__codelineno-0-462"></a>        <span class="nb">print</span><span class="p">(</span><span class="n">outputFolder</span><span class="p">)</span>
-<a id="__codelineno-0-463" name="__codelineno-0-463"></a>        <span class="k">return</span> <span class="n">detected_leaks</span>
+<a id="__codelineno-0-456" name="__codelineno-0-456"></a>        <span class="c1"># TODO: Read results from output folder</span>
+<a id="__codelineno-0-457" name="__codelineno-0-457"></a>
+<a id="__codelineno-0-458" name="__codelineno-0-458"></a>        <span class="n">detected_leaks</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_csv</span><span class="p">(</span>
+<a id="__codelineno-0-459" name="__codelineno-0-459"></a>            <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">outputFolder</span><span class="p">,</span> <span class="s2">&quot;detected_leaks.csv&quot;</span><span class="p">),</span>
+<a id="__codelineno-0-460" name="__codelineno-0-460"></a>            <span class="n">parse_dates</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+<a id="__codelineno-0-461" name="__codelineno-0-461"></a>        <span class="p">)</span><span class="o">.</span><span class="n">to_dict</span><span class="p">(</span><span class="s2">&quot;records&quot;</span><span class="p">)</span>
+<a id="__codelineno-0-462" name="__codelineno-0-462"></a>        <span class="c1"># if tempfolder:</span>
+<a id="__codelineno-0-463" name="__codelineno-0-463"></a>        <span class="c1">#     tempfolder.cleanup()</span>
+<a id="__codelineno-0-464" name="__codelineno-0-464"></a>        <span class="nb">print</span><span class="p">(</span><span class="n">outputFolder</span><span class="p">)</span>
+<a id="__codelineno-0-465" name="__codelineno-0-465"></a>        <span class="k">return</span> <span class="n">detected_leaks</span>
 </code></pre></div></td></tr></table></div>
         </details>
 
@@ -1545,7 +1545,9 @@
 <span class="normal"><a href="#__codelineno-0-395">395</a></span>
 <span class="normal"><a href="#__codelineno-0-396">396</a></span>
 <span class="normal"><a href="#__codelineno-0-397">397</a></span>
-<span class="normal"><a href="#__codelineno-0-398">398</a></span></pre></div></td><td class="code"><div><pre><span></span><code><a id="__codelineno-0-179" name="__codelineno-0-179"></a><span class="k">class</span> <span class="nc">LDIMBenchmark</span><span class="p">:</span>
+<span class="normal"><a href="#__codelineno-0-398">398</a></span>
+<span class="normal"><a href="#__codelineno-0-399">399</a></span>
+<span class="normal"><a href="#__codelineno-0-400">400</a></span></pre></div></td><td class="code"><div><pre><span></span><code><a id="__codelineno-0-179" name="__codelineno-0-179"></a><span class="k">class</span> <span class="nc">LDIMBenchmark</span><span class="p">:</span>
 <a id="__codelineno-0-180" name="__codelineno-0-180"></a>    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
 <a id="__codelineno-0-181" name="__codelineno-0-181"></a>        <span class="bp">self</span><span class="p">,</span>
 <a id="__codelineno-0-182" name="__codelineno-0-182"></a>        <span class="n">hyperparameters</span><span class="p">,</span>
@@ -1557,214 +1559,216 @@
 <a id="__codelineno-0-188" name="__codelineno-0-188"></a>        <span class="c1"># validate dataset types and edit them to LoadedDataset</span>
 <a id="__codelineno-0-189" name="__codelineno-0-189"></a>        <span class="bp">self</span><span class="o">.</span><span class="n">hyperparameters</span><span class="p">:</span> <span class="nb">dict</span> <span class="o">=</span> <span class="n">hyperparameters</span>
 <a id="__codelineno-0-190" name="__codelineno-0-190"></a>        <span class="c1"># validate dataset types and edit them to LoadedDataset</span>
-<a id="__codelineno-0-191" name="__codelineno-0-191"></a>        <span class="bp">self</span><span class="o">.</span><span class="n">datasets</span> <span class="o">=</span> <span class="n">datasets</span>
-<a id="__codelineno-0-192" name="__codelineno-0-192"></a>        <span class="bp">self</span><span class="o">.</span><span class="n">experiments</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="n">MethodRunner</span><span class="p">]</span> <span class="o">=</span> <span class="p">[]</span>
-<a id="__codelineno-0-193" name="__codelineno-0-193"></a>        <span class="bp">self</span><span class="o">.</span><span class="n">results</span> <span class="o">=</span> <span class="p">{}</span>
-<a id="__codelineno-0-194" name="__codelineno-0-194"></a>        <span class="bp">self</span><span class="o">.</span><span class="n">cache_dir</span> <span class="o">=</span> <span class="n">cache_dir</span>
-<a id="__codelineno-0-195" name="__codelineno-0-195"></a>        <span class="bp">self</span><span class="o">.</span><span class="n">results_dir</span> <span class="o">=</span> <span class="n">results_dir</span>
-<a id="__codelineno-0-196" name="__codelineno-0-196"></a>        <span class="bp">self</span><span class="o">.</span><span class="n">runner_results_dir</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">results_dir</span><span class="p">,</span> <span class="s2">&quot;runner_results&quot;</span><span class="p">)</span>
-<a id="__codelineno-0-197" name="__codelineno-0-197"></a>        <span class="bp">self</span><span class="o">.</span><span class="n">evaluation_results_dir</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span>
-<a id="__codelineno-0-198" name="__codelineno-0-198"></a>            <span class="bp">self</span><span class="o">.</span><span class="n">results_dir</span><span class="p">,</span> <span class="s2">&quot;evaluation_results&quot;</span>
-<a id="__codelineno-0-199" name="__codelineno-0-199"></a>        <span class="p">)</span>
-<a id="__codelineno-0-200" name="__codelineno-0-200"></a>        <span class="bp">self</span><span class="o">.</span><span class="n">complexity_results_dir</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span>
-<a id="__codelineno-0-201" name="__codelineno-0-201"></a>            <span class="bp">self</span><span class="o">.</span><span class="n">results_dir</span><span class="p">,</span> <span class="s2">&quot;complexity_results&quot;</span>
-<a id="__codelineno-0-202" name="__codelineno-0-202"></a>        <span class="p">)</span>
-<a id="__codelineno-0-203" name="__codelineno-0-203"></a>        <span class="bp">self</span><span class="o">.</span><span class="n">debug</span> <span class="o">=</span> <span class="n">debug</span>
-<a id="__codelineno-0-204" name="__codelineno-0-204"></a>
-<a id="__codelineno-0-205" name="__codelineno-0-205"></a>    <span class="k">def</span> <span class="nf">add_local_methods</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">methods</span><span class="p">,</span> <span class="n">goal</span><span class="o">=</span><span class="s2">&quot;detect_offline&quot;</span><span class="p">):</span>
-<a id="__codelineno-0-206" name="__codelineno-0-206"></a>        <span class="sd">&quot;&quot;&quot;</span>
-<a id="__codelineno-0-207" name="__codelineno-0-207"></a><span class="sd">        Adds local methods to the benchmark.</span>
-<a id="__codelineno-0-208" name="__codelineno-0-208"></a>
-<a id="__codelineno-0-209" name="__codelineno-0-209"></a><span class="sd">        :param methods: List of local methods</span>
-<a id="__codelineno-0-210" name="__codelineno-0-210"></a><span class="sd">        &quot;&quot;&quot;</span>
-<a id="__codelineno-0-211" name="__codelineno-0-211"></a>        <span class="k">for</span> <span class="n">dataset</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">datasets</span><span class="p">:</span>
-<a id="__codelineno-0-212" name="__codelineno-0-212"></a>            <span class="k">for</span> <span class="n">method</span> <span class="ow">in</span> <span class="n">methods</span><span class="p">:</span>
-<a id="__codelineno-0-213" name="__codelineno-0-213"></a>                <span class="n">hyperparameters</span> <span class="o">=</span> <span class="kc">None</span>
-<a id="__codelineno-0-214" name="__codelineno-0-214"></a>                <span class="k">if</span> <span class="n">method</span><span class="o">.</span><span class="n">name</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">hyperparameters</span><span class="p">:</span>
-<a id="__codelineno-0-215" name="__codelineno-0-215"></a>                    <span class="k">if</span> <span class="n">dataset</span><span class="o">.</span><span class="n">name</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">hyperparameters</span><span class="p">[</span><span class="n">method</span><span class="o">.</span><span class="n">name</span><span class="p">]:</span>
-<a id="__codelineno-0-216" name="__codelineno-0-216"></a>                        <span class="n">hyperparameters</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">hyperparameters</span><span class="p">[</span><span class="n">method</span><span class="o">.</span><span class="n">name</span><span class="p">][</span>
-<a id="__codelineno-0-217" name="__codelineno-0-217"></a>                            <span class="n">dataset</span><span class="o">.</span><span class="n">name</span>
-<a id="__codelineno-0-218" name="__codelineno-0-218"></a>                        <span class="p">]</span>
-<a id="__codelineno-0-219" name="__codelineno-0-219"></a>                <span class="c1"># TODO: Use right hyperparameters</span>
-<a id="__codelineno-0-220" name="__codelineno-0-220"></a>                <span class="bp">self</span><span class="o">.</span><span class="n">experiments</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
-<a id="__codelineno-0-221" name="__codelineno-0-221"></a>                    <span class="n">LocalMethodRunner</span><span class="p">(</span>
-<a id="__codelineno-0-222" name="__codelineno-0-222"></a>                        <span class="n">method</span><span class="p">,</span>
-<a id="__codelineno-0-223" name="__codelineno-0-223"></a>                        <span class="n">dataset</span><span class="p">,</span>
-<a id="__codelineno-0-224" name="__codelineno-0-224"></a>                        <span class="n">hyperparameters</span><span class="o">=</span><span class="n">hyperparameters</span><span class="p">,</span>
-<a id="__codelineno-0-225" name="__codelineno-0-225"></a>                        <span class="n">resultsFolder</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">runner_results_dir</span><span class="p">,</span>
-<a id="__codelineno-0-226" name="__codelineno-0-226"></a>                        <span class="n">debug</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">debug</span><span class="p">,</span>
-<a id="__codelineno-0-227" name="__codelineno-0-227"></a>                    <span class="p">)</span>
-<a id="__codelineno-0-228" name="__codelineno-0-228"></a>                <span class="p">)</span>
-<a id="__codelineno-0-229" name="__codelineno-0-229"></a>
-<a id="__codelineno-0-230" name="__codelineno-0-230"></a>    <span class="k">def</span> <span class="nf">add_docker_methods</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">methods</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]):</span>
-<a id="__codelineno-0-231" name="__codelineno-0-231"></a>        <span class="sd">&quot;&quot;&quot;</span>
-<a id="__codelineno-0-232" name="__codelineno-0-232"></a><span class="sd">        Adds docker methods to the benchmark.</span>
-<a id="__codelineno-0-233" name="__codelineno-0-233"></a>
-<a id="__codelineno-0-234" name="__codelineno-0-234"></a><span class="sd">        :param methods: List of docker images (with tag) which run the according method</span>
-<a id="__codelineno-0-235" name="__codelineno-0-235"></a><span class="sd">        &quot;&quot;&quot;</span>
-<a id="__codelineno-0-236" name="__codelineno-0-236"></a>        <span class="k">for</span> <span class="n">dataset</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">datasets</span><span class="p">:</span>
-<a id="__codelineno-0-237" name="__codelineno-0-237"></a>            <span class="k">for</span> <span class="n">method</span> <span class="ow">in</span> <span class="n">methods</span><span class="p">:</span>
-<a id="__codelineno-0-238" name="__codelineno-0-238"></a>                <span class="c1"># TODO: Use right hyperparameters</span>
-<a id="__codelineno-0-239" name="__codelineno-0-239"></a>                <span class="bp">self</span><span class="o">.</span><span class="n">experiments</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
-<a id="__codelineno-0-240" name="__codelineno-0-240"></a>                    <span class="n">DockerMethodRunner</span><span class="p">(</span><span class="n">method</span><span class="p">,</span> <span class="n">dataset</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">hyperparameters</span><span class="p">)</span>
-<a id="__codelineno-0-241" name="__codelineno-0-241"></a>                <span class="p">)</span>
-<a id="__codelineno-0-242" name="__codelineno-0-242"></a>
-<a id="__codelineno-0-243" name="__codelineno-0-243"></a>    <span class="k">def</span> <span class="nf">run_complexity_analysis</span><span class="p">(</span>
-<a id="__codelineno-0-244" name="__codelineno-0-244"></a>        <span class="bp">self</span><span class="p">,</span>
-<a id="__codelineno-0-245" name="__codelineno-0-245"></a>        <span class="n">methods</span><span class="p">,</span>
-<a id="__codelineno-0-246" name="__codelineno-0-246"></a>        <span class="n">style</span><span class="p">:</span> <span class="n">Literal</span><span class="p">[</span><span class="s2">&quot;time&quot;</span><span class="p">,</span> <span class="s2">&quot;junctions&quot;</span><span class="p">],</span>
-<a id="__codelineno-0-247" name="__codelineno-0-247"></a>    <span class="p">):</span>
-<a id="__codelineno-0-248" name="__codelineno-0-248"></a>        <span class="n">complexity_results_path</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">complexity_results_dir</span><span class="p">,</span> <span class="n">style</span><span class="p">)</span>
-<a id="__codelineno-0-249" name="__codelineno-0-249"></a>        <span class="n">os</span><span class="o">.</span><span class="n">makedirs</span><span class="p">(</span><span class="n">complexity_results_path</span><span class="p">,</span> <span class="n">exist_ok</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
-<a id="__codelineno-0-250" name="__codelineno-0-250"></a>        <span class="k">if</span> <span class="n">style</span> <span class="o">==</span> <span class="s2">&quot;time&quot;</span><span class="p">:</span>
-<a id="__codelineno-0-251" name="__codelineno-0-251"></a>            <span class="n">run_benchmark_complexity</span><span class="p">(</span>
-<a id="__codelineno-0-252" name="__codelineno-0-252"></a>                <span class="n">methods</span><span class="p">,</span>
-<a id="__codelineno-0-253" name="__codelineno-0-253"></a>                <span class="n">cache_dir</span><span class="o">=</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">cache_dir</span><span class="p">,</span> <span class="s2">&quot;datagen&quot;</span><span class="p">),</span>
-<a id="__codelineno-0-254" name="__codelineno-0-254"></a>                <span class="n">out_folder</span><span class="o">=</span><span class="n">complexity_results_path</span><span class="p">,</span>
-<a id="__codelineno-0-255" name="__codelineno-0-255"></a>                <span class="n">style</span><span class="o">=</span><span class="s2">&quot;time&quot;</span><span class="p">,</span>
-<a id="__codelineno-0-256" name="__codelineno-0-256"></a>                <span class="n">additionalOutput</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">debug</span><span class="p">,</span>
-<a id="__codelineno-0-257" name="__codelineno-0-257"></a>            <span class="p">)</span>
-<a id="__codelineno-0-258" name="__codelineno-0-258"></a>        <span class="k">if</span> <span class="n">style</span> <span class="o">==</span> <span class="s2">&quot;junctions&quot;</span><span class="p">:</span>
-<a id="__codelineno-0-259" name="__codelineno-0-259"></a>            <span class="n">run_benchmark_complexity</span><span class="p">(</span>
-<a id="__codelineno-0-260" name="__codelineno-0-260"></a>                <span class="n">methods</span><span class="p">,</span>
-<a id="__codelineno-0-261" name="__codelineno-0-261"></a>                <span class="n">cache_dir</span><span class="o">=</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">cache_dir</span><span class="p">,</span> <span class="s2">&quot;datagen&quot;</span><span class="p">),</span>
-<a id="__codelineno-0-262" name="__codelineno-0-262"></a>                <span class="n">out_folder</span><span class="o">=</span><span class="n">complexity_results_path</span><span class="p">,</span>
-<a id="__codelineno-0-263" name="__codelineno-0-263"></a>                <span class="n">style</span><span class="o">=</span><span class="s2">&quot;junctions&quot;</span><span class="p">,</span>
-<a id="__codelineno-0-264" name="__codelineno-0-264"></a>                <span class="n">additionalOutput</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">debug</span><span class="p">,</span>
-<a id="__codelineno-0-265" name="__codelineno-0-265"></a>            <span class="p">)</span>
-<a id="__codelineno-0-266" name="__codelineno-0-266"></a>
-<a id="__codelineno-0-267" name="__codelineno-0-267"></a>    <span class="k">def</span> <span class="nf">run_benchmark</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">parallel</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
-<a id="__codelineno-0-268" name="__codelineno-0-268"></a>        <span class="sd">&quot;&quot;&quot;</span>
-<a id="__codelineno-0-269" name="__codelineno-0-269"></a><span class="sd">        Runs the benchmark.</span>
-<a id="__codelineno-0-270" name="__codelineno-0-270"></a>
-<a id="__codelineno-0-271" name="__codelineno-0-271"></a><span class="sd">        :param parallel: If the benchmark should be run in parallel</span>
-<a id="__codelineno-0-272" name="__codelineno-0-272"></a><span class="sd">        :param results_dir: Directory where the results should be stored</span>
-<a id="__codelineno-0-273" name="__codelineno-0-273"></a><span class="sd">        &quot;&quot;&quot;</span>
-<a id="__codelineno-0-274" name="__codelineno-0-274"></a>
-<a id="__codelineno-0-275" name="__codelineno-0-275"></a>        <span class="n">results</span> <span class="o">=</span> <span class="p">[]</span>
-<a id="__codelineno-0-276" name="__codelineno-0-276"></a>        <span class="k">if</span> <span class="n">parallel</span><span class="p">:</span>
-<a id="__codelineno-0-277" name="__codelineno-0-277"></a>            <span class="c1"># TODO: preload datasets (as to not overwrite each other during the parallel loop)</span>
-<a id="__codelineno-0-278" name="__codelineno-0-278"></a>            <span class="k">pass</span>
-<a id="__codelineno-0-279" name="__codelineno-0-279"></a>        <span class="k">else</span><span class="p">:</span>
-<a id="__codelineno-0-280" name="__codelineno-0-280"></a>            <span class="k">for</span> <span class="n">experiment</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">experiments</span><span class="p">:</span>
-<a id="__codelineno-0-281" name="__codelineno-0-281"></a>                <span class="n">results</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">experiment</span><span class="o">.</span><span class="n">run</span><span class="p">())</span>
-<a id="__codelineno-0-282" name="__codelineno-0-282"></a>
-<a id="__codelineno-0-283" name="__codelineno-0-283"></a>    <span class="k">def</span> <span class="nf">evaluate</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-<a id="__codelineno-0-284" name="__codelineno-0-284"></a>        <span class="sd">&quot;&quot;&quot;</span>
-<a id="__codelineno-0-285" name="__codelineno-0-285"></a><span class="sd">        Evaluates the benchmark.</span>
-<a id="__codelineno-0-286" name="__codelineno-0-286"></a>
-<a id="__codelineno-0-287" name="__codelineno-0-287"></a><span class="sd">        :param results_dir: Directory where the results are stored</span>
-<a id="__codelineno-0-288" name="__codelineno-0-288"></a><span class="sd">        &quot;&quot;&quot;</span>
-<a id="__codelineno-0-289" name="__codelineno-0-289"></a>        <span class="c1"># if self.results_dir is None and len(self.results.keys()) == 0:</span>
-<a id="__codelineno-0-290" name="__codelineno-0-290"></a>        <span class="c1">#     raise Exception(&quot;No results to evaluate&quot;)</span>
-<a id="__codelineno-0-291" name="__codelineno-0-291"></a>
-<a id="__codelineno-0-292" name="__codelineno-0-292"></a>        <span class="c1"># if results_dir:</span>
-<a id="__codelineno-0-293" name="__codelineno-0-293"></a>        <span class="c1">#     self.results = self.load_results(results_dir)</span>
-<a id="__codelineno-0-294" name="__codelineno-0-294"></a>
-<a id="__codelineno-0-295" name="__codelineno-0-295"></a>        <span class="c1"># TODO: Evaluate results</span>
-<a id="__codelineno-0-296" name="__codelineno-0-296"></a>        <span class="n">results</span> <span class="o">=</span> <span class="p">[]</span>
-<a id="__codelineno-0-297" name="__codelineno-0-297"></a>
-<a id="__codelineno-0-298" name="__codelineno-0-298"></a>        <span class="k">for</span> <span class="n">experiment_result</span> <span class="ow">in</span> <span class="n">glob</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">runner_results_dir</span><span class="p">,</span> <span class="s2">&quot;*&quot;</span><span class="p">,</span> <span class="s2">&quot;&quot;</span><span class="p">)):</span>
-<a id="__codelineno-0-299" name="__codelineno-0-299"></a>            <span class="n">detected_leaks</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_csv</span><span class="p">(</span>
-<a id="__codelineno-0-300" name="__codelineno-0-300"></a>                <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">experiment_result</span><span class="p">,</span> <span class="s2">&quot;detected_leaks.csv&quot;</span><span class="p">),</span>
-<a id="__codelineno-0-301" name="__codelineno-0-301"></a>                <span class="n">parse_dates</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
-<a id="__codelineno-0-302" name="__codelineno-0-302"></a>            <span class="p">)</span>  <span class="c1"># .to_dict(&quot;records&quot;)</span>
-<a id="__codelineno-0-303" name="__codelineno-0-303"></a>
-<a id="__codelineno-0-304" name="__codelineno-0-304"></a>            <span class="n">evaluation_dataset_leakages</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_csv</span><span class="p">(</span>
-<a id="__codelineno-0-305" name="__codelineno-0-305"></a>                <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">experiment_result</span><span class="p">,</span> <span class="s2">&quot;should_have_detected_leaks.csv&quot;</span><span class="p">),</span>
-<a id="__codelineno-0-306" name="__codelineno-0-306"></a>                <span class="n">parse_dates</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
-<a id="__codelineno-0-307" name="__codelineno-0-307"></a>            <span class="p">)</span>  <span class="c1"># .to_dict(&quot;records&quot;)</span>
-<a id="__codelineno-0-308" name="__codelineno-0-308"></a>
-<a id="__codelineno-0-309" name="__codelineno-0-309"></a>            <span class="n">run_info</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_csv</span><span class="p">(</span>
-<a id="__codelineno-0-310" name="__codelineno-0-310"></a>                <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">experiment_result</span><span class="p">,</span> <span class="s2">&quot;run_info.csv&quot;</span><span class="p">)</span>
-<a id="__codelineno-0-311" name="__codelineno-0-311"></a>            <span class="p">)</span><span class="o">.</span><span class="n">iloc</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
-<a id="__codelineno-0-312" name="__codelineno-0-312"></a>            <span class="c1"># detected_leaks = parse_obj_as(List[BenchmarkLeakageResult], detected_leaks)</span>
-<a id="__codelineno-0-313" name="__codelineno-0-313"></a>            <span class="c1"># evaluation_dataset_leakages = parse_obj_as(</span>
-<a id="__codelineno-0-314" name="__codelineno-0-314"></a>            <span class="c1">#     List[BenchmarkLeakageResult], evaluation_dataset_leakages</span>
-<a id="__codelineno-0-315" name="__codelineno-0-315"></a>            <span class="c1"># )</span>
-<a id="__codelineno-0-316" name="__codelineno-0-316"></a>
-<a id="__codelineno-0-317" name="__codelineno-0-317"></a>            <span class="c1"># TODO: Ignore Detections outside of the evaluation period</span>
-<a id="__codelineno-0-318" name="__codelineno-0-318"></a>            <span class="n">evaluation_results</span> <span class="o">=</span> <span class="n">evaluate_leakages</span><span class="p">(</span>
-<a id="__codelineno-0-319" name="__codelineno-0-319"></a>                <span class="n">evaluation_dataset_leakages</span><span class="p">,</span> <span class="n">detected_leaks</span>
-<a id="__codelineno-0-320" name="__codelineno-0-320"></a>            <span class="p">)</span>
-<a id="__codelineno-0-321" name="__codelineno-0-321"></a>            <span class="n">evaluation_results</span><span class="p">[</span><span class="s2">&quot;method&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">run_info</span><span class="p">[</span><span class="s2">&quot;method&quot;</span><span class="p">]</span>
-<a id="__codelineno-0-322" name="__codelineno-0-322"></a>            <span class="n">evaluation_results</span><span class="p">[</span><span class="s2">&quot;dataset&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">run_info</span><span class="p">[</span><span class="s2">&quot;dataset&quot;</span><span class="p">]</span>
-<a id="__codelineno-0-323" name="__codelineno-0-323"></a>            <span class="n">results</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">evaluation_results</span><span class="p">)</span>
-<a id="__codelineno-0-324" name="__codelineno-0-324"></a>
-<a id="__codelineno-0-325" name="__codelineno-0-325"></a>            <span class="n">logging</span><span class="o">.</span><span class="n">info</span><span class="p">(</span>
-<a id="__codelineno-0-326" name="__codelineno-0-326"></a>                <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">detected_leaks</span><span class="p">)</span><span class="si">}</span><span class="s2"> / </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">evaluation_dataset_leakages</span><span class="p">)</span><span class="si">}</span><span class="s2"> Dataset Leaks&quot;</span>
-<a id="__codelineno-0-327" name="__codelineno-0-327"></a>            <span class="p">)</span>
-<a id="__codelineno-0-328" name="__codelineno-0-328"></a>            <span class="n">logging</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="n">evaluation_results</span><span class="p">)</span>
-<a id="__codelineno-0-329" name="__codelineno-0-329"></a>
-<a id="__codelineno-0-330" name="__codelineno-0-330"></a>            <span class="c1"># TODO: Draw plots with leaks and detected leaks</span>
+<a id="__codelineno-0-191" name="__codelineno-0-191"></a>        <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">datasets</span><span class="p">,</span> <span class="nb">list</span><span class="p">):</span>
+<a id="__codelineno-0-192" name="__codelineno-0-192"></a>            <span class="n">datasets</span> <span class="o">=</span> <span class="p">[</span><span class="n">datasets</span><span class="p">]</span>
+<a id="__codelineno-0-193" name="__codelineno-0-193"></a>        <span class="bp">self</span><span class="o">.</span><span class="n">datasets</span> <span class="o">=</span> <span class="n">datasets</span>
+<a id="__codelineno-0-194" name="__codelineno-0-194"></a>        <span class="bp">self</span><span class="o">.</span><span class="n">experiments</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">MethodRunner</span><span class="p">]</span> <span class="o">=</span> <span class="p">[]</span>
+<a id="__codelineno-0-195" name="__codelineno-0-195"></a>        <span class="bp">self</span><span class="o">.</span><span class="n">results</span> <span class="o">=</span> <span class="p">{}</span>
+<a id="__codelineno-0-196" name="__codelineno-0-196"></a>        <span class="bp">self</span><span class="o">.</span><span class="n">cache_dir</span> <span class="o">=</span> <span class="n">cache_dir</span>
+<a id="__codelineno-0-197" name="__codelineno-0-197"></a>        <span class="bp">self</span><span class="o">.</span><span class="n">results_dir</span> <span class="o">=</span> <span class="n">results_dir</span>
+<a id="__codelineno-0-198" name="__codelineno-0-198"></a>        <span class="bp">self</span><span class="o">.</span><span class="n">runner_results_dir</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">results_dir</span><span class="p">,</span> <span class="s2">&quot;runner_results&quot;</span><span class="p">)</span>
+<a id="__codelineno-0-199" name="__codelineno-0-199"></a>        <span class="bp">self</span><span class="o">.</span><span class="n">evaluation_results_dir</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span>
+<a id="__codelineno-0-200" name="__codelineno-0-200"></a>            <span class="bp">self</span><span class="o">.</span><span class="n">results_dir</span><span class="p">,</span> <span class="s2">&quot;evaluation_results&quot;</span>
+<a id="__codelineno-0-201" name="__codelineno-0-201"></a>        <span class="p">)</span>
+<a id="__codelineno-0-202" name="__codelineno-0-202"></a>        <span class="bp">self</span><span class="o">.</span><span class="n">complexity_results_dir</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span>
+<a id="__codelineno-0-203" name="__codelineno-0-203"></a>            <span class="bp">self</span><span class="o">.</span><span class="n">results_dir</span><span class="p">,</span> <span class="s2">&quot;complexity_results&quot;</span>
+<a id="__codelineno-0-204" name="__codelineno-0-204"></a>        <span class="p">)</span>
+<a id="__codelineno-0-205" name="__codelineno-0-205"></a>        <span class="bp">self</span><span class="o">.</span><span class="n">debug</span> <span class="o">=</span> <span class="n">debug</span>
+<a id="__codelineno-0-206" name="__codelineno-0-206"></a>
+<a id="__codelineno-0-207" name="__codelineno-0-207"></a>    <span class="k">def</span> <span class="nf">add_local_methods</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">methods</span><span class="p">,</span> <span class="n">goal</span><span class="o">=</span><span class="s2">&quot;detect_offline&quot;</span><span class="p">):</span>
+<a id="__codelineno-0-208" name="__codelineno-0-208"></a>        <span class="sd">&quot;&quot;&quot;</span>
+<a id="__codelineno-0-209" name="__codelineno-0-209"></a><span class="sd">        Adds local methods to the benchmark.</span>
+<a id="__codelineno-0-210" name="__codelineno-0-210"></a>
+<a id="__codelineno-0-211" name="__codelineno-0-211"></a><span class="sd">        :param methods: List of local methods</span>
+<a id="__codelineno-0-212" name="__codelineno-0-212"></a><span class="sd">        &quot;&quot;&quot;</span>
+<a id="__codelineno-0-213" name="__codelineno-0-213"></a>        <span class="k">for</span> <span class="n">dataset</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">datasets</span><span class="p">:</span>
+<a id="__codelineno-0-214" name="__codelineno-0-214"></a>            <span class="k">for</span> <span class="n">method</span> <span class="ow">in</span> <span class="n">methods</span><span class="p">:</span>
+<a id="__codelineno-0-215" name="__codelineno-0-215"></a>                <span class="n">hyperparameters</span> <span class="o">=</span> <span class="kc">None</span>
+<a id="__codelineno-0-216" name="__codelineno-0-216"></a>                <span class="k">if</span> <span class="n">method</span><span class="o">.</span><span class="n">name</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">hyperparameters</span><span class="p">:</span>
+<a id="__codelineno-0-217" name="__codelineno-0-217"></a>                    <span class="k">if</span> <span class="n">dataset</span><span class="o">.</span><span class="n">name</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">hyperparameters</span><span class="p">[</span><span class="n">method</span><span class="o">.</span><span class="n">name</span><span class="p">]:</span>
+<a id="__codelineno-0-218" name="__codelineno-0-218"></a>                        <span class="n">hyperparameters</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">hyperparameters</span><span class="p">[</span><span class="n">method</span><span class="o">.</span><span class="n">name</span><span class="p">][</span>
+<a id="__codelineno-0-219" name="__codelineno-0-219"></a>                            <span class="n">dataset</span><span class="o">.</span><span class="n">name</span>
+<a id="__codelineno-0-220" name="__codelineno-0-220"></a>                        <span class="p">]</span>
+<a id="__codelineno-0-221" name="__codelineno-0-221"></a>                <span class="c1"># TODO: Use right hyperparameters</span>
+<a id="__codelineno-0-222" name="__codelineno-0-222"></a>                <span class="bp">self</span><span class="o">.</span><span class="n">experiments</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
+<a id="__codelineno-0-223" name="__codelineno-0-223"></a>                    <span class="n">LocalMethodRunner</span><span class="p">(</span>
+<a id="__codelineno-0-224" name="__codelineno-0-224"></a>                        <span class="n">method</span><span class="p">,</span>
+<a id="__codelineno-0-225" name="__codelineno-0-225"></a>                        <span class="n">dataset</span><span class="p">,</span>
+<a id="__codelineno-0-226" name="__codelineno-0-226"></a>                        <span class="n">hyperparameters</span><span class="o">=</span><span class="n">hyperparameters</span><span class="p">,</span>
+<a id="__codelineno-0-227" name="__codelineno-0-227"></a>                        <span class="n">resultsFolder</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">runner_results_dir</span><span class="p">,</span>
+<a id="__codelineno-0-228" name="__codelineno-0-228"></a>                        <span class="n">debug</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">debug</span><span class="p">,</span>
+<a id="__codelineno-0-229" name="__codelineno-0-229"></a>                    <span class="p">)</span>
+<a id="__codelineno-0-230" name="__codelineno-0-230"></a>                <span class="p">)</span>
+<a id="__codelineno-0-231" name="__codelineno-0-231"></a>
+<a id="__codelineno-0-232" name="__codelineno-0-232"></a>    <span class="k">def</span> <span class="nf">add_docker_methods</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">methods</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]):</span>
+<a id="__codelineno-0-233" name="__codelineno-0-233"></a>        <span class="sd">&quot;&quot;&quot;</span>
+<a id="__codelineno-0-234" name="__codelineno-0-234"></a><span class="sd">        Adds docker methods to the benchmark.</span>
+<a id="__codelineno-0-235" name="__codelineno-0-235"></a>
+<a id="__codelineno-0-236" name="__codelineno-0-236"></a><span class="sd">        :param methods: List of docker images (with tag) which run the according method</span>
+<a id="__codelineno-0-237" name="__codelineno-0-237"></a><span class="sd">        &quot;&quot;&quot;</span>
+<a id="__codelineno-0-238" name="__codelineno-0-238"></a>        <span class="k">for</span> <span class="n">dataset</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">datasets</span><span class="p">:</span>
+<a id="__codelineno-0-239" name="__codelineno-0-239"></a>            <span class="k">for</span> <span class="n">method</span> <span class="ow">in</span> <span class="n">methods</span><span class="p">:</span>
+<a id="__codelineno-0-240" name="__codelineno-0-240"></a>                <span class="c1"># TODO: Use right hyperparameters</span>
+<a id="__codelineno-0-241" name="__codelineno-0-241"></a>                <span class="bp">self</span><span class="o">.</span><span class="n">experiments</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
+<a id="__codelineno-0-242" name="__codelineno-0-242"></a>                    <span class="n">DockerMethodRunner</span><span class="p">(</span><span class="n">method</span><span class="p">,</span> <span class="n">dataset</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">hyperparameters</span><span class="p">)</span>
+<a id="__codelineno-0-243" name="__codelineno-0-243"></a>                <span class="p">)</span>
+<a id="__codelineno-0-244" name="__codelineno-0-244"></a>
+<a id="__codelineno-0-245" name="__codelineno-0-245"></a>    <span class="k">def</span> <span class="nf">run_complexity_analysis</span><span class="p">(</span>
+<a id="__codelineno-0-246" name="__codelineno-0-246"></a>        <span class="bp">self</span><span class="p">,</span>
+<a id="__codelineno-0-247" name="__codelineno-0-247"></a>        <span class="n">methods</span><span class="p">,</span>
+<a id="__codelineno-0-248" name="__codelineno-0-248"></a>        <span class="n">style</span><span class="p">:</span> <span class="n">Literal</span><span class="p">[</span><span class="s2">&quot;time&quot;</span><span class="p">,</span> <span class="s2">&quot;junctions&quot;</span><span class="p">],</span>
+<a id="__codelineno-0-249" name="__codelineno-0-249"></a>    <span class="p">):</span>
+<a id="__codelineno-0-250" name="__codelineno-0-250"></a>        <span class="n">complexity_results_path</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">complexity_results_dir</span><span class="p">,</span> <span class="n">style</span><span class="p">)</span>
+<a id="__codelineno-0-251" name="__codelineno-0-251"></a>        <span class="n">os</span><span class="o">.</span><span class="n">makedirs</span><span class="p">(</span><span class="n">complexity_results_path</span><span class="p">,</span> <span class="n">exist_ok</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<a id="__codelineno-0-252" name="__codelineno-0-252"></a>        <span class="k">if</span> <span class="n">style</span> <span class="o">==</span> <span class="s2">&quot;time&quot;</span><span class="p">:</span>
+<a id="__codelineno-0-253" name="__codelineno-0-253"></a>            <span class="n">run_benchmark_complexity</span><span class="p">(</span>
+<a id="__codelineno-0-254" name="__codelineno-0-254"></a>                <span class="n">methods</span><span class="p">,</span>
+<a id="__codelineno-0-255" name="__codelineno-0-255"></a>                <span class="n">cache_dir</span><span class="o">=</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">cache_dir</span><span class="p">,</span> <span class="s2">&quot;datagen&quot;</span><span class="p">),</span>
+<a id="__codelineno-0-256" name="__codelineno-0-256"></a>                <span class="n">out_folder</span><span class="o">=</span><span class="n">complexity_results_path</span><span class="p">,</span>
+<a id="__codelineno-0-257" name="__codelineno-0-257"></a>                <span class="n">style</span><span class="o">=</span><span class="s2">&quot;time&quot;</span><span class="p">,</span>
+<a id="__codelineno-0-258" name="__codelineno-0-258"></a>                <span class="n">additionalOutput</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">debug</span><span class="p">,</span>
+<a id="__codelineno-0-259" name="__codelineno-0-259"></a>            <span class="p">)</span>
+<a id="__codelineno-0-260" name="__codelineno-0-260"></a>        <span class="k">if</span> <span class="n">style</span> <span class="o">==</span> <span class="s2">&quot;junctions&quot;</span><span class="p">:</span>
+<a id="__codelineno-0-261" name="__codelineno-0-261"></a>            <span class="n">run_benchmark_complexity</span><span class="p">(</span>
+<a id="__codelineno-0-262" name="__codelineno-0-262"></a>                <span class="n">methods</span><span class="p">,</span>
+<a id="__codelineno-0-263" name="__codelineno-0-263"></a>                <span class="n">cache_dir</span><span class="o">=</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">cache_dir</span><span class="p">,</span> <span class="s2">&quot;datagen&quot;</span><span class="p">),</span>
+<a id="__codelineno-0-264" name="__codelineno-0-264"></a>                <span class="n">out_folder</span><span class="o">=</span><span class="n">complexity_results_path</span><span class="p">,</span>
+<a id="__codelineno-0-265" name="__codelineno-0-265"></a>                <span class="n">style</span><span class="o">=</span><span class="s2">&quot;junctions&quot;</span><span class="p">,</span>
+<a id="__codelineno-0-266" name="__codelineno-0-266"></a>                <span class="n">additionalOutput</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">debug</span><span class="p">,</span>
+<a id="__codelineno-0-267" name="__codelineno-0-267"></a>            <span class="p">)</span>
+<a id="__codelineno-0-268" name="__codelineno-0-268"></a>
+<a id="__codelineno-0-269" name="__codelineno-0-269"></a>    <span class="k">def</span> <span class="nf">run_benchmark</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">parallel</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+<a id="__codelineno-0-270" name="__codelineno-0-270"></a>        <span class="sd">&quot;&quot;&quot;</span>
+<a id="__codelineno-0-271" name="__codelineno-0-271"></a><span class="sd">        Runs the benchmark.</span>
+<a id="__codelineno-0-272" name="__codelineno-0-272"></a>
+<a id="__codelineno-0-273" name="__codelineno-0-273"></a><span class="sd">        :param parallel: If the benchmark should be run in parallel</span>
+<a id="__codelineno-0-274" name="__codelineno-0-274"></a><span class="sd">        :param results_dir: Directory where the results should be stored</span>
+<a id="__codelineno-0-275" name="__codelineno-0-275"></a><span class="sd">        &quot;&quot;&quot;</span>
+<a id="__codelineno-0-276" name="__codelineno-0-276"></a>
+<a id="__codelineno-0-277" name="__codelineno-0-277"></a>        <span class="n">results</span> <span class="o">=</span> <span class="p">[]</span>
+<a id="__codelineno-0-278" name="__codelineno-0-278"></a>        <span class="k">if</span> <span class="n">parallel</span><span class="p">:</span>
+<a id="__codelineno-0-279" name="__codelineno-0-279"></a>            <span class="c1"># TODO: preload datasets (as to not overwrite each other during the parallel loop)</span>
+<a id="__codelineno-0-280" name="__codelineno-0-280"></a>            <span class="k">pass</span>
+<a id="__codelineno-0-281" name="__codelineno-0-281"></a>        <span class="k">else</span><span class="p">:</span>
+<a id="__codelineno-0-282" name="__codelineno-0-282"></a>            <span class="k">for</span> <span class="n">experiment</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">experiments</span><span class="p">:</span>
+<a id="__codelineno-0-283" name="__codelineno-0-283"></a>                <span class="n">results</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">experiment</span><span class="o">.</span><span class="n">run</span><span class="p">())</span>
+<a id="__codelineno-0-284" name="__codelineno-0-284"></a>
+<a id="__codelineno-0-285" name="__codelineno-0-285"></a>    <span class="k">def</span> <span class="nf">evaluate</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<a id="__codelineno-0-286" name="__codelineno-0-286"></a>        <span class="sd">&quot;&quot;&quot;</span>
+<a id="__codelineno-0-287" name="__codelineno-0-287"></a><span class="sd">        Evaluates the benchmark.</span>
+<a id="__codelineno-0-288" name="__codelineno-0-288"></a>
+<a id="__codelineno-0-289" name="__codelineno-0-289"></a><span class="sd">        :param results_dir: Directory where the results are stored</span>
+<a id="__codelineno-0-290" name="__codelineno-0-290"></a><span class="sd">        &quot;&quot;&quot;</span>
+<a id="__codelineno-0-291" name="__codelineno-0-291"></a>        <span class="c1"># if self.results_dir is None and len(self.results.keys()) == 0:</span>
+<a id="__codelineno-0-292" name="__codelineno-0-292"></a>        <span class="c1">#     raise Exception(&quot;No results to evaluate&quot;)</span>
+<a id="__codelineno-0-293" name="__codelineno-0-293"></a>
+<a id="__codelineno-0-294" name="__codelineno-0-294"></a>        <span class="c1"># if results_dir:</span>
+<a id="__codelineno-0-295" name="__codelineno-0-295"></a>        <span class="c1">#     self.results = self.load_results(results_dir)</span>
+<a id="__codelineno-0-296" name="__codelineno-0-296"></a>
+<a id="__codelineno-0-297" name="__codelineno-0-297"></a>        <span class="c1"># TODO: Evaluate results</span>
+<a id="__codelineno-0-298" name="__codelineno-0-298"></a>        <span class="n">results</span> <span class="o">=</span> <span class="p">[]</span>
+<a id="__codelineno-0-299" name="__codelineno-0-299"></a>
+<a id="__codelineno-0-300" name="__codelineno-0-300"></a>        <span class="k">for</span> <span class="n">experiment_result</span> <span class="ow">in</span> <span class="n">glob</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">runner_results_dir</span><span class="p">,</span> <span class="s2">&quot;*&quot;</span><span class="p">,</span> <span class="s2">&quot;&quot;</span><span class="p">)):</span>
+<a id="__codelineno-0-301" name="__codelineno-0-301"></a>            <span class="n">detected_leaks</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_csv</span><span class="p">(</span>
+<a id="__codelineno-0-302" name="__codelineno-0-302"></a>                <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">experiment_result</span><span class="p">,</span> <span class="s2">&quot;detected_leaks.csv&quot;</span><span class="p">),</span>
+<a id="__codelineno-0-303" name="__codelineno-0-303"></a>                <span class="n">parse_dates</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+<a id="__codelineno-0-304" name="__codelineno-0-304"></a>            <span class="p">)</span>  <span class="c1"># .to_dict(&quot;records&quot;)</span>
+<a id="__codelineno-0-305" name="__codelineno-0-305"></a>
+<a id="__codelineno-0-306" name="__codelineno-0-306"></a>            <span class="n">evaluation_dataset_leakages</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_csv</span><span class="p">(</span>
+<a id="__codelineno-0-307" name="__codelineno-0-307"></a>                <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">experiment_result</span><span class="p">,</span> <span class="s2">&quot;should_have_detected_leaks.csv&quot;</span><span class="p">),</span>
+<a id="__codelineno-0-308" name="__codelineno-0-308"></a>                <span class="n">parse_dates</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+<a id="__codelineno-0-309" name="__codelineno-0-309"></a>            <span class="p">)</span>  <span class="c1"># .to_dict(&quot;records&quot;)</span>
+<a id="__codelineno-0-310" name="__codelineno-0-310"></a>
+<a id="__codelineno-0-311" name="__codelineno-0-311"></a>            <span class="n">run_info</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_csv</span><span class="p">(</span>
+<a id="__codelineno-0-312" name="__codelineno-0-312"></a>                <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">experiment_result</span><span class="p">,</span> <span class="s2">&quot;run_info.csv&quot;</span><span class="p">)</span>
+<a id="__codelineno-0-313" name="__codelineno-0-313"></a>            <span class="p">)</span><span class="o">.</span><span class="n">iloc</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+<a id="__codelineno-0-314" name="__codelineno-0-314"></a>            <span class="c1"># detected_leaks = parse_obj_as(List[BenchmarkLeakageResult], detected_leaks)</span>
+<a id="__codelineno-0-315" name="__codelineno-0-315"></a>            <span class="c1"># evaluation_dataset_leakages = parse_obj_as(</span>
+<a id="__codelineno-0-316" name="__codelineno-0-316"></a>            <span class="c1">#     List[BenchmarkLeakageResult], evaluation_dataset_leakages</span>
+<a id="__codelineno-0-317" name="__codelineno-0-317"></a>            <span class="c1"># )</span>
+<a id="__codelineno-0-318" name="__codelineno-0-318"></a>
+<a id="__codelineno-0-319" name="__codelineno-0-319"></a>            <span class="c1"># TODO: Ignore Detections outside of the evaluation period</span>
+<a id="__codelineno-0-320" name="__codelineno-0-320"></a>            <span class="n">evaluation_results</span> <span class="o">=</span> <span class="n">evaluate_leakages</span><span class="p">(</span>
+<a id="__codelineno-0-321" name="__codelineno-0-321"></a>                <span class="n">evaluation_dataset_leakages</span><span class="p">,</span> <span class="n">detected_leaks</span>
+<a id="__codelineno-0-322" name="__codelineno-0-322"></a>            <span class="p">)</span>
+<a id="__codelineno-0-323" name="__codelineno-0-323"></a>            <span class="n">evaluation_results</span><span class="p">[</span><span class="s2">&quot;method&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">run_info</span><span class="p">[</span><span class="s2">&quot;method&quot;</span><span class="p">]</span>
+<a id="__codelineno-0-324" name="__codelineno-0-324"></a>            <span class="n">evaluation_results</span><span class="p">[</span><span class="s2">&quot;dataset&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">run_info</span><span class="p">[</span><span class="s2">&quot;dataset&quot;</span><span class="p">]</span>
+<a id="__codelineno-0-325" name="__codelineno-0-325"></a>            <span class="n">results</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">evaluation_results</span><span class="p">)</span>
+<a id="__codelineno-0-326" name="__codelineno-0-326"></a>
+<a id="__codelineno-0-327" name="__codelineno-0-327"></a>            <span class="n">logging</span><span class="o">.</span><span class="n">info</span><span class="p">(</span>
+<a id="__codelineno-0-328" name="__codelineno-0-328"></a>                <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">detected_leaks</span><span class="p">)</span><span class="si">}</span><span class="s2"> / </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">evaluation_dataset_leakages</span><span class="p">)</span><span class="si">}</span><span class="s2"> Dataset Leaks&quot;</span>
+<a id="__codelineno-0-329" name="__codelineno-0-329"></a>            <span class="p">)</span>
+<a id="__codelineno-0-330" name="__codelineno-0-330"></a>            <span class="n">logging</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="n">evaluation_results</span><span class="p">)</span>
 <a id="__codelineno-0-331" name="__codelineno-0-331"></a>
-<a id="__codelineno-0-332" name="__codelineno-0-332"></a>        <span class="n">results</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="n">results</span><span class="p">)</span>
-<a id="__codelineno-0-333" name="__codelineno-0-333"></a>        <span class="c1"># https://towardsdatascience.com/performance-metrics-confusion-matrix-precision-recall-and-f1-score-a8fe076a2262</span>
-<a id="__codelineno-0-334" name="__codelineno-0-334"></a>        <span class="n">results</span><span class="p">[</span><span class="s2">&quot;precision&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">results</span><span class="p">[</span><span class="s2">&quot;true_positives&quot;</span><span class="p">]</span> <span class="o">/</span> <span class="p">(</span>
-<a id="__codelineno-0-335" name="__codelineno-0-335"></a>            <span class="n">results</span><span class="p">[</span><span class="s2">&quot;true_positives&quot;</span><span class="p">]</span> <span class="o">+</span> <span class="n">results</span><span class="p">[</span><span class="s2">&quot;false_positives&quot;</span><span class="p">]</span>
-<a id="__codelineno-0-336" name="__codelineno-0-336"></a>        <span class="p">)</span>
-<a id="__codelineno-0-337" name="__codelineno-0-337"></a>
-<a id="__codelineno-0-338" name="__codelineno-0-338"></a>        <span class="c1"># True-Positive-Rate (Recall)</span>
-<a id="__codelineno-0-339" name="__codelineno-0-339"></a>        <span class="n">results</span><span class="p">[</span><span class="s2">&quot;recall (TPR)&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">results</span><span class="p">[</span><span class="s2">&quot;true_positives&quot;</span><span class="p">]</span> <span class="o">/</span> <span class="p">(</span>
-<a id="__codelineno-0-340" name="__codelineno-0-340"></a>            <span class="n">results</span><span class="p">[</span><span class="s2">&quot;true_positives&quot;</span><span class="p">]</span> <span class="o">+</span> <span class="n">results</span><span class="p">[</span><span class="s2">&quot;false_negatives&quot;</span><span class="p">]</span>
-<a id="__codelineno-0-341" name="__codelineno-0-341"></a>        <span class="p">)</span>
-<a id="__codelineno-0-342" name="__codelineno-0-342"></a>        <span class="c1"># True-Negative-Rate (Specificity)</span>
-<a id="__codelineno-0-343" name="__codelineno-0-343"></a>        <span class="n">results</span><span class="p">[</span><span class="s2">&quot;TNR)&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">results</span><span class="p">[</span><span class="s2">&quot;true_negatives&quot;</span><span class="p">]</span> <span class="o">/</span> <span class="p">(</span>
-<a id="__codelineno-0-344" name="__codelineno-0-344"></a>            <span class="n">results</span><span class="p">[</span><span class="s2">&quot;true_negatives&quot;</span><span class="p">]</span> <span class="o">+</span> <span class="n">results</span><span class="p">[</span><span class="s2">&quot;false_positives&quot;</span><span class="p">]</span>
-<a id="__codelineno-0-345" name="__codelineno-0-345"></a>        <span class="p">)</span>
-<a id="__codelineno-0-346" name="__codelineno-0-346"></a>        <span class="c1"># False-Positive-Rate (Fall-Out)</span>
-<a id="__codelineno-0-347" name="__codelineno-0-347"></a>        <span class="n">results</span><span class="p">[</span><span class="s2">&quot;FPR&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">results</span><span class="p">[</span><span class="s2">&quot;false_positives&quot;</span><span class="p">]</span> <span class="o">/</span> <span class="p">(</span>
-<a id="__codelineno-0-348" name="__codelineno-0-348"></a>            <span class="n">results</span><span class="p">[</span><span class="s2">&quot;true_negatives&quot;</span><span class="p">]</span> <span class="o">+</span> <span class="n">results</span><span class="p">[</span><span class="s2">&quot;false_positives&quot;</span><span class="p">]</span>
-<a id="__codelineno-0-349" name="__codelineno-0-349"></a>        <span class="p">)</span>
-<a id="__codelineno-0-350" name="__codelineno-0-350"></a>        <span class="c1"># False-Negative-Rate (Miss-Rate)</span>
-<a id="__codelineno-0-351" name="__codelineno-0-351"></a>        <span class="n">results</span><span class="p">[</span><span class="s2">&quot;FNR&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">results</span><span class="p">[</span><span class="s2">&quot;false_negatives&quot;</span><span class="p">]</span> <span class="o">/</span> <span class="p">(</span>
-<a id="__codelineno-0-352" name="__codelineno-0-352"></a>            <span class="n">results</span><span class="p">[</span><span class="s2">&quot;true_positives&quot;</span><span class="p">]</span> <span class="o">+</span> <span class="n">results</span><span class="p">[</span><span class="s2">&quot;false_negatives&quot;</span><span class="p">]</span>
-<a id="__codelineno-0-353" name="__codelineno-0-353"></a>        <span class="p">)</span>
-<a id="__codelineno-0-354" name="__codelineno-0-354"></a>        <span class="c1"># F1</span>
-<a id="__codelineno-0-355" name="__codelineno-0-355"></a>        <span class="n">results</span><span class="p">[</span><span class="s2">&quot;F1&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="mi">2</span> <span class="o">*</span> <span class="n">results</span><span class="p">[</span><span class="s2">&quot;precision&quot;</span><span class="p">]</span> <span class="o">*</span> <span class="n">results</span><span class="p">[</span><span class="s2">&quot;recall (TPR)&quot;</span><span class="p">])</span> <span class="o">/</span> <span class="p">(</span>
-<a id="__codelineno-0-356" name="__codelineno-0-356"></a>            <span class="n">results</span><span class="p">[</span><span class="s2">&quot;precision&quot;</span><span class="p">]</span> <span class="o">+</span> <span class="n">results</span><span class="p">[</span><span class="s2">&quot;recall (TPR)&quot;</span><span class="p">]</span>
-<a id="__codelineno-0-357" name="__codelineno-0-357"></a>        <span class="p">)</span>
-<a id="__codelineno-0-358" name="__codelineno-0-358"></a>
-<a id="__codelineno-0-359" name="__codelineno-0-359"></a>        <span class="n">results</span> <span class="o">=</span> <span class="n">results</span><span class="o">.</span><span class="n">set_index</span><span class="p">([</span><span class="s2">&quot;dataset&quot;</span><span class="p">,</span> <span class="s2">&quot;method&quot;</span><span class="p">])</span>
+<a id="__codelineno-0-332" name="__codelineno-0-332"></a>            <span class="c1"># TODO: Draw plots with leaks and detected leaks</span>
+<a id="__codelineno-0-333" name="__codelineno-0-333"></a>
+<a id="__codelineno-0-334" name="__codelineno-0-334"></a>        <span class="n">results</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="n">results</span><span class="p">)</span>
+<a id="__codelineno-0-335" name="__codelineno-0-335"></a>        <span class="c1"># https://towardsdatascience.com/performance-metrics-confusion-matrix-precision-recall-and-f1-score-a8fe076a2262</span>
+<a id="__codelineno-0-336" name="__codelineno-0-336"></a>        <span class="n">results</span><span class="p">[</span><span class="s2">&quot;precision&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">results</span><span class="p">[</span><span class="s2">&quot;true_positives&quot;</span><span class="p">]</span> <span class="o">/</span> <span class="p">(</span>
+<a id="__codelineno-0-337" name="__codelineno-0-337"></a>            <span class="n">results</span><span class="p">[</span><span class="s2">&quot;true_positives&quot;</span><span class="p">]</span> <span class="o">+</span> <span class="n">results</span><span class="p">[</span><span class="s2">&quot;false_positives&quot;</span><span class="p">]</span>
+<a id="__codelineno-0-338" name="__codelineno-0-338"></a>        <span class="p">)</span>
+<a id="__codelineno-0-339" name="__codelineno-0-339"></a>
+<a id="__codelineno-0-340" name="__codelineno-0-340"></a>        <span class="c1"># True-Positive-Rate (Recall)</span>
+<a id="__codelineno-0-341" name="__codelineno-0-341"></a>        <span class="n">results</span><span class="p">[</span><span class="s2">&quot;recall (TPR)&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">results</span><span class="p">[</span><span class="s2">&quot;true_positives&quot;</span><span class="p">]</span> <span class="o">/</span> <span class="p">(</span>
+<a id="__codelineno-0-342" name="__codelineno-0-342"></a>            <span class="n">results</span><span class="p">[</span><span class="s2">&quot;true_positives&quot;</span><span class="p">]</span> <span class="o">+</span> <span class="n">results</span><span class="p">[</span><span class="s2">&quot;false_negatives&quot;</span><span class="p">]</span>
+<a id="__codelineno-0-343" name="__codelineno-0-343"></a>        <span class="p">)</span>
+<a id="__codelineno-0-344" name="__codelineno-0-344"></a>        <span class="c1"># True-Negative-Rate (Specificity)</span>
+<a id="__codelineno-0-345" name="__codelineno-0-345"></a>        <span class="n">results</span><span class="p">[</span><span class="s2">&quot;TNR)&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">results</span><span class="p">[</span><span class="s2">&quot;true_negatives&quot;</span><span class="p">]</span> <span class="o">/</span> <span class="p">(</span>
+<a id="__codelineno-0-346" name="__codelineno-0-346"></a>            <span class="n">results</span><span class="p">[</span><span class="s2">&quot;true_negatives&quot;</span><span class="p">]</span> <span class="o">+</span> <span class="n">results</span><span class="p">[</span><span class="s2">&quot;false_positives&quot;</span><span class="p">]</span>
+<a id="__codelineno-0-347" name="__codelineno-0-347"></a>        <span class="p">)</span>
+<a id="__codelineno-0-348" name="__codelineno-0-348"></a>        <span class="c1"># False-Positive-Rate (Fall-Out)</span>
+<a id="__codelineno-0-349" name="__codelineno-0-349"></a>        <span class="n">results</span><span class="p">[</span><span class="s2">&quot;FPR&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">results</span><span class="p">[</span><span class="s2">&quot;false_positives&quot;</span><span class="p">]</span> <span class="o">/</span> <span class="p">(</span>
+<a id="__codelineno-0-350" name="__codelineno-0-350"></a>            <span class="n">results</span><span class="p">[</span><span class="s2">&quot;true_negatives&quot;</span><span class="p">]</span> <span class="o">+</span> <span class="n">results</span><span class="p">[</span><span class="s2">&quot;false_positives&quot;</span><span class="p">]</span>
+<a id="__codelineno-0-351" name="__codelineno-0-351"></a>        <span class="p">)</span>
+<a id="__codelineno-0-352" name="__codelineno-0-352"></a>        <span class="c1"># False-Negative-Rate (Miss-Rate)</span>
+<a id="__codelineno-0-353" name="__codelineno-0-353"></a>        <span class="n">results</span><span class="p">[</span><span class="s2">&quot;FNR&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">results</span><span class="p">[</span><span class="s2">&quot;false_negatives&quot;</span><span class="p">]</span> <span class="o">/</span> <span class="p">(</span>
+<a id="__codelineno-0-354" name="__codelineno-0-354"></a>            <span class="n">results</span><span class="p">[</span><span class="s2">&quot;true_positives&quot;</span><span class="p">]</span> <span class="o">+</span> <span class="n">results</span><span class="p">[</span><span class="s2">&quot;false_negatives&quot;</span><span class="p">]</span>
+<a id="__codelineno-0-355" name="__codelineno-0-355"></a>        <span class="p">)</span>
+<a id="__codelineno-0-356" name="__codelineno-0-356"></a>        <span class="c1"># F1</span>
+<a id="__codelineno-0-357" name="__codelineno-0-357"></a>        <span class="n">results</span><span class="p">[</span><span class="s2">&quot;F1&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="mi">2</span> <span class="o">*</span> <span class="n">results</span><span class="p">[</span><span class="s2">&quot;precision&quot;</span><span class="p">]</span> <span class="o">*</span> <span class="n">results</span><span class="p">[</span><span class="s2">&quot;recall (TPR)&quot;</span><span class="p">])</span> <span class="o">/</span> <span class="p">(</span>
+<a id="__codelineno-0-358" name="__codelineno-0-358"></a>            <span class="n">results</span><span class="p">[</span><span class="s2">&quot;precision&quot;</span><span class="p">]</span> <span class="o">+</span> <span class="n">results</span><span class="p">[</span><span class="s2">&quot;recall (TPR)&quot;</span><span class="p">]</span>
+<a id="__codelineno-0-359" name="__codelineno-0-359"></a>        <span class="p">)</span>
 <a id="__codelineno-0-360" name="__codelineno-0-360"></a>
-<a id="__codelineno-0-361" name="__codelineno-0-361"></a>        <span class="n">os</span><span class="o">.</span><span class="n">makedirs</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">evaluation_results_dir</span><span class="p">,</span> <span class="n">exist_ok</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<a id="__codelineno-0-361" name="__codelineno-0-361"></a>        <span class="n">results</span> <span class="o">=</span> <span class="n">results</span><span class="o">.</span><span class="n">set_index</span><span class="p">([</span><span class="s2">&quot;dataset&quot;</span><span class="p">,</span> <span class="s2">&quot;method&quot;</span><span class="p">])</span>
 <a id="__codelineno-0-362" name="__codelineno-0-362"></a>
-<a id="__codelineno-0-363" name="__codelineno-0-363"></a>        <span class="n">columns</span> <span class="o">=</span> <span class="p">[</span>
-<a id="__codelineno-0-364" name="__codelineno-0-364"></a>            <span class="s2">&quot;TP&quot;</span><span class="p">,</span>
-<a id="__codelineno-0-365" name="__codelineno-0-365"></a>            <span class="s2">&quot;FP&quot;</span><span class="p">,</span>
-<a id="__codelineno-0-366" name="__codelineno-0-366"></a>            <span class="s2">&quot;TN&quot;</span><span class="p">,</span>
-<a id="__codelineno-0-367" name="__codelineno-0-367"></a>            <span class="s2">&quot;FN&quot;</span><span class="p">,</span>
-<a id="__codelineno-0-368" name="__codelineno-0-368"></a>            <span class="s2">&quot;TTD&quot;</span><span class="p">,</span>
-<a id="__codelineno-0-369" name="__codelineno-0-369"></a>            <span class="s2">&quot;wrongpipe&quot;</span><span class="p">,</span>
-<a id="__codelineno-0-370" name="__codelineno-0-370"></a>            <span class="s2">&quot;score&quot;</span><span class="p">,</span>
-<a id="__codelineno-0-371" name="__codelineno-0-371"></a>            <span class="s2">&quot;precision&quot;</span><span class="p">,</span>
-<a id="__codelineno-0-372" name="__codelineno-0-372"></a>            <span class="s2">&quot;recall (TPR)&quot;</span><span class="p">,</span>
-<a id="__codelineno-0-373" name="__codelineno-0-373"></a>            <span class="s2">&quot;TNR&quot;</span><span class="p">,</span>
-<a id="__codelineno-0-374" name="__codelineno-0-374"></a>            <span class="s2">&quot;FPR&quot;</span><span class="p">,</span>
-<a id="__codelineno-0-375" name="__codelineno-0-375"></a>            <span class="s2">&quot;FNR&quot;</span><span class="p">,</span>
-<a id="__codelineno-0-376" name="__codelineno-0-376"></a>            <span class="s2">&quot;F1&quot;</span><span class="p">,</span>
-<a id="__codelineno-0-377" name="__codelineno-0-377"></a>        <span class="p">]</span>
-<a id="__codelineno-0-378" name="__codelineno-0-378"></a>        <span class="n">results</span><span class="o">.</span><span class="n">columns</span> <span class="o">=</span> <span class="n">columns</span>
-<a id="__codelineno-0-379" name="__codelineno-0-379"></a>
-<a id="__codelineno-0-380" name="__codelineno-0-380"></a>        <span class="nb">print</span><span class="p">(</span><span class="n">tabulate</span><span class="p">(</span><span class="n">results</span><span class="p">,</span> <span class="n">headers</span><span class="o">=</span><span class="s2">&quot;keys&quot;</span><span class="p">))</span>
-<a id="__codelineno-0-381" name="__codelineno-0-381"></a>        <span class="n">results</span><span class="o">.</span><span class="n">to_csv</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">evaluation_results_dir</span><span class="p">,</span> <span class="s2">&quot;results.csv&quot;</span><span class="p">))</span>
-<a id="__codelineno-0-382" name="__codelineno-0-382"></a>
-<a id="__codelineno-0-383" name="__codelineno-0-383"></a>        <span class="n">results</span><span class="o">.</span><span class="n">style</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">escape</span><span class="o">=</span><span class="s2">&quot;latex&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">set_table_styles</span><span class="p">(</span>
-<a id="__codelineno-0-384" name="__codelineno-0-384"></a>            <span class="p">[</span>
-<a id="__codelineno-0-385" name="__codelineno-0-385"></a>                <span class="c1"># {&#39;selector&#39;: &#39;toprule&#39;, &#39;props&#39;: &#39;:hline;&#39;},</span>
-<a id="__codelineno-0-386" name="__codelineno-0-386"></a>                <span class="p">{</span><span class="s2">&quot;selector&quot;</span><span class="p">:</span> <span class="s2">&quot;midrule&quot;</span><span class="p">,</span> <span class="s2">&quot;props&quot;</span><span class="p">:</span> <span class="s2">&quot;:hline;&quot;</span><span class="p">},</span>
-<a id="__codelineno-0-387" name="__codelineno-0-387"></a>                <span class="c1"># {&#39;selector&#39;: &#39;bottomrule&#39;, &#39;props&#39;: &#39;:hline;&#39;},</span>
-<a id="__codelineno-0-388" name="__codelineno-0-388"></a>            <span class="p">],</span>
-<a id="__codelineno-0-389" name="__codelineno-0-389"></a>            <span class="n">overwrite</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
-<a id="__codelineno-0-390" name="__codelineno-0-390"></a>        <span class="p">)</span><span class="o">.</span><span class="n">relabel_index</span><span class="p">(</span><span class="n">columns</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="s2">&quot;columns&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">to_latex</span><span class="p">(</span>
-<a id="__codelineno-0-391" name="__codelineno-0-391"></a>            <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">evaluation_results_dir</span><span class="p">,</span> <span class="s2">&quot;results.tex&quot;</span><span class="p">),</span>
-<a id="__codelineno-0-392" name="__codelineno-0-392"></a>            <span class="n">position_float</span><span class="o">=</span><span class="s2">&quot;centering&quot;</span><span class="p">,</span>
-<a id="__codelineno-0-393" name="__codelineno-0-393"></a>            <span class="n">clines</span><span class="o">=</span><span class="s2">&quot;all;data&quot;</span><span class="p">,</span>
-<a id="__codelineno-0-394" name="__codelineno-0-394"></a>            <span class="n">column_format</span><span class="o">=</span><span class="s2">&quot;ll|&quot;</span> <span class="o">+</span> <span class="s2">&quot;r&quot;</span> <span class="o">*</span> <span class="nb">len</span><span class="p">(</span><span class="n">columns</span><span class="p">),</span>
-<a id="__codelineno-0-395" name="__codelineno-0-395"></a>            <span class="n">position</span><span class="o">=</span><span class="s2">&quot;H&quot;</span><span class="p">,</span>
-<a id="__codelineno-0-396" name="__codelineno-0-396"></a>            <span class="n">label</span><span class="o">=</span><span class="s2">&quot;table:benchmark_results&quot;</span><span class="p">,</span>
-<a id="__codelineno-0-397" name="__codelineno-0-397"></a>            <span class="n">caption</span><span class="o">=</span><span class="s2">&quot;Overview of the benchmark results.&quot;</span><span class="p">,</span>
-<a id="__codelineno-0-398" name="__codelineno-0-398"></a>        <span class="p">)</span>
+<a id="__codelineno-0-363" name="__codelineno-0-363"></a>        <span class="n">os</span><span class="o">.</span><span class="n">makedirs</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">evaluation_results_dir</span><span class="p">,</span> <span class="n">exist_ok</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<a id="__codelineno-0-364" name="__codelineno-0-364"></a>
+<a id="__codelineno-0-365" name="__codelineno-0-365"></a>        <span class="n">columns</span> <span class="o">=</span> <span class="p">[</span>
+<a id="__codelineno-0-366" name="__codelineno-0-366"></a>            <span class="s2">&quot;TP&quot;</span><span class="p">,</span>
+<a id="__codelineno-0-367" name="__codelineno-0-367"></a>            <span class="s2">&quot;FP&quot;</span><span class="p">,</span>
+<a id="__codelineno-0-368" name="__codelineno-0-368"></a>            <span class="s2">&quot;TN&quot;</span><span class="p">,</span>
+<a id="__codelineno-0-369" name="__codelineno-0-369"></a>            <span class="s2">&quot;FN&quot;</span><span class="p">,</span>
+<a id="__codelineno-0-370" name="__codelineno-0-370"></a>            <span class="s2">&quot;TTD&quot;</span><span class="p">,</span>
+<a id="__codelineno-0-371" name="__codelineno-0-371"></a>            <span class="s2">&quot;wrongpipe&quot;</span><span class="p">,</span>
+<a id="__codelineno-0-372" name="__codelineno-0-372"></a>            <span class="s2">&quot;score&quot;</span><span class="p">,</span>
+<a id="__codelineno-0-373" name="__codelineno-0-373"></a>            <span class="s2">&quot;precision&quot;</span><span class="p">,</span>
+<a id="__codelineno-0-374" name="__codelineno-0-374"></a>            <span class="s2">&quot;recall (TPR)&quot;</span><span class="p">,</span>
+<a id="__codelineno-0-375" name="__codelineno-0-375"></a>            <span class="s2">&quot;TNR&quot;</span><span class="p">,</span>
+<a id="__codelineno-0-376" name="__codelineno-0-376"></a>            <span class="s2">&quot;FPR&quot;</span><span class="p">,</span>
+<a id="__codelineno-0-377" name="__codelineno-0-377"></a>            <span class="s2">&quot;FNR&quot;</span><span class="p">,</span>
+<a id="__codelineno-0-378" name="__codelineno-0-378"></a>            <span class="s2">&quot;F1&quot;</span><span class="p">,</span>
+<a id="__codelineno-0-379" name="__codelineno-0-379"></a>        <span class="p">]</span>
+<a id="__codelineno-0-380" name="__codelineno-0-380"></a>        <span class="n">results</span><span class="o">.</span><span class="n">columns</span> <span class="o">=</span> <span class="n">columns</span>
+<a id="__codelineno-0-381" name="__codelineno-0-381"></a>
+<a id="__codelineno-0-382" name="__codelineno-0-382"></a>        <span class="nb">print</span><span class="p">(</span><span class="n">tabulate</span><span class="p">(</span><span class="n">results</span><span class="p">,</span> <span class="n">headers</span><span class="o">=</span><span class="s2">&quot;keys&quot;</span><span class="p">))</span>
+<a id="__codelineno-0-383" name="__codelineno-0-383"></a>        <span class="n">results</span><span class="o">.</span><span class="n">to_csv</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">evaluation_results_dir</span><span class="p">,</span> <span class="s2">&quot;results.csv&quot;</span><span class="p">))</span>
+<a id="__codelineno-0-384" name="__codelineno-0-384"></a>
+<a id="__codelineno-0-385" name="__codelineno-0-385"></a>        <span class="n">results</span><span class="o">.</span><span class="n">style</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">escape</span><span class="o">=</span><span class="s2">&quot;latex&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">set_table_styles</span><span class="p">(</span>
+<a id="__codelineno-0-386" name="__codelineno-0-386"></a>            <span class="p">[</span>
+<a id="__codelineno-0-387" name="__codelineno-0-387"></a>                <span class="c1"># {&#39;selector&#39;: &#39;toprule&#39;, &#39;props&#39;: &#39;:hline;&#39;},</span>
+<a id="__codelineno-0-388" name="__codelineno-0-388"></a>                <span class="p">{</span><span class="s2">&quot;selector&quot;</span><span class="p">:</span> <span class="s2">&quot;midrule&quot;</span><span class="p">,</span> <span class="s2">&quot;props&quot;</span><span class="p">:</span> <span class="s2">&quot;:hline;&quot;</span><span class="p">},</span>
+<a id="__codelineno-0-389" name="__codelineno-0-389"></a>                <span class="c1"># {&#39;selector&#39;: &#39;bottomrule&#39;, &#39;props&#39;: &#39;:hline;&#39;},</span>
+<a id="__codelineno-0-390" name="__codelineno-0-390"></a>            <span class="p">],</span>
+<a id="__codelineno-0-391" name="__codelineno-0-391"></a>            <span class="n">overwrite</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+<a id="__codelineno-0-392" name="__codelineno-0-392"></a>        <span class="p">)</span><span class="o">.</span><span class="n">relabel_index</span><span class="p">(</span><span class="n">columns</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="s2">&quot;columns&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">to_latex</span><span class="p">(</span>
+<a id="__codelineno-0-393" name="__codelineno-0-393"></a>            <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">evaluation_results_dir</span><span class="p">,</span> <span class="s2">&quot;results.tex&quot;</span><span class="p">),</span>
+<a id="__codelineno-0-394" name="__codelineno-0-394"></a>            <span class="n">position_float</span><span class="o">=</span><span class="s2">&quot;centering&quot;</span><span class="p">,</span>
+<a id="__codelineno-0-395" name="__codelineno-0-395"></a>            <span class="n">clines</span><span class="o">=</span><span class="s2">&quot;all;data&quot;</span><span class="p">,</span>
+<a id="__codelineno-0-396" name="__codelineno-0-396"></a>            <span class="n">column_format</span><span class="o">=</span><span class="s2">&quot;ll|&quot;</span> <span class="o">+</span> <span class="s2">&quot;r&quot;</span> <span class="o">*</span> <span class="nb">len</span><span class="p">(</span><span class="n">columns</span><span class="p">),</span>
+<a id="__codelineno-0-397" name="__codelineno-0-397"></a>            <span class="n">position</span><span class="o">=</span><span class="s2">&quot;H&quot;</span><span class="p">,</span>
+<a id="__codelineno-0-398" name="__codelineno-0-398"></a>            <span class="n">label</span><span class="o">=</span><span class="s2">&quot;table:benchmark_results&quot;</span><span class="p">,</span>
+<a id="__codelineno-0-399" name="__codelineno-0-399"></a>            <span class="n">caption</span><span class="o">=</span><span class="s2">&quot;Overview of the benchmark results.&quot;</span><span class="p">,</span>
+<a id="__codelineno-0-400" name="__codelineno-0-400"></a>        <span class="p">)</span>
 </code></pre></div></td></tr></table></div>
         </details>
 
@@ -1797,9 +1801,7 @@
 
       <details class="quote">
         <summary>Source code in <code>ldimbenchmark/benchmark.py</code></summary>
-        <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-0-230">230</a></span>
-<span class="normal"><a href="#__codelineno-0-231">231</a></span>
-<span class="normal"><a href="#__codelineno-0-232">232</a></span>
+        <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-0-232">232</a></span>
 <span class="normal"><a href="#__codelineno-0-233">233</a></span>
 <span class="normal"><a href="#__codelineno-0-234">234</a></span>
 <span class="normal"><a href="#__codelineno-0-235">235</a></span>
@@ -1808,18 +1810,20 @@
 <span class="normal"><a href="#__codelineno-0-238">238</a></span>
 <span class="normal"><a href="#__codelineno-0-239">239</a></span>
 <span class="normal"><a href="#__codelineno-0-240">240</a></span>
-<span class="normal"><a href="#__codelineno-0-241">241</a></span></pre></div></td><td class="code"><div><pre><span></span><code><a id="__codelineno-0-230" name="__codelineno-0-230"></a><span class="k">def</span> <span class="nf">add_docker_methods</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">methods</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]):</span>
-<a id="__codelineno-0-231" name="__codelineno-0-231"></a>    <span class="sd">&quot;&quot;&quot;</span>
-<a id="__codelineno-0-232" name="__codelineno-0-232"></a><span class="sd">    Adds docker methods to the benchmark.</span>
-<a id="__codelineno-0-233" name="__codelineno-0-233"></a>
-<a id="__codelineno-0-234" name="__codelineno-0-234"></a><span class="sd">    :param methods: List of docker images (with tag) which run the according method</span>
-<a id="__codelineno-0-235" name="__codelineno-0-235"></a><span class="sd">    &quot;&quot;&quot;</span>
-<a id="__codelineno-0-236" name="__codelineno-0-236"></a>    <span class="k">for</span> <span class="n">dataset</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">datasets</span><span class="p">:</span>
-<a id="__codelineno-0-237" name="__codelineno-0-237"></a>        <span class="k">for</span> <span class="n">method</span> <span class="ow">in</span> <span class="n">methods</span><span class="p">:</span>
-<a id="__codelineno-0-238" name="__codelineno-0-238"></a>            <span class="c1"># TODO: Use right hyperparameters</span>
-<a id="__codelineno-0-239" name="__codelineno-0-239"></a>            <span class="bp">self</span><span class="o">.</span><span class="n">experiments</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
-<a id="__codelineno-0-240" name="__codelineno-0-240"></a>                <span class="n">DockerMethodRunner</span><span class="p">(</span><span class="n">method</span><span class="p">,</span> <span class="n">dataset</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">hyperparameters</span><span class="p">)</span>
-<a id="__codelineno-0-241" name="__codelineno-0-241"></a>            <span class="p">)</span>
+<span class="normal"><a href="#__codelineno-0-241">241</a></span>
+<span class="normal"><a href="#__codelineno-0-242">242</a></span>
+<span class="normal"><a href="#__codelineno-0-243">243</a></span></pre></div></td><td class="code"><div><pre><span></span><code><a id="__codelineno-0-232" name="__codelineno-0-232"></a><span class="k">def</span> <span class="nf">add_docker_methods</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">methods</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]):</span>
+<a id="__codelineno-0-233" name="__codelineno-0-233"></a>    <span class="sd">&quot;&quot;&quot;</span>
+<a id="__codelineno-0-234" name="__codelineno-0-234"></a><span class="sd">    Adds docker methods to the benchmark.</span>
+<a id="__codelineno-0-235" name="__codelineno-0-235"></a>
+<a id="__codelineno-0-236" name="__codelineno-0-236"></a><span class="sd">    :param methods: List of docker images (with tag) which run the according method</span>
+<a id="__codelineno-0-237" name="__codelineno-0-237"></a><span class="sd">    &quot;&quot;&quot;</span>
+<a id="__codelineno-0-238" name="__codelineno-0-238"></a>    <span class="k">for</span> <span class="n">dataset</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">datasets</span><span class="p">:</span>
+<a id="__codelineno-0-239" name="__codelineno-0-239"></a>        <span class="k">for</span> <span class="n">method</span> <span class="ow">in</span> <span class="n">methods</span><span class="p">:</span>
+<a id="__codelineno-0-240" name="__codelineno-0-240"></a>            <span class="c1"># TODO: Use right hyperparameters</span>
+<a id="__codelineno-0-241" name="__codelineno-0-241"></a>            <span class="bp">self</span><span class="o">.</span><span class="n">experiments</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
+<a id="__codelineno-0-242" name="__codelineno-0-242"></a>                <span class="n">DockerMethodRunner</span><span class="p">(</span><span class="n">method</span><span class="p">,</span> <span class="n">dataset</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">hyperparameters</span><span class="p">)</span>
+<a id="__codelineno-0-243" name="__codelineno-0-243"></a>            <span class="p">)</span>
 </code></pre></div></td></tr></table></div>
       </details>
   </div>
@@ -1843,9 +1847,7 @@
 
       <details class="quote">
         <summary>Source code in <code>ldimbenchmark/benchmark.py</code></summary>
-        <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-0-205">205</a></span>
-<span class="normal"><a href="#__codelineno-0-206">206</a></span>
-<span class="normal"><a href="#__codelineno-0-207">207</a></span>
+        <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-0-207">207</a></span>
 <span class="normal"><a href="#__codelineno-0-208">208</a></span>
 <span class="normal"><a href="#__codelineno-0-209">209</a></span>
 <span class="normal"><a href="#__codelineno-0-210">210</a></span>
@@ -1866,30 +1868,32 @@
 <span class="normal"><a href="#__codelineno-0-225">225</a></span>
 <span class="normal"><a href="#__codelineno-0-226">226</a></span>
 <span class="normal"><a href="#__codelineno-0-227">227</a></span>
-<span class="normal"><a href="#__codelineno-0-228">228</a></span></pre></div></td><td class="code"><div><pre><span></span><code><a id="__codelineno-0-205" name="__codelineno-0-205"></a><span class="k">def</span> <span class="nf">add_local_methods</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">methods</span><span class="p">,</span> <span class="n">goal</span><span class="o">=</span><span class="s2">&quot;detect_offline&quot;</span><span class="p">):</span>
-<a id="__codelineno-0-206" name="__codelineno-0-206"></a>    <span class="sd">&quot;&quot;&quot;</span>
-<a id="__codelineno-0-207" name="__codelineno-0-207"></a><span class="sd">    Adds local methods to the benchmark.</span>
-<a id="__codelineno-0-208" name="__codelineno-0-208"></a>
-<a id="__codelineno-0-209" name="__codelineno-0-209"></a><span class="sd">    :param methods: List of local methods</span>
-<a id="__codelineno-0-210" name="__codelineno-0-210"></a><span class="sd">    &quot;&quot;&quot;</span>
-<a id="__codelineno-0-211" name="__codelineno-0-211"></a>    <span class="k">for</span> <span class="n">dataset</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">datasets</span><span class="p">:</span>
-<a id="__codelineno-0-212" name="__codelineno-0-212"></a>        <span class="k">for</span> <span class="n">method</span> <span class="ow">in</span> <span class="n">methods</span><span class="p">:</span>
-<a id="__codelineno-0-213" name="__codelineno-0-213"></a>            <span class="n">hyperparameters</span> <span class="o">=</span> <span class="kc">None</span>
-<a id="__codelineno-0-214" name="__codelineno-0-214"></a>            <span class="k">if</span> <span class="n">method</span><span class="o">.</span><span class="n">name</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">hyperparameters</span><span class="p">:</span>
-<a id="__codelineno-0-215" name="__codelineno-0-215"></a>                <span class="k">if</span> <span class="n">dataset</span><span class="o">.</span><span class="n">name</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">hyperparameters</span><span class="p">[</span><span class="n">method</span><span class="o">.</span><span class="n">name</span><span class="p">]:</span>
-<a id="__codelineno-0-216" name="__codelineno-0-216"></a>                    <span class="n">hyperparameters</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">hyperparameters</span><span class="p">[</span><span class="n">method</span><span class="o">.</span><span class="n">name</span><span class="p">][</span>
-<a id="__codelineno-0-217" name="__codelineno-0-217"></a>                        <span class="n">dataset</span><span class="o">.</span><span class="n">name</span>
-<a id="__codelineno-0-218" name="__codelineno-0-218"></a>                    <span class="p">]</span>
-<a id="__codelineno-0-219" name="__codelineno-0-219"></a>            <span class="c1"># TODO: Use right hyperparameters</span>
-<a id="__codelineno-0-220" name="__codelineno-0-220"></a>            <span class="bp">self</span><span class="o">.</span><span class="n">experiments</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
-<a id="__codelineno-0-221" name="__codelineno-0-221"></a>                <span class="n">LocalMethodRunner</span><span class="p">(</span>
-<a id="__codelineno-0-222" name="__codelineno-0-222"></a>                    <span class="n">method</span><span class="p">,</span>
-<a id="__codelineno-0-223" name="__codelineno-0-223"></a>                    <span class="n">dataset</span><span class="p">,</span>
-<a id="__codelineno-0-224" name="__codelineno-0-224"></a>                    <span class="n">hyperparameters</span><span class="o">=</span><span class="n">hyperparameters</span><span class="p">,</span>
-<a id="__codelineno-0-225" name="__codelineno-0-225"></a>                    <span class="n">resultsFolder</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">runner_results_dir</span><span class="p">,</span>
-<a id="__codelineno-0-226" name="__codelineno-0-226"></a>                    <span class="n">debug</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">debug</span><span class="p">,</span>
-<a id="__codelineno-0-227" name="__codelineno-0-227"></a>                <span class="p">)</span>
-<a id="__codelineno-0-228" name="__codelineno-0-228"></a>            <span class="p">)</span>
+<span class="normal"><a href="#__codelineno-0-228">228</a></span>
+<span class="normal"><a href="#__codelineno-0-229">229</a></span>
+<span class="normal"><a href="#__codelineno-0-230">230</a></span></pre></div></td><td class="code"><div><pre><span></span><code><a id="__codelineno-0-207" name="__codelineno-0-207"></a><span class="k">def</span> <span class="nf">add_local_methods</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">methods</span><span class="p">,</span> <span class="n">goal</span><span class="o">=</span><span class="s2">&quot;detect_offline&quot;</span><span class="p">):</span>
+<a id="__codelineno-0-208" name="__codelineno-0-208"></a>    <span class="sd">&quot;&quot;&quot;</span>
+<a id="__codelineno-0-209" name="__codelineno-0-209"></a><span class="sd">    Adds local methods to the benchmark.</span>
+<a id="__codelineno-0-210" name="__codelineno-0-210"></a>
+<a id="__codelineno-0-211" name="__codelineno-0-211"></a><span class="sd">    :param methods: List of local methods</span>
+<a id="__codelineno-0-212" name="__codelineno-0-212"></a><span class="sd">    &quot;&quot;&quot;</span>
+<a id="__codelineno-0-213" name="__codelineno-0-213"></a>    <span class="k">for</span> <span class="n">dataset</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">datasets</span><span class="p">:</span>
+<a id="__codelineno-0-214" name="__codelineno-0-214"></a>        <span class="k">for</span> <span class="n">method</span> <span class="ow">in</span> <span class="n">methods</span><span class="p">:</span>
+<a id="__codelineno-0-215" name="__codelineno-0-215"></a>            <span class="n">hyperparameters</span> <span class="o">=</span> <span class="kc">None</span>
+<a id="__codelineno-0-216" name="__codelineno-0-216"></a>            <span class="k">if</span> <span class="n">method</span><span class="o">.</span><span class="n">name</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">hyperparameters</span><span class="p">:</span>
+<a id="__codelineno-0-217" name="__codelineno-0-217"></a>                <span class="k">if</span> <span class="n">dataset</span><span class="o">.</span><span class="n">name</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">hyperparameters</span><span class="p">[</span><span class="n">method</span><span class="o">.</span><span class="n">name</span><span class="p">]:</span>
+<a id="__codelineno-0-218" name="__codelineno-0-218"></a>                    <span class="n">hyperparameters</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">hyperparameters</span><span class="p">[</span><span class="n">method</span><span class="o">.</span><span class="n">name</span><span class="p">][</span>
+<a id="__codelineno-0-219" name="__codelineno-0-219"></a>                        <span class="n">dataset</span><span class="o">.</span><span class="n">name</span>
+<a id="__codelineno-0-220" name="__codelineno-0-220"></a>                    <span class="p">]</span>
+<a id="__codelineno-0-221" name="__codelineno-0-221"></a>            <span class="c1"># TODO: Use right hyperparameters</span>
+<a id="__codelineno-0-222" name="__codelineno-0-222"></a>            <span class="bp">self</span><span class="o">.</span><span class="n">experiments</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
+<a id="__codelineno-0-223" name="__codelineno-0-223"></a>                <span class="n">LocalMethodRunner</span><span class="p">(</span>
+<a id="__codelineno-0-224" name="__codelineno-0-224"></a>                    <span class="n">method</span><span class="p">,</span>
+<a id="__codelineno-0-225" name="__codelineno-0-225"></a>                    <span class="n">dataset</span><span class="p">,</span>
+<a id="__codelineno-0-226" name="__codelineno-0-226"></a>                    <span class="n">hyperparameters</span><span class="o">=</span><span class="n">hyperparameters</span><span class="p">,</span>
+<a id="__codelineno-0-227" name="__codelineno-0-227"></a>                    <span class="n">resultsFolder</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">runner_results_dir</span><span class="p">,</span>
+<a id="__codelineno-0-228" name="__codelineno-0-228"></a>                    <span class="n">debug</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">debug</span><span class="p">,</span>
+<a id="__codelineno-0-229" name="__codelineno-0-229"></a>                <span class="p">)</span>
+<a id="__codelineno-0-230" name="__codelineno-0-230"></a>            <span class="p">)</span>
 </code></pre></div></td></tr></table></div>
       </details>
   </div>
@@ -1913,9 +1917,7 @@
 
       <details class="quote">
         <summary>Source code in <code>ldimbenchmark/benchmark.py</code></summary>
-        <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-0-283">283</a></span>
-<span class="normal"><a href="#__codelineno-0-284">284</a></span>
-<span class="normal"><a href="#__codelineno-0-285">285</a></span>
+        <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-0-285">285</a></span>
 <span class="normal"><a href="#__codelineno-0-286">286</a></span>
 <span class="normal"><a href="#__codelineno-0-287">287</a></span>
 <span class="normal"><a href="#__codelineno-0-288">288</a></span>
@@ -2028,122 +2030,124 @@
 <span class="normal"><a href="#__codelineno-0-395">395</a></span>
 <span class="normal"><a href="#__codelineno-0-396">396</a></span>
 <span class="normal"><a href="#__codelineno-0-397">397</a></span>
-<span class="normal"><a href="#__codelineno-0-398">398</a></span></pre></div></td><td class="code"><div><pre><span></span><code><a id="__codelineno-0-283" name="__codelineno-0-283"></a><span class="k">def</span> <span class="nf">evaluate</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-<a id="__codelineno-0-284" name="__codelineno-0-284"></a>    <span class="sd">&quot;&quot;&quot;</span>
-<a id="__codelineno-0-285" name="__codelineno-0-285"></a><span class="sd">    Evaluates the benchmark.</span>
-<a id="__codelineno-0-286" name="__codelineno-0-286"></a>
-<a id="__codelineno-0-287" name="__codelineno-0-287"></a><span class="sd">    :param results_dir: Directory where the results are stored</span>
-<a id="__codelineno-0-288" name="__codelineno-0-288"></a><span class="sd">    &quot;&quot;&quot;</span>
-<a id="__codelineno-0-289" name="__codelineno-0-289"></a>    <span class="c1"># if self.results_dir is None and len(self.results.keys()) == 0:</span>
-<a id="__codelineno-0-290" name="__codelineno-0-290"></a>    <span class="c1">#     raise Exception(&quot;No results to evaluate&quot;)</span>
-<a id="__codelineno-0-291" name="__codelineno-0-291"></a>
-<a id="__codelineno-0-292" name="__codelineno-0-292"></a>    <span class="c1"># if results_dir:</span>
-<a id="__codelineno-0-293" name="__codelineno-0-293"></a>    <span class="c1">#     self.results = self.load_results(results_dir)</span>
-<a id="__codelineno-0-294" name="__codelineno-0-294"></a>
-<a id="__codelineno-0-295" name="__codelineno-0-295"></a>    <span class="c1"># TODO: Evaluate results</span>
-<a id="__codelineno-0-296" name="__codelineno-0-296"></a>    <span class="n">results</span> <span class="o">=</span> <span class="p">[]</span>
-<a id="__codelineno-0-297" name="__codelineno-0-297"></a>
-<a id="__codelineno-0-298" name="__codelineno-0-298"></a>    <span class="k">for</span> <span class="n">experiment_result</span> <span class="ow">in</span> <span class="n">glob</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">runner_results_dir</span><span class="p">,</span> <span class="s2">&quot;*&quot;</span><span class="p">,</span> <span class="s2">&quot;&quot;</span><span class="p">)):</span>
-<a id="__codelineno-0-299" name="__codelineno-0-299"></a>        <span class="n">detected_leaks</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_csv</span><span class="p">(</span>
-<a id="__codelineno-0-300" name="__codelineno-0-300"></a>            <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">experiment_result</span><span class="p">,</span> <span class="s2">&quot;detected_leaks.csv&quot;</span><span class="p">),</span>
-<a id="__codelineno-0-301" name="__codelineno-0-301"></a>            <span class="n">parse_dates</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
-<a id="__codelineno-0-302" name="__codelineno-0-302"></a>        <span class="p">)</span>  <span class="c1"># .to_dict(&quot;records&quot;)</span>
-<a id="__codelineno-0-303" name="__codelineno-0-303"></a>
-<a id="__codelineno-0-304" name="__codelineno-0-304"></a>        <span class="n">evaluation_dataset_leakages</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_csv</span><span class="p">(</span>
-<a id="__codelineno-0-305" name="__codelineno-0-305"></a>            <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">experiment_result</span><span class="p">,</span> <span class="s2">&quot;should_have_detected_leaks.csv&quot;</span><span class="p">),</span>
-<a id="__codelineno-0-306" name="__codelineno-0-306"></a>            <span class="n">parse_dates</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
-<a id="__codelineno-0-307" name="__codelineno-0-307"></a>        <span class="p">)</span>  <span class="c1"># .to_dict(&quot;records&quot;)</span>
-<a id="__codelineno-0-308" name="__codelineno-0-308"></a>
-<a id="__codelineno-0-309" name="__codelineno-0-309"></a>        <span class="n">run_info</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_csv</span><span class="p">(</span>
-<a id="__codelineno-0-310" name="__codelineno-0-310"></a>            <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">experiment_result</span><span class="p">,</span> <span class="s2">&quot;run_info.csv&quot;</span><span class="p">)</span>
-<a id="__codelineno-0-311" name="__codelineno-0-311"></a>        <span class="p">)</span><span class="o">.</span><span class="n">iloc</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
-<a id="__codelineno-0-312" name="__codelineno-0-312"></a>        <span class="c1"># detected_leaks = parse_obj_as(List[BenchmarkLeakageResult], detected_leaks)</span>
-<a id="__codelineno-0-313" name="__codelineno-0-313"></a>        <span class="c1"># evaluation_dataset_leakages = parse_obj_as(</span>
-<a id="__codelineno-0-314" name="__codelineno-0-314"></a>        <span class="c1">#     List[BenchmarkLeakageResult], evaluation_dataset_leakages</span>
-<a id="__codelineno-0-315" name="__codelineno-0-315"></a>        <span class="c1"># )</span>
-<a id="__codelineno-0-316" name="__codelineno-0-316"></a>
-<a id="__codelineno-0-317" name="__codelineno-0-317"></a>        <span class="c1"># TODO: Ignore Detections outside of the evaluation period</span>
-<a id="__codelineno-0-318" name="__codelineno-0-318"></a>        <span class="n">evaluation_results</span> <span class="o">=</span> <span class="n">evaluate_leakages</span><span class="p">(</span>
-<a id="__codelineno-0-319" name="__codelineno-0-319"></a>            <span class="n">evaluation_dataset_leakages</span><span class="p">,</span> <span class="n">detected_leaks</span>
-<a id="__codelineno-0-320" name="__codelineno-0-320"></a>        <span class="p">)</span>
-<a id="__codelineno-0-321" name="__codelineno-0-321"></a>        <span class="n">evaluation_results</span><span class="p">[</span><span class="s2">&quot;method&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">run_info</span><span class="p">[</span><span class="s2">&quot;method&quot;</span><span class="p">]</span>
-<a id="__codelineno-0-322" name="__codelineno-0-322"></a>        <span class="n">evaluation_results</span><span class="p">[</span><span class="s2">&quot;dataset&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">run_info</span><span class="p">[</span><span class="s2">&quot;dataset&quot;</span><span class="p">]</span>
-<a id="__codelineno-0-323" name="__codelineno-0-323"></a>        <span class="n">results</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">evaluation_results</span><span class="p">)</span>
-<a id="__codelineno-0-324" name="__codelineno-0-324"></a>
-<a id="__codelineno-0-325" name="__codelineno-0-325"></a>        <span class="n">logging</span><span class="o">.</span><span class="n">info</span><span class="p">(</span>
-<a id="__codelineno-0-326" name="__codelineno-0-326"></a>            <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">detected_leaks</span><span class="p">)</span><span class="si">}</span><span class="s2"> / </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">evaluation_dataset_leakages</span><span class="p">)</span><span class="si">}</span><span class="s2"> Dataset Leaks&quot;</span>
-<a id="__codelineno-0-327" name="__codelineno-0-327"></a>        <span class="p">)</span>
-<a id="__codelineno-0-328" name="__codelineno-0-328"></a>        <span class="n">logging</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="n">evaluation_results</span><span class="p">)</span>
-<a id="__codelineno-0-329" name="__codelineno-0-329"></a>
-<a id="__codelineno-0-330" name="__codelineno-0-330"></a>        <span class="c1"># TODO: Draw plots with leaks and detected leaks</span>
+<span class="normal"><a href="#__codelineno-0-398">398</a></span>
+<span class="normal"><a href="#__codelineno-0-399">399</a></span>
+<span class="normal"><a href="#__codelineno-0-400">400</a></span></pre></div></td><td class="code"><div><pre><span></span><code><a id="__codelineno-0-285" name="__codelineno-0-285"></a><span class="k">def</span> <span class="nf">evaluate</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<a id="__codelineno-0-286" name="__codelineno-0-286"></a>    <span class="sd">&quot;&quot;&quot;</span>
+<a id="__codelineno-0-287" name="__codelineno-0-287"></a><span class="sd">    Evaluates the benchmark.</span>
+<a id="__codelineno-0-288" name="__codelineno-0-288"></a>
+<a id="__codelineno-0-289" name="__codelineno-0-289"></a><span class="sd">    :param results_dir: Directory where the results are stored</span>
+<a id="__codelineno-0-290" name="__codelineno-0-290"></a><span class="sd">    &quot;&quot;&quot;</span>
+<a id="__codelineno-0-291" name="__codelineno-0-291"></a>    <span class="c1"># if self.results_dir is None and len(self.results.keys()) == 0:</span>
+<a id="__codelineno-0-292" name="__codelineno-0-292"></a>    <span class="c1">#     raise Exception(&quot;No results to evaluate&quot;)</span>
+<a id="__codelineno-0-293" name="__codelineno-0-293"></a>
+<a id="__codelineno-0-294" name="__codelineno-0-294"></a>    <span class="c1"># if results_dir:</span>
+<a id="__codelineno-0-295" name="__codelineno-0-295"></a>    <span class="c1">#     self.results = self.load_results(results_dir)</span>
+<a id="__codelineno-0-296" name="__codelineno-0-296"></a>
+<a id="__codelineno-0-297" name="__codelineno-0-297"></a>    <span class="c1"># TODO: Evaluate results</span>
+<a id="__codelineno-0-298" name="__codelineno-0-298"></a>    <span class="n">results</span> <span class="o">=</span> <span class="p">[]</span>
+<a id="__codelineno-0-299" name="__codelineno-0-299"></a>
+<a id="__codelineno-0-300" name="__codelineno-0-300"></a>    <span class="k">for</span> <span class="n">experiment_result</span> <span class="ow">in</span> <span class="n">glob</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">runner_results_dir</span><span class="p">,</span> <span class="s2">&quot;*&quot;</span><span class="p">,</span> <span class="s2">&quot;&quot;</span><span class="p">)):</span>
+<a id="__codelineno-0-301" name="__codelineno-0-301"></a>        <span class="n">detected_leaks</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_csv</span><span class="p">(</span>
+<a id="__codelineno-0-302" name="__codelineno-0-302"></a>            <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">experiment_result</span><span class="p">,</span> <span class="s2">&quot;detected_leaks.csv&quot;</span><span class="p">),</span>
+<a id="__codelineno-0-303" name="__codelineno-0-303"></a>            <span class="n">parse_dates</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+<a id="__codelineno-0-304" name="__codelineno-0-304"></a>        <span class="p">)</span>  <span class="c1"># .to_dict(&quot;records&quot;)</span>
+<a id="__codelineno-0-305" name="__codelineno-0-305"></a>
+<a id="__codelineno-0-306" name="__codelineno-0-306"></a>        <span class="n">evaluation_dataset_leakages</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_csv</span><span class="p">(</span>
+<a id="__codelineno-0-307" name="__codelineno-0-307"></a>            <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">experiment_result</span><span class="p">,</span> <span class="s2">&quot;should_have_detected_leaks.csv&quot;</span><span class="p">),</span>
+<a id="__codelineno-0-308" name="__codelineno-0-308"></a>            <span class="n">parse_dates</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+<a id="__codelineno-0-309" name="__codelineno-0-309"></a>        <span class="p">)</span>  <span class="c1"># .to_dict(&quot;records&quot;)</span>
+<a id="__codelineno-0-310" name="__codelineno-0-310"></a>
+<a id="__codelineno-0-311" name="__codelineno-0-311"></a>        <span class="n">run_info</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_csv</span><span class="p">(</span>
+<a id="__codelineno-0-312" name="__codelineno-0-312"></a>            <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">experiment_result</span><span class="p">,</span> <span class="s2">&quot;run_info.csv&quot;</span><span class="p">)</span>
+<a id="__codelineno-0-313" name="__codelineno-0-313"></a>        <span class="p">)</span><span class="o">.</span><span class="n">iloc</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+<a id="__codelineno-0-314" name="__codelineno-0-314"></a>        <span class="c1"># detected_leaks = parse_obj_as(List[BenchmarkLeakageResult], detected_leaks)</span>
+<a id="__codelineno-0-315" name="__codelineno-0-315"></a>        <span class="c1"># evaluation_dataset_leakages = parse_obj_as(</span>
+<a id="__codelineno-0-316" name="__codelineno-0-316"></a>        <span class="c1">#     List[BenchmarkLeakageResult], evaluation_dataset_leakages</span>
+<a id="__codelineno-0-317" name="__codelineno-0-317"></a>        <span class="c1"># )</span>
+<a id="__codelineno-0-318" name="__codelineno-0-318"></a>
+<a id="__codelineno-0-319" name="__codelineno-0-319"></a>        <span class="c1"># TODO: Ignore Detections outside of the evaluation period</span>
+<a id="__codelineno-0-320" name="__codelineno-0-320"></a>        <span class="n">evaluation_results</span> <span class="o">=</span> <span class="n">evaluate_leakages</span><span class="p">(</span>
+<a id="__codelineno-0-321" name="__codelineno-0-321"></a>            <span class="n">evaluation_dataset_leakages</span><span class="p">,</span> <span class="n">detected_leaks</span>
+<a id="__codelineno-0-322" name="__codelineno-0-322"></a>        <span class="p">)</span>
+<a id="__codelineno-0-323" name="__codelineno-0-323"></a>        <span class="n">evaluation_results</span><span class="p">[</span><span class="s2">&quot;method&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">run_info</span><span class="p">[</span><span class="s2">&quot;method&quot;</span><span class="p">]</span>
+<a id="__codelineno-0-324" name="__codelineno-0-324"></a>        <span class="n">evaluation_results</span><span class="p">[</span><span class="s2">&quot;dataset&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">run_info</span><span class="p">[</span><span class="s2">&quot;dataset&quot;</span><span class="p">]</span>
+<a id="__codelineno-0-325" name="__codelineno-0-325"></a>        <span class="n">results</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">evaluation_results</span><span class="p">)</span>
+<a id="__codelineno-0-326" name="__codelineno-0-326"></a>
+<a id="__codelineno-0-327" name="__codelineno-0-327"></a>        <span class="n">logging</span><span class="o">.</span><span class="n">info</span><span class="p">(</span>
+<a id="__codelineno-0-328" name="__codelineno-0-328"></a>            <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">detected_leaks</span><span class="p">)</span><span class="si">}</span><span class="s2"> / </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">evaluation_dataset_leakages</span><span class="p">)</span><span class="si">}</span><span class="s2"> Dataset Leaks&quot;</span>
+<a id="__codelineno-0-329" name="__codelineno-0-329"></a>        <span class="p">)</span>
+<a id="__codelineno-0-330" name="__codelineno-0-330"></a>        <span class="n">logging</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="n">evaluation_results</span><span class="p">)</span>
 <a id="__codelineno-0-331" name="__codelineno-0-331"></a>
-<a id="__codelineno-0-332" name="__codelineno-0-332"></a>    <span class="n">results</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="n">results</span><span class="p">)</span>
-<a id="__codelineno-0-333" name="__codelineno-0-333"></a>    <span class="c1"># https://towardsdatascience.com/performance-metrics-confusion-matrix-precision-recall-and-f1-score-a8fe076a2262</span>
-<a id="__codelineno-0-334" name="__codelineno-0-334"></a>    <span class="n">results</span><span class="p">[</span><span class="s2">&quot;precision&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">results</span><span class="p">[</span><span class="s2">&quot;true_positives&quot;</span><span class="p">]</span> <span class="o">/</span> <span class="p">(</span>
-<a id="__codelineno-0-335" name="__codelineno-0-335"></a>        <span class="n">results</span><span class="p">[</span><span class="s2">&quot;true_positives&quot;</span><span class="p">]</span> <span class="o">+</span> <span class="n">results</span><span class="p">[</span><span class="s2">&quot;false_positives&quot;</span><span class="p">]</span>
-<a id="__codelineno-0-336" name="__codelineno-0-336"></a>    <span class="p">)</span>
-<a id="__codelineno-0-337" name="__codelineno-0-337"></a>
-<a id="__codelineno-0-338" name="__codelineno-0-338"></a>    <span class="c1"># True-Positive-Rate (Recall)</span>
-<a id="__codelineno-0-339" name="__codelineno-0-339"></a>    <span class="n">results</span><span class="p">[</span><span class="s2">&quot;recall (TPR)&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">results</span><span class="p">[</span><span class="s2">&quot;true_positives&quot;</span><span class="p">]</span> <span class="o">/</span> <span class="p">(</span>
-<a id="__codelineno-0-340" name="__codelineno-0-340"></a>        <span class="n">results</span><span class="p">[</span><span class="s2">&quot;true_positives&quot;</span><span class="p">]</span> <span class="o">+</span> <span class="n">results</span><span class="p">[</span><span class="s2">&quot;false_negatives&quot;</span><span class="p">]</span>
-<a id="__codelineno-0-341" name="__codelineno-0-341"></a>    <span class="p">)</span>
-<a id="__codelineno-0-342" name="__codelineno-0-342"></a>    <span class="c1"># True-Negative-Rate (Specificity)</span>
-<a id="__codelineno-0-343" name="__codelineno-0-343"></a>    <span class="n">results</span><span class="p">[</span><span class="s2">&quot;TNR)&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">results</span><span class="p">[</span><span class="s2">&quot;true_negatives&quot;</span><span class="p">]</span> <span class="o">/</span> <span class="p">(</span>
-<a id="__codelineno-0-344" name="__codelineno-0-344"></a>        <span class="n">results</span><span class="p">[</span><span class="s2">&quot;true_negatives&quot;</span><span class="p">]</span> <span class="o">+</span> <span class="n">results</span><span class="p">[</span><span class="s2">&quot;false_positives&quot;</span><span class="p">]</span>
-<a id="__codelineno-0-345" name="__codelineno-0-345"></a>    <span class="p">)</span>
-<a id="__codelineno-0-346" name="__codelineno-0-346"></a>    <span class="c1"># False-Positive-Rate (Fall-Out)</span>
-<a id="__codelineno-0-347" name="__codelineno-0-347"></a>    <span class="n">results</span><span class="p">[</span><span class="s2">&quot;FPR&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">results</span><span class="p">[</span><span class="s2">&quot;false_positives&quot;</span><span class="p">]</span> <span class="o">/</span> <span class="p">(</span>
-<a id="__codelineno-0-348" name="__codelineno-0-348"></a>        <span class="n">results</span><span class="p">[</span><span class="s2">&quot;true_negatives&quot;</span><span class="p">]</span> <span class="o">+</span> <span class="n">results</span><span class="p">[</span><span class="s2">&quot;false_positives&quot;</span><span class="p">]</span>
-<a id="__codelineno-0-349" name="__codelineno-0-349"></a>    <span class="p">)</span>
-<a id="__codelineno-0-350" name="__codelineno-0-350"></a>    <span class="c1"># False-Negative-Rate (Miss-Rate)</span>
-<a id="__codelineno-0-351" name="__codelineno-0-351"></a>    <span class="n">results</span><span class="p">[</span><span class="s2">&quot;FNR&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">results</span><span class="p">[</span><span class="s2">&quot;false_negatives&quot;</span><span class="p">]</span> <span class="o">/</span> <span class="p">(</span>
-<a id="__codelineno-0-352" name="__codelineno-0-352"></a>        <span class="n">results</span><span class="p">[</span><span class="s2">&quot;true_positives&quot;</span><span class="p">]</span> <span class="o">+</span> <span class="n">results</span><span class="p">[</span><span class="s2">&quot;false_negatives&quot;</span><span class="p">]</span>
-<a id="__codelineno-0-353" name="__codelineno-0-353"></a>    <span class="p">)</span>
-<a id="__codelineno-0-354" name="__codelineno-0-354"></a>    <span class="c1"># F1</span>
-<a id="__codelineno-0-355" name="__codelineno-0-355"></a>    <span class="n">results</span><span class="p">[</span><span class="s2">&quot;F1&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="mi">2</span> <span class="o">*</span> <span class="n">results</span><span class="p">[</span><span class="s2">&quot;precision&quot;</span><span class="p">]</span> <span class="o">*</span> <span class="n">results</span><span class="p">[</span><span class="s2">&quot;recall (TPR)&quot;</span><span class="p">])</span> <span class="o">/</span> <span class="p">(</span>
-<a id="__codelineno-0-356" name="__codelineno-0-356"></a>        <span class="n">results</span><span class="p">[</span><span class="s2">&quot;precision&quot;</span><span class="p">]</span> <span class="o">+</span> <span class="n">results</span><span class="p">[</span><span class="s2">&quot;recall (TPR)&quot;</span><span class="p">]</span>
-<a id="__codelineno-0-357" name="__codelineno-0-357"></a>    <span class="p">)</span>
-<a id="__codelineno-0-358" name="__codelineno-0-358"></a>
-<a id="__codelineno-0-359" name="__codelineno-0-359"></a>    <span class="n">results</span> <span class="o">=</span> <span class="n">results</span><span class="o">.</span><span class="n">set_index</span><span class="p">([</span><span class="s2">&quot;dataset&quot;</span><span class="p">,</span> <span class="s2">&quot;method&quot;</span><span class="p">])</span>
+<a id="__codelineno-0-332" name="__codelineno-0-332"></a>        <span class="c1"># TODO: Draw plots with leaks and detected leaks</span>
+<a id="__codelineno-0-333" name="__codelineno-0-333"></a>
+<a id="__codelineno-0-334" name="__codelineno-0-334"></a>    <span class="n">results</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="n">results</span><span class="p">)</span>
+<a id="__codelineno-0-335" name="__codelineno-0-335"></a>    <span class="c1"># https://towardsdatascience.com/performance-metrics-confusion-matrix-precision-recall-and-f1-score-a8fe076a2262</span>
+<a id="__codelineno-0-336" name="__codelineno-0-336"></a>    <span class="n">results</span><span class="p">[</span><span class="s2">&quot;precision&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">results</span><span class="p">[</span><span class="s2">&quot;true_positives&quot;</span><span class="p">]</span> <span class="o">/</span> <span class="p">(</span>
+<a id="__codelineno-0-337" name="__codelineno-0-337"></a>        <span class="n">results</span><span class="p">[</span><span class="s2">&quot;true_positives&quot;</span><span class="p">]</span> <span class="o">+</span> <span class="n">results</span><span class="p">[</span><span class="s2">&quot;false_positives&quot;</span><span class="p">]</span>
+<a id="__codelineno-0-338" name="__codelineno-0-338"></a>    <span class="p">)</span>
+<a id="__codelineno-0-339" name="__codelineno-0-339"></a>
+<a id="__codelineno-0-340" name="__codelineno-0-340"></a>    <span class="c1"># True-Positive-Rate (Recall)</span>
+<a id="__codelineno-0-341" name="__codelineno-0-341"></a>    <span class="n">results</span><span class="p">[</span><span class="s2">&quot;recall (TPR)&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">results</span><span class="p">[</span><span class="s2">&quot;true_positives&quot;</span><span class="p">]</span> <span class="o">/</span> <span class="p">(</span>
+<a id="__codelineno-0-342" name="__codelineno-0-342"></a>        <span class="n">results</span><span class="p">[</span><span class="s2">&quot;true_positives&quot;</span><span class="p">]</span> <span class="o">+</span> <span class="n">results</span><span class="p">[</span><span class="s2">&quot;false_negatives&quot;</span><span class="p">]</span>
+<a id="__codelineno-0-343" name="__codelineno-0-343"></a>    <span class="p">)</span>
+<a id="__codelineno-0-344" name="__codelineno-0-344"></a>    <span class="c1"># True-Negative-Rate (Specificity)</span>
+<a id="__codelineno-0-345" name="__codelineno-0-345"></a>    <span class="n">results</span><span class="p">[</span><span class="s2">&quot;TNR)&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">results</span><span class="p">[</span><span class="s2">&quot;true_negatives&quot;</span><span class="p">]</span> <span class="o">/</span> <span class="p">(</span>
+<a id="__codelineno-0-346" name="__codelineno-0-346"></a>        <span class="n">results</span><span class="p">[</span><span class="s2">&quot;true_negatives&quot;</span><span class="p">]</span> <span class="o">+</span> <span class="n">results</span><span class="p">[</span><span class="s2">&quot;false_positives&quot;</span><span class="p">]</span>
+<a id="__codelineno-0-347" name="__codelineno-0-347"></a>    <span class="p">)</span>
+<a id="__codelineno-0-348" name="__codelineno-0-348"></a>    <span class="c1"># False-Positive-Rate (Fall-Out)</span>
+<a id="__codelineno-0-349" name="__codelineno-0-349"></a>    <span class="n">results</span><span class="p">[</span><span class="s2">&quot;FPR&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">results</span><span class="p">[</span><span class="s2">&quot;false_positives&quot;</span><span class="p">]</span> <span class="o">/</span> <span class="p">(</span>
+<a id="__codelineno-0-350" name="__codelineno-0-350"></a>        <span class="n">results</span><span class="p">[</span><span class="s2">&quot;true_negatives&quot;</span><span class="p">]</span> <span class="o">+</span> <span class="n">results</span><span class="p">[</span><span class="s2">&quot;false_positives&quot;</span><span class="p">]</span>
+<a id="__codelineno-0-351" name="__codelineno-0-351"></a>    <span class="p">)</span>
+<a id="__codelineno-0-352" name="__codelineno-0-352"></a>    <span class="c1"># False-Negative-Rate (Miss-Rate)</span>
+<a id="__codelineno-0-353" name="__codelineno-0-353"></a>    <span class="n">results</span><span class="p">[</span><span class="s2">&quot;FNR&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">results</span><span class="p">[</span><span class="s2">&quot;false_negatives&quot;</span><span class="p">]</span> <span class="o">/</span> <span class="p">(</span>
+<a id="__codelineno-0-354" name="__codelineno-0-354"></a>        <span class="n">results</span><span class="p">[</span><span class="s2">&quot;true_positives&quot;</span><span class="p">]</span> <span class="o">+</span> <span class="n">results</span><span class="p">[</span><span class="s2">&quot;false_negatives&quot;</span><span class="p">]</span>
+<a id="__codelineno-0-355" name="__codelineno-0-355"></a>    <span class="p">)</span>
+<a id="__codelineno-0-356" name="__codelineno-0-356"></a>    <span class="c1"># F1</span>
+<a id="__codelineno-0-357" name="__codelineno-0-357"></a>    <span class="n">results</span><span class="p">[</span><span class="s2">&quot;F1&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="mi">2</span> <span class="o">*</span> <span class="n">results</span><span class="p">[</span><span class="s2">&quot;precision&quot;</span><span class="p">]</span> <span class="o">*</span> <span class="n">results</span><span class="p">[</span><span class="s2">&quot;recall (TPR)&quot;</span><span class="p">])</span> <span class="o">/</span> <span class="p">(</span>
+<a id="__codelineno-0-358" name="__codelineno-0-358"></a>        <span class="n">results</span><span class="p">[</span><span class="s2">&quot;precision&quot;</span><span class="p">]</span> <span class="o">+</span> <span class="n">results</span><span class="p">[</span><span class="s2">&quot;recall (TPR)&quot;</span><span class="p">]</span>
+<a id="__codelineno-0-359" name="__codelineno-0-359"></a>    <span class="p">)</span>
 <a id="__codelineno-0-360" name="__codelineno-0-360"></a>
-<a id="__codelineno-0-361" name="__codelineno-0-361"></a>    <span class="n">os</span><span class="o">.</span><span class="n">makedirs</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">evaluation_results_dir</span><span class="p">,</span> <span class="n">exist_ok</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<a id="__codelineno-0-361" name="__codelineno-0-361"></a>    <span class="n">results</span> <span class="o">=</span> <span class="n">results</span><span class="o">.</span><span class="n">set_index</span><span class="p">([</span><span class="s2">&quot;dataset&quot;</span><span class="p">,</span> <span class="s2">&quot;method&quot;</span><span class="p">])</span>
 <a id="__codelineno-0-362" name="__codelineno-0-362"></a>
-<a id="__codelineno-0-363" name="__codelineno-0-363"></a>    <span class="n">columns</span> <span class="o">=</span> <span class="p">[</span>
-<a id="__codelineno-0-364" name="__codelineno-0-364"></a>        <span class="s2">&quot;TP&quot;</span><span class="p">,</span>
-<a id="__codelineno-0-365" name="__codelineno-0-365"></a>        <span class="s2">&quot;FP&quot;</span><span class="p">,</span>
-<a id="__codelineno-0-366" name="__codelineno-0-366"></a>        <span class="s2">&quot;TN&quot;</span><span class="p">,</span>
-<a id="__codelineno-0-367" name="__codelineno-0-367"></a>        <span class="s2">&quot;FN&quot;</span><span class="p">,</span>
-<a id="__codelineno-0-368" name="__codelineno-0-368"></a>        <span class="s2">&quot;TTD&quot;</span><span class="p">,</span>
-<a id="__codelineno-0-369" name="__codelineno-0-369"></a>        <span class="s2">&quot;wrongpipe&quot;</span><span class="p">,</span>
-<a id="__codelineno-0-370" name="__codelineno-0-370"></a>        <span class="s2">&quot;score&quot;</span><span class="p">,</span>
-<a id="__codelineno-0-371" name="__codelineno-0-371"></a>        <span class="s2">&quot;precision&quot;</span><span class="p">,</span>
-<a id="__codelineno-0-372" name="__codelineno-0-372"></a>        <span class="s2">&quot;recall (TPR)&quot;</span><span class="p">,</span>
-<a id="__codelineno-0-373" name="__codelineno-0-373"></a>        <span class="s2">&quot;TNR&quot;</span><span class="p">,</span>
-<a id="__codelineno-0-374" name="__codelineno-0-374"></a>        <span class="s2">&quot;FPR&quot;</span><span class="p">,</span>
-<a id="__codelineno-0-375" name="__codelineno-0-375"></a>        <span class="s2">&quot;FNR&quot;</span><span class="p">,</span>
-<a id="__codelineno-0-376" name="__codelineno-0-376"></a>        <span class="s2">&quot;F1&quot;</span><span class="p">,</span>
-<a id="__codelineno-0-377" name="__codelineno-0-377"></a>    <span class="p">]</span>
-<a id="__codelineno-0-378" name="__codelineno-0-378"></a>    <span class="n">results</span><span class="o">.</span><span class="n">columns</span> <span class="o">=</span> <span class="n">columns</span>
-<a id="__codelineno-0-379" name="__codelineno-0-379"></a>
-<a id="__codelineno-0-380" name="__codelineno-0-380"></a>    <span class="nb">print</span><span class="p">(</span><span class="n">tabulate</span><span class="p">(</span><span class="n">results</span><span class="p">,</span> <span class="n">headers</span><span class="o">=</span><span class="s2">&quot;keys&quot;</span><span class="p">))</span>
-<a id="__codelineno-0-381" name="__codelineno-0-381"></a>    <span class="n">results</span><span class="o">.</span><span class="n">to_csv</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">evaluation_results_dir</span><span class="p">,</span> <span class="s2">&quot;results.csv&quot;</span><span class="p">))</span>
-<a id="__codelineno-0-382" name="__codelineno-0-382"></a>
-<a id="__codelineno-0-383" name="__codelineno-0-383"></a>    <span class="n">results</span><span class="o">.</span><span class="n">style</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">escape</span><span class="o">=</span><span class="s2">&quot;latex&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">set_table_styles</span><span class="p">(</span>
-<a id="__codelineno-0-384" name="__codelineno-0-384"></a>        <span class="p">[</span>
-<a id="__codelineno-0-385" name="__codelineno-0-385"></a>            <span class="c1"># {&#39;selector&#39;: &#39;toprule&#39;, &#39;props&#39;: &#39;:hline;&#39;},</span>
-<a id="__codelineno-0-386" name="__codelineno-0-386"></a>            <span class="p">{</span><span class="s2">&quot;selector&quot;</span><span class="p">:</span> <span class="s2">&quot;midrule&quot;</span><span class="p">,</span> <span class="s2">&quot;props&quot;</span><span class="p">:</span> <span class="s2">&quot;:hline;&quot;</span><span class="p">},</span>
-<a id="__codelineno-0-387" name="__codelineno-0-387"></a>            <span class="c1"># {&#39;selector&#39;: &#39;bottomrule&#39;, &#39;props&#39;: &#39;:hline;&#39;},</span>
-<a id="__codelineno-0-388" name="__codelineno-0-388"></a>        <span class="p">],</span>
-<a id="__codelineno-0-389" name="__codelineno-0-389"></a>        <span class="n">overwrite</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
-<a id="__codelineno-0-390" name="__codelineno-0-390"></a>    <span class="p">)</span><span class="o">.</span><span class="n">relabel_index</span><span class="p">(</span><span class="n">columns</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="s2">&quot;columns&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">to_latex</span><span class="p">(</span>
-<a id="__codelineno-0-391" name="__codelineno-0-391"></a>        <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">evaluation_results_dir</span><span class="p">,</span> <span class="s2">&quot;results.tex&quot;</span><span class="p">),</span>
-<a id="__codelineno-0-392" name="__codelineno-0-392"></a>        <span class="n">position_float</span><span class="o">=</span><span class="s2">&quot;centering&quot;</span><span class="p">,</span>
-<a id="__codelineno-0-393" name="__codelineno-0-393"></a>        <span class="n">clines</span><span class="o">=</span><span class="s2">&quot;all;data&quot;</span><span class="p">,</span>
-<a id="__codelineno-0-394" name="__codelineno-0-394"></a>        <span class="n">column_format</span><span class="o">=</span><span class="s2">&quot;ll|&quot;</span> <span class="o">+</span> <span class="s2">&quot;r&quot;</span> <span class="o">*</span> <span class="nb">len</span><span class="p">(</span><span class="n">columns</span><span class="p">),</span>
-<a id="__codelineno-0-395" name="__codelineno-0-395"></a>        <span class="n">position</span><span class="o">=</span><span class="s2">&quot;H&quot;</span><span class="p">,</span>
-<a id="__codelineno-0-396" name="__codelineno-0-396"></a>        <span class="n">label</span><span class="o">=</span><span class="s2">&quot;table:benchmark_results&quot;</span><span class="p">,</span>
-<a id="__codelineno-0-397" name="__codelineno-0-397"></a>        <span class="n">caption</span><span class="o">=</span><span class="s2">&quot;Overview of the benchmark results.&quot;</span><span class="p">,</span>
-<a id="__codelineno-0-398" name="__codelineno-0-398"></a>    <span class="p">)</span>
+<a id="__codelineno-0-363" name="__codelineno-0-363"></a>    <span class="n">os</span><span class="o">.</span><span class="n">makedirs</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">evaluation_results_dir</span><span class="p">,</span> <span class="n">exist_ok</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<a id="__codelineno-0-364" name="__codelineno-0-364"></a>
+<a id="__codelineno-0-365" name="__codelineno-0-365"></a>    <span class="n">columns</span> <span class="o">=</span> <span class="p">[</span>
+<a id="__codelineno-0-366" name="__codelineno-0-366"></a>        <span class="s2">&quot;TP&quot;</span><span class="p">,</span>
+<a id="__codelineno-0-367" name="__codelineno-0-367"></a>        <span class="s2">&quot;FP&quot;</span><span class="p">,</span>
+<a id="__codelineno-0-368" name="__codelineno-0-368"></a>        <span class="s2">&quot;TN&quot;</span><span class="p">,</span>
+<a id="__codelineno-0-369" name="__codelineno-0-369"></a>        <span class="s2">&quot;FN&quot;</span><span class="p">,</span>
+<a id="__codelineno-0-370" name="__codelineno-0-370"></a>        <span class="s2">&quot;TTD&quot;</span><span class="p">,</span>
+<a id="__codelineno-0-371" name="__codelineno-0-371"></a>        <span class="s2">&quot;wrongpipe&quot;</span><span class="p">,</span>
+<a id="__codelineno-0-372" name="__codelineno-0-372"></a>        <span class="s2">&quot;score&quot;</span><span class="p">,</span>
+<a id="__codelineno-0-373" name="__codelineno-0-373"></a>        <span class="s2">&quot;precision&quot;</span><span class="p">,</span>
+<a id="__codelineno-0-374" name="__codelineno-0-374"></a>        <span class="s2">&quot;recall (TPR)&quot;</span><span class="p">,</span>
+<a id="__codelineno-0-375" name="__codelineno-0-375"></a>        <span class="s2">&quot;TNR&quot;</span><span class="p">,</span>
+<a id="__codelineno-0-376" name="__codelineno-0-376"></a>        <span class="s2">&quot;FPR&quot;</span><span class="p">,</span>
+<a id="__codelineno-0-377" name="__codelineno-0-377"></a>        <span class="s2">&quot;FNR&quot;</span><span class="p">,</span>
+<a id="__codelineno-0-378" name="__codelineno-0-378"></a>        <span class="s2">&quot;F1&quot;</span><span class="p">,</span>
+<a id="__codelineno-0-379" name="__codelineno-0-379"></a>    <span class="p">]</span>
+<a id="__codelineno-0-380" name="__codelineno-0-380"></a>    <span class="n">results</span><span class="o">.</span><span class="n">columns</span> <span class="o">=</span> <span class="n">columns</span>
+<a id="__codelineno-0-381" name="__codelineno-0-381"></a>
+<a id="__codelineno-0-382" name="__codelineno-0-382"></a>    <span class="nb">print</span><span class="p">(</span><span class="n">tabulate</span><span class="p">(</span><span class="n">results</span><span class="p">,</span> <span class="n">headers</span><span class="o">=</span><span class="s2">&quot;keys&quot;</span><span class="p">))</span>
+<a id="__codelineno-0-383" name="__codelineno-0-383"></a>    <span class="n">results</span><span class="o">.</span><span class="n">to_csv</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">evaluation_results_dir</span><span class="p">,</span> <span class="s2">&quot;results.csv&quot;</span><span class="p">))</span>
+<a id="__codelineno-0-384" name="__codelineno-0-384"></a>
+<a id="__codelineno-0-385" name="__codelineno-0-385"></a>    <span class="n">results</span><span class="o">.</span><span class="n">style</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">escape</span><span class="o">=</span><span class="s2">&quot;latex&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">set_table_styles</span><span class="p">(</span>
+<a id="__codelineno-0-386" name="__codelineno-0-386"></a>        <span class="p">[</span>
+<a id="__codelineno-0-387" name="__codelineno-0-387"></a>            <span class="c1"># {&#39;selector&#39;: &#39;toprule&#39;, &#39;props&#39;: &#39;:hline;&#39;},</span>
+<a id="__codelineno-0-388" name="__codelineno-0-388"></a>            <span class="p">{</span><span class="s2">&quot;selector&quot;</span><span class="p">:</span> <span class="s2">&quot;midrule&quot;</span><span class="p">,</span> <span class="s2">&quot;props&quot;</span><span class="p">:</span> <span class="s2">&quot;:hline;&quot;</span><span class="p">},</span>
+<a id="__codelineno-0-389" name="__codelineno-0-389"></a>            <span class="c1"># {&#39;selector&#39;: &#39;bottomrule&#39;, &#39;props&#39;: &#39;:hline;&#39;},</span>
+<a id="__codelineno-0-390" name="__codelineno-0-390"></a>        <span class="p">],</span>
+<a id="__codelineno-0-391" name="__codelineno-0-391"></a>        <span class="n">overwrite</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+<a id="__codelineno-0-392" name="__codelineno-0-392"></a>    <span class="p">)</span><span class="o">.</span><span class="n">relabel_index</span><span class="p">(</span><span class="n">columns</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="s2">&quot;columns&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">to_latex</span><span class="p">(</span>
+<a id="__codelineno-0-393" name="__codelineno-0-393"></a>        <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">evaluation_results_dir</span><span class="p">,</span> <span class="s2">&quot;results.tex&quot;</span><span class="p">),</span>
+<a id="__codelineno-0-394" name="__codelineno-0-394"></a>        <span class="n">position_float</span><span class="o">=</span><span class="s2">&quot;centering&quot;</span><span class="p">,</span>
+<a id="__codelineno-0-395" name="__codelineno-0-395"></a>        <span class="n">clines</span><span class="o">=</span><span class="s2">&quot;all;data&quot;</span><span class="p">,</span>
+<a id="__codelineno-0-396" name="__codelineno-0-396"></a>        <span class="n">column_format</span><span class="o">=</span><span class="s2">&quot;ll|&quot;</span> <span class="o">+</span> <span class="s2">&quot;r&quot;</span> <span class="o">*</span> <span class="nb">len</span><span class="p">(</span><span class="n">columns</span><span class="p">),</span>
+<a id="__codelineno-0-397" name="__codelineno-0-397"></a>        <span class="n">position</span><span class="o">=</span><span class="s2">&quot;H&quot;</span><span class="p">,</span>
+<a id="__codelineno-0-398" name="__codelineno-0-398"></a>        <span class="n">label</span><span class="o">=</span><span class="s2">&quot;table:benchmark_results&quot;</span><span class="p">,</span>
+<a id="__codelineno-0-399" name="__codelineno-0-399"></a>        <span class="n">caption</span><span class="o">=</span><span class="s2">&quot;Overview of the benchmark results.&quot;</span><span class="p">,</span>
+<a id="__codelineno-0-400" name="__codelineno-0-400"></a>    <span class="p">)</span>
 </code></pre></div></td></tr></table></div>
       </details>
   </div>
@@ -2168,9 +2172,7 @@
 
       <details class="quote">
         <summary>Source code in <code>ldimbenchmark/benchmark.py</code></summary>
-        <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-0-267">267</a></span>
-<span class="normal"><a href="#__codelineno-0-268">268</a></span>
-<span class="normal"><a href="#__codelineno-0-269">269</a></span>
+        <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-0-269">269</a></span>
 <span class="normal"><a href="#__codelineno-0-270">270</a></span>
 <span class="normal"><a href="#__codelineno-0-271">271</a></span>
 <span class="normal"><a href="#__codelineno-0-272">272</a></span>
@@ -2182,21 +2184,23 @@
 <span class="normal"><a href="#__codelineno-0-278">278</a></span>
 <span class="normal"><a href="#__codelineno-0-279">279</a></span>
 <span class="normal"><a href="#__codelineno-0-280">280</a></span>
-<span class="normal"><a href="#__codelineno-0-281">281</a></span></pre></div></td><td class="code"><div><pre><span></span><code><a id="__codelineno-0-267" name="__codelineno-0-267"></a><span class="k">def</span> <span class="nf">run_benchmark</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">parallel</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
-<a id="__codelineno-0-268" name="__codelineno-0-268"></a>    <span class="sd">&quot;&quot;&quot;</span>
-<a id="__codelineno-0-269" name="__codelineno-0-269"></a><span class="sd">    Runs the benchmark.</span>
-<a id="__codelineno-0-270" name="__codelineno-0-270"></a>
-<a id="__codelineno-0-271" name="__codelineno-0-271"></a><span class="sd">    :param parallel: If the benchmark should be run in parallel</span>
-<a id="__codelineno-0-272" name="__codelineno-0-272"></a><span class="sd">    :param results_dir: Directory where the results should be stored</span>
-<a id="__codelineno-0-273" name="__codelineno-0-273"></a><span class="sd">    &quot;&quot;&quot;</span>
-<a id="__codelineno-0-274" name="__codelineno-0-274"></a>
-<a id="__codelineno-0-275" name="__codelineno-0-275"></a>    <span class="n">results</span> <span class="o">=</span> <span class="p">[]</span>
-<a id="__codelineno-0-276" name="__codelineno-0-276"></a>    <span class="k">if</span> <span class="n">parallel</span><span class="p">:</span>
-<a id="__codelineno-0-277" name="__codelineno-0-277"></a>        <span class="c1"># TODO: preload datasets (as to not overwrite each other during the parallel loop)</span>
-<a id="__codelineno-0-278" name="__codelineno-0-278"></a>        <span class="k">pass</span>
-<a id="__codelineno-0-279" name="__codelineno-0-279"></a>    <span class="k">else</span><span class="p">:</span>
-<a id="__codelineno-0-280" name="__codelineno-0-280"></a>        <span class="k">for</span> <span class="n">experiment</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">experiments</span><span class="p">:</span>
-<a id="__codelineno-0-281" name="__codelineno-0-281"></a>            <span class="n">results</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">experiment</span><span class="o">.</span><span class="n">run</span><span class="p">())</span>
+<span class="normal"><a href="#__codelineno-0-281">281</a></span>
+<span class="normal"><a href="#__codelineno-0-282">282</a></span>
+<span class="normal"><a href="#__codelineno-0-283">283</a></span></pre></div></td><td class="code"><div><pre><span></span><code><a id="__codelineno-0-269" name="__codelineno-0-269"></a><span class="k">def</span> <span class="nf">run_benchmark</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">parallel</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+<a id="__codelineno-0-270" name="__codelineno-0-270"></a>    <span class="sd">&quot;&quot;&quot;</span>
+<a id="__codelineno-0-271" name="__codelineno-0-271"></a><span class="sd">    Runs the benchmark.</span>
+<a id="__codelineno-0-272" name="__codelineno-0-272"></a>
+<a id="__codelineno-0-273" name="__codelineno-0-273"></a><span class="sd">    :param parallel: If the benchmark should be run in parallel</span>
+<a id="__codelineno-0-274" name="__codelineno-0-274"></a><span class="sd">    :param results_dir: Directory where the results should be stored</span>
+<a id="__codelineno-0-275" name="__codelineno-0-275"></a><span class="sd">    &quot;&quot;&quot;</span>
+<a id="__codelineno-0-276" name="__codelineno-0-276"></a>
+<a id="__codelineno-0-277" name="__codelineno-0-277"></a>    <span class="n">results</span> <span class="o">=</span> <span class="p">[]</span>
+<a id="__codelineno-0-278" name="__codelineno-0-278"></a>    <span class="k">if</span> <span class="n">parallel</span><span class="p">:</span>
+<a id="__codelineno-0-279" name="__codelineno-0-279"></a>        <span class="c1"># TODO: preload datasets (as to not overwrite each other during the parallel loop)</span>
+<a id="__codelineno-0-280" name="__codelineno-0-280"></a>        <span class="k">pass</span>
+<a id="__codelineno-0-281" name="__codelineno-0-281"></a>    <span class="k">else</span><span class="p">:</span>
+<a id="__codelineno-0-282" name="__codelineno-0-282"></a>        <span class="k">for</span> <span class="n">experiment</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">experiments</span><span class="p">:</span>
+<a id="__codelineno-0-283" name="__codelineno-0-283"></a>            <span class="n">results</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">experiment</span><span class="o">.</span><span class="n">run</span><span class="p">())</span>
 </code></pre></div></td></tr></table></div>
       </details>
   </div>
@@ -2364,10 +2368,10 @@
 <a id="__codelineno-0-62" name="__codelineno-0-62"></a>    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
 <a id="__codelineno-0-63" name="__codelineno-0-63"></a>        <span class="bp">self</span><span class="p">,</span>
 <a id="__codelineno-0-64" name="__codelineno-0-64"></a>        <span class="n">detection_method</span><span class="p">:</span> <span class="n">LDIMMethodBase</span><span class="p">,</span>
-<a id="__codelineno-0-65" name="__codelineno-0-65"></a>        <span class="n">dataset</span><span class="p">:</span> <span class="n">Dataset</span> <span class="o">|</span> <span class="nb">str</span><span class="p">,</span>
+<a id="__codelineno-0-65" name="__codelineno-0-65"></a>        <span class="n">dataset</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">Dataset</span><span class="p">,</span> <span class="nb">str</span><span class="p">],</span>
 <a id="__codelineno-0-66" name="__codelineno-0-66"></a>        <span class="n">hyperparameters</span><span class="p">:</span> <span class="nb">dict</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
 <a id="__codelineno-0-67" name="__codelineno-0-67"></a>        <span class="c1"># TODO: Rename goal stage method to more meaningful names</span>
-<a id="__codelineno-0-68" name="__codelineno-0-68"></a>        <span class="n">goal</span><span class="p">:</span> <span class="n">Literal</span><span class="p">[</span><span class="s2">&quot;detection&quot;</span><span class="p">]</span> <span class="o">|</span> <span class="n">Literal</span><span class="p">[</span><span class="s2">&quot;location&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;detection&quot;</span><span class="p">,</span>
+<a id="__codelineno-0-68" name="__codelineno-0-68"></a>        <span class="n">goal</span><span class="p">:</span> <span class="n">Literal</span><span class="p">[</span><span class="s2">&quot;detection&quot;</span><span class="p">,</span> <span class="s2">&quot;location&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;detection&quot;</span><span class="p">,</span>
 <a id="__codelineno-0-69" name="__codelineno-0-69"></a>        <span class="n">stage</span><span class="o">=</span><span class="s2">&quot;train&quot;</span><span class="p">,</span>  <span class="c1"># train, detect</span>
 <a id="__codelineno-0-70" name="__codelineno-0-70"></a>        <span class="n">method</span><span class="o">=</span><span class="s2">&quot;offline&quot;</span><span class="p">,</span>  <span class="c1"># offline, online</span>
 <a id="__codelineno-0-71" name="__codelineno-0-71"></a>        <span class="n">debug</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
