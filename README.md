@@ -81,6 +81,7 @@ https://mathspp.com/blog/how-to-create-a-python-package-in-2022
 https://python-poetry.org/docs/basic-usage/
 
 ```bash
+# python 3.10
 # Use Environment
 poetry config virtualenvs.in-project true
 poetry shell

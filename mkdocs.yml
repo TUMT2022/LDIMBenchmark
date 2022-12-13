@@ -11,8 +11,12 @@ nav:
 - Story: 
   - story/index.md
   - Testing: story/testing.ipynb
-- Design: design.md
+- Design: 
+  - design/index.md
+  - Dataset: design/datasets.md
 - Guides:
+  - Own Dataset: user-guides/run-on-your-dataset.ipynb
+  - Own Method: user-guides/run-your-method.ipynb
   - Docker: user-guides/docker.md
 - Roadmap: roadmap.md
 - Code Reference: reference/
@@ -23,7 +27,7 @@ plugins:
       # execute: True
       allow_errors: false
       kernel_name: python3
-      show_input: False
+      show_input: True
   - gen-files:
       scripts:
       - docs/gen_ref_pages.py
