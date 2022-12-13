@@ -81,7 +81,7 @@ class LDIMMethodBase(ABC):
         self.name = name
         self.version = version
         self.metadata = metadata
-        self.logging = True if additional_output_path != None else False
+        self.debug = True if additional_output_path != None else False
         self.additional_output_path = additional_output_path
         self.hyperparameters = {}
         for hyperparameter in metadata["hyperparameters"]:
@@ -99,7 +99,7 @@ class LDIMMethodBase(ABC):
         :param method: Method that should be executed. Possible methods: "offline", "online"
         """
         self.additional_output_path = additional_output_path
-        self.logging = True if additional_output_path is not None else False
+        self.debug = True if additional_output_path is not None else False
         if not hasattr(self, "hyperparameters"):
             self.hyperparameters = {}
         self.hyperparameters.update(hyperparameters)
