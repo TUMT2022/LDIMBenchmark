@@ -1,6 +1,10 @@
+[Documentation](https://tumt2022.github.io/LDIMBench/)
+
 # LDIMBenchmark
 
 Leakage Detection and Isolation Methods Benchmark
+
+> Instead of collecting all the different dataset to benchmark different methods on. We wanted to create a Benchmarking Tool which makes it easy to reproduce the results of the different methods locally on your own dataset.
 
 ## Usage
 
