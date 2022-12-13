@@ -638,24 +638,6 @@ python-dateutil = ">=2.8.1"
 dev = ["flake8", "markdown", "twine", "wheel"]
 
 [[package]]
-name = "griffe"
-version = "0.25.0"
-description = "Signatures for entire Python programs. Extract the structure, the frame, the skeleton of your project, to generate API documentation or find breaking changes in your API."
-category = "dev"
-optional = false
-python-versions = ">=3.7"
-files = [
-    {file = "griffe-0.25.0-py3-none-any.whl", hash = "sha256:57527250e06c0fac5381c5ccc9695b6c46a3af51928d99364bf2e5fd9aabf37d"},
-    {file = "griffe-0.25.0.tar.gz", hash = "sha256:35d412d2235330a05c755f906458c70ee8a4eec85bc3de20f1fd79d0a501dc38"},
-]
-
-[package.dependencies]
-colorama = ">=0.4"
-
-[package.extras]
-async = ["aiofiles (>=0.7,<1.0)"]
-
-[[package]]
 name = "idna"
 version = "3.4"
 description = "Internationalized Domain Names in Applications (IDNA)"
@@ -1428,14 +1410,14 @@ mkdocs = ">=1.0.3,<2.0.0"
 
 [[package]]
 name = "mkdocs-material"
-version = "8.5.10"
+version = "8.5.11"
 description = "Documentation that simply works"
 category = "dev"
 optional = false
 python-versions = ">=3.7"
 files = [
-    {file = "mkdocs_material-8.5.10-py3-none-any.whl", hash = "sha256:51760fa4c9ee3ca0b3a661ec9f9817ec312961bb84ff19e5b523fdc5256e1d6c"},
-    {file = "mkdocs_material-8.5.10.tar.gz", hash = "sha256:7623608f746c6d9ff68a8ef01f13eddf32fa2cae5e15badb251f26d1196bc8f1"},
+    {file = "mkdocs_material-8.5.11-py3-none-any.whl", hash = "sha256:c907b4b052240a5778074a30a78f31a1f8ff82d7012356dc26898b97559f082e"},
+    {file = "mkdocs_material-8.5.11.tar.gz", hash = "sha256:b0ea0513fd8cab323e8a825d6692ea07fa83e917bb5db042e523afecc7064ab7"},
 ]
 
 [package.dependencies]
@@ -1492,29 +1474,12 @@ Markdown = ">=3.3"
 MarkupSafe = ">=1.1"
 mkdocs = ">=1.2"
 mkdocs-autorefs = ">=0.3.1"
-mkdocstrings-python = {version = ">=0.5.2", optional = true, markers = "extra == \"python\""}
 pymdown-extensions = ">=6.3"
 
 [package.extras]
 crystal = ["mkdocstrings-crystal (>=0.3.4)"]
 python = ["mkdocstrings-python (>=0.5.2)"]
 python-legacy = ["mkdocstrings-python-legacy (>=0.2.1)"]
-
-[[package]]
-name = "mkdocstrings-python"
-version = "0.8.2"
-description = "A Python handler for mkdocstrings."
-category = "dev"
-optional = false
-python-versions = ">=3.7"
-files = [
-    {file = "mkdocstrings-python-0.8.2.tar.gz", hash = "sha256:b22528b7a7a0589d007eced019d97ad14de4eba4b2b9ba6a013bb66edc74ab43"},
-    {file = "mkdocstrings_python-0.8.2-py3-none-any.whl", hash = "sha256:213d9592e66e084a9bd2fa4956d6294a3487c6dc9cc45164058d6317249b7b6e"},
-]
-
-[package.dependencies]
-griffe = ">=0.24"
-mkdocstrings = ">=0.19"
 
 [[package]]
 name = "mypy-extensions"
@@ -2916,5 +2881,5 @@ testing = ["flake8 (<5)", "func-timeout", "jaraco.functools", "jaraco.itertools"
 
 [metadata]
 lock-version = "2.0"
-python-versions = "^3.8"
-content-hash = "481da1d46888d6d0445180192f3b74e888b3fdb2cad4cb18e070cd05d55b41a0"
+python-versions = ">=3.8,<4"
+content-hash = "57aa6b72eed2195c218e17c95274396546267eb020e6aa03435fd27a518b1be3"
