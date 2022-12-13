@@ -39,6 +39,8 @@
     
       <link rel="stylesheet" href="../../assets/_mkdocstrings.css">
     
+      <link rel="stylesheet" href="../../_extra/jupyter.css">
+    
     <script>__md_scope=new URL("../..",location),__md_hash=e=>[...e].reduce((e,_)=>(e<<5)-e+_.charCodeAt(0),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
     
       
@@ -1984,13 +1986,13 @@ Licensed under the Apache License, Version 2.0.
 </div>
 </div>
 </div>
-</div><div class="jp-Cell jp-CodeCell jp-Notebook-cell jp-mod-noOutputs  ">
-<div class="jp-Cell jp-CodeCell jp-Notebook-cell jp-mod-noOutputs  ">
+</div><div class="jp-Cell jp-CodeCell jp-Notebook-cell   ">
+<div class="jp-Cell jp-CodeCell jp-Notebook-cell   ">
 <div class="jp-Cell-inputWrapper">
 <div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
 </div>
 <div class="jp-InputArea jp-Cell-inputArea">
-<div class="jp-InputPrompt jp-InputArea-prompt">In&nbsp;[&nbsp;]:</div><div class="jp-CodeMirrorEditor jp-Editor jp-InputArea-editor" data-type="inline">
+<div class="jp-InputPrompt jp-InputArea-prompt">In&nbsp;[1]:</div><div class="jp-CodeMirrorEditor jp-Editor jp-InputArea-editor" data-type="inline">
         
         
         <div class="CodeMirror cm-s-jupyter">
@@ -2017,6 +2019,109 @@ Licensed under the Apache License, Version 2.0.
 </div>
 </div>
 
+<div class="jp-Cell-outputWrapper">
+<div class="jp-Collapser jp-OutputCollapser jp-Cell-outputCollapser">
+</div>
+
+
+<div class="jp-OutputArea jp-Cell-outputArea">
+
+<div class="jp-OutputArea-child">
+
+    
+    <div class="jp-OutputPrompt jp-OutputArea-prompt"></div>
+
+
+<div class="jp-RenderedText jp-OutputArea-output" data-mime-type="text/plain">
+<pre>Collecting ldimbenchmark
+  Downloading ldimbenchmark-0.1.17-py3-none-any.whl (40 kB)
+     |████████████████████████████████| 40 kB 2.5 MB/s eta 0:00:011
+Collecting pandas&lt;2.0.0,&gt;=1.5.2
+  Downloading pandas-1.5.2-cp38-cp38-manylinux_2_17_x86_64.manylinux2014_x86_64.whl (12.2 MB)
+     |████████████████████████████████| 12.2 MB 6.4 MB/s eta 0:00:01
+Collecting tqdm&lt;5.0.0,&gt;=4.64.1
+  Using cached tqdm-4.64.1-py2.py3-none-any.whl (78 kB)
+Collecting big-o&lt;0.11.0,&gt;=0.10.2
+  Using cached big_O-0.10.2.tar.gz (10 kB)
+Collecting click&lt;9.0.0,&gt;=8.1.3
+  Using cached click-8.1.3-py3-none-any.whl (96 kB)
+Collecting wntr&lt;0.6.0,&gt;=0.5.0
+  Downloading wntr-0.5.0-cp38-cp38-manylinux_2_17_x86_64.manylinux2014_x86_64.whl (4.0 MB)
+     |████████████████████████████████| 4.0 MB 74.9 MB/s eta 0:00:01
+Collecting scikit-learn&lt;2.0.0,&gt;=1.1.3
+  Downloading scikit_learn-1.2.0-cp38-cp38-manylinux_2_17_x86_64.manylinux2014_x86_64.whl (9.7 MB)
+     |████████████████████████████████| 9.7 MB 92.3 MB/s eta 0:00:01
+Collecting docker&lt;7.0.0,&gt;=6.0.1
+  Using cached docker-6.0.1-py3-none-any.whl (147 kB)
+Collecting tabulate&lt;0.10.0,&gt;=0.9.0
+  Using cached tabulate-0.9.0-py3-none-any.whl (35 kB)
+Collecting pydantic&lt;2.0.0,&gt;=1.10.2
+  Downloading pydantic-1.10.2-cp38-cp38-manylinux_2_17_x86_64.manylinux2014_x86_64.whl (13.6 MB)
+     |████████████████████████████████| 13.6 MB 96.6 MB/s eta 0:00:01
+Collecting pyyaml&lt;7.0,&gt;=6.0
+  Downloading PyYAML-6.0-cp38-cp38-manylinux_2_5_x86_64.manylinux1_x86_64.manylinux_2_12_x86_64.manylinux2010_x86_64.whl (701 kB)
+     |████████████████████████████████| 701 kB 108.9 MB/s eta 0:00:01
+Collecting pytz&gt;=2020.1
+  Using cached pytz-2022.6-py2.py3-none-any.whl (498 kB)
+Requirement already satisfied: python-dateutil&gt;=2.8.1 in /home/azureuser/.local/lib/python3.8/site-packages (from pandas&lt;2.0.0,&gt;=1.5.2-&gt;ldimbenchmark) (2.8.2)
+Collecting numpy&gt;=1.20.3; python_version &lt; &#34;3.10&#34;
+  Downloading numpy-1.23.5-cp38-cp38-manylinux_2_17_x86_64.manylinux2014_x86_64.whl (17.1 MB)
+     |████████████████████████████████| 17.1 MB 81.8 MB/s eta 0:00:01
+Collecting scipy
+  Downloading scipy-1.9.3-cp38-cp38-manylinux_2_17_x86_64.manylinux2014_x86_64.whl (33.8 MB)
+     |████████████████████████████████| 33.8 MB 106.0 MB/s eta 0:00:01
+Collecting networkx
+  Using cached networkx-2.8.8-py3-none-any.whl (2.0 MB)
+Collecting matplotlib
+  Downloading matplotlib-3.6.2-cp38-cp38-manylinux_2_12_x86_64.manylinux2010_x86_64.whl (9.4 MB)
+     |████████████████████████████████| 9.4 MB 107.0 MB/s eta 0:00:01     |██▋                             | 778 kB 107.0 MB/s eta 0:00:01
+Collecting joblib&gt;=1.1.1
+  Using cached joblib-1.2.0-py3-none-any.whl (297 kB)
+Collecting threadpoolctl&gt;=2.0.0
+  Using cached threadpoolctl-3.1.0-py3-none-any.whl (14 kB)
+Collecting requests&gt;=2.26.0
+  Using cached requests-2.28.1-py3-none-any.whl (62 kB)
+Requirement already satisfied: packaging&gt;=14.0 in /home/azureuser/.local/lib/python3.8/site-packages (from docker&lt;7.0.0,&gt;=6.0.1-&gt;ldimbenchmark) (22.0)
+Collecting websocket-client&gt;=0.32.0
+  Using cached websocket_client-1.4.2-py3-none-any.whl (55 kB)
+Requirement already satisfied: urllib3&gt;=1.26.0 in /home/azureuser/.local/lib/python3.8/site-packages (from docker&lt;7.0.0,&gt;=6.0.1-&gt;ldimbenchmark) (1.26.13)
+Collecting typing-extensions&gt;=4.1.0
+  Using cached typing_extensions-4.4.0-py3-none-any.whl (26 kB)
+Requirement already satisfied: six&gt;=1.5 in /usr/lib/python3/dist-packages (from python-dateutil&gt;=2.8.1-&gt;pandas&lt;2.0.0,&gt;=1.5.2-&gt;ldimbenchmark) (1.14.0)
+Collecting pillow&gt;=6.2.0
+  Downloading Pillow-9.3.0-cp38-cp38-manylinux_2_17_x86_64.manylinux2014_x86_64.whl (3.2 MB)
+     |████████████████████████████████| 3.2 MB 96.5 MB/s eta 0:00:01
+Collecting pyparsing&gt;=2.2.1
+  Using cached pyparsing-3.0.9-py3-none-any.whl (98 kB)
+Collecting kiwisolver&gt;=1.0.1
+  Downloading kiwisolver-1.4.4-cp38-cp38-manylinux_2_5_x86_64.manylinux1_x86_64.whl (1.2 MB)
+     |████████████████████████████████| 1.2 MB 95.8 MB/s eta 0:00:01
+Collecting contourpy&gt;=1.0.1
+  Downloading contourpy-1.0.6-cp38-cp38-manylinux_2_17_x86_64.manylinux2014_x86_64.whl (295 kB)
+     |████████████████████████████████| 295 kB 109.6 MB/s eta 0:00:01
+Collecting fonttools&gt;=4.22.0
+  Using cached fonttools-4.38.0-py3-none-any.whl (965 kB)
+Collecting cycler&gt;=0.10
+  Using cached cycler-0.11.0-py3-none-any.whl (6.4 kB)
+Collecting charset-normalizer&lt;3,&gt;=2
+  Using cached charset_normalizer-2.1.1-py3-none-any.whl (39 kB)
+Requirement already satisfied: idna&lt;4,&gt;=2.5 in /usr/lib/python3/dist-packages (from requests&gt;=2.26.0-&gt;docker&lt;7.0.0,&gt;=6.0.1-&gt;ldimbenchmark) (2.8)
+Requirement already satisfied: certifi&gt;=2017.4.17 in /usr/lib/python3/dist-packages (from requests&gt;=2.26.0-&gt;docker&lt;7.0.0,&gt;=6.0.1-&gt;ldimbenchmark) (2019.11.28)
+Building wheels for collected packages: big-o
+  Building wheel for big-o (setup.py) ... done
+  Created wheel for big-o: filename=big_O-0.10.2-py3-none-any.whl size=10035 sha256=c3fbc9ee75a79ac1efb1d2034b57c23be3a933c21b91b1a2a365f1f4ea5b90af
+  Stored in directory: /home/azureuser/.cache/pip/wheels/75/6b/38/c71a899ef5d0694d633e09160b63901a23e8be1772744d8817
+Successfully built big-o
+Installing collected packages: pytz, numpy, pandas, tqdm, big-o, click, scipy, networkx, pillow, pyparsing, kiwisolver, contourpy, fonttools, cycler, matplotlib, wntr, joblib, threadpoolctl, scikit-learn, charset-normalizer, requests, websocket-client, docker, tabulate, typing-extensions, pydantic, pyyaml, ldimbenchmark
+Successfully installed big-o-0.10.2 charset-normalizer-2.1.1 click-8.1.3 contourpy-1.0.6 cycler-0.11.0 docker-6.0.1 fonttools-4.38.0 joblib-1.2.0 kiwisolver-1.4.4 ldimbenchmark-0.1.17 matplotlib-3.6.2 networkx-2.8.8 numpy-1.23.5 pandas-1.5.2 pillow-9.3.0 pydantic-1.10.2 pyparsing-3.0.9 pytz-2022.6 pyyaml-6.0 requests-2.28.1 scikit-learn-1.2.0 scipy-1.9.3 tabulate-0.9.0 threadpoolctl-3.1.0 tqdm-4.64.1 typing-extensions-4.4.0 websocket-client-1.4.2 wntr-0.5.0
+</pre>
+</div>
+</div>
+
+</div>
+
+</div>
+
 </div>
 </div>
 <div class="jp-Cell jp-MarkdownCell jp-Notebook-cell">
@@ -2030,13 +2135,13 @@ Licensed under the Apache License, Version 2.0.
 </div>
 </div>
 </div>
-</div><div class="jp-Cell jp-CodeCell jp-Notebook-cell   ">
-<div class="jp-Cell jp-CodeCell jp-Notebook-cell   ">
+</div><div class="jp-Cell jp-CodeCell jp-Notebook-cell jp-mod-noOutputs  ">
+<div class="jp-Cell jp-CodeCell jp-Notebook-cell jp-mod-noOutputs  ">
 <div class="jp-Cell-inputWrapper">
 <div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
 </div>
 <div class="jp-InputArea jp-Cell-inputArea">
-<div class="jp-InputPrompt jp-InputArea-prompt">In&nbsp;[&nbsp;]:</div><div class="jp-CodeMirrorEditor jp-Editor jp-InputArea-editor" data-type="inline">
+<div class="jp-InputPrompt jp-InputArea-prompt">In&nbsp;[1]:</div><div class="jp-CodeMirrorEditor jp-Editor jp-InputArea-editor" data-type="inline">
         
         
         <div class="CodeMirror cm-s-jupyter">
@@ -2138,33 +2243,6 @@ class MyNewLeakageDetectionMethod(LDIMMethodBase):
 </div>
 </div>
 
-<div class="jp-Cell-outputWrapper">
-<div class="jp-Collapser jp-OutputCollapser jp-Cell-outputCollapser">
-</div>
-
-
-<div class="jp-OutputArea jp-Cell-outputArea">
-
-<div class="jp-OutputArea-child">
-
-    
-    <div class="jp-OutputPrompt jp-OutputArea-prompt"></div>
-
-
-<div class="jp-RenderedText jp-OutputArea-output" data-mime-type="application/vnd.jupyter.stderr">
-<pre>
-<span class="ansi-red-intense-fg ansi-bold">Running cells with &#39;/bin/python3.10&#39; requires ipykernel package.
-</span>
-<span class="ansi-red-intense-fg ansi-bold">Run the following command to install &#39;ipykernel&#39; into the Python environment. 
-</span>
-<span class="ansi-red-intense-fg ansi-bold">Command: &#39;/bin/python3.10 -m pip install ipykernel -U --user --force-reinstall&#39;</span></pre>
-</div>
-</div>
-
-</div>
-
-</div>
-
 </div>
 </div>
 <div class="jp-Cell jp-MarkdownCell jp-Notebook-cell">
@@ -2178,13 +2256,13 @@ class MyNewLeakageDetectionMethod(LDIMMethodBase):
 </div>
 </div>
 </div>
-</div><div class="jp-Cell jp-CodeCell jp-Notebook-cell jp-mod-noOutputs  ">
-<div class="jp-Cell jp-CodeCell jp-Notebook-cell jp-mod-noOutputs  ">
+</div><div class="jp-Cell jp-CodeCell jp-Notebook-cell   ">
+<div class="jp-Cell jp-CodeCell jp-Notebook-cell   ">
 <div class="jp-Cell-inputWrapper">
 <div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
 </div>
 <div class="jp-InputArea jp-Cell-inputArea">
-<div class="jp-InputPrompt jp-InputArea-prompt">In&nbsp;[&nbsp;]:</div><div class="jp-CodeMirrorEditor jp-Editor jp-InputArea-editor" data-type="inline">
+<div class="jp-InputPrompt jp-InputArea-prompt">In&nbsp;[2]:</div><div class="jp-CodeMirrorEditor jp-Editor jp-InputArea-editor" data-type="inline">
         
         
         <div class="CodeMirror cm-s-jupyter">
@@ -2213,6 +2291,30 @@ datasets = DatasetLibrary("datasets").download(DATASETS.BATTLEDIM)</div>
 </div>
 </div>
 
+<div class="jp-Cell-outputWrapper">
+<div class="jp-Collapser jp-OutputCollapser jp-Cell-outputCollapser">
+</div>
+
+
+<div class="jp-OutputArea jp-Cell-outputArea">
+
+<div class="jp-OutputArea-child">
+
+    
+    <div class="jp-OutputPrompt jp-OutputArea-prompt"></div>
+
+
+<div class="jp-RenderedText jp-OutputArea-output" data-mime-type="text/plain">
+<pre>Downloading dataset: battledim
+Dataset already downloaded
+</pre>
+</div>
+</div>
+
+</div>
+
+</div>
+
 </div>
 </div>
 <div class="jp-Cell jp-MarkdownCell jp-Notebook-cell">
@@ -2232,7 +2334,7 @@ datasets = DatasetLibrary("datasets").download(DATASETS.BATTLEDIM)</div>
 <div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
 </div>
 <div class="jp-InputArea jp-Cell-inputArea">
-<div class="jp-InputPrompt jp-InputArea-prompt">In&nbsp;[&nbsp;]:</div><div class="jp-CodeMirrorEditor jp-Editor jp-InputArea-editor" data-type="inline">
+<div class="jp-InputPrompt jp-InputArea-prompt">In&nbsp;[3]:</div><div class="jp-CodeMirrorEditor jp-Editor jp-InputArea-editor" data-type="inline">
         
         
         <div class="CodeMirror cm-s-jupyter">
@@ -2302,13 +2404,13 @@ benchmark.add_local_methods([MyNewLeakageDetectionMethod()])</div>
 </div>
 </div>
 </div>
-</div><div class="jp-Cell jp-CodeCell jp-Notebook-cell jp-mod-noOutputs  ">
-<div class="jp-Cell jp-CodeCell jp-Notebook-cell jp-mod-noOutputs  ">
+</div><div class="jp-Cell jp-CodeCell jp-Notebook-cell   ">
+<div class="jp-Cell jp-CodeCell jp-Notebook-cell   ">
 <div class="jp-Cell-inputWrapper">
 <div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
 </div>
 <div class="jp-InputArea jp-Cell-inputArea">
-<div class="jp-InputPrompt jp-InputArea-prompt">In&nbsp;[&nbsp;]:</div><div class="jp-CodeMirrorEditor jp-Editor jp-InputArea-editor" data-type="inline">
+<div class="jp-InputPrompt jp-InputArea-prompt">In&nbsp;[4]:</div><div class="jp-CodeMirrorEditor jp-Editor jp-InputArea-editor" data-type="inline">
         
         
         <div class="CodeMirror cm-s-jupyter">
@@ -2337,6 +2439,31 @@ benchmark.evaluate()</div>
     </div>
 
 </div>
+</div>
+
+<div class="jp-Cell-outputWrapper">
+<div class="jp-Collapser jp-OutputCollapser jp-Cell-outputCollapser">
+</div>
+
+
+<div class="jp-OutputArea jp-Cell-outputArea">
+
+<div class="jp-OutputArea-child">
+
+    
+    <div class="jp-OutputPrompt jp-OutputArea-prompt"></div>
+
+
+<div class="jp-RenderedText jp-OutputArea-output" data-mime-type="text/plain">
+<pre>                              TP    FP  TN      FN  TTD      wrongpipe    score    precision    recall (TPR)    TNR    FPR    FNR    F1
+--------------------------  ----  ----  ----  ----  -----  -----------  -------  -----------  --------------  -----  -----  -----  ----
+(&#39;battledim&#39;, &#39;NEWMETHOD&#39;)     0     0          19                   0        0          nan               0    nan    nan      1   nan
+</pre>
+</div>
+</div>
+
+</div>
+
 </div>
 
 </div>
@@ -2421,6 +2548,8 @@ benchmark.evaluate()</div>
     
     
       <script src="../../assets/javascripts/bundle.d6c3db9e.min.js"></script>
+      
+        <script src="../../_extra/jupyter.js"></script>
       
     
   </body>
