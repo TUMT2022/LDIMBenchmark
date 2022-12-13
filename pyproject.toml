@@ -9,7 +9,7 @@ readme = "README.md"
 ldimbenchmark = "ldimbenchmark.cli:cli"
 
 [tool.poetry.dependencies]
-python = "^3.8"
+python = "^3.7"
 tqdm = "^4.64.1"
 wntr = "^0.5.0"
 pyyaml = "^6.0"
@@ -49,11 +49,10 @@ build-backend = "poetry.core.masonry.api"
 legacy_tox_ini = """
 [tox]
 isolated_build = True
-envlist = py38,py39,py310
+envlist = py37,py38,py39,py310
 
 [gh-actions]
 python =
-    3.6: py36
     3.7: py37
     3.8: py38
     3.9: py39
