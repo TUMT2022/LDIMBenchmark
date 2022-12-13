@@ -27,7 +27,6 @@ plugins:
       # execute: True
       allow_errors: false
       kernel_name: python3
-      show_input: True
   - gen-files:
       scripts:
       - docs/gen_ref_pages.py
@@ -51,3 +50,9 @@ markdown_extensions:
   - pymdownx.snippets:
       auto_append:
         - includes/abbreviations.md
+
+extra_css:
+ - _extra/jupyter.css
+
+extra_javascript:
+ - _extra/jupyter.js
