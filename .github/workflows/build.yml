@@ -17,15 +17,15 @@ jobs:
 
     steps:
       - name: Checkout sources
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
 
       - name: Setup Python
-        uses: actions/setup-python@v2
+        uses: actions/setup-python@v4
         with:
           python-version: ${{ matrix.python-version }}
 
       - name: cache poetry install
-        uses: actions/cache@v2
+        uses: actions/cache@v3
         with:
           path: ~/.local
           key: python-${{ matrix.python-version }}-poetry-${{ env.poetry_version }}-0
@@ -38,7 +38,7 @@ jobs:
 
       - name: cache deps
         id: cache-deps
-        uses: actions/cache@v2
+        uses: actions/cache@v3
         with:
           path: .venv
           key: python-${{ matrix.python-version }}-pydeps-${{ hashFiles('**/poetry.lock') }}
@@ -59,17 +59,17 @@ jobs:
       python-version: "3.10"
     steps:
       - name: Checkout sources
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
         with:
           fetch-depth: 0
 
       - name: Setup Python
-        uses: actions/setup-python@v2
+        uses: actions/setup-python@v4
         with:
           python-version: ${{ env.python-version }}
 
       - name: cache poetry install
-        uses: actions/cache@v2
+        uses: actions/cache@v3
         with:
           path: ~/.local
           key: python-${{ env.python-version }}-poetry-${{ env.poetry_version }}-0
@@ -82,7 +82,7 @@ jobs:
 
       - name: cache deps
         id: cache-deps
-        uses: actions/cache@v2
+        uses: actions/cache@v3
         with:
           path: .venv
           key: python-${{ env.python-version }}-pydeps-${{ hashFiles('**/poetry.lock') }}
