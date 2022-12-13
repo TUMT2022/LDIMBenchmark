@@ -60,6 +60,8 @@ python =
 deps =
     black
     pytest
+    syrupy
+    pytest-xdist
 commands =
     black --check src/ldimbenchmark
     pytest .
