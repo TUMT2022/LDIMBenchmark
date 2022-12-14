@@ -13,7 +13,7 @@
     
     
       
-        <title>How to run the benchmark on your own dataset? - LDIMBenchmark</title>
+        <title>How to benchmark your own leakage detection method? - LDIMBenchmark</title>
       
     
     
@@ -66,7 +66,7 @@
     <div data-md-component="skip">
       
         
-        <a href="#how-to-run-the-benchmark-on-your-own-dataset" class="md-skip">
+        <a href="#how-to-benchmark-your-own-leakage-detection-method" class="md-skip">
           Skip to content
         </a>
       
@@ -99,7 +99,7 @@
         <div class="md-header__topic" data-md-component="header-topic">
           <span class="md-ellipsis">
             
-              How to run the benchmark on your own dataset?
+              How to benchmark your own leakage detection method?
             
           </span>
         </div>
@@ -358,21 +358,11 @@
               
   
   
-    
   
-  
-    <li class="md-nav__item md-nav__item--active">
-      
-      <input class="md-nav__toggle md-toggle" data-md-toggle="toc" type="checkbox" id="__toc">
-      
-      
-        
-      
-      
-      <a href="./" class="md-nav__link md-nav__link--active">
+    <li class="md-nav__item">
+      <a href="../run-on-your-dataset/" class="md-nav__link">
         How to run the benchmark on your own dataset?
       </a>
-      
     </li>
   
 
@@ -396,11 +386,21 @@
               
   
   
+    
   
-    <li class="md-nav__item">
-      <a href="../run-complexity-analysis/" class="md-nav__link">
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" data-md-toggle="toc" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
         How to benchmark your own leakage detection method?
       </a>
+      
     </li>
   
 
@@ -968,7 +968,7 @@
                 
                   
 
-  <a href="https://github.com/TUMT2022/LDIMBench.git/edit/master/docs/user-guides/run-on-your-dataset.ipynb" title="Edit this page" class="md-content__button md-icon">
+  <a href="https://github.com/TUMT2022/LDIMBench.git/edit/master/docs/user-guides/run-complexity-analysis.ipynb" title="Edit this page" class="md-content__button md-icon">
     
     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20.71 7.04c.39-.39.39-1.04 0-1.41l-2.34-2.34c-.37-.39-1.02-.39-1.41 0l-1.84 1.83 3.75 3.75M3 17.25V21h3.75L17.81 9.93l-3.75-3.75L3 17.25Z"/></svg>
   </a>
@@ -2011,7 +2011,9 @@ Licensed under the Apache License, Version 2.0.
 </div>
 <div class="jp-InputArea jp-Cell-inputArea"><div class="jp-InputPrompt jp-InputArea-prompt">
 </div><div class="jp-RenderedHTMLCommon jp-RenderedMarkdown jp-MarkdownOutput " data-mime-type="text/markdown">
-<h1 id="how-to-run-the-benchmark-on-your-own-dataset">How to run the benchmark on your own dataset?<a class="anchor-link" href="#how-to-run-the-benchmark-on-your-own-dataset">&#182;</a></h1>
+<h1 id="how-to-benchmark-your-own-leakage-detection-method">How to benchmark your own leakage detection method?<a class="anchor-link" href="#how-to-benchmark-your-own-leakage-detection-method">&#182;</a></h1><p>You can try this tutorial on <a href="https://colab.research.google.com/github/TUMT2022/LDIMBench/blob/main/docs/user-guides/run-your-method.ipynb">Google Colab</a>!</p>
+<p>This guide will show you how to develop your own leakage detection method (in python, there are <a href="/docs/user-guides/docker.md">other options</a> as well!) and benchmark it against the other methods in the benchmark suite.</p>
+
 </div>
 </div>
 </div>
@@ -2022,20 +2024,18 @@ Licensed under the Apache License, Version 2.0.
 </div>
 <div class="jp-InputArea jp-Cell-inputArea"><div class="jp-InputPrompt jp-InputArea-prompt">
 </div><div class="jp-RenderedHTMLCommon jp-RenderedMarkdown jp-MarkdownOutput " data-mime-type="text/markdown">
-<p>Create a folder as specified in the <a href="/docs/design/datasets.md">Datasets Section</a>.
-Then simply import your dataset using the <code>Dataset</code> class. 
-The validations will be run on demand so make sure you load the dataset to check if it works:</p>
+<p>First install the package:</p>
 
 </div>
 </div>
 </div>
-</div><div class="jp-Cell jp-CodeCell jp-Notebook-cell jp-mod-noOutputs  ">
-<div class="jp-Cell jp-CodeCell jp-Notebook-cell jp-mod-noOutputs  ">
+</div><div class="jp-Cell jp-CodeCell jp-Notebook-cell   ">
+<div class="jp-Cell jp-CodeCell jp-Notebook-cell   ">
 <div class="jp-Cell-inputWrapper">
 <div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
 </div>
 <div class="jp-InputArea jp-Cell-inputArea">
-<div class="jp-InputPrompt jp-InputArea-prompt">In&nbsp;[&nbsp;]:</div><div class="jp-CodeMirrorEditor jp-Editor jp-InputArea-editor" data-type="inline">
+<div class="jp-InputPrompt jp-InputArea-prompt">In&nbsp;[1]:</div><div class="jp-CodeMirrorEditor jp-Editor jp-InputArea-editor" data-type="inline">
         
         
         <div class="CodeMirror cm-s-jupyter">
@@ -2050,16 +2050,383 @@ The validations will be run on demand so make sure you load the dataset to check
                 </div>
             </clipboard-copy>
         </div>
-            <div class="highlight-ipynb hl-python"><pre><span></span><span class="kn">from</span> <span class="nn">ldimbenchmark.datasets</span> <span class="kn">import</span> <span class="n">Dataset</span>
-
-<span class="n">your_dataset</span> <span class="o">=</span> <span class="n">Dataset</span><span class="p">(</span><span class="s2">&quot;path/to/your/dataset&quot;</span><span class="p">)</span>
-<span class="n">your_dataset</span><span class="o">.</span><span class="n">loadDataset</span><span class="p">()</span><span class="o">.</span><span class="n">loadBenchmarkData</span><span class="p">()</span>
+            <div class="highlight-ipynb hl-python"><pre><span></span><span class="c1"># Run this in Google Colab:</span>
+<span class="err">!</span><span class="n">pip</span> <span class="n">install</span> <span class="n">ldimbenchmark</span>
+<span class="o">%</span><span class="n">load_ext</span> <span class="n">autoreload</span>
+<span class="o">%</span><span class="n">autoreload</span> <span class="mi">2</span>
 </pre></div>
-<div id="cell-1" class="clipboard-copy-txt">from ldimbenchmark.datasets import Dataset
+<div id="cell-1" class="clipboard-copy-txt"># Run this in Google Colab:
+!pip install ldimbenchmark
+%load_ext autoreload
+%autoreload 2</div>
+    
+        </div>
+    </div>
 
-your_dataset = Dataset("path/to/your/dataset")
-your_dataset.loadDataset().loadBenchmarkData()
 </div>
+</div>
+
+<div class="jp-Cell-outputWrapper">
+<div class="jp-Collapser jp-OutputCollapser jp-Cell-outputCollapser">
+</div>
+
+
+<div class="jp-OutputArea jp-Cell-outputArea">
+
+<div class="jp-OutputArea-child">
+
+    
+    <div class="jp-OutputPrompt jp-OutputArea-prompt"></div>
+
+
+<div class="jp-RenderedText jp-OutputArea-output" data-mime-type="text/plain">
+<pre>Requirement already satisfied: ldimbenchmark in /home/azureuser/LDIMBench/.venv/lib/python3.8/site-packages (0.1.17)
+Requirement already satisfied: pyyaml&lt;7.0,&gt;=6.0 in /home/azureuser/LDIMBench/.venv/lib/python3.8/site-packages (from ldimbenchmark) (6.0)
+Requirement already satisfied: pydantic&lt;2.0.0,&gt;=1.10.2 in /home/azureuser/LDIMBench/.venv/lib/python3.8/site-packages (from ldimbenchmark) (1.10.2)
+Requirement already satisfied: tabulate&lt;0.10.0,&gt;=0.9.0 in /home/azureuser/LDIMBench/.venv/lib/python3.8/site-packages (from ldimbenchmark) (0.9.0)
+Requirement already satisfied: big-o&lt;0.11.0,&gt;=0.10.2 in /home/azureuser/LDIMBench/.venv/lib/python3.8/site-packages (from ldimbenchmark) (0.10.2)
+Requirement already satisfied: numpy&lt;2.0.0,&gt;=1.23.5 in /home/azureuser/LDIMBench/.venv/lib/python3.8/site-packages (from ldimbenchmark) (1.23.5)
+Requirement already satisfied: scikit-learn&lt;2.0.0,&gt;=1.1.3 in /home/azureuser/LDIMBench/.venv/lib/python3.8/site-packages (from ldimbenchmark) (1.1.3)
+Requirement already satisfied: jinja2&lt;4.0.0,&gt;=3.1.2 in /home/azureuser/LDIMBench/.venv/lib/python3.8/site-packages (from ldimbenchmark) (3.1.2)
+Requirement already satisfied: pandas&lt;2.0.0,&gt;=1.5.2 in /home/azureuser/LDIMBench/.venv/lib/python3.8/site-packages (from ldimbenchmark) (1.5.2)
+Requirement already satisfied: click&lt;9.0.0,&gt;=8.1.3 in /home/azureuser/LDIMBench/.venv/lib/python3.8/site-packages (from ldimbenchmark) (8.1.3)
+Requirement already satisfied: wntr&lt;0.6.0,&gt;=0.5.0 in /home/azureuser/LDIMBench/.venv/lib/python3.8/site-packages (from ldimbenchmark) (0.5.0)
+Requirement already satisfied: docker&lt;7.0.0,&gt;=6.0.1 in /home/azureuser/LDIMBench/.venv/lib/python3.8/site-packages (from ldimbenchmark) (6.0.1)
+Requirement already satisfied: tqdm&lt;5.0.0,&gt;=4.64.1 in /home/azureuser/LDIMBench/.venv/lib/python3.8/site-packages (from ldimbenchmark) (4.64.1)
+Requirement already satisfied: websocket-client&gt;=0.32.0 in /home/azureuser/LDIMBench/.venv/lib/python3.8/site-packages (from docker&lt;7.0.0,&gt;=6.0.1-&gt;ldimbenchmark) (1.4.2)
+Requirement already satisfied: requests&gt;=2.26.0 in /home/azureuser/LDIMBench/.venv/lib/python3.8/site-packages (from docker&lt;7.0.0,&gt;=6.0.1-&gt;ldimbenchmark) (2.28.1)
+Requirement already satisfied: urllib3&gt;=1.26.0 in /home/azureuser/LDIMBench/.venv/lib/python3.8/site-packages (from docker&lt;7.0.0,&gt;=6.0.1-&gt;ldimbenchmark) (1.26.13)
+Requirement already satisfied: packaging&gt;=14.0 in /home/azureuser/LDIMBench/.venv/lib/python3.8/site-packages (from docker&lt;7.0.0,&gt;=6.0.1-&gt;ldimbenchmark) (21.3)
+Requirement already satisfied: MarkupSafe&gt;=2.0 in /home/azureuser/LDIMBench/.venv/lib/python3.8/site-packages (from jinja2&lt;4.0.0,&gt;=3.1.2-&gt;ldimbenchmark) (2.1.1)
+Requirement already satisfied: python-dateutil&gt;=2.8.1 in /home/azureuser/LDIMBench/.venv/lib/python3.8/site-packages (from pandas&lt;2.0.0,&gt;=1.5.2-&gt;ldimbenchmark) (2.8.2)
+Requirement already satisfied: pytz&gt;=2020.1 in /home/azureuser/LDIMBench/.venv/lib/python3.8/site-packages (from pandas&lt;2.0.0,&gt;=1.5.2-&gt;ldimbenchmark) (2022.6)
+Requirement already satisfied: typing-extensions&gt;=4.1.0 in /home/azureuser/LDIMBench/.venv/lib/python3.8/site-packages (from pydantic&lt;2.0.0,&gt;=1.10.2-&gt;ldimbenchmark) (4.4.0)
+Requirement already satisfied: threadpoolctl&gt;=2.0.0 in /home/azureuser/LDIMBench/.venv/lib/python3.8/site-packages (from scikit-learn&lt;2.0.0,&gt;=1.1.3-&gt;ldimbenchmark) (3.1.0)
+Requirement already satisfied: joblib&gt;=1.0.0 in /home/azureuser/LDIMBench/.venv/lib/python3.8/site-packages (from scikit-learn&lt;2.0.0,&gt;=1.1.3-&gt;ldimbenchmark) (1.2.0)
+Requirement already satisfied: scipy&gt;=1.3.2 in /home/azureuser/LDIMBench/.venv/lib/python3.8/site-packages (from scikit-learn&lt;2.0.0,&gt;=1.1.3-&gt;ldimbenchmark) (1.9.3)
+Requirement already satisfied: networkx in /home/azureuser/LDIMBench/.venv/lib/python3.8/site-packages (from wntr&lt;0.6.0,&gt;=0.5.0-&gt;ldimbenchmark) (2.8.8)
+Requirement already satisfied: matplotlib in /home/azureuser/LDIMBench/.venv/lib/python3.8/site-packages (from wntr&lt;0.6.0,&gt;=0.5.0-&gt;ldimbenchmark) (3.6.2)
+Requirement already satisfied: pyparsing!=3.0.5,&gt;=2.0.2 in /home/azureuser/LDIMBench/.venv/lib/python3.8/site-packages (from packaging&gt;=14.0-&gt;docker&lt;7.0.0,&gt;=6.0.1-&gt;ldimbenchmark) (3.0.9)
+Requirement already satisfied: six&gt;=1.5 in /home/azureuser/LDIMBench/.venv/lib/python3.8/site-packages (from python-dateutil&gt;=2.8.1-&gt;pandas&lt;2.0.0,&gt;=1.5.2-&gt;ldimbenchmark) (1.16.0)
+Requirement already satisfied: idna&lt;4,&gt;=2.5 in /home/azureuser/LDIMBench/.venv/lib/python3.8/site-packages (from requests&gt;=2.26.0-&gt;docker&lt;7.0.0,&gt;=6.0.1-&gt;ldimbenchmark) (3.4)
+Requirement already satisfied: charset-normalizer&lt;3,&gt;=2 in /home/azureuser/LDIMBench/.venv/lib/python3.8/site-packages (from requests&gt;=2.26.0-&gt;docker&lt;7.0.0,&gt;=6.0.1-&gt;ldimbenchmark) (2.1.1)
+Requirement already satisfied: certifi&gt;=2017.4.17 in /home/azureuser/LDIMBench/.venv/lib/python3.8/site-packages (from requests&gt;=2.26.0-&gt;docker&lt;7.0.0,&gt;=6.0.1-&gt;ldimbenchmark) (2022.9.24)
+Requirement already satisfied: fonttools&gt;=4.22.0 in /home/azureuser/LDIMBench/.venv/lib/python3.8/site-packages (from matplotlib-&gt;wntr&lt;0.6.0,&gt;=0.5.0-&gt;ldimbenchmark) (4.38.0)
+Requirement already satisfied: pillow&gt;=6.2.0 in /home/azureuser/LDIMBench/.venv/lib/python3.8/site-packages (from matplotlib-&gt;wntr&lt;0.6.0,&gt;=0.5.0-&gt;ldimbenchmark) (9.3.0)
+Requirement already satisfied: kiwisolver&gt;=1.0.1 in /home/azureuser/LDIMBench/.venv/lib/python3.8/site-packages (from matplotlib-&gt;wntr&lt;0.6.0,&gt;=0.5.0-&gt;ldimbenchmark) (1.4.4)
+Requirement already satisfied: cycler&gt;=0.10 in /home/azureuser/LDIMBench/.venv/lib/python3.8/site-packages (from matplotlib-&gt;wntr&lt;0.6.0,&gt;=0.5.0-&gt;ldimbenchmark) (0.11.0)
+Requirement already satisfied: contourpy&gt;=1.0.1 in /home/azureuser/LDIMBench/.venv/lib/python3.8/site-packages (from matplotlib-&gt;wntr&lt;0.6.0,&gt;=0.5.0-&gt;ldimbenchmark) (1.0.6)
+</pre>
+</div>
+</div>
+
+</div>
+
+</div>
+
+</div>
+</div>
+<div class="jp-Cell jp-MarkdownCell jp-Notebook-cell">
+<div class="jp-Cell-inputWrapper">
+<div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
+</div>
+<div class="jp-InputArea jp-Cell-inputArea"><div class="jp-InputPrompt jp-InputArea-prompt">
+</div><div class="jp-RenderedHTMLCommon jp-RenderedMarkdown jp-MarkdownOutput " data-mime-type="text/markdown">
+<p>Load or define the methods you want to benchmark:</p>
+
+</div>
+</div>
+</div>
+</div><div class="jp-Cell jp-CodeCell jp-Notebook-cell jp-mod-noOutputs  ">
+<div class="jp-Cell jp-CodeCell jp-Notebook-cell jp-mod-noOutputs  ">
+<div class="jp-Cell-inputWrapper">
+<div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
+</div>
+<div class="jp-InputArea jp-Cell-inputArea">
+<div class="jp-InputPrompt jp-InputArea-prompt">In&nbsp;[2]:</div><div class="jp-CodeMirrorEditor jp-Editor jp-InputArea-editor" data-type="inline">
+        
+        
+        <div class="CodeMirror cm-s-jupyter">
+        <div class="zeroclipboard-container">
+            <clipboard-copy for="cell-2">
+            <div>
+                <span class="notice" hidden>Copied!</span>
+                <svg aria-hidden="true" width="20" height="20" viewBox="0 0 16 16" version="1.1"  data-view-component="true" class="clipboard-copy-icon">
+                    <path fill="currentColor" fill-rule="evenodd" d="M0 6.75C0 5.784.784 5 1.75 5h1.5a.75.75 0 010 1.5h-1.5a.25.25 0 00-.25.25v7.5c0 .138.112.25.25.25h7.5a.25.25 0 00.25-.25v-1.5a.75.75 0 011.5 0v1.5A1.75 1.75 0 019.25 16h-7.5A1.75 1.75 0 010 14.25v-7.5z"></path>
+                    <path fill="currentColor" fill-rule="evenodd" d="M5 1.75C5 .784 5.784 0 6.75 0h7.5C15.216 0 16 .784 16 1.75v7.5A1.75 1.75 0 0114.25 11h-7.5A1.75 1.75 0 015 9.25v-7.5zm1.75-.25a.25.25 0 00-.25.25v7.5c0 .138.112.25.25.25h7.5a.25.25 0 00.25-.25v-7.5a.25.25 0 00-.25-.25h-7.5z"></path>
+                </svg>
+                </div>
+            </clipboard-copy>
+        </div>
+            <div class="highlight-ipynb hl-python"><pre><span></span><span class="kn">from</span> <span class="nn">ldimbenchmark.methods</span> <span class="kn">import</span> <span class="n">LILA</span><span class="p">,</span> <span class="n">MNF</span>
+
+<span class="n">methods</span> <span class="o">=</span> <span class="p">[</span><span class="n">MNF</span><span class="p">(),</span> <span class="n">LILA</span><span class="p">()]</span>
+</pre></div>
+<div id="cell-2" class="clipboard-copy-txt">from ldimbenchmark.methods import LILA, MNF
+
+methods = [MNF(), LILA()]</div>
+    
+        </div>
+    </div>
+
+</div>
+</div>
+
+</div>
+</div>
+<div class="jp-Cell jp-MarkdownCell jp-Notebook-cell">
+<div class="jp-Cell-inputWrapper">
+<div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
+</div>
+<div class="jp-InputArea jp-Cell-inputArea"><div class="jp-InputPrompt jp-InputArea-prompt">
+</div><div class="jp-RenderedHTMLCommon jp-RenderedMarkdown jp-MarkdownOutput " data-mime-type="text/markdown">
+<p>Prepare the Benchmark:</p>
+
+</div>
+</div>
+</div>
+</div><div class="jp-Cell jp-CodeCell jp-Notebook-cell jp-mod-noOutputs  ">
+<div class="jp-Cell jp-CodeCell jp-Notebook-cell jp-mod-noOutputs  ">
+<div class="jp-Cell-inputWrapper">
+<div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
+</div>
+<div class="jp-InputArea jp-Cell-inputArea">
+<div class="jp-InputPrompt jp-InputArea-prompt">In&nbsp;[3]:</div><div class="jp-CodeMirrorEditor jp-Editor jp-InputArea-editor" data-type="inline">
+        
+        
+        <div class="CodeMirror cm-s-jupyter">
+        <div class="zeroclipboard-container">
+            <clipboard-copy for="cell-3">
+            <div>
+                <span class="notice" hidden>Copied!</span>
+                <svg aria-hidden="true" width="20" height="20" viewBox="0 0 16 16" version="1.1"  data-view-component="true" class="clipboard-copy-icon">
+                    <path fill="currentColor" fill-rule="evenodd" d="M0 6.75C0 5.784.784 5 1.75 5h1.5a.75.75 0 010 1.5h-1.5a.25.25 0 00-.25.25v7.5c0 .138.112.25.25.25h7.5a.25.25 0 00.25-.25v-1.5a.75.75 0 011.5 0v1.5A1.75 1.75 0 019.25 16h-7.5A1.75 1.75 0 010 14.25v-7.5z"></path>
+                    <path fill="currentColor" fill-rule="evenodd" d="M5 1.75C5 .784 5.784 0 6.75 0h7.5C15.216 0 16 .784 16 1.75v7.5A1.75 1.75 0 0114.25 11h-7.5A1.75 1.75 0 015 9.25v-7.5zm1.75-.25a.25.25 0 00-.25.25v7.5c0 .138.112.25.25.25h7.5a.25.25 0 00.25-.25v-7.5a.25.25 0 00-.25-.25h-7.5z"></path>
+                </svg>
+                </div>
+            </clipboard-copy>
+        </div>
+            <div class="highlight-ipynb hl-python"><pre><span></span><span class="kn">from</span> <span class="nn">ldimbenchmark</span> <span class="kn">import</span> <span class="n">LDIMBenchmark</span>
+
+<span class="n">benchmark</span> <span class="o">=</span> <span class="n">LDIMBenchmark</span><span class="p">({},</span> <span class="p">[],</span> <span class="n">results_dir</span><span class="o">=</span><span class="s2">&quot;./benchmark-results&quot;</span><span class="p">)</span>
+<span class="n">benchmark</span><span class="o">.</span><span class="n">add_local_methods</span><span class="p">(</span><span class="n">methods</span><span class="p">)</span>
+</pre></div>
+<div id="cell-3" class="clipboard-copy-txt">from ldimbenchmark import LDIMBenchmark
+
+benchmark = LDIMBenchmark({}, [], results_dir="./benchmark-results")
+benchmark.add_local_methods(methods)
+
+</div>
+    
+        </div>
+    </div>
+
+</div>
+</div>
+
+</div>
+</div>
+<div class="jp-Cell jp-MarkdownCell jp-Notebook-cell">
+<div class="jp-Cell-inputWrapper">
+<div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
+</div>
+<div class="jp-InputArea jp-Cell-inputArea"><div class="jp-InputPrompt jp-InputArea-prompt">
+</div><div class="jp-RenderedHTMLCommon jp-RenderedMarkdown jp-MarkdownOutput " data-mime-type="text/markdown">
+<p>Run and evaluate the benchmark (this can take a while):</p>
+
+</div>
+</div>
+</div>
+</div><div class="jp-Cell jp-CodeCell jp-Notebook-cell   ">
+<div class="jp-Cell jp-CodeCell jp-Notebook-cell   ">
+<div class="jp-Cell-inputWrapper">
+<div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
+</div>
+<div class="jp-InputArea jp-Cell-inputArea">
+<div class="jp-InputPrompt jp-InputArea-prompt">In&nbsp;[9]:</div><div class="jp-CodeMirrorEditor jp-Editor jp-InputArea-editor" data-type="inline">
+        
+        
+        <div class="CodeMirror cm-s-jupyter">
+        <div class="zeroclipboard-container">
+            <clipboard-copy for="cell-4">
+            <div>
+                <span class="notice" hidden>Copied!</span>
+                <svg aria-hidden="true" width="20" height="20" viewBox="0 0 16 16" version="1.1"  data-view-component="true" class="clipboard-copy-icon">
+                    <path fill="currentColor" fill-rule="evenodd" d="M0 6.75C0 5.784.784 5 1.75 5h1.5a.75.75 0 010 1.5h-1.5a.25.25 0 00-.25.25v7.5c0 .138.112.25.25.25h7.5a.25.25 0 00.25-.25v-1.5a.75.75 0 011.5 0v1.5A1.75 1.75 0 019.25 16h-7.5A1.75 1.75 0 010 14.25v-7.5z"></path>
+                    <path fill="currentColor" fill-rule="evenodd" d="M5 1.75C5 .784 5.784 0 6.75 0h7.5C15.216 0 16 .784 16 1.75v7.5A1.75 1.75 0 0114.25 11h-7.5A1.75 1.75 0 015 9.25v-7.5zm1.75-.25a.25.25 0 00-.25.25v7.5c0 .138.112.25.25.25h7.5a.25.25 0 00.25-.25v-7.5a.25.25 0 00-.25-.25h-7.5z"></path>
+                </svg>
+                </div>
+            </clipboard-copy>
+        </div>
+            <div class="highlight-ipynb hl-python"><pre><span></span><span class="c1"># for time complexity</span>
+<span class="n">results</span> <span class="o">=</span> <span class="n">benchmark</span><span class="o">.</span><span class="n">run_complexity_analysis</span><span class="p">(</span>
+    <span class="n">methods</span><span class="o">=</span><span class="n">methods</span><span class="p">,</span>
+    <span class="n">style</span><span class="o">=</span><span class="s2">&quot;time&quot;</span><span class="p">,</span>
+<span class="p">)</span>
+</pre></div>
+<div id="cell-4" class="clipboard-copy-txt"># for time complexity
+results = benchmark.run_complexity_analysis(
+    methods=methods,
+    style="time",
+)
+
+</div>
+    
+        </div>
+    </div>
+
+</div>
+</div>
+
+<div class="jp-Cell-outputWrapper">
+<div class="jp-Collapser jp-OutputCollapser jp-Cell-outputCollapser">
+</div>
+
+
+<div class="jp-OutputArea jp-Cell-outputArea">
+
+<div class="jp-OutputArea-child">
+
+    
+    <div class="jp-OutputPrompt jp-OutputArea-prompt"></div>
+
+
+<div class="jp-RenderedText jp-OutputArea-output" data-mime-type="application/vnd.jupyter.stderr">
+<pre>100%|██████████| 60/60 [00:00&lt;00:00, 34178.76it/s]
+100%|██████████| 60/60 [00:02&lt;00:00, 29.32it/s]
+</pre>
+</div>
+</div>
+
+</div>
+
+</div>
+
+</div>
+</div><div class="jp-Cell jp-CodeCell jp-Notebook-cell   ">
+<div class="jp-Cell jp-CodeCell jp-Notebook-cell   ">
+<div class="jp-Cell-inputWrapper">
+<div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
+</div>
+<div class="jp-InputArea jp-Cell-inputArea">
+<div class="jp-InputPrompt jp-InputArea-prompt">In&nbsp;[10]:</div><div class="jp-CodeMirrorEditor jp-Editor jp-InputArea-editor" data-type="inline">
+        
+        
+        <div class="CodeMirror cm-s-jupyter">
+        <div class="zeroclipboard-container">
+            <clipboard-copy for="cell-5">
+            <div>
+                <span class="notice" hidden>Copied!</span>
+                <svg aria-hidden="true" width="20" height="20" viewBox="0 0 16 16" version="1.1"  data-view-component="true" class="clipboard-copy-icon">
+                    <path fill="currentColor" fill-rule="evenodd" d="M0 6.75C0 5.784.784 5 1.75 5h1.5a.75.75 0 010 1.5h-1.5a.25.25 0 00-.25.25v7.5c0 .138.112.25.25.25h7.5a.25.25 0 00.25-.25v-1.5a.75.75 0 011.5 0v1.5A1.75 1.75 0 019.25 16h-7.5A1.75 1.75 0 010 14.25v-7.5z"></path>
+                    <path fill="currentColor" fill-rule="evenodd" d="M5 1.75C5 .784 5.784 0 6.75 0h7.5C15.216 0 16 .784 16 1.75v7.5A1.75 1.75 0 0114.25 11h-7.5A1.75 1.75 0 015 9.25v-7.5zm1.75-.25a.25.25 0 00-.25.25v7.5c0 .138.112.25.25.25h7.5a.25.25 0 00.25-.25v-7.5a.25.25 0 00-.25-.25h-7.5z"></path>
+                </svg>
+                </div>
+            </clipboard-copy>
+        </div>
+            <div class="highlight-ipynb hl-python"><pre><span></span><span class="n">results</span>
+</pre></div>
+<div id="cell-5" class="clipboard-copy-txt">results</div>
+    
+        </div>
+    </div>
+
+</div>
+</div>
+
+<div class="jp-Cell-outputWrapper">
+<div class="jp-Collapser jp-OutputCollapser jp-Cell-outputCollapser">
+</div>
+
+
+<div class="jp-OutputArea jp-Cell-outputArea">
+
+<div class="jp-OutputArea-child">
+
+    
+    <div class="jp-OutputPrompt jp-OutputArea-prompt">Out[10]:</div>
+
+
+
+<div class="jp-RenderedHTMLCommon jp-RenderedHTML jp-OutputArea-output jp-OutputArea-executeResult" data-mime-type="text/html">
+<div>
+<style scoped>
+    .dataframe tbody tr th:only-of-type {
+        vertical-align: middle;
+    }
+
+    .dataframe tbody tr th {
+        vertical-align: top;
+    }
+
+    .dataframe thead th {
+        text-align: right;
+    }
+</style>
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th></th>
+      <th>Leakage Detection Method</th>
+      <th>Time Complexity</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>0</th>
+      <td>MNF</td>
+      <td>Quadratic: time = -2.2E-05 + 1.8E-06*n^2 (sec)</td>
+    </tr>
+    <tr>
+      <th>1</th>
+      <td>LILA</td>
+      <td>Exponential: time = 0.85 * 0.044^n (sec)</td>
+    </tr>
+  </tbody>
+</table>
+</div>
+</div>
+
+</div>
+
+</div>
+
+</div>
+
+</div>
+</div><div class="jp-Cell jp-CodeCell jp-Notebook-cell jp-mod-noOutputs  ">
+<div class="jp-Cell jp-CodeCell jp-Notebook-cell jp-mod-noOutputs  ">
+<div class="jp-Cell-inputWrapper">
+<div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
+</div>
+<div class="jp-InputArea jp-Cell-inputArea">
+<div class="jp-InputPrompt jp-InputArea-prompt">In&nbsp;[&nbsp;]:</div><div class="jp-CodeMirrorEditor jp-Editor jp-InputArea-editor" data-type="inline">
+        
+        
+        <div class="CodeMirror cm-s-jupyter">
+        <div class="zeroclipboard-container">
+            <clipboard-copy for="cell-6">
+            <div>
+                <span class="notice" hidden>Copied!</span>
+                <svg aria-hidden="true" width="20" height="20" viewBox="0 0 16 16" version="1.1"  data-view-component="true" class="clipboard-copy-icon">
+                    <path fill="currentColor" fill-rule="evenodd" d="M0 6.75C0 5.784.784 5 1.75 5h1.5a.75.75 0 010 1.5h-1.5a.25.25 0 00-.25.25v7.5c0 .138.112.25.25.25h7.5a.25.25 0 00.25-.25v-1.5a.75.75 0 011.5 0v1.5A1.75 1.75 0 019.25 16h-7.5A1.75 1.75 0 010 14.25v-7.5z"></path>
+                    <path fill="currentColor" fill-rule="evenodd" d="M5 1.75C5 .784 5.784 0 6.75 0h7.5C15.216 0 16 .784 16 1.75v7.5A1.75 1.75 0 0114.25 11h-7.5A1.75 1.75 0 015 9.25v-7.5zm1.75-.25a.25.25 0 00-.25.25v7.5c0 .138.112.25.25.25h7.5a.25.25 0 00.25-.25v-7.5a.25.25 0 00-.25-.25h-7.5z"></path>
+                </svg>
+                </div>
+            </clipboard-copy>
+        </div>
+            <div class="highlight-ipynb hl-python"><pre><span></span><span class="c1"># for network size complexity</span>
+<span class="n">benchmark</span><span class="o">.</span><span class="n">run_complexity_analysis</span><span class="p">(</span>
+    <span class="n">methods</span><span class="o">=</span><span class="n">methods</span><span class="p">,</span>
+    <span class="n">style</span><span class="o">=</span><span class="s2">&quot;junctions&quot;</span><span class="p">,</span>
+<span class="p">)</span>
+</pre></div>
+<div id="cell-6" class="clipboard-copy-txt">
+# for network size complexity
+benchmark.run_complexity_analysis(
+    methods=methods,
+    style="junctions",
+)</div>
     
         </div>
     </div>
@@ -2078,11 +2445,11 @@ your_dataset.loadDataset().loadBenchmarkData()
   <small>
     
       Last update:
-      <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date">December 13, 2022</span>
+      <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date">December 14, 2022</span>
       
         <br>
         Created:
-        <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date">December 13, 2022</span>
+        <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date">December 14, 2022</span>
       
     
   </small>
@@ -2107,7 +2474,7 @@ your_dataset.loadDataset().loadBenchmarkData()
     <nav class="md-footer__inner md-grid" aria-label="Footer" >
       
         
-        <a href="../../design/datasets/" class="md-footer__link md-footer__link--prev" aria-label="Previous: Dataset" rel="prev">
+        <a href="../run-your-method/" class="md-footer__link md-footer__link--prev" aria-label="Previous: How to benchmark your own leakage detection method?" rel="prev">
           <div class="md-footer__button md-icon">
             <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11h12Z"/></svg>
           </div>
@@ -2116,20 +2483,20 @@ your_dataset.loadDataset().loadBenchmarkData()
               <span class="md-footer__direction">
                 Previous
               </span>
-              Dataset
+              How to benchmark your own leakage detection method?
             </div>
           </div>
         </a>
       
       
         
-        <a href="../run-your-method/" class="md-footer__link md-footer__link--next" aria-label="Next: How to benchmark your own leakage detection method?" rel="next">
+        <a href="../analyze-method-sensitvity/" class="md-footer__link md-footer__link--next" aria-label="Next: Analyze the sensitivity of method regarding to changing input data" rel="next">
           <div class="md-footer__title">
             <div class="md-ellipsis">
               <span class="md-footer__direction">
                 Next
               </span>
-              How to benchmark your own leakage detection method?
+              Analyze the sensitivity of method regarding to changing input data
             </div>
           </div>
           <div class="md-footer__button md-icon">
