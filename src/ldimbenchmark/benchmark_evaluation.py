@@ -130,12 +130,18 @@ def evaluate_leakages(expected_leaks: pd.DataFrame, detected_leaks: pd.DataFrame
                 wrong_pipe_detected += 1
         else:
             existing_leak_not_detected += 1
-    return {
-        "true_positives": right_leak_detected,
-        "false_positives": non_existing_leak_detected,
-        "true_negatives": None,  # Not applicable, we dont have information about non-leaks
-        "false_negatives": existing_leak_not_detected,
-        "time_to_detection": time_to_detection,
-        "wrong_pipe": wrong_pipe_detected,
-        "score": 0,
-    }
+
+        # TODO Refactor and only give back the matched list
+        # TODO make another function which takes a list of evaluators and executes them to get an evaluation table
+    return (
+        {
+            "true_positives": right_leak_detected,
+            "false_positives": non_existing_leak_detected,
+            "true_negatives": None,  # Not applicable, we dont have information about non-leaks
+            "false_negatives": existing_leak_not_detected,
+            "time_to_detection": time_to_detection,
+            "wrong_pipe": wrong_pipe_detected,
+            "score": 0,
+        },
+        matched_list,
+    )

@@ -18,6 +18,7 @@ from ldimbenchmark.benchmark_complexity import run_benchmark_complexity
 from ldimbenchmark.classes import LDIMMethodBase, BenchmarkLeakageResult
 import json
 import hashlib
+import matplotlib.pyplot as plt
 
 
 class MethodRunner(ABC):
@@ -190,7 +191,7 @@ class LDIMBenchmark:
         # validate dataset types and edit them to LoadedDataset
         if not isinstance(datasets, list):
             datasets = [datasets]
-        self.datasets = datasets
+        self.datasets: List[Dataset] = datasets
         self.experiments: List[MethodRunner] = []
         self.results = {}
         self.cache_dir = cache_dir
@@ -282,12 +283,17 @@ class LDIMBenchmark:
             for experiment in self.experiments:
                 results.append(experiment.run())
 
-    def evaluate(self):
+    def evaluate(self, current=True):
         """
         Evaluates the benchmark.
 
         :param results_dir: Directory where the results are stored
         """
+        # TODO: Groupby datasets (and derivations) or by method
+        # How does the method perform on different datasets?
+        # How do different methods perform on the same dataset?
+        # How does one method perform on different derivations of the same dataset?
+        # How do different methods perform on one derivations of a dataset?
         # if self.results_dir is None and len(self.results.keys()) == 0:
         #     raise Exception("No results to evaluate")
 
@@ -295,40 +301,123 @@ class LDIMBenchmark:
         #     self.results = self.load_results(results_dir)
 
         # TODO: Evaluate results
-        results = []
+        result_folders = glob(os.path.join(self.runner_results_dir, "*"))
 
-        for experiment_result in glob(os.path.join(self.runner_results_dir, "*", "")):
+        if current:
+            result_folders = list(
+                filter(
+                    lambda x: os.path.basename(x)
+                    in [exp.id for exp in self.experiments],
+                    result_folders,
+                )
+            )
+
+        loaded_datasets = {}
+        for dataset in self.datasets:
+            loaded = (
+                dataset.loadDataset().loadBenchmarkData().getEvaluationBenchmarkData()
+            )
+            loaded_datasets[dataset.id] = loaded
+
+        results = []
+        for experiment_result in [
+            os.path.join(result, "") for result in result_folders
+        ]:
             detected_leaks = pd.read_csv(
                 os.path.join(experiment_result, "detected_leaks.csv"),
                 parse_dates=True,
-            )  # .to_dict("records")
+            )
 
             evaluation_dataset_leakages = pd.read_csv(
                 os.path.join(experiment_result, "should_have_detected_leaks.csv"),
                 parse_dates=True,
-            )  # .to_dict("records")
+            )
 
             run_info = pd.read_csv(
                 os.path.join(experiment_result, "run_info.csv")
             ).iloc[0]
-            # detected_leaks = parse_obj_as(List[BenchmarkLeakageResult], detected_leaks)
-            # evaluation_dataset_leakages = parse_obj_as(
-            #     List[BenchmarkLeakageResult], evaluation_dataset_leakages
-            # )
 
             # TODO: Ignore Detections outside of the evaluation period
-            evaluation_results = evaluate_leakages(
+            (evaluation_results, matched_list) = evaluate_leakages(
                 evaluation_dataset_leakages, detected_leaks
             )
             evaluation_results["method"] = run_info["method"]
+            # TODO: generate name with derivations in brackets
             evaluation_results["dataset"] = run_info["dataset"]
+            evaluation_results["dataset_id"] = run_info["dataset_id"]
             results.append(evaluation_results)
 
-            logging.info(
-                f"{len(detected_leaks)} / {len(evaluation_dataset_leakages)} Dataset Leaks"
-            )
-            logging.info(evaluation_results)
+            logging.debug(evaluation_results)
 
+            graph_dir = os.path.join(self.evaluation_results_dir, "per_run")
+            os.makedirs(graph_dir, exist_ok=True)
+
+            for index, (expected_leak, detected_leak) in enumerate(matched_list):
+                fig, ax = plt.subplots()
+                name = ""
+                data_to_plot = loaded_datasets[run_info["dataset_id"]].pressures
+
+                if expected_leak is not None:
+                    name = str(expected_leak.leak_time_start)
+                    boundarys = (
+                        expected_leak.leak_time_end - expected_leak.leak_time_start
+                    ) / 6
+                    mask = (
+                        data_to_plot.index >= expected_leak.leak_time_start - boundarys
+                    ) & (data_to_plot.index <= expected_leak.leak_time_end + boundarys)
+
+                if detected_leak is not None:
+                    ax.axvline(detected_leak.leak_time_start, color="green")
+
+                if expected_leak is None and detected_leak is not None:
+                    name = str(detected_leak.leak_time_start) + "_fp"
+                    boundarys = (data_to_plot.index[-1] - data_to_plot.index[0]) / (
+                        data_to_plot.shape[0] / 6
+                    )
+                    mask = (
+                        data_to_plot.index >= detected_leak.leak_time_start - boundarys
+                    ) & (
+                        data_to_plot.index <= detected_leak.leak_time_start + boundarys
+                    )
+
+                data_to_plot = data_to_plot[mask]
+                data_to_plot.plot(ax=ax, alpha=0.2)
+                debug_folder = os.path.join(experiment_result, "debug/")
+                if os.path.exists(debug_folder):
+                    files = glob(debug_folder + "*")
+                    for file in files:
+                        try:
+                            debug_data = pd.read_csv(
+                                file, parse_dates=True, index_col=0
+                            )
+                            debug_data = debug_data[mask]
+                            debug_data.plot(ax=ax, alpha=1)
+                        except e:
+                            print(e)
+                            pass
+
+                # For some reason the vspan vanishes if we do it earlier so we do it last
+                if expected_leak is not None:
+                    ax.axvspan(
+                        expected_leak.leak_time_start,
+                        expected_leak.leak_time_end,
+                        color="red",
+                        alpha=0.1,
+                        lw=0,
+                    )
+
+                box = ax.get_position()
+                ax.set_position([box.x0, box.y0, box.width * 0.8, box.height])
+
+                if detected_leak is None and expected_leak is not None:
+                    name = str(expected_leak.leak_time_start) + "_fn"
+
+                # TODO: Plot Leak Outflow, if available
+
+                # Put a legend to the right of the current axis
+                ax.legend(loc="center left", bbox_to_anchor=(1, 0.5))
+                fig.savefig(os.path.join(graph_dir, name + ".png"))
+                plt.close(fig)
             # TODO: Draw plots with leaks and detected leaks
 
         results = pd.DataFrame(results)
@@ -358,7 +447,7 @@ class LDIMBenchmark:
             results["precision"] + results["recall (TPR)"]
         )
 
-        results = results.set_index(["dataset", "method"])
+        results = results.set_index(["method", "dataset_id"])
 
         os.makedirs(self.evaluation_results_dir, exist_ok=True)
 
@@ -369,6 +458,7 @@ class LDIMBenchmark:
             "FN",
             "TTD",
             "wrongpipe",
+            "dataset",
             "score",
             "precision",
             "recall (TPR)",
@@ -493,7 +583,7 @@ class FileBasedMethodRunner(MethodRunner):
         if not self.resultsFolder and self.debug:
             raise Exception("Debug mode requires a results folder.")
         elif self.debug == True:
-            additional_output_path = os.path.join(self.resultsFolder, "debug")
+            additional_output_path = os.path.join(self.resultsFolder, "debug", "/")
             os.makedirs(additional_output_path, exist_ok=True)
         else:
             additional_output_path = None
