@@ -18,11 +18,11 @@ from wntr.network import write_inpfile, to_dict
 from pandas.testing import assert_frame_equal
 
 
-
-
 def test_derivator_model(snapshot, mocked_dataset: Dataset):
     derivator = DatasetDerivator([mocked_dataset], TEST_DATA_FOLDER_DATASETS)
-    derivedDatasets = derivator.derive_model("junctions", "elevation", "noise", [0.1])
+    derivedDatasets = derivator.derive_model(
+        "junctions", "elevation", "accuracy", [0.1]
+    )
     snapshot.assert_match(to_dict(derivedDatasets[0].loadDataset().model))
 
 
@@ -37,7 +37,7 @@ def test_derivator_model(snapshot, mocked_dataset: Dataset):
 def test_derivator_data_demands(snapshot, mocked_dataset: Dataset):
     """Testing Derivation for data: demands (and no others)"""
     derivator = DatasetDerivator([mocked_dataset], TEST_DATA_FOLDER_DATASETS)
-    derivedDatasets = derivator.derive_data("demands", "noise", [0.1])
+    derivedDatasets = derivator.derive_data("demands", "precision", [0.1])
     snapshot.assert_match(derivedDatasets[0].loadDataset().demands.to_csv())
     assert_frame_equal(
         mocked_dataset.loadDataset().flows, derivedDatasets[0].loadDataset().flows
@@ -54,7 +54,7 @@ def test_derivator_data_demands(snapshot, mocked_dataset: Dataset):
 def test_derivator_data_pressures(snapshot, mocked_dataset: Dataset):
     """Testing Derivation for data: pressures (and no others)"""
     derivator = DatasetDerivator([mocked_dataset], TEST_DATA_FOLDER_DATASETS)
-    derivedDatasets = derivator.derive_data("pressures", "noise", [0.1])
+    derivedDatasets = derivator.derive_data("pressures", "precision", [0.1])
     snapshot.assert_match(derivedDatasets[0].loadDataset().pressures.to_csv())
     assert_frame_equal(
         mocked_dataset.loadDataset().flows, derivedDatasets[0].loadDataset().flows
@@ -71,7 +71,7 @@ def test_derivator_data_pressures(snapshot, mocked_dataset: Dataset):
 def test_derivator_data_flows(snapshot, mocked_dataset: Dataset):
     """Testing Derivation for data: flows (and no others)"""
     derivator = DatasetDerivator([mocked_dataset], TEST_DATA_FOLDER_DATASETS)
-    derivedDatasets = derivator.derive_data("flows", "noise", [0.1])
+    derivedDatasets = derivator.derive_data("flows", "precision", [0.1])
     snapshot.assert_match(derivedDatasets[0].loadDataset().flows.to_csv())
     assert_frame_equal(
         mocked_dataset.loadDataset().demands, derivedDatasets[0].loadDataset().demands
@@ -88,7 +88,7 @@ def test_derivator_data_flows(snapshot, mocked_dataset: Dataset):
 def test_derivator_data_levels(snapshot, mocked_dataset: Dataset):
     """Testing Derivation for data: levels (and no others)"""
     derivator = DatasetDerivator([mocked_dataset], TEST_DATA_FOLDER_DATASETS)
-    derivedDatasets = derivator.derive_data("levels", "noise", [0.1])
+    derivedDatasets = derivator.derive_data("levels", "precision", [0.1])
     snapshot.assert_match(derivedDatasets[0].loadDataset().levels.to_csv())
     assert_frame_equal(
         mocked_dataset.loadDataset().flows, derivedDatasets[0].loadDataset().flows

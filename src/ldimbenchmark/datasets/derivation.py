@@ -24,21 +24,26 @@ class DatasetDerivator:
 
     def __init__(self, datasets: Union[Dataset, List[Dataset]], out_path: str):
 
-        # TODO: Check if datasets is a list or a single dataset
-        if isinstance(datasets, Sequence):
-            self.datasets: List[Dataset] = datasets
-        else:
-            self.datasets: List[Dataset] = [datasets]
+        if not isinstance(datasets, Sequence):
+            datasets = [datasets]
+        self.datasets: List[Dataset] = datasets
         self.out_path = out_path
 
         # TODO: should we always use the same seed?
         seed = 27565124760782368551060429849508057759
         self.random_gen = Generator(PCG64(seed))
+        self.all_derived_datasets = []
+
+    def get_dervived_datasets(self, with_original: bool = False):
+        if with_original:
+            return self.datasets + self.all_derived_datasets
+        return self.all_derived_datasets
 
     # TODO: Add more derivations, like junction elevation
 
     # TODO: Caching
     # TODO: cross product of derivations
+    # TODO: Parallelization
 
     def derive_model(
         self,
@@ -57,36 +62,45 @@ class DatasetDerivator:
         newDatasets = []
         for dataset in self.datasets:
 
-            if derivation == "noise":
+            if derivation == "accuracy":
 
                 for value in values:
 
-                    loadedDataset = Dataset(dataset.path).loadDataset()
-                    junctions = loadedDataset.model.junction_name_list
-                    noise = self.__get_random_norm(value, len(junctions))
-                    for index, junction in enumerate(junctions):
-                        loadedDataset.model.get_node(junction).elevation += noise[index]
-
-                    loadedDataset.info["derivations"] = {}
-                    loadedDataset.info["derivations"]["model"] = []
-                    loadedDataset.info["derivations"]["model"].append(
+                    this_dataset = Dataset(dataset.path)
+                    this_dataset.info["derivations"] = {}
+                    this_dataset.info["derivations"]["model"] = []
+                    this_dataset.info["derivations"]["model"].append(
                         {
                             "element": apply_to,
                             "property": change_property,
                             "value": value,
                         }
                     )
-                    loadedDataset._update_id()
+                    this_dataset._update_id()
 
                     derivedDatasetPath = os.path.join(
-                        self.out_path, loadedDataset.id + "/"
+                        self.out_path, this_dataset.id + "/"
                     )
 
-                    os.makedirs(os.path.dirname(derivedDatasetPath), exist_ok=True)
-                    loadedDataset.exportTo(derivedDatasetPath)
+                    if not os.path.exists(derivedDatasetPath):
+                        loadedDataset = this_dataset.loadDataset()
 
-                    # TODO write to dataser_info.yml and add keys with derivation properties
-                    newDatasets.append(Dataset(derivedDatasetPath))
+                        # Derive
+                        junctions = loadedDataset.model.junction_name_list
+                        noise = self.__get_random_norm(value, len(junctions))
+                        for index, junction in enumerate(junctions):
+                            loadedDataset.model.get_node(junction).elevation += noise[
+                                index
+                            ]
+
+                        # Save
+                        os.makedirs(os.path.dirname(derivedDatasetPath), exist_ok=True)
+                        loadedDataset.exportTo(derivedDatasetPath)
+
+                    dataset = Dataset(derivedDatasetPath)
+                    newDatasets.append(dataset)
+                    self.all_derived_datasets.append(dataset)
+
         return newDatasets
 
     def derive_data(
@@ -101,7 +115,7 @@ class DatasetDerivator:
         :param derivation: Name of derivation that should be applied
         :param options_list: List of options for the derivation
 
-        ``derivation="noise"``
+        ``derivation="precision"``
             Adds noise to the data. The noise is normally distributed with a mean of 0 and a standard deviation of ``value``.
 
         ``derivation="sensitivity"``
@@ -118,46 +132,66 @@ class DatasetDerivator:
         for dataset in self.datasets:
             for options in options_list:
                 # Prepare data for derivation
-                loadedDataset = Dataset(dataset.path).loadDataset()
-                data = getattr(loadedDataset, apply_to)
-                loadedDataset.info["derivations"] = {}
-                loadedDataset.info["derivations"]["data"] = []
+                this_dataset = Dataset(dataset.path)
+                this_dataset.info["derivations"] = {}
+                this_dataset.info["derivations"]["data"] = []
 
                 # Apply derivation
                 # TODO Implement derivates
-                if derivation == "noise":
+                value = options
+                if derivation == "precision":
 
-                    value = options
                     if isinstance(value, dict):
                         value = value["value"]
-                    noise = self.__get_random_norm(value, data.index.shape)
-                    data = data.mul(1 + noise, axis=0)
 
                 if derivation == "sensitivity":
 
-                    shift = options["value"]
-                    if options["shift"] == "bottom":
+                    if not isinstance(value, dict):
+                        value = {
+                            "value": value,
+                            "shift": "top",
+                        }
+
+                    shift = value["value"]
+                    if value["shift"] == "bottom":
                         shift = 0
-                    if options["shift"] == "middle":
-                        shift = options["value"] / 2
-                    data = np.divmod(data, options["value"])[0] + shift
+                    if value["shift"] == "middle":
+                        shift = value["value"] / 2
 
                 # Save Derivation
-                loadedDataset.info["derivations"]["data"].append(
+                this_dataset.info["derivations"]["data"].append(
                     {
                         "to": apply_to,
                         "kind": derivation,
                         "value": value,
                     }
                 )
-                setattr(loadedDataset, apply_to, data)
-                loadedDataset._update_id()
-                derivedDatasetPath = os.path.join(self.out_path, loadedDataset.id + "/")
+                this_dataset._update_id()
+                derivedDatasetPath = os.path.join(self.out_path, this_dataset.id + "/")
 
-                os.makedirs(os.path.dirname(derivedDatasetPath), exist_ok=True)
-                loadedDataset.exportTo(derivedDatasetPath)
+                if not os.path.exists(derivedDatasetPath):
+                    loadedDataset = this_dataset.loadDataset()
+                    data = getattr(loadedDataset, apply_to)
+                    if derivation == "precision":
+                        noise = self.__get_random_norm(value, data.index.shape)
+                        data = data.mul(1 + noise, axis=0)
 
-                newDatasets.append(Dataset(derivedDatasetPath))
+                    if derivation == "sensitivity":
+                        shift = value["value"]
+                        if value["shift"] == "bottom":
+                            shift = 0
+                        if value["shift"] == "middle":
+                            shift = value["value"] / 2
+                        data = np.divmod(data, value["value"])[0] + shift
+
+                    setattr(loadedDataset, apply_to, data)
+
+                    os.makedirs(os.path.dirname(derivedDatasetPath), exist_ok=True)
+                    loadedDataset.exportTo(derivedDatasetPath)
+
+                dataset = Dataset(derivedDatasetPath)
+                newDatasets.append(dataset)
+                self.all_derived_datasets.append(dataset)
 
         return newDatasets
 
