@@ -20,10 +20,9 @@ class DatasetAnalyzer:
         """
         Compare the datasets, e.g. especially helpful when comparing the original dataset with derived ones.
         """
-        if type(datasets) is not list:
-            dataset_list: List[Dataset] = [datasets]
-        else:
-            dataset_list = datasets
+        if not isinstance(datasets, list):
+            datasets = [datasets]
+        dataset_list: List[Dataset] = datasets
 
         datasets_info = {}
         for dataset in dataset_list:
@@ -33,6 +32,8 @@ class DatasetAnalyzer:
         datasets_info = datasets_info.reset_index(level=1, drop=True)
 
         original_dataset_frame = datasets_info[datasets_info["derivations"].isnull()]
+        if original_dataset_frame.shape[0] == 0:
+            raise Exception("No original dataset found")
         if original_dataset_frame.shape[0] > 1:
             raise Exception("More than one original dataset found")
         original_dataset_id = original_dataset_frame.index[0]
@@ -46,8 +47,15 @@ class DatasetAnalyzer:
         del loaded_datasets[original_dataset_id]
 
         # Plot each time series
+        # TODO: Only plot timeseries with difference...
+        for dataset_id, dataset in loaded_datasets.items():
+            if dataset.info["derivations"] is not None:
+                if dataset.info["derivations"]["data"] is not None:
+                    data_name = dataset.info["derivations"]["data"][0]["kind"]
+
+
         for data_name in ["demands", "pressures", "flows", "levels"]:
-            data = getattr(loadedDataset, data_name)
+            data = getattr(original_dataset, data_name)
             if data.shape[1] > 0:
                 data.columns = [f"[Original] {col}" for col in data.columns]
                 DatasetAnalyzer._plot_time_series(
@@ -92,8 +100,10 @@ class DatasetAnalyzer:
 
         if compare_df is not None:
             for compare in compare_df:
-                compare.plot(ax=ax, label="Derived", alpha=0.5)
-            df.plot(ax=ax, label="Original")
+                compare.plot(ax=ax, alpha=0.5)
+            df.plot(
+                ax=ax,
+            )
             ax.legend()
         else:
             df.plot(ax=ax)

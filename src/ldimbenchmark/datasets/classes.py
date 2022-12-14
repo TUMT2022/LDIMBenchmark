@@ -243,7 +243,7 @@ class DatasetTransformer:
         self.config = config
         self.cache_dir = cache_dir
 
-        self.dataset_dir = os.path.join(self.cache_dir, config["name"])
+        self.dataset_dir = os.path.join(self.cache_dir, self.dataset.id)
         self.dataset_hash_file = os.path.join(self.dataset_dir, ".hash")
 
     def _extractDataType(

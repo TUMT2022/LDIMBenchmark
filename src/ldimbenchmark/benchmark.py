@@ -19,6 +19,8 @@ from ldimbenchmark.classes import LDIMMethodBase, BenchmarkLeakageResult
 import json
 import hashlib
 import matplotlib.pyplot as plt
+from multiprocessing import Pool, cpu_count
+from tqdm import tqdm
 
 
 class MethodRunner(ABC):
@@ -51,6 +53,10 @@ class MethodRunner(ABC):
     @abstractmethod
     def run(self) -> dict:
         pass
+
+
+def execute_experiment(experiment: MethodRunner):
+    return experiment.run()
 
 
 class LocalMethodRunner(MethodRunner):
@@ -251,7 +257,7 @@ class LDIMBenchmark:
         complexity_results_path = os.path.join(self.complexity_results_dir, style)
         os.makedirs(complexity_results_path, exist_ok=True)
         if style == "time":
-            run_benchmark_complexity(
+            return run_benchmark_complexity(
                 methods,
                 cache_dir=os.path.join(self.cache_dir, "datagen"),
                 out_folder=complexity_results_path,
@@ -259,7 +265,7 @@ class LDIMBenchmark:
                 additionalOutput=self.debug,
             )
         if style == "junctions":
-            run_benchmark_complexity(
+            return run_benchmark_complexity(
                 methods,
                 cache_dir=os.path.join(self.cache_dir, "datagen"),
                 out_folder=complexity_results_path,
@@ -274,16 +280,24 @@ class LDIMBenchmark:
         :param parallel: If the benchmark should be run in parallel
         :param results_dir: Directory where the results should be stored
         """
-
+        # TODO: Caching (don't run same experiment twice, if its already there)
         results = []
         if parallel:
+            with Pool(processes=cpu_count() - 1) as p:
+                max_ = len(self.experiments)
+                with tqdm(total=max_) as pbar:
+                    for result in p.imap_unordered(
+                        execute_experiment, self.experiments
+                    ):
+                        results.append(result)
+                        pbar.update()
             # TODO: preload datasets (as to not overwrite each other during the parallel loop)
             pass
         else:
             for experiment in self.experiments:
                 results.append(experiment.run())
 
-    def evaluate(self, current=True):
+    def evaluate(self, current=True, generate_plots=False):
         """
         Evaluates the benchmark.
 
@@ -301,6 +315,7 @@ class LDIMBenchmark:
         #     self.results = self.load_results(results_dir)
 
         # TODO: Evaluate results
+        # TODO: parallelize
         result_folders = glob(os.path.join(self.runner_results_dir, "*"))
 
         if current:
@@ -312,6 +327,7 @@ class LDIMBenchmark:
                 )
             )
 
+        # TODO: Load datasets only once (parallel)
         loaded_datasets = {}
         for dataset in self.datasets:
             loaded = (
@@ -349,76 +365,83 @@ class LDIMBenchmark:
 
             logging.debug(evaluation_results)
 
-            graph_dir = os.path.join(self.evaluation_results_dir, "per_run")
-            os.makedirs(graph_dir, exist_ok=True)
+            if generate_plots:
+                graph_dir = os.path.join(self.evaluation_results_dir, "per_run")
+                os.makedirs(graph_dir, exist_ok=True)
 
-            for index, (expected_leak, detected_leak) in enumerate(matched_list):
-                fig, ax = plt.subplots()
-                name = ""
-                data_to_plot = loaded_datasets[run_info["dataset_id"]].pressures
+                for index, (expected_leak, detected_leak) in enumerate(matched_list):
+                    fig, ax = plt.subplots()
+                    name = ""
+                    data_to_plot = loaded_datasets[run_info["dataset_id"]].pressures
 
-                if expected_leak is not None:
-                    name = str(expected_leak.leak_time_start)
-                    boundarys = (
-                        expected_leak.leak_time_end - expected_leak.leak_time_start
-                    ) / 6
-                    mask = (
-                        data_to_plot.index >= expected_leak.leak_time_start - boundarys
-                    ) & (data_to_plot.index <= expected_leak.leak_time_end + boundarys)
+                    if expected_leak is not None:
+                        name = str(expected_leak.leak_time_start)
+                        boundarys = (
+                            expected_leak.leak_time_end - expected_leak.leak_time_start
+                        ) / 6
+                        mask = (
+                            data_to_plot.index
+                            >= expected_leak.leak_time_start - boundarys
+                        ) & (
+                            data_to_plot.index
+                            <= expected_leak.leak_time_end + boundarys
+                        )
 
-                if detected_leak is not None:
-                    ax.axvline(detected_leak.leak_time_start, color="green")
+                    if detected_leak is not None:
+                        ax.axvline(detected_leak.leak_time_start, color="green")
 
-                if expected_leak is None and detected_leak is not None:
-                    name = str(detected_leak.leak_time_start) + "_fp"
-                    boundarys = (data_to_plot.index[-1] - data_to_plot.index[0]) / (
-                        data_to_plot.shape[0] / 6
-                    )
-                    mask = (
-                        data_to_plot.index >= detected_leak.leak_time_start - boundarys
-                    ) & (
-                        data_to_plot.index <= detected_leak.leak_time_start + boundarys
-                    )
+                    if expected_leak is None and detected_leak is not None:
+                        name = str(detected_leak.leak_time_start) + "_fp"
+                        boundarys = (data_to_plot.index[-1] - data_to_plot.index[0]) / (
+                            data_to_plot.shape[0] / 6
+                        )
+                        mask = (
+                            data_to_plot.index
+                            >= detected_leak.leak_time_start - boundarys
+                        ) & (
+                            data_to_plot.index
+                            <= detected_leak.leak_time_start + boundarys
+                        )
 
-                data_to_plot = data_to_plot[mask]
-                data_to_plot.plot(ax=ax, alpha=0.2)
-                debug_folder = os.path.join(experiment_result, "debug/")
-                if os.path.exists(debug_folder):
-                    files = glob(debug_folder + "*")
-                    for file in files:
-                        try:
-                            debug_data = pd.read_csv(
-                                file, parse_dates=True, index_col=0
-                            )
-                            debug_data = debug_data[mask]
-                            debug_data.plot(ax=ax, alpha=1)
-                        except e:
-                            print(e)
-                            pass
+                    data_to_plot = data_to_plot[mask]
+                    data_to_plot.plot(ax=ax, alpha=0.2)
+                    debug_folder = os.path.join(experiment_result, "debug/")
+                    if os.path.exists(debug_folder):
+                        files = glob(debug_folder + "*")
+                        for file in files:
+                            try:
+                                debug_data = pd.read_csv(
+                                    file, parse_dates=True, index_col=0
+                                )
+                                debug_data = debug_data[mask]
+                                debug_data.plot(ax=ax, alpha=1)
+                            except e:
+                                print(e)
+                                pass
 
-                # For some reason the vspan vanishes if we do it earlier so we do it last
-                if expected_leak is not None:
-                    ax.axvspan(
-                        expected_leak.leak_time_start,
-                        expected_leak.leak_time_end,
-                        color="red",
-                        alpha=0.1,
-                        lw=0,
-                    )
+                    # For some reason the vspan vanishes if we do it earlier so we do it last
+                    if expected_leak is not None:
+                        ax.axvspan(
+                            expected_leak.leak_time_start,
+                            expected_leak.leak_time_end,
+                            color="red",
+                            alpha=0.1,
+                            lw=0,
+                        )
 
-                box = ax.get_position()
-                ax.set_position([box.x0, box.y0, box.width * 0.8, box.height])
+                    box = ax.get_position()
+                    ax.set_position([box.x0, box.y0, box.width * 0.8, box.height])
 
-                if detected_leak is None and expected_leak is not None:
-                    name = str(expected_leak.leak_time_start) + "_fn"
+                    if detected_leak is None and expected_leak is not None:
+                        name = str(expected_leak.leak_time_start) + "_fn"
 
-                # TODO: Plot Leak Outflow, if available
+                    # TODO: Plot Leak Outflow, if available
 
-                # Put a legend to the right of the current axis
-                ax.legend(loc="center left", bbox_to_anchor=(1, 0.5))
-                fig.savefig(os.path.join(graph_dir, name + ".png"))
-                plt.close(fig)
-            # TODO: Draw plots with leaks and detected leaks
+                    # Put a legend to the right of the current axis
+                    ax.legend(loc="center left", bbox_to_anchor=(1, 0.5))
+                    fig.savefig(os.path.join(graph_dir, name + ".png"))
+                    plt.close(fig)
+                # TODO: Draw plots with leaks and detected leaks
 
         results = pd.DataFrame(results)
         # https://towardsdatascience.com/performance-metrics-confusion-matrix-precision-recall-and-f1-score-a8fe076a2262
@@ -488,6 +511,7 @@ class LDIMBenchmark:
             label="table:benchmark_results",
             caption="Overview of the benchmark results.",
         )
+        return results
 
 
 class DockerMethodRunner(MethodRunner):

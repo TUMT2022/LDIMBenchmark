@@ -58,7 +58,10 @@ class MNF(LDIMMethodBase):
         window = pd.Timedelta(self.hyperparameters["window"])
         gamma: float = self.hyperparameters["gamma"]
 
-        if evaluation_data.flows.index[-1] - evaluation_data.flows.index[0] < window:
+        if (
+            evaluation_data.flows.index[-1] - evaluation_data.flows.index[0]
+            < 3 * window
+        ):
             return []
 
         evaluation_start_date = Timestamp = evaluation_data.flows.index[0]

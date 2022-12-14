@@ -50,7 +50,7 @@ def run_benchmark_complexity(
     logging.info(" > Generating Datasets")
     if style == "time":
         datasets_dir = os.path.join(cache_dir, "synthetic-days")
-        generateDatasetsForTimespan(1, 61, datasets_dir)
+        generateDatasetsForTimespan(1, 91, datasets_dir)
     if style == "junctions":
         datasets_dir = os.path.join(cache_dir, "synthetic-junctions")
         generateDatasetsForJunctions(4, 59, datasets_dir)
@@ -138,3 +138,4 @@ def run_benchmark_complexity(
     plot.set_title(f"Complexity Analysis: {style}")
     fig = plot.get_figure()
     fig.savefig(os.path.join(out_folder, "measures.png"))
+    return results

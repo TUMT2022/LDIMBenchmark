@@ -6,7 +6,8 @@ __pycache__
 # MkDocs
 site
 docs/reference
-
+docs/user-guides/datasets
+docs/user-guides/datasets-analysis
 # LDIMBench
 .ldim_benchmark_cache
 benchmark-results
