@@ -20,6 +20,8 @@ nav:
 - Guides:
   - Own Dataset: user-guides/run-on-your-dataset.ipynb
   - Own Method: user-guides/run-your-method.ipynb
+  - Complexity Analysis: user-guides/run-complexity-analysis.ipynb
+  - Analyze Sensitvity: user-guides/analyze-method-sensitvity.ipynb
   - Docker: user-guides/docker.md
 - Roadmap: roadmap.md
 - Code Reference: reference/
