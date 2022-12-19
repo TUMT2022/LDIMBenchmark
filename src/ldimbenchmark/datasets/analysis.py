@@ -53,7 +53,6 @@ class DatasetAnalyzer:
                 if dataset.info["derivations"]["data"] is not None:
                     data_name = dataset.info["derivations"]["data"][0]["kind"]
 
-
         for data_name in ["demands", "pressures", "flows", "levels"]:
             data = getattr(original_dataset, data_name)
             if data.shape[1] > 0:
