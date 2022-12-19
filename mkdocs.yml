@@ -17,12 +17,14 @@ nav:
 - Design: 
   - design/index.md
   - Dataset: design/datasets.md
+  - File Level API: design/file-level-interface.md
+  - Programming Interface: design/programming-interface.md
 - Guides:
   - Own Dataset: user-guides/run-on-your-dataset.ipynb
-  - Own Method: user-guides/run-your-method.ipynb
-  - Complexity Analysis: user-guides/run-complexity-analysis.ipynb
-  - Analyze Sensitvity: user-guides/analyze-method-sensitvity.ipynb
-  - Docker: user-guides/docker.md
+  - user-guides/run-your-method.ipynb
+  - user-guides/run-complexity-analysis.ipynb
+  - user-guides/run-sensitivity-analysis.ipynb
+  - user-guides/docker.md
 - Roadmap: roadmap.md
 - Code Reference: reference/
 

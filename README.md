@@ -6,6 +6,8 @@ Leakage Detection and Isolation Methods Benchmark
 
 > Instead of collecting all the different dataset to benchmark different methods on. We wanted to create a Benchmarking Tool which makes it easy to reproduce the results of the different methods locally on your own dataset.
 
+It provides a close to real-world conditions environment and forces researchers to provide a reproducible method implementation, which is supposed to run automated on any input dataset, thus hindering custom solutions which work well in one specific case.
+
 ## Usage
 
 ### Installation
