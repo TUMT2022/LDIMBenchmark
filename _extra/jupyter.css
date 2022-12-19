@@ -29,24 +29,3 @@
     /* background-color:red; */
     margin-top: -17px;
 }
-
-/* Jupyter code block expand and collapse*/
-.expandClass {
-    border: 1.5px solid #7D838A;
-    color: #7D838A;
-    border-radius: 3px;
-    padding-left:2px;
-    padding-right:2px;
-    margin-right:3px;
-}
-.active, .expandClass:hover{
-    background: #7D838A;
-    color:white;
-}
-.jupyter-wrapper  .highlight-ipynb {
-    display:none;
-}
-.zeroclipboard-container {
-    position: relative !important;
-    float:right;
-}
