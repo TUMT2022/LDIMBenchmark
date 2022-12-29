@@ -7,5 +7,5 @@ from ldimbenchmark import (
 )
 
 
-# def test_download():
-#     DatasetLibrary("test_data/datasets").download(DATASETS.BATTLEDIM)
+def test_download():
+    DatasetLibrary("test_data/datasets").download(DATASETS.BATTLEDIM)

@@ -29,3 +29,28 @@ test = pd.Series(time_series_resample_sensitivity)
 test.plot()
 print(time_series_resample_sensitivity)
 print(time_series)
+
+
+# %%
+import pandas as pd
+import numpy as np
+import matplotlib.pyplot as plt
+
+time_series = pd.read_csv(
+    "../../../tests/test_data/datasets/battledim/pressures.csv",
+    parse_dates=True,
+    decimal=",",
+    delimiter=";",
+    index_col="Timestamp",
+)
+# data = time_series["n1"]
+data = time_series.reset_index()
+print(data)
+
+data = data.groupby(
+    (data["Timestamp"] - data["Timestamp"][0]).dt.total_seconds() // (10 * 60),
+    group_keys=True,
+).first()
+
+data = data.set_index("Timestamp")
+data

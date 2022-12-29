@@ -6,6 +6,6 @@ from tests.shared import (
 import os
 
 
-def test_analyzer(mocked_dataset: Dataset):
+def test_analyzer(mocked_dataset1: Dataset):
     analyzer = DatasetAnalyzer(os.path.join(TEST_DATA_FOLDER, "dataset-analysis"))
     analyzer.analyze(mocked_dataset)
