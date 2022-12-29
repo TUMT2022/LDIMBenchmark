@@ -19,7 +19,18 @@
 
 	// Use 'postCreateCommand' to run commands after the container is created.
 	// "postCreateCommand": "pip3 install --user -r requirements.txt",
-	"postAttachCommand": "git config --global --add safe.directory /workspaces"
+	"postAttachCommand": "git config --global --add safe.directory /workspaces & poetry config virtualenvs.in-project true",
+	"customizations": {
+		"vscode": {
+			"extensions": [
+				"ms-python.python"
+			]
+		}
+	},
+	"runArgs": [
+		"--mount",
+		  "type=volume,target=/workspaces/LDIMBench/.venv/"
+	]
 	// Configure tool-specific properties.
 	// "customizations": {},
 
