@@ -71,7 +71,6 @@ benchmark.evaluate()
 ### CLI
 
 ```bash
-# TODO (not yet working)
 ldimbenchmark --help
 ```
 
@@ -105,6 +104,9 @@ pytest tests/test_derivation.py -k 'test_mything'
 ptw
 ptw -- --testmon
 
+# Watch a file during development
+npm install -g nodemon
+nodemon -L tests/auto_hyperparameter.py
 
 # Test-Publish
 poetry config repositories.testpypi https://test.pypi.org/legacy/
