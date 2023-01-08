@@ -141,7 +141,6 @@ def evaluate_leakages(expected_leaks: pd.DataFrame, detected_leaks: pd.DataFrame
             "false_negatives": existing_leak_not_detected,
             "time_to_detection": time_to_detection,
             "wrong_pipe": wrong_pipe_detected,
-            "score": 0,
         },
         matched_list,
     )

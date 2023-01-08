@@ -33,15 +33,19 @@ class MNF(LDIMMethodBase):
                 hyperparameters=[
                     Hyperparameter(
                         name="window",
-                        type=str,
-                        default="10 days",
-                        description="Window size for the sliding window",
+                        type=int,
+                        default=10,
+                        description="Window size for the sliding window in days",
+                        min=1,
+                        max=365,
                     ),
                     Hyperparameter(
                         name="gamma",
                         type=float,
                         default=0.1,
                         description="Threshold to raise an alert",
+                        min=0.0,
+                        max=1.0,
                     ),
                 ],
                 # TODO: more attributes?
@@ -55,7 +59,7 @@ class MNF(LDIMMethodBase):
         pass
 
     def detect(self, evaluation_data: BenchmarkData):
-        window = pd.Timedelta(self.hyperparameters["window"])
+        window = pd.Timedelta(days=self.hyperparameters["window"])
         gamma: float = self.hyperparameters["gamma"]
 
         if (

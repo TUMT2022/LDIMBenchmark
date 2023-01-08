@@ -17,6 +17,7 @@ class BenchmarkData:
         flows: Dict[str, DataFrame],
         levels: Dict[str, DataFrame],
         model: WaterNetworkModel,
+        dmas: Dict[str, List[str]],
     ):
         """
         Hello
@@ -31,6 +32,11 @@ class BenchmarkData:
         """Levels of the System."""
         self.model = model
         """Model of the System (INP)."""
+        self.dmas = dmas
+        """
+        District Metered Areas
+        Dictionary with names of the areas as key and list of WN nodes as value.
+        """
         self.metadata = {}
         """Metadata of the System. e.g. Metering zones and included sensors."""
 
@@ -50,6 +56,10 @@ class Hyperparameter(TypedDict):
     type: type
     default: Union[str, int, float, bool]
     description: str
+    # TODO
+    min: Union[int, float]
+    max: Union[int, float]
+    options: List[Union[str, int, float]]
 
 
 class MethodMetadata(TypedDict):

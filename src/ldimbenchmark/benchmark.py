@@ -3,7 +3,7 @@ from ldimbenchmark.classes import BenchmarkData
 from abc import ABC, abstractmethod
 import pandas as pd
 from datetime import datetime, timedelta
-from typing import Literal, TypedDict, Union, List
+from typing import Literal, TypedDict, Union, List, Callable
 import os
 import time
 import logging
@@ -21,6 +21,14 @@ import hashlib
 import matplotlib.pyplot as plt
 from multiprocessing import Pool, cpu_count
 from tqdm import tqdm
+from ldimbenchmark.evaluation import (
+    precision,
+    recall,
+    specifity,
+    falsePositiveRate,
+    falseNegativeRate,
+    f1Score,
+)
 
 
 class MethodRunner(ABC):
@@ -80,11 +88,33 @@ class LocalMethodRunner(MethodRunner):
     ):
         if hyperparameters is None:
             hyperparameters = {}
+
+        for key in hyperparameters.keys():
+            matching_params = [
+                item
+                for item in detection_method.metadata["hyperparameters"]
+                if item.get("name") == key
+            ]
+            # Check if name of the supplied param matches with the ones that can be set
+            if len(matching_params) == 0:
+                raise Exception(
+                    f"Hyperparameter {key} is not known to method {detection_method.name}, must be any of {[param['name'] for param in detection_method.metadata['hyperparameters']]}"
+                )
+            # Check if the type of the supplied param matches with the ones that can be set
+            if not isinstance(hyperparameters[key], matching_params[0].get("type")):
+                # Skip Float for now: https://github.com/pandas-dev/pandas/issues/50633
+                if isinstance(hyperparameters[key], float):
+                    pass
+                else:
+                    raise Exception(
+                        f"Hyperparameter {key}: {hyperparameters[key]} is not of the correct type ({type(hyperparameters[key])}) for method {detection_method.name}, must be any of {[param['type'] for param in detection_method.metadata['hyperparameters'] if param['name'] == key]}"
+                    )
+
         hyperparameter_hash = hashlib.md5(
             json.dumps(hyperparameters, sort_keys=True).encode("utf-8")
         ).hexdigest()
 
-        self.id = f"{detection_method.name}_{dataset.id}_{hyperparameter_hash}"  # TODO: Hash of hyperparameters
+        self.id = f"{detection_method.name}_{dataset.id}_{hyperparameter_hash}"
         super().__init__(
             hyperparameters=hyperparameters,
             goal=goal,
@@ -95,6 +125,7 @@ class LocalMethodRunner(MethodRunner):
             ),
             debug=debug,
         )
+        logging.info("Loading Datasets")
         if dataset is str:
             self.dataset = Dataset(dataset).loadDataset().loadBenchmarkData()
         else:
@@ -112,7 +143,7 @@ class LocalMethodRunner(MethodRunner):
         else:
             additional_output_path = None
 
-        # test compatibility (stages)
+        # TODO: test compatibility (stages)
         self.detection_method.init_with_benchmark_params(
             additional_output_path=additional_output_path,
             hyperparameters=self.hyperparameters,
@@ -211,12 +242,16 @@ class LDIMBenchmark:
         )
         self.debug = debug
 
+    # TODO: Make Faster/Inform user about updates
     def add_local_methods(self, methods, goal="detect_offline"):
         """
         Adds local methods to the benchmark.
 
         :param methods: List of local methods
         """
+
+        if not isinstance(methods, list):
+            methods = [methods]
         for dataset in self.datasets:
             for method in methods:
                 hyperparameters = None
@@ -297,7 +332,19 @@ class LDIMBenchmark:
             for experiment in self.experiments:
                 results.append(experiment.run())
 
-    def evaluate(self, current=True, generate_plots=False):
+    def evaluate(
+        self,
+        current=True,
+        generate_plots=False,
+        evaluations: List[Callable] = [
+            precision,
+            recall,
+            specifity,
+            falsePositiveRate,
+            falseNegativeRate,
+            f1Score,
+        ],
+    ):
         """
         Evaluates the benchmark.
 
@@ -444,32 +491,11 @@ class LDIMBenchmark:
                 # TODO: Draw plots with leaks and detected leaks
 
         results = pd.DataFrame(results)
+
+        for function in evaluations:
+            results = function(results)
+
         # https://towardsdatascience.com/performance-metrics-confusion-matrix-precision-recall-and-f1-score-a8fe076a2262
-        results["precision"] = results["true_positives"] / (
-            results["true_positives"] + results["false_positives"]
-        )
-
-        # True-Positive-Rate (Recall)
-        results["recall (TPR)"] = results["true_positives"] / (
-            results["true_positives"] + results["false_negatives"]
-        )
-        # True-Negative-Rate (Specificity)
-        results["TNR)"] = results["true_negatives"] / (
-            results["true_negatives"] + results["false_positives"]
-        )
-        # False-Positive-Rate (Fall-Out)
-        results["FPR"] = results["false_positives"] / (
-            results["true_negatives"] + results["false_positives"]
-        )
-        # False-Negative-Rate (Miss-Rate)
-        results["FNR"] = results["false_negatives"] / (
-            results["true_positives"] + results["false_negatives"]
-        )
-        # F1
-        results["F1"] = (2 * results["precision"] * results["recall (TPR)"]) / (
-            results["precision"] + results["recall (TPR)"]
-        )
-
         results = results.set_index(["method", "dataset_id"])
 
         os.makedirs(self.evaluation_results_dir, exist_ok=True)
@@ -482,7 +508,7 @@ class LDIMBenchmark:
             "TTD",
             "wrongpipe",
             "dataset",
-            "score",
+            # "score",
             "precision",
             "recall (TPR)",
             "TNR",
