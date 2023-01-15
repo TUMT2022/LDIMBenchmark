@@ -13,3 +13,4 @@ docs/user-guides/datasets-analysis
 benchmark-results
 test
 tests/test_data
+grid-search

@@ -106,7 +106,7 @@ ptw -- --testmon
 
 # Watch a file during development
 npm install -g nodemon
-nodemon -L src/ldimbenchmark/auto_hyperparameter.py
+nodemon -L experiments/auto_hyperparameter.py
 
 # Test-Publish
 poetry config repositories.testpypi https://test.pypi.org/legacy/
