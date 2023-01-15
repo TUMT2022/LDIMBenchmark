@@ -18,6 +18,7 @@ import hashlib
 from pandas import DataFrame
 import json
 import hashlib
+import logging
 
 
 class DatasetInfoDatasetOverwrites(TypedDict):
@@ -163,6 +164,16 @@ class LoadedDataset(Dataset, _LoadedDatasetPart):
             os.path.join(self.path, self.info["inp_file"])
         )
 
+        # Load DMAs
+        dma_path = os.path.join(self.path, "dmas.json")
+        if os.path.isfile(dma_path):
+            # file exists
+            with open(os.path.join(self.path, f"dmas.json"), "r") as f:
+                self.dmas = json.load(f)
+        else:
+            logging.warning("No dmas.json file found. Skipping loading of DMAs.")
+            self.dmas = None
+
     def loadBenchmarkData(self):
         return BenchmarkDatasets(self)
 
@@ -202,6 +213,7 @@ class BenchmarkDatasets(LoadedDataset):
         self.model = dataset.model
         self.info = dataset.info
         self.id = dataset.id
+        self.dmas = dataset.dmas
 
         # Load Data
         self.train = _LoadedDatasetPart(training_dataset)
@@ -214,6 +226,7 @@ class BenchmarkDatasets(LoadedDataset):
             flows=self.train.flows,
             levels=self.train.levels,
             model=self.model,
+            dmas=self.dmas,
         )
 
     def getEvaluationBenchmarkData(self):
@@ -223,6 +236,7 @@ class BenchmarkDatasets(LoadedDataset):
             flows=self.evaluation.flows,
             levels=self.evaluation.levels,
             model=self.model,
+            dmas=self.dmas,
         )
 
 
@@ -321,6 +335,7 @@ class DatasetTransformer:
             lambda x: not "leaks" in os.path.basename(x),
             glob(os.path.join(datastet_dir + "/" + "*.csv")),
         ):
+            # TODO: Use Multicore implementation from gjovik
             dataset[os.path.basename(file).lower()[:-4]] = pd.read_csv(
                 file,
                 index_col=index_column,
@@ -365,6 +380,7 @@ class DatasetTransformer:
                     )
                     return (training_data, evaluation_data)
 
+        logging.info("Transforming Dataset")
         # is not equal, remove old dataset
         shutil.rmtree(self.dataset_dir, ignore_errors=True)
         training_data = self._extractDataType("training")
