@@ -138,12 +138,15 @@ class DatasetAnalyzer:
                 loadedDataset.model.describe(2)
             )
 
+            dataset_analysis_out_dir = os.path.join(self.analyisis_out_dir, dataset.id)
+            os.makedirs(dataset_analysis_out_dir, exist_ok=True)
+
             # Plot each time series
             for data_name in ["demands", "pressures", "flows", "levels"]:
                 data = getattr(loadedDataset, data_name)
                 if data.shape[1] > 0:
                     DatasetAnalyzer._plot_time_series(
-                        data, f"{dataset.id}: {data_name}", self.analyisis_out_dir
+                        data, f"{dataset.id}: {data_name}", dataset_analysis_out_dir
                     )
 
             # Plot Network
@@ -157,7 +160,7 @@ class DatasetAnalyzer:
                 link_labels=True,
             )
             fig.savefig(
-                os.path.join(self.analyisis_out_dir, f"network_{dataset.id}.png")
+                os.path.join(dataset_analysis_out_dir, f"network_{dataset.id}.png")
             )
 
         datasets_table = pd.concat(datasets_table)
@@ -171,10 +174,10 @@ class DatasetAnalyzer:
         overview_fine = overview_fine.reset_index(level=1, drop=True)
 
         overview_medium.to_csv(
-            os.path.join(self.analyisis_out_dir, "network_model_details_medium.csv")
+            os.path.join(dataset_analysis_out_dir, "network_model_details_medium.csv")
         )
         overview_fine.to_csv(
-            os.path.join(self.analyisis_out_dir, "network_model_details_fine.csv")
+            os.path.join(dataset_analysis_out_dir, "network_model_details_fine.csv")
         )
 
         overview_table = pd.concat(
