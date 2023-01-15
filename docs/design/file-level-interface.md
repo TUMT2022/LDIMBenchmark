@@ -17,7 +17,7 @@ It is designed to make it easy to implement the interface in any environment (do
  | -- levels/
  |     | -- <sensorname>.csv
  | -- model.inp            # The water network model
- | -- dma.json             # Layout of the district metering zones
+ | -- dma.json             # Layout of the district metering zones it contains all nodes and pipes in the an area, enabling methods to be specific to each area.
  | -- options.yml # Options for the algorithm (e.g. training and evaluation data timestampy, stage of the algorithm [training, detection_offline, detection_online] and goal (detection, localization), hyperparameters, etc.)
 ```
 
