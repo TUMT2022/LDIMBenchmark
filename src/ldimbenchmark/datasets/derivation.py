@@ -22,12 +22,18 @@ class DatasetDerivator:
 
     """
 
-    def __init__(self, datasets: Union[Dataset, List[Dataset]], out_path: str):
+    def __init__(
+        self,
+        datasets: Union[Dataset, List[Dataset]],
+        out_path: str,
+        force: bool = False,
+    ):
 
         if not isinstance(datasets, Sequence):
             datasets = [datasets]
         self.datasets: List[Dataset] = datasets
         self.out_path = out_path
+        self.force = force
 
         # TODO: should we always use the same seed?
         seed = 27565124760782368551060429849508057759
@@ -106,7 +112,7 @@ class DatasetDerivator:
     def derive_data(
         self,
         apply_to: Literal["demands", "levels", "pressures", "flows"],
-        derivation: str,
+        derivation: Literal["sensitivity", "precision", "downsample"],
         options_list: Union[List[dict], List[float]],
     ):
         """
@@ -139,8 +145,7 @@ class DatasetDerivator:
                 # Apply derivation
                 # TODO Implement derivates
                 value = options
-                if derivation == "precision":
-
+                if derivation == "precision" or derivation == "downsample":
                     if isinstance(value, dict):
                         value = value["value"]
 
@@ -169,7 +174,7 @@ class DatasetDerivator:
                 this_dataset._update_id()
                 derivedDatasetPath = os.path.join(self.out_path, this_dataset.id + "/")
 
-                if not os.path.exists(derivedDatasetPath):
+                if not os.path.exists(derivedDatasetPath) or self.force:
                     loadedDataset = this_dataset.loadDataset()
                     data = getattr(loadedDataset, apply_to)
                     if derivation == "precision":
@@ -183,6 +188,19 @@ class DatasetDerivator:
                         if value["shift"] == "middle":
                             shift = value["value"] / 2
                         data = np.divmod(data, value["value"])[0] + shift
+
+                    if derivation == "downsample":
+
+                        data = data.reset_index()
+                        data = data.groupby(
+                            (
+                                data["Timestamp"] - data["Timestamp"][0]
+                            ).dt.total_seconds()
+                            // (value),
+                            group_keys=True,
+                        ).first()
+
+                        data = data.set_index("Timestamp")
 
                     setattr(loadedDataset, apply_to, data)
 

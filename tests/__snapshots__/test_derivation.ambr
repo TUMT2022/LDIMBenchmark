@@ -102,6 +102,15 @@
   
   '''
 # ---
+# name: test_derivator_data_sampling
+  '''
+  Timestamp,a
+  2018-01-01 00:00:00,0
+  2018-01-01 00:09:00,9
+  2018-01-01 00:18:00,18
+  
+  '''
+# ---
 # name: test_derivator_model
   dict({
     'comment': 'WaterNetworkModel - all values given in SI units',

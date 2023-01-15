@@ -14,7 +14,7 @@ from tests.shared import (
 import logging
 
 
-def test_benchmark(mocked_dataset: Dataset):
+def test_benchmark(mocked_dataset1: Dataset):
     # dataset = Dataset(TEST_DATA_FOLDER_BATTLEDIM)
     logLevel = "INFO"
 
@@ -38,7 +38,7 @@ def test_benchmark(mocked_dataset: Dataset):
 
     benchmark = LDIMBenchmark(
         hyperparameters,
-        mocked_dataset,
+        mocked_dataset1,
         results_dir="./benchmark-results",
         debug=True,
     )
@@ -74,16 +74,16 @@ def test_benchmark(mocked_dataset: Dataset):
 #     # benchmark.evaluate()
 
 
-def test_single_run_local(mocked_dataset: Dataset):
+def test_single_run_local(mocked_dataset1: Dataset):
     runner = LocalMethodRunner(
-        YourCustomLDIMMethod(), mocked_dataset, {}, resultsFolder=TEST_DATA_FOLDER
+        YourCustomLDIMMethod(), mocked_dataset1, {}, resultsFolder=TEST_DATA_FOLDER
     )
     runner.run()
 
     pass
 
 
-# def test_single_run_docker(mocked_dataset: Dataset):
+# def test_single_run_docker(mocked_dataset1: Dataset):
 #     runner = DockerMethodRunner(
 #         "testmethod", mocked_dataset, resultsFolder=TEST_DATA_FOLDER
 #     )
@@ -91,12 +91,12 @@ def test_single_run_local(mocked_dataset: Dataset):
 #     assert detected_leaks == True
 
 
-def test_method(mocked_dataset: Dataset):
+def test_method(mocked_dataset1: Dataset):
     trainData = (
-        mocked_dataset.loadDataset().loadBenchmarkData().getTrainingBenchmarkData()
+        mocked_dataset1.loadDataset().loadBenchmarkData().getTrainingBenchmarkData()
     )
     evaluationData = (
-        mocked_dataset.loadDataset().loadBenchmarkData().getEvaluationBenchmarkData()
+        mocked_dataset1.loadDataset().loadBenchmarkData().getEvaluationBenchmarkData()
     )
 
     method = YourCustomLDIMMethod()
