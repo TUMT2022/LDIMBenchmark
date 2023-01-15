@@ -42,21 +42,27 @@ class LILA(LDIMMethodBase):
                 hyperparameters=[
                     Hyperparameter(
                         name="est_length",
-                        description="Length of the estimation period",
-                        default="3 days",
-                        type=str,
+                        description="Length of the estimation period in hours",
+                        default=72,  # 3 days
+                        type=int,
+                        max=8760,  # 1 year
+                        min=1,
                     ),
                     Hyperparameter(
                         name="C_threshold",
                         description="Threshold for the CUSUM statistic",
                         default=3,
-                        type=int,
+                        type=float,
+                        max=10,
+                        min=0,
                     ),
                     Hyperparameter(
                         name="delta",
                         description="Delta for the CUSUM statistic",
                         default=4,
-                        type=int,
+                        type=float,
+                        max=10,
+                        min=0,
                     ),
                 ],
             ),
