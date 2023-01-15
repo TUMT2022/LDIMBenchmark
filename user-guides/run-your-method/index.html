@@ -2079,9 +2079,15 @@ Licensed under the Apache License, Version 2.0.
             </clipboard-copy>
         </div>
             <div class="highlight-ipynb hl-python"><pre><span></span><span class="c1"># Run this in Google Colab:</span>
+<span class="err">!</span><span class="n">python3</span> <span class="o">--</span><span class="n">version</span>
+<span class="err">!</span><span class="n">pip</span> <span class="n">uninstall</span> <span class="n">google</span><span class="o">-</span><span class="n">colab</span> <span class="n">community</span> <span class="n">flask</span> <span class="o">-</span><span class="n">y</span>  <span class="c1"># Workaround for GoogleColab beeing out of date</span>
+<span class="err">!</span><span class="n">pip</span> <span class="n">install</span> <span class="n">ipython</span> <span class="n">ipykernel</span> <span class="o">--</span><span class="n">upgrade</span>        <span class="c1"># https://github.com/googlecolab/colabtools/issues/2230</span>
 <span class="err">!</span><span class="n">pip</span> <span class="n">install</span> <span class="n">ldimbenchmark</span>
 </pre></div>
 <div id="cell-1" class="clipboard-copy-txt"># Run this in Google Colab:
+!python3 --version
+!pip uninstall google-colab community flask -y  # Workaround for GoogleColab beeing out of date
+!pip install ipython ipykernel --upgrade        # https://github.com/googlecolab/colabtools/issues/2230
 !pip install ldimbenchmark</div>
     
         </div>
