@@ -91,6 +91,8 @@ class LocalMethodRunner(MethodRunner):
             hyperparameters = {}
 
         for key in hyperparameters.keys():
+            if key.startswith("_"):
+                continue
             matching_params = [
                 item
                 for item in detection_method.metadata["hyperparameters"]
