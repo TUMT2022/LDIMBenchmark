@@ -808,11 +808,25 @@
   
   
   
+    <li class="md-nav__item">
+      <a href="../../reference/ldimbenchmark/evaluation/" class="md-nav__link">
+        evaluation
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
     
     <li class="md-nav__item md-nav__item--nested">
       
       
-        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_6_1_8" type="checkbox" id="__nav_6_1_8" >
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_6_1_9" type="checkbox" id="__nav_6_1_9" >
       
       
       
@@ -822,14 +836,14 @@
         <div class="md-nav__link md-nav__link--index ">
           <a href="../../reference/ldimbenchmark/generator/">generator</a>
           
-            <label for="__nav_6_1_8">
+            <label for="__nav_6_1_9">
               <span class="md-nav__icon md-icon"></span>
             </label>
           
         </div>
       
       <nav class="md-nav" aria-label="generator" data-md-level="3">
-        <label class="md-nav__title" for="__nav_6_1_8">
+        <label class="md-nav__title" for="__nav_6_1_9">
           <span class="md-nav__icon md-icon"></span>
           generator
         </label>
@@ -879,7 +893,7 @@
     <li class="md-nav__item md-nav__item--nested">
       
       
-        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_6_1_9" type="checkbox" id="__nav_6_1_9" >
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_6_1_10" type="checkbox" id="__nav_6_1_10" >
       
       
       
@@ -889,14 +903,14 @@
         <div class="md-nav__link md-nav__link--index ">
           <a href="../../reference/ldimbenchmark/methods/">methods</a>
           
-            <label for="__nav_6_1_9">
+            <label for="__nav_6_1_10">
               <span class="md-nav__icon md-icon"></span>
             </label>
           
         </div>
       
       <nav class="md-nav" aria-label="methods" data-md-level="3">
-        <label class="md-nav__title" for="__nav_6_1_9">
+        <label class="md-nav__title" for="__nav_6_1_10">
           <span class="md-nav__icon md-icon"></span>
           methods
         </label>
@@ -939,6 +953,73 @@
       <a href="../../reference/ldimbenchmark/methods/null/" class="md-nav__link">
         null
       </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../reference/ldimbenchmark/methods/random/" class="md-nav__link">
+        random
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+      
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_6_1_10_5" type="checkbox" id="__nav_6_1_10_5" >
+      
+      
+      
+      
+        
+        
+        <div class="md-nav__link md-nav__link--index ">
+          <a href="../../reference/ldimbenchmark/methods/utils/">utils</a>
+          
+            <label for="__nav_6_1_10_5">
+              <span class="md-nav__icon md-icon"></span>
+            </label>
+          
+        </div>
+      
+      <nav class="md-nav" aria-label="utils" data-md-level="4">
+        <label class="md-nav__title" for="__nav_6_1_10_5">
+          <span class="md-nav__icon md-icon"></span>
+          utils
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../reference/ldimbenchmark/methods/utils/cusum/" class="md-nav__link">
+        cusum
+      </a>
+    </li>
+  
+
+            
+          
+        </ul>
+      </nav>
     </li>
   
 
@@ -2272,15 +2353,17 @@ Successfully installed big-o-0.10.2 charset-normalizer-2.1.1 click-8.1.3 contour
         <span class="k">return</span> <span class="p">[]</span>
 
     <span class="k">def</span> <span class="nf">detect_datapoint</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">evaluation_data</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">BenchmarkLeakageResult</span><span class="p">:</span>
-        <span class="c1"># TODO: Update keys to conform to new schema</span>
-        <span class="k">return</span> <span class="p">{</span>
-            <span class="s1">&#39;pipe_id&#39;</span><span class="p">:</span> <span class="s2">&quot;Any&quot;</span><span class="p">,</span>
-            <span class="s1">&#39;leak_start&#39;</span><span class="p">:</span> <span class="n">evaluation_data</span><span class="o">.</span><span class="n">pressures</span><span class="o">.</span><span class="n">index</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span>
-            <span class="s1">&#39;leak_end&#39;</span><span class="p">:</span> <span class="n">evaluation_data</span><span class="o">.</span><span class="n">pressures</span><span class="o">.</span><span class="n">index</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span>
-            <span class="s1">&#39;leak_peak&#39;</span><span class="p">:</span> <span class="n">evaluation_data</span><span class="o">.</span><span class="n">pressures</span><span class="o">.</span><span class="n">index</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span>
-            <span class="s1">&#39;leak_area&#39;</span><span class="p">:</span> <span class="mf">0.0</span><span class="p">,</span>
-            <span class="s1">&#39;leak_diameter&#39;</span><span class="p">:</span> <span class="mf">0.0</span><span class="p">,</span>
-        <span class="p">}</span> <span class="k">if</span> <span class="n">random</span><span class="p">()</span> <span class="o">&lt;</span> <span class="mf">0.5</span> <span class="k">else</span> <span class="kc">None</span>
+        <span class="k">return</span> <span class="n">BenchmarkLeakageResult</span><span class="p">(</span>
+                    <span class="n">leak_pipe_id</span><span class="o">=</span><span class="s2">&quot;&lt;your_pipe_id&gt;&quot;</span><span class="p">,</span>
+                    <span class="n">leak_pipe_nodes</span><span class="o">=</span><span class="s2">&quot;&lt;your_leak_pipe_nodes&gt;&quot;</span><span class="p">,</span>
+                    <span class="n">leak_node</span><span class="o">=</span><span class="s2">&quot;&quot;</span><span class="p">,</span>
+                    <span class="n">leak_diameter</span><span class="o">=</span><span class="s2">&quot;&quot;</span><span class="p">,</span>
+                    <span class="n">leak_area</span><span class="o">=</span><span class="s2">&quot;&quot;</span><span class="p">,</span>
+                    <span class="n">leak_type</span><span class="o">=</span><span class="s2">&quot;&quot;</span><span class="p">,</span>
+                    <span class="n">leak_time_start</span><span class="o">=</span><span class="s2">&quot;&quot;</span><span class="p">,</span>
+                    <span class="n">leak_time_peak</span><span class="o">=</span><span class="s2">&quot;&quot;</span><span class="p">,</span>
+                    <span class="n">leak_time_end</span><span class="o">=</span><span class="s2">&quot;&quot;</span><span class="p">,</span>
+                <span class="p">)</span> <span class="k">if</span> <span class="n">random</span><span class="p">()</span> <span class="o">&lt;</span> <span class="mf">0.5</span> <span class="k">else</span> <span class="kc">None</span>
 </pre></div>
 <div id="cell-2" class="clipboard-copy-txt">from ldimbenchmark import LDIMMethodBase, BenchmarkData, BenchmarkLeakageResult
 from ldimbenchmark.classes import MethodMetadata, Hyperparameter
@@ -2321,15 +2404,17 @@ class MyNewLeakageDetectionMethod(LDIMMethodBase):
         return []
 
     def detect_datapoint(self, evaluation_data) -> BenchmarkLeakageResult:
-        # TODO: Update keys to conform to new schema
-        return {
-            'pipe_id': "Any",
-            'leak_start': evaluation_data.pressures.index[0],
-            'leak_end': evaluation_data.pressures.index[0],
-            'leak_peak': evaluation_data.pressures.index[0],
-            'leak_area': 0.0,
-            'leak_diameter': 0.0,
-        } if random() < 0.5 else None
+        return BenchmarkLeakageResult(
+                    leak_pipe_id="<your_pipe_id>",
+                    leak_pipe_nodes="<your_leak_pipe_nodes>",
+                    leak_node="",
+                    leak_diameter="",
+                    leak_area="",
+                    leak_type="",
+                    leak_time_start="",
+                    leak_time_peak="",
+                    leak_time_end="",
+                ) if random() < 0.5 else None
 </div>
     
         </div>
@@ -2454,7 +2539,6 @@ Dataset already downloaded
     <span class="p">}</span>
 <span class="p">}</span>
 
-<span class="c1"># TODO: Make Faster/Inform user about updates</span>
 <span class="n">benchmark</span> <span class="o">=</span> <span class="n">LDIMBenchmark</span><span class="p">(</span>
     <span class="n">hyperparameters</span><span class="p">,</span>
     <span class="n">datasets</span><span class="p">,</span>
@@ -2473,7 +2557,6 @@ hyperparameters = {
     }
 }
 
-# TODO: Make Faster/Inform user about updates
 benchmark = LDIMBenchmark(
     hyperparameters,
     datasets,
@@ -2574,7 +2657,7 @@ benchmark.evaluate()</div>
   <small>
     
       Last update:
-      <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date">December 19, 2022</span>
+      <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date">January 15, 2023</span>
       
         <br>
         Created:
