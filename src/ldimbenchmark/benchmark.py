@@ -21,6 +21,7 @@ import hashlib
 import matplotlib.pyplot as plt
 from multiprocessing import Pool, cpu_count
 from tqdm import tqdm
+from ldimbenchmark.datasets.classes import BenchmarkDatasets
 from ldimbenchmark.evaluation import (
     precision,
     recall,
@@ -126,10 +127,16 @@ class LocalMethodRunner(MethodRunner):
             debug=debug,
         )
         logging.info("Loading Datasets")
-        if dataset is str:
+        # TODO: Refactor DatasetClasses into globally cached object
+        if type(dataset) is str:
             self.dataset = Dataset(dataset).loadDataset().loadBenchmarkData()
+        elif type(dataset) is LoadedDataset:
+            self.dataset = dataset.loadBenchmarkData()
+        elif type(dataset) is BenchmarkDatasets:
+            self.dataset = dataset
         else:
             self.dataset = dataset.loadDataset().loadBenchmarkData()
+        logging.info("Loading Datasets - FINISH")
         self.detection_method = detection_method
 
     def run(self):
@@ -377,9 +384,14 @@ class LDIMBenchmark:
         # TODO: Load datasets only once (parallel)
         loaded_datasets = {}
         for dataset in self.datasets:
-            loaded = (
-                dataset.loadDataset().loadBenchmarkData().getEvaluationBenchmarkData()
-            )
+            if type(dataset) is str:
+                loaded = Dataset(dataset).loadDataset().loadBenchmarkData()
+            elif type(dataset) is LoadedDataset:
+                loaded = dataset.loadBenchmarkData()
+            elif type(dataset) is BenchmarkDatasets:
+                loaded = dataset
+            else:
+                loaded = dataset.loadDataset().loadBenchmarkData()
             loaded_datasets[dataset.id] = loaded
 
         results = []
