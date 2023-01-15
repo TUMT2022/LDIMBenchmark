@@ -1,4 +1,5 @@
-[Documentation](https://tumt2022.github.io/LDIMBench/)
+[![ldimbenchmark version](https://badgen.net/pypi/v/ldimbenchmark/)](https://pypi.org/project/ldimbenchmark) 
+[![Documentation badge](https://img.shields.io/badge/Documentation-here!-GREEN.svg)](https://tumt2022.github.io/LDIMBench/)
 
 # LDIMBenchmark
 
