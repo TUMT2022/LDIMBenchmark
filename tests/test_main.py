@@ -32,7 +32,13 @@ def test_benchmark(mocked_dataset1: Dataset):
             "synthetic-days-60": {
                 "window": "10 days",
                 "gamma": 0.1,
-            }
+                "_dma_specific": {
+                    "dma_a": {
+                        "window": "10 days",
+                        "gamma": 0.1,
+                    },
+                },
+            },
         }
     }
 
