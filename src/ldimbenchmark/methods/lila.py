@@ -326,3 +326,28 @@ class LILA(LDIMMethodBase):
 #         'step': 0.1,
 #     }),
 # ]
+
+
+# TODO: Faster implementation: https://stackoverflow.com/questions/40954560/pandas-rolling-apply-custom
+def zscore(df, win):
+    """calcualte rolling z_score for leak trajectories
+    df :    dfs containing leak trajectories (model reconstruction errors)
+    win :   window for error statistics calculation
+
+    df_z :  pd.DataFrame containing normalized trajectories
+    """
+    start_dates = df.ne(0).idxmax()
+    z_base = np.zeros(shape=(win, df.shape[1]))
+
+    for i, pipe in enumerate(df):
+        start = start_dates[pipe]
+        stop = start_dates[pipe] + pd.Timedelta(win, unit="Min") * 5
+        z_base[:, i] = df[pipe].loc[start:stop].iloc[:-1]
+
+    m = z_base.mean(axis=0)
+    sigma = z_base.std(axis=0)
+    z = (df - m) / sigma
+    z = z.replace([np.inf, -np.inf], np.nan).fillna(0)
+    df_z = pd.DataFrame(z, columns=df.columns, index=df.index)
+    #
+    return df_z, sigma, m
