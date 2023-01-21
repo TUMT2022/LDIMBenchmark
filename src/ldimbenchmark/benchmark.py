@@ -344,6 +344,7 @@ class LDIMBenchmark:
     def evaluate(
         self,
         current=True,
+        write_results=False,
         generate_plots=False,
         evaluations: List[Callable] = [
             precision,
@@ -533,24 +534,27 @@ class LDIMBenchmark:
         results.columns = columns
 
         print(tabulate(results, headers="keys"))
-        results.to_csv(os.path.join(self.evaluation_results_dir, "results.csv"))
 
-        results.style.format(escape="latex").set_table_styles(
-            [
-                # {'selector': 'toprule', 'props': ':hline;'},
-                {"selector": "midrule", "props": ":hline;"},
-                # {'selector': 'bottomrule', 'props': ':hline;'},
-            ],
-            overwrite=False,
-        ).relabel_index(columns, axis="columns").to_latex(
-            os.path.join(self.evaluation_results_dir, "results.tex"),
-            position_float="centering",
-            clines="all;data",
-            column_format="ll|" + "r" * len(columns),
-            position="H",
-            label="table:benchmark_results",
-            caption="Overview of the benchmark results.",
-        )
+        if write_results:
+            print("Writing results to disk")
+            results.to_csv(os.path.join(self.evaluation_results_dir, "results.csv"))
+
+            results.style.format(escape="latex").set_table_styles(
+                [
+                    # {'selector': 'toprule', 'props': ':hline;'},
+                    {"selector": "midrule", "props": ":hline;"},
+                    # {'selector': 'bottomrule', 'props': ':hline;'},
+                ],
+                overwrite=False,
+            ).relabel_index(columns, axis="columns").to_latex(
+                os.path.join(self.evaluation_results_dir, "results.tex"),
+                position_float="centering",
+                clines="all;data",
+                column_format="ll|" + "r" * len(columns),
+                position="H",
+                label="table:benchmark_results",
+                caption="Overview of the benchmark results.",
+            )
         return results
 
 
