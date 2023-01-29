@@ -26,7 +26,8 @@
 				"ms-python.python",
 				"GitHub.copilot",
 				"GitHub.copilot-labs",
-				"mechatroner.rainbow-csv"
+				"mechatroner.rainbow-csv",
+				"esbenp.prettier-vscode"
 			]
 		}
 	},
