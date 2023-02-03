@@ -55,7 +55,6 @@ def test_evaluate_leakages_tn():
         "false_negatives": 1,
         "time_to_detection": 0.0,
         "wrong_pipe": 0,
-        "score": 0,
     }
 
 
@@ -101,7 +100,6 @@ def test_evaluate_leakages_fp():
         "false_negatives": 0,
         "time_to_detection": 0.0,
         "wrong_pipe": 0,
-        "score": 0,
     }
 
 
@@ -163,7 +161,6 @@ def test_leak_matching_more_detected():
         "false_negatives": 0,
         "time_to_detection": 300.0,
         "wrong_pipe": 0,
-        "score": 0,
     }
 
 
@@ -225,7 +222,6 @@ def test_leak_matching_more_expected():
         "false_negatives": 1,
         "time_to_detection": 300.0,
         "wrong_pipe": 0,
-        "score": 0,
     }
 
 
@@ -279,7 +275,6 @@ def test_leak_matching_all_detected_earlier_than_expected():
         "false_negatives": 2,
         "time_to_detection": "",
         "wrong_pipe": 0,
-        "score": 0,
     }
 
 
@@ -314,7 +309,6 @@ def test_empty_detected():
         "false_negatives": 2,
         "time_to_detection": "",
         "wrong_pipe": 0,
-        "score": 0,
     }
 
 
@@ -349,7 +343,6 @@ def test_empty_expected():
         "false_negatives": 0,
         "time_to_detection": "",
         "wrong_pipe": 0,
-        "score": 0,
     }
 
 
@@ -365,5 +358,4 @@ def test_empty_both():
         "false_negatives": 0,
         "time_to_detection": "",
         "wrong_pipe": 0,
-        "score": 0,
     }

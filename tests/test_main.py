@@ -16,14 +16,6 @@ import logging
 
 def test_benchmark(mocked_dataset1: Dataset):
     # dataset = Dataset(TEST_DATA_FOLDER_BATTLEDIM)
-    logLevel = "INFO"
-
-    numeric_level = getattr(logging, logLevel, None)
-    if not isinstance(numeric_level, int):
-        raise ValueError("Invalid log level: %s" % logLevel)
-
-    logging.basicConfig(level=numeric_level, handlers=[logging.StreamHandler()])
-    logging.getLogger().setLevel(numeric_level)
 
     local_methods = [MNF(), LILA()]
 

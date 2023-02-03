@@ -50,6 +50,13 @@ mkdocs-git-revision-date-localized-plugin = "^1.1.0"
 requires = ["poetry-core"]
 build-backend = "poetry.core.masonry.api"
 
+[tool.pytest.ini_options]
+testpaths = [
+    "tests",
+]
+norecursedirs="test_data .ldim_benchmark_cache"
+
+
 [tool.tox]
 legacy_tox_ini = """
 [tox]

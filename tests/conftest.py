@@ -18,11 +18,24 @@ import pandas as pd
 import numpy as np
 from wntr.network import write_inpfile
 import os
+import logging
 
 
 @pytest.fixture(autouse=True)
 def change_test_dir(request, monkeypatch):
     monkeypatch.chdir(request.fspath.dirname)
+
+
+@pytest.fixture(autouse=True)
+def change_log_level(request):
+    logLevel = "INFO"
+
+    numeric_level = getattr(logging, logLevel, None)
+    if not isinstance(numeric_level, int):
+        raise ValueError("Invalid log level: %s" % logLevel)
+
+    logging.basicConfig(level=numeric_level, handlers=[logging.StreamHandler()])
+    logging.getLogger().setLevel(numeric_level)
 
 
 @pytest.fixture
