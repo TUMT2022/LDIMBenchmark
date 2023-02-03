@@ -118,6 +118,8 @@ class LILA(LDIMMethodBase):
     def detect(self, evaluation_data: BenchmarkData) -> List[BenchmarkLeakageResult]:
         scada_data = SCADA_data()
 
+        # TODO: Implement reoccuring training on trailing timeframe?
+
         scada_data.pressures = evaluation_data.pressures
         nodes = evaluation_data.pressures.keys()
 
