@@ -25,8 +25,12 @@ def download_file(args):
     Download a file from a URL and save it to a given path
     """
     url, out_file_path = args
+    if os.path.exists(out_file_path):
+        logging.info(f"File {out_file_path} already exists.")
+        return
     res = requests.get(url)
     os.makedirs(path.dirname(out_file_path), exist_ok=True)
+    logging.info(out_file_path)
     if res.status_code == 200:  # http 200 means success
         with open(out_file_path, "wb") as file_handle:  # wb means Write Binary
             file_handle.write(res.content)
@@ -79,20 +83,38 @@ class BattledimDatasetLoader(_LoadDatasetBase):
         )
         wntr.network.write_inpfile(wn, path.join(preparedDatasetPath, "L-TOWN.inp"))
 
+        logging.info("Concatening Files")
         copyfiles = glob.glob(path.join(unpreparedDatasetPath, "2018") + "/*.csv")
         for file in copyfiles:
             shutil.copy(
-                file, os.path.join(preparedDatasetPath, os.path.basename(file).lower())
+                file,
+                os.path.join(unpreparedDatasetPath, os.path.basename(file).lower()),
             )
 
         copyfiles = glob.glob(path.join(unpreparedDatasetPath, "2019") + "/*.csv")
         for file in copyfiles:
             with open(file, "r") as file_from:
                 with open(
-                    os.path.join(preparedDatasetPath, os.path.basename(file).lower()),
+                    os.path.join(unpreparedDatasetPath, os.path.basename(file).lower()),
                     "a",
                 ) as file_to:
                     file_to.writelines(file_from.readlines()[1:])
+
+        logging.info("Splitting data by sensor")
+        copyfiles = glob.glob(path.join(unpreparedDatasetPath) + "/*.csv")
+        for file in copyfiles:
+            current_file_base_path = os.path.join(
+                preparedDatasetPath, os.path.basename(file).lower()[:-4]
+            )
+            os.makedirs(current_file_base_path)
+
+            table = pd.read_csv(
+                file, delimiter=";", decimal=",", index_col=["Timestamp"]
+            )
+            for column in table.columns:
+                table[column].to_csv(
+                    os.path.join(current_file_base_path, f"{column}.csv")
+                )
 
         new_leakages = []
         with open(
@@ -104,24 +126,20 @@ class BattledimDatasetLoader(_LoadDatasetBase):
                 if leak == None:
                     continue
                 splits = leak.split(",")
+                # TODOlater:  Extract leak area and diameter from extra CSVs
                 new_leakages.append(
                     {
                         "leak_pipe_id": splits[0].strip(),
                         "leak_time_start": splits[1].strip(),
                         "leak_time_end": splits[2].strip(),
                         "leak_time_peak": splits[5].strip(),
-                        "leak_max_flow": float(splits[3].strip()),
+                        "leak_flow_max": float(splits[3].strip()),
                     }
                 )
-        # TODO: Extract leak area and diameter
 
         dataset_info = """
 name: battledim
 dataset:
-  overwrites:
-        index_column: Timestamp
-        decimal: ','
-        delimiter: ;
   evaluation:
       start: 2019-01-01 00:00
       end: 2019-12-31 23:55
@@ -140,8 +158,6 @@ inp_file: L-TOWN.inp
             os.path.join(preparedDatasetPath, "leaks.csv"),
             index=False,
             date_format="%Y-%m-%d %H:%M:%S",
-            sep=";",
-            decimal=",",
         )
 
         # Write info to file
