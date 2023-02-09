@@ -178,25 +178,3 @@ class LDIMMethodBase(ABC):
         This method should return a single BenchmarkLeakageResult or None if there is no leak at this datapoint.
         """
         raise NotImplementedError("Please Implement this method")
-
-
-class LDIMMethodScikitAdapter:
-    def __init__(self, method):
-        self.method = method
-
-    def get_params(self, deep=True):
-        return self.method.hyperparameters
-
-    def set_params(self, **params):
-        # self.method.hyperparameters.update(params)
-        return self
-
-    def fit(self, X, y):
-        self.method.train(X)
-
-    def predict(self, X):
-        return self.method.detect(X)
-
-    def score(self, X, y):
-        # TODO: Return F1?
-        return 0

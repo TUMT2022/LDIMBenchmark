@@ -5,6 +5,28 @@ from sklearn.utils.multiclass import unique_labels
 from sklearn.metrics import euclidean_distances
 
 
+class LDIMMethodScikitAdapter:
+    def __init__(self, method):
+        self.method = method
+
+    def get_params(self, deep=True):
+        return self.method.hyperparameters
+
+    def set_params(self, **params):
+        # self.method.hyperparameters.update(params)
+        return self
+
+    def fit(self, X, y):
+        self.method.train(X)
+
+    def predict(self, X):
+        return self.method.detect(X)
+
+    def score(self, X, y):
+        # TODO: Return F1?
+        return 0
+
+
 class ScikitLearnEstimatorAdapter(BaseEstimator, ClassifierMixin):
     def __init__(self, demo_param="demo"):
         self.demo_param = demo_param
