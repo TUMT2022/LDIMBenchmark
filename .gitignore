@@ -2,6 +2,7 @@
 dist
 .tox
 __pycache__
+.testmondata
 
 # MkDocs
 site

@@ -1,4 +1,4 @@
-[![ldimbenchmark version](https://badgen.net/pypi/v/ldimbenchmark/)](https://pypi.org/project/ldimbenchmark) 
+[![ldimbenchmark version](https://badgen.net/pypi/v/ldimbenchmark/)](https://pypi.org/project/ldimbenchmark)
 [![Documentation badge](https://img.shields.io/badge/Documentation-here!-GREEN.svg)](https://tumt2022.github.io/LDIMBench/)
 
 # LDIMBenchmark
@@ -101,6 +101,8 @@ cd tests
 docker build . -t testmethod
 pytest -s -o log_cli=true
 pytest tests/test_derivation.py -k 'test_mything'
+pytest --testmon
+
 # Pytest watch
 ptw
 ptw -- --testmon
@@ -127,3 +129,11 @@ https://click.palletsprojects.com/en/8.1.x/
 ```
 mkdocs serve
 ```
+
+# TODO
+
+LDIMBenchmark:
+Data Cleansing before working with them
+
+- per sensor type, e.g. waterflow (cut of at 0)
+- removing datapoints which are clearly a malfunction
