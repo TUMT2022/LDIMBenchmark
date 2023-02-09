@@ -23,7 +23,7 @@ import matplotlib.pyplot as plt
 from multiprocessing import Pool, cpu_count
 from tqdm import tqdm
 from ldimbenchmark.datasets.classes import BenchmarkDatasets
-from ldimbenchmark.evaluation import (
+from ldimbenchmark.evaluation_metrics import (
     precision,
     recall,
     specifity,
