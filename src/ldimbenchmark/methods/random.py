@@ -1,7 +1,11 @@
 from ldimbenchmark import LDIMMethodBase, BenchmarkData, BenchmarkLeakageResult
-from ldimbenchmark.classes import MethodMetadata, Hyperparameter
-from typing import List
-import random
+from ldimbenchmark.classes import (
+    MethodMetadata,
+    Hyperparameter,
+    MethodMetadataDataNeeded,
+)
+from typing import List, Union
+from random import random
 
 
 class RandomMethod(LDIMMethodBase):
@@ -15,11 +19,18 @@ class RandomMethod(LDIMMethodBase):
             name="RandomMethod",
             version="1.0",
             metadata=MethodMetadata(
-                data_needed=["pressures", "demands", "flows", "levels"],
+                data_needed=MethodMetadataDataNeeded(
+                    pressures="ignored",
+                    flows="ignored",
+                    levels="ignored",
+                    model="ignored",
+                    demands="ignored",
+                    structure="ignored",
+                ),
                 hyperparameters=[
                     Hyperparameter(
                         name="random",
-                        description="The Random percentage of detecing a leakage",
+                        description="The Random percentage of detecting a leakage",
                         default=0.5,
                         max=1.0,
                         min=0.0,
@@ -35,17 +46,17 @@ class RandomMethod(LDIMMethodBase):
     def detect(self, evaluation_data: BenchmarkData) -> List[BenchmarkLeakageResult]:
         return []
 
-    def detect_datapoint(self, evaluation_data) -> BenchmarkLeakageResult:
+    def detect_datapoint(self, evaluation_data) -> Union[BenchmarkLeakageResult, None]:
         # TODO: Update keys to conform to new schema
-        return (
-            {
-                "pipe_id": "Any",
-                "leak_start": evaluation_data.pressures.index[0],
-                "leak_end": evaluation_data.pressures.index[0],
-                "leak_peak": evaluation_data.pressures.index[0],
-                "leak_area": 0.0,
-                "leak_diameter": 0.0,
-            }
-            if random() < 0.5
-            else None
-        )
+        if random() < 0.5:
+            return BenchmarkLeakageResult(
+                leak_pipe_id="Any",
+                leak_time_start=evaluation_data.pressures.index[0],
+                leak_time_end=evaluation_data.pressures.index[0],
+                leak_time_peak=evaluation_data.pressures.index[0],
+                leak_area=0.0,
+                leak_diameter=0.0,
+                leak_max_flow=0.0,
+            )
+        else:
+            return None

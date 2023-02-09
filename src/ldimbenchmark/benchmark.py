@@ -40,17 +40,51 @@ class MethodRunner(ABC):
     def __init__(
         self,
         hyperparameters: dict,
-        goal: str,
-        stage: str,
-        method: str,
+        goal: Literal[
+            "assessment", "detection", "identification", "localization", "control"
+        ] = "detection",
+        stage: Literal["train", "detect"] = "detect",
+        method: Literal["offline", "online"] = "offline",
         debug: bool = False,
-        resultsFolder: str = None,
+        resultsFolder: Union[str, None] = None,
     ):
         """
-        :param hyperparameters: Hyperparameters for the method
-        :param stages: List of stages that should be executed. Possible stages: "train", "detect", "detect_datapoint"
-        :param goal: Goal of the benchmark. Possible goals: "detection", "location"
-        :param method: Method that should be executed. Possible methods: "offline", "online"
+        Base Class for a Method Runner.
+
+
+        Parameters
+        ----------
+        detection_method : LDIMMethodBase
+            The LDIM method object.
+
+        dataset : Union[Dataset, str]
+            The dataset object or the path to the dataset.
+
+        hyperparameters : dict, optional
+            The hyperparameters for the LDIM object, by default None
+
+        goal : Literal[
+            "assessment", "detection", "identification", "localization", "control"
+        ], optional
+            Goal of the benchmark. Possible goals:
+            "assessment" - Asses if there are any leaks
+            "detection" - Detect leaks and their onset
+            "localization" - Detect leaks and their location
+            "control" - Detect leaks and fomulate a control strategy
+            by default "detection"
+
+        stage : Literal["train", "detect"], optional
+            List of stages that should be executed. Possible stages: "train", "detect"
+
+        method : Literal["offline", "online"], optional
+            The method of the LDIM object, by default "offline"
+
+        debug : bool, optional
+            Whether to print debug information, by default False
+
+        resultsFolder : None, optional
+            The path to the results folder, by default None
+
         """
         self.hyperparameters = hyperparameters
         self.goal = goal
@@ -80,13 +114,49 @@ class LocalMethodRunner(MethodRunner):
         detection_method: LDIMMethodBase,
         dataset: Union[Dataset, str],
         hyperparameters: dict = None,
-        # TODO: Rename goal stage method to more meaningful names
-        goal: Literal["detection", "location"] = "detection",
-        stage="train",  # train, detect
-        method="offline",  # offline, online
+        goal: Literal[
+            "assessment", "detection", "identification", "localization", "control"
+        ] = "detection",
+        stage: Literal["train", "detect"] = "detect",
+        method: Literal["offline", "online"] = "offline",
         debug=False,
         resultsFolder=None,
     ):
+        """Initialize the LocalMethodRunner.
+
+        Parameters
+        ----------
+        detection_method : LDIMMethodBase
+            The LDIM method object.
+        dataset : Union[Dataset, str]
+            The dataset object or the path to the dataset.
+        hyperparameters : dict, optional
+            The hyperparameters for the LDIM object, by default None
+        goal : Literal[
+            "assessment", "detection", "identification", "localization", "control"
+        ], optional
+            The goal of the LDIM object, by default "detection"
+
+        stage : Literal["train", "detect"], optional
+            The stage of the LDIM object, by default "detect"
+
+        method : Literal["offline", "online"], optional
+            The method of the LDIM object, by default "offline"
+
+        debug : bool, optional
+            Whether to print debug information, by default False
+
+        resultsFolder : None, optional
+            The path to the results folder, by default None
+
+        Raises
+        ------
+        TypeError
+            If the dataset is not of type Dataset or str.
+        ValueError
+            If the dataset is not of type Dataset or str.
+        """
+
         if hyperparameters is None:
             hyperparameters = {}
 
@@ -569,9 +639,11 @@ class DockerMethodRunner(MethodRunner):
         image: str,
         dataset: Union[Dataset, str],
         hyperparameters: dict = {},
-        goal: Literal["detection", "location"] = "detection",
-        stage="train",  # train, detect
-        method="offline",  # offline, online
+        goal: Literal[
+            "assessment", "detection", "identification", "localization", "control"
+        ] = "detection",
+        stage: Literal["train", "detect"] = "detect",
+        method: Literal["offline", "online"] = "offline",
         debug=False,
         resultsFolder=None,
     ):

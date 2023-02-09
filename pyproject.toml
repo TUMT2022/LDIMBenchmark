@@ -23,6 +23,7 @@ pandas = "^1.5.2"
 jinja2 = "^3.1.2"
 numpy = "^1.23.5"
 pytest-benchmark = "^4.0.0"
+pyright = "^1.1.293"
 
 [tool.poetry.group.dev.dependencies]
 tox = "^3.27.1"
@@ -80,3 +81,15 @@ commands =
     black --check src/ldimbenchmark
     pytest .
 """
+
+[tool.pyright]
+include = ["src", "tests"]
+exclude = ["**/node_modules",
+    "**/__pycache__",
+    "**/.ldim_benchmark_cache",
+    "**/test_data",
+]
+defineConstant = { DEBUG = true }
+
+reportMissingImports = true
+reportMissingTypeStubs = false

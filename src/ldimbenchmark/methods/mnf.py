@@ -195,6 +195,9 @@ class MNF(LDIMMethodBase):
                     leak_time_start=leak_start,
                     leak_time_end=leak_start,
                     leak_time_peak=leak_start,
+                    leak_area=0.0,
+                    leak_diameter=0.0,
+                    leak_max_flow=0.0,
                 )
             )
         return results

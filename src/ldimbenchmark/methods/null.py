@@ -1,6 +1,6 @@
 from ldimbenchmark import LDIMMethodBase, BenchmarkData, BenchmarkLeakageResult
-from ldimbenchmark.classes import MethodMetadata
-from typing import List
+from ldimbenchmark.classes import MethodMetadata, MethodMetadataDataNeeded
+from typing import List, Union
 
 
 class NullLeakagedDetectionMethod(LDIMMethodBase):
@@ -13,7 +13,14 @@ class NullLeakagedDetectionMethod(LDIMMethodBase):
             name="Null",
             version="1.0",
             metadata=MethodMetadata(
-                data_needed=["pressures", "demands", "flows", "levels"],
+                data_needed=MethodMetadataDataNeeded(
+                    pressures="ignored",
+                    flows="ignored",
+                    levels="ignored",
+                    model="ignored",
+                    demands="ignored",
+                    structure="ignored",
+                ),
                 hyperparameters=[],
             )
             # hyperparameters={"est_length": "3 days", "C_threshold": 3, "delta": 4},
@@ -25,5 +32,5 @@ class NullLeakagedDetectionMethod(LDIMMethodBase):
     def detect(self, evaluation_data: BenchmarkData) -> List[BenchmarkLeakageResult]:
         return []
 
-    def detect_datapoint(self, evaluation_data) -> BenchmarkLeakageResult:
+    def detect_datapoint(self, evaluation_data) -> Union[BenchmarkLeakageResult, None]:
         return None

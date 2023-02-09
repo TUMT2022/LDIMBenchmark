@@ -1,13 +1,13 @@
 from pandas import DataFrame
 from wntr.network import WaterNetworkModel
-from typing import Literal, TypedDict, Dict, Union, List
-from datetime import datetime, timedelta
+from typing import Literal, Optional, TypedDict, Dict, Union, List
+from datetime import datetime
 from abc import ABC, abstractmethod
 
 
 class BenchmarkData:
     """
-    Representation of the File Based Bechmark Dataset
+    Representation of the File Based Benchmark Dataset
     """
 
     def __init__(
@@ -42,7 +42,7 @@ class BenchmarkData:
 
 
 class BenchmarkLeakageResult(TypedDict):
-    leak_pipe_id: str
+    leak_pipe_id: Optional[str]
     leak_time_start: datetime
     leak_time_end: datetime
     leak_time_peak: datetime
@@ -59,11 +59,39 @@ class Hyperparameter(TypedDict):
     # TODO
     min: Union[int, float]
     max: Union[int, float]
-    options: List[Union[str, int, float]]
+    options: Optional[List[Union[str, int, float]]]
+
+
+class MethodMetadataDataNeeded(TypedDict):
+    """
+    Describing the necessity of the data for the method.
+
+    necessary - The method needs the data to work, otherwise it would fail.
+    optional - The data is not necessary for the method, but its presence would enhance it.
+    ignored - The data is not necessary for the method and its presence would not enhance it (simply put it is ignored).
+
+    Depending on what is set for the type of data the
+
+    |Selected Need|Provided by dataset|Result     | Data supplied |
+    |:------------|:------------------|-----------|---------------|
+    |`necessary`  |yes                |Benchmarked|Yes            |
+    |`necessary`  |no                 |Skipped    |No             |
+    |`optional`   |yes                |Benchmarked|Yes            |
+    |`optional`   |no                 |Benchmarked|No             |
+    |`ignored`    |yes                |Benchmarked|No             |
+    |`ignored`    |no                 |Benchmarked|No             |
+    """
+
+    pressures: Literal["necessary", "optional", "ignored"]
+    demands: Literal["necessary", "optional", "ignored"]
+    flows: Literal["necessary", "optional", "ignored"]
+    levels: Literal["necessary", "optional", "ignored"]
+    model: Literal["necessary", "optional", "ignored"]
+    structure: Literal["necessary", "optional", "ignored"]
 
 
 class MethodMetadata(TypedDict):
-    data_needed: List[str]
+    data_needed: MethodMetadataDataNeeded
     hyperparameters: List[Hyperparameter]
 
 
@@ -129,6 +157,7 @@ class LDIMMethodBase(ABC):
     @abstractmethod
     def detect(self, evaluation_data: BenchmarkData) -> List[BenchmarkLeakageResult]:
         """
+        TODO: Rename detect_offline
         Detect Leakages on never before seen data. (BenchmarkData)
 
         This method should return an array of leakages.
@@ -139,6 +168,7 @@ class LDIMMethodBase(ABC):
     @abstractmethod
     def detect_datapoint(self, evaluation_data) -> BenchmarkLeakageResult:
         """
+        TODO: Rename detect_online
         Detect Leakage on never before seen datapoint.
         This method is called multiple times for each datapoint in the evaluation data.
         It is your responsibility to store the new datapoint, if you want to use it for refinining your model.

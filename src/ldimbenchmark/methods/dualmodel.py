@@ -2,7 +2,12 @@ from ldimbenchmark import (
     BenchmarkData,
     BenchmarkLeakageResult,
 )
-from ldimbenchmark.classes import Hyperparameter, LDIMMethodBase, MethodMetadata
+from ldimbenchmark.classes import (
+    Hyperparameter,
+    LDIMMethodBase,
+    MethodMetadata,
+    MethodMetadataDataNeeded,
+)
 from ldimbenchmark.methods.utils.cusum import cusum
 
 import pickle
@@ -24,7 +29,14 @@ class DUALMethod(LDIMMethodBase):
             name="DUAL",
             version="0.1.0",
             metadata=MethodMetadata(
-                data_needed=["pressures", "demands", "flows", "levels", "model"],
+                data_needed=MethodMetadataDataNeeded(
+                    pressures="necessary",
+                    flows="necessary",
+                    levels="optional",
+                    model="ignored",
+                    demands="ignored",
+                    structure="necessary",
+                ),
                 hyperparameters=[
                     Hyperparameter(
                         name="est_length",
