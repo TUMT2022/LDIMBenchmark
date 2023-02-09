@@ -28,7 +28,8 @@
 				"GitHub.copilot-labs",
 				"mechatroner.rainbow-csv",
 				"esbenp.prettier-vscode",
-				"bierner.markdown-mermaid"
+				"bierner.markdown-mermaid",
+				"streetsidesoftware.code-spell-checker"
 			]
 		}
 	},
