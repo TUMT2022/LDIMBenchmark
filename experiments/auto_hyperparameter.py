@@ -4,7 +4,7 @@ import pandas as pd
 from ldimbenchmark.benchmark import LDIMBenchmark
 from ldimbenchmark.classes import LDIMMethodBase
 from typing import Dict, List
-from ldimbenchmark.evaluation import f1Score
+from ldimbenchmark.evaluation_metrics import f1Score
 from ldimbenchmark.methods import LILA, MNF
 from ldimbenchmark.datasets import Dataset, DatasetLibrary, DATASETS
 from tqdm import tqdm
@@ -118,7 +118,7 @@ param_grid = {
 grid_search = GridSearch(LILA(), param_grid)
 
 
-grid_search.detect_offline(datasets[0].loadDataset().loadBenchmarkData())
+grid_search.detect_offline(datasets[0].loadData().loadBenchmarkData())
 
 print(grid_search.results)
 
