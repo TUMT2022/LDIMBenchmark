@@ -122,7 +122,9 @@ class LILA(LDIMMethodBase):
     def detect(self, evaluation_data: BenchmarkData) -> List[BenchmarkLeakageResult]:
         scada_data = SCADA_data()
 
-        simple_evaluation_data = simplifyBenchmarkData(evaluation_data)
+        simple_evaluation_data = simplifyBenchmarkData(
+            evaluation_data, resample_frequency="5T"
+        )
 
         # TODO: Implement reoccuring training on trailing timeframe?
 
