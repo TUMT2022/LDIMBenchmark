@@ -115,7 +115,7 @@ def generateDatasetForJunctionNumber(
     junctions: int, out_dir: str = LDIM_BENCHMARK_CACHE_DIR
 ):
     if os.path.exists(out_dir):
-        # print(f"Skipping {junctions} as it already exists")
+        logging.info(f"Skipping {out_dir} as it already exists")
         return
     os.makedirs(out_dir, exist_ok=True)
 
@@ -164,7 +164,7 @@ def generateDatasetForJunctionNumber(
 
 def generateDatasetForTimeSpanDays(days: int, out_dir: str):
     if os.path.exists(out_dir):
-        # print(f"Skipping {out_dir} as it already exists")
+        logging.info(f"Skipping {out_dir} as it already exists")
         return
     os.makedirs(out_dir, exist_ok=True)
     wn = generatePoulakisNetwork()

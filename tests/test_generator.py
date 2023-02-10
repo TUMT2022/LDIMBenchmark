@@ -1,3 +1,4 @@
+from ldimbenchmark.datasets.classes import Dataset
 from ldimbenchmark.generator import (
     generateDatasetForTimeSpanDays,
     generateDatasetsForTimespan,
@@ -11,15 +12,15 @@ import os
 
 
 def test_generator_time():
-    generateDatasetForTimeSpanDays(
-        90, os.path.join(TEST_DATA_FOLDER_DATASETS_GENERATED)
-    )
+    out_dir = os.path.join(TEST_DATA_FOLDER_DATASETS_GENERATED, "synthetic-days-90")
+    generateDatasetForTimeSpanDays(90, out_dir)
+    dataset = Dataset(out_dir).loadData()
 
 
 def test_generator_junction():
-    generateDatasetForJunctionNumber(
-        30, os.path.join(TEST_DATA_FOLDER_DATASETS_GENERATED)
-    )
+    out_dir = os.path.join(TEST_DATA_FOLDER_DATASETS_GENERATED, "synthetic-j-30")
+    generateDatasetForJunctionNumber(30, out_dir)
+    dataset = Dataset(out_dir).loadData()
 
 
 def test_generator_set_time():

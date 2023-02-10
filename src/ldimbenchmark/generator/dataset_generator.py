@@ -196,7 +196,6 @@ class DatasetGenerator:
             print("Run the 'dataset_generator()' Function before. No results to write.")
             return
 
-        # TODO: Use Dataset.exportTo() function
         # Create CSV files
         decimal_size = 4
 
@@ -250,6 +249,10 @@ class DatasetGenerator:
         total_demands = pd.DataFrame(index=self.time_stamps)
         total_flows = pd.DataFrame(index=self.time_stamps)
         total_levels = pd.DataFrame(index=self.time_stamps)
+
+        for folders in ["pressures", "demands", "flows", "levels"]:
+            os.makedirs(os.path.join(results_folder, folders), exist_ok=True)
+
         for node_id, values in self.results.node["demand"].items():
             if (
                 node_id in self.pressure_sensors
@@ -258,6 +261,10 @@ class DatasetGenerator:
                 pres = self.results.node["pressure"][node_id].values[
                     : len(self.time_stamps)
                 ]
+                pd.DataFrame(pres, index=self.time_stamps).round(decimal_size).to_csv(
+                    os.path.join(results_folder, "pressures", f"{node_id}.csv"),
+                    index_label="Timestamp",
+                )
                 # pres = pres[:len(self.time_stamp)]
                 total_pressures[node_id] = pres
 
@@ -265,6 +272,10 @@ class DatasetGenerator:
                 dem = self.results.node["demand"][node_id].values[
                     : len(self.time_stamps)
                 ]
+                pd.DataFrame(dem, index=self.time_stamps).round(decimal_size).to_csv(
+                    os.path.join(results_folder, "demands", f"{node_id}.csv"),
+                    index_label="Timestamp",
+                )
                 # dem = dem[:len(self.time_stamp)]
                 # dem = [elem * 3600 * 1000 for elem in dem] #CMH / L/s
                 total_demands[node_id] = dem
@@ -273,6 +284,12 @@ class DatasetGenerator:
                 level_pres = self.results.node["pressure"][node_id].values[
                     : len(self.time_stamps)
                 ]
+                pd.DataFrame(level_pres, index=self.time_stamps).round(
+                    decimal_size
+                ).to_csv(
+                    os.path.join(results_folder, "levels", f"{node_id}.csv"),
+                    index_label="Timestamp",
+                )
                 # level_pres = level_pres[:len(self.time_stamp)]
                 # level_pres = [round(elem, decimal_size) for elem in level_pres]
                 total_levels[node_id] = level_pres
@@ -282,18 +299,22 @@ class DatasetGenerator:
                 flows = self.results.link["flowrate"][link_id].values[
                     : len(self.time_stamps)
                 ]
+                pd.DataFrame(flows, index=self.time_stamps).round(decimal_size).to_csv(
+                    os.path.join(results_folder, "flows", f"{node_id}.csv"),
+                    index_label="Timestamp",
+                )
                 total_flows[link_id] = flows
 
         # Pressures (m), Demands (m^3/s), Flows (m^3/s), Levels (m)
-        total_pressures.round(decimal_size).to_csv(
-            os.path.join(results_folder, "pressures.csv"), index_label="Timestamp"
-        )
-        total_demands.round(decimal_size).to_csv(
-            os.path.join(results_folder, "demands.csv"), index_label="Timestamp"
-        )
-        total_flows.round(decimal_size).to_csv(
-            os.path.join(results_folder, "flows.csv"), index_label="Timestamp"
-        )
-        total_levels.round(decimal_size).to_csv(
-            os.path.join(results_folder, "levels.csv"), index_label="Timestamp"
-        )
+        # total_pressures.round(decimal_size).to_csv(
+        #     os.path.join(results_folder, "pressures.csv"), index_label="Timestamp"
+        # )
+        # total_demands.round(decimal_size).to_csv(
+        #     os.path.join(results_folder, "demands.csv"), index_label="Timestamp"
+        # )
+        # total_flows.round(decimal_size).to_csv(
+        #     os.path.join(results_folder, "flows.csv"), index_label="Timestamp"
+        # )
+        # total_levels.round(decimal_size).to_csv(
+        #     os.path.join(results_folder, "levels.csv"), index_label="Timestamp"
+        # )
