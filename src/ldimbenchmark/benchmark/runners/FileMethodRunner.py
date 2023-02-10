@@ -60,7 +60,7 @@ class FileBasedMethodRunner(MethodRunner):
         )
 
         start = time.time()
-        detected_leaks = self.detection_method.detect(
+        detected_leaks = self.detection_method.detect_offline(
             self.dataset.getEvaluationBenchmarkData()
         )
 

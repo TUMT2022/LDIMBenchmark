@@ -99,7 +99,7 @@ def run_benchmark_complexity(
 
         def runAlgorithmWithNetwork(n):
             method.train(datasets[n]["training"])
-            method.detect(datasets[n]["evaluation"])
+            method.detect_offline(datasets[n]["evaluation"])
 
         # Run Big-O
         best, others = big_o.big_o(

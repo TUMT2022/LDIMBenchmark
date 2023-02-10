@@ -155,9 +155,11 @@ class LDIMMethodBase(ABC):
         raise NotImplementedError("Please Implement this method")
 
     @abstractmethod
-    def detect(self, evaluation_data: BenchmarkData) -> List[BenchmarkLeakageResult]:
+    def detect_offline(
+        self, evaluation_data: BenchmarkData
+    ) -> List[BenchmarkLeakageResult]:
         """
-        TODO: Rename detect_offline
+        Detect Leakage in an "offline" (historical) manner.
         Detect Leakages on never before seen data. (BenchmarkData)
 
         This method should return an array of leakages.
@@ -166,15 +168,14 @@ class LDIMMethodBase(ABC):
         raise NotImplementedError("Please Implement this method")
 
     @abstractmethod
-    def detect_datapoint(self, evaluation_data) -> BenchmarkLeakageResult:
+    def detect_online(self, evaluation_data) -> BenchmarkLeakageResult:
         """
-        TODO: Rename detect_online
-        Detect Leakage on never before seen datapoint.
-        This method is called multiple times for each datapoint in the evaluation data.
-        It is your responsibility to store the new datapoint, if you want to use it for refinining your model.
+        Detect Leakage in an "online" (real-time) manner.
+        This method is called multiple times for each data point in the evaluation data.
+        It is your responsibility to store the new data point, if you want to use it for refining your model.
 
         The Model will still be initialized by calling the `train()` Method (with the Train Dataset) before.
 
-        This method should return a single BenchmarkLeakageResult or None if there is no leak at this datapoint.
+        This method should return a single BenchmarkLeakageResult or None if there is no leak at this data point.
         """
         raise NotImplementedError("Please Implement this method")

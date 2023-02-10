@@ -99,7 +99,7 @@ def test_method(mocked_dataset1: Dataset):
 
     method = YourCustomLDIMMethod()
     method.train(trainData)
-    method.detect(evaluationData)
+    method.detect_offline(evaluationData)
     pass
 
 

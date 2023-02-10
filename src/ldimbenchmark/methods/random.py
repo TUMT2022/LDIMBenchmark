@@ -43,10 +43,12 @@ class RandomMethod(LDIMMethodBase):
     def train(self, train_data: BenchmarkData) -> None:
         return
 
-    def detect(self, evaluation_data: BenchmarkData) -> List[BenchmarkLeakageResult]:
+    def detect_offline(
+        self, evaluation_data: BenchmarkData
+    ) -> List[BenchmarkLeakageResult]:
         return []
 
-    def detect_datapoint(self, evaluation_data) -> Union[BenchmarkLeakageResult, None]:
+    def detect_online(self, evaluation_data) -> Union[BenchmarkLeakageResult, None]:
         # TODO: Update keys to conform to new schema
         if random() < 0.5:
             return BenchmarkLeakageResult(

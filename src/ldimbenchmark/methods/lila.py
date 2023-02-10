@@ -119,7 +119,9 @@ class LILA(LDIMMethodBase):
 
             ref_node.set_models(models)
 
-    def detect(self, evaluation_data: BenchmarkData) -> List[BenchmarkLeakageResult]:
+    def detect_offline(
+        self, evaluation_data: BenchmarkData
+    ) -> List[BenchmarkLeakageResult]:
         scada_data = SCADA_data()
 
         simple_evaluation_data = simplifyBenchmarkData(
@@ -228,7 +230,7 @@ class LILA(LDIMMethodBase):
             )
         return results
 
-    def detect_datapoint(self, evaluation_data) -> BenchmarkLeakageResult:
+    def detect_online(self, evaluation_data) -> BenchmarkLeakageResult:
         scada_data = SCADA_data()
 
         scada_data.pressures = evaluation_data.pressures

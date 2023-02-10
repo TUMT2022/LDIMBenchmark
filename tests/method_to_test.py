@@ -18,13 +18,13 @@ class YourCustomLDIMMethod(LDIMMethodBase):
             metadata=MethodMetadata(
                 data_needed=["pressures", "demands", "flows", "levels"],
                 hyperparameters=[],
-            )
+            ),
         )
 
     def train(self, data: BenchmarkData):
         pass
 
-    def detect(self, data: BenchmarkData) -> List[BenchmarkLeakageResult]:
+    def detect_offline(self, data: BenchmarkData) -> List[BenchmarkLeakageResult]:
         return [
             {
                 "leak_start": "2020-01-01",
@@ -34,7 +34,7 @@ class YourCustomLDIMMethod(LDIMMethodBase):
             }
         ]
 
-    def detect_datapoint(self, evaluation_data) -> BenchmarkLeakageResult:
+    def detect_online(self, evaluation_data) -> BenchmarkLeakageResult:
         return {}
 
 

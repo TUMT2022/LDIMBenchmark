@@ -124,7 +124,9 @@ class DUALMethod(LDIMMethodBase):
 
         # TODO: Refine the model with the training data...
 
-    def detect(self, evaluation_data: BenchmarkData) -> List[BenchmarkLeakageResult]:
+    def detect_offline(
+        self, evaluation_data: BenchmarkData
+    ) -> List[BenchmarkLeakageResult]:
         pressure_sensors_with_data = evaluation_data.pressures.keys()
         pipelist = list(
             filter(
@@ -297,7 +299,7 @@ class DUALMethod(LDIMMethodBase):
 
         return results
 
-    def detect_datapoint(self, evaluation_data) -> BenchmarkLeakageResult:
+    def detect_online(self, evaluation_data) -> BenchmarkLeakageResult:
         return None
 
 

@@ -62,7 +62,7 @@ class MNF(LDIMMethodBase):
 
         pass
 
-    def detect(self, evaluation_data: BenchmarkData):
+    def detect_offline(self, evaluation_data: BenchmarkData):
         window = pd.Timedelta(days=self.hyperparameters["window"])
         gamma: float = self.hyperparameters["gamma"]
 
@@ -209,5 +209,5 @@ class MNF(LDIMMethodBase):
             )
         return results
 
-    def detect_datapoint(self, evaluation_data):
+    def detect_online(self, evaluation_data):
         pass
