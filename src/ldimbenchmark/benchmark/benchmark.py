@@ -1,6 +1,6 @@
 from ldimbenchmark.benchmark.runners import DockerMethodRunner, LocalMethodRunner
 from ldimbenchmark.benchmark.runners.BaseMethodRunner import MethodRunner
-from ldimbenchmark.datasets import Dataset, LoadedDataset
+from ldimbenchmark.datasets import Dataset
 from ldimbenchmark.classes import BenchmarkData
 from abc import ABC, abstractmethod
 import pandas as pd
@@ -22,7 +22,6 @@ import hashlib
 import matplotlib.pyplot as plt
 from multiprocessing import Pool, cpu_count
 from tqdm import tqdm
-from ldimbenchmark.datasets.classes import BenchmarkDatasets
 from ldimbenchmark.evaluation_metrics import (
     precision,
     recall,
@@ -49,9 +48,7 @@ class LDIMBenchmark:
         results_dir: str = None,
         cache_dir: str = LDIM_BENCHMARK_CACHE_DIR,
     ):
-        # validate dataset types and edit them to LoadedDataset
         self.hyperparameters: dict = hyperparameters
-        # validate dataset types and edit them to LoadedDataset
         if not isinstance(datasets, list):
             datasets = [datasets]
         self.datasets: List[Dataset] = datasets
@@ -205,14 +202,12 @@ class LDIMBenchmark:
         loaded_datasets = {}
         for dataset in self.datasets:
             if type(dataset) is str:
-                loaded = Dataset(dataset).loadDataset().loadBenchmarkData()
-            elif type(dataset) is LoadedDataset:
-                loaded = dataset.loadBenchmarkData()
-            elif type(dataset) is BenchmarkDatasets:
-                loaded = dataset
+                loaded = Dataset(dataset)
             else:
-                loaded = dataset.loadDataset().loadBenchmarkData()
-            loaded_datasets[dataset.id] = loaded
+                loaded = dataset
+
+            # TODO: Check if cached, if not cache before
+            loaded_datasets[dataset.id] = loaded.loadData()
 
         results = []
         for experiment_result in [

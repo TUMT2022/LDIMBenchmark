@@ -9,7 +9,7 @@ import pandas as pd
 import yaml
 from ldimbenchmark.benchmark.runners.BaseMethodRunner import MethodRunner
 from ldimbenchmark.classes import BenchmarkLeakageResult, LDIMMethodBase
-from ldimbenchmark.datasets.classes import BenchmarkDatasets, Dataset, LoadedDataset
+from ldimbenchmark.datasets.classes import Dataset
 
 
 class LocalMethodRunner(MethodRunner):
@@ -109,15 +109,12 @@ class LocalMethodRunner(MethodRunner):
             debug=debug,
         )
         logging.info("Loading Datasets")
-        # TODO: Refactor DatasetClasses into globally cached object
         if type(dataset) is str:
-            self.dataset = Dataset(dataset).loadDataset().loadBenchmarkData()
-        elif type(dataset) is LoadedDataset:
-            self.dataset = dataset.loadBenchmarkData()
-        elif type(dataset) is BenchmarkDatasets:
-            self.dataset = dataset
+            self.dataset = Dataset(dataset)
         else:
-            self.dataset = dataset.loadDataset().loadBenchmarkData()
+            dataset.loadData()
+            dataset.loadBenchmarkData()
+            self.dataset = dataset
         logging.info("Loading Datasets - FINISH")
         self.detection_method = detection_method
 

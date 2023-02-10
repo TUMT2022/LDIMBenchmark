@@ -41,21 +41,23 @@ def change_log_level(request):
 @pytest.fixture
 def mocked_dataset1():
     os.makedirs(TEST_DATA_FOLDER_DATASETS_TEST, exist_ok=True)
-    temp_dir = tempfile.TemporaryDirectory(dir=TEST_DATA_FOLDER_DATASETS_TEST_TIME)
-    with open(temp_dir.name + "/dataset_info.yaml", "w") as f:
+    # temp_dir = tempfile.TemporaryDirectory(dir=TEST_DATA_FOLDER_DATASETS_TEST)
+    # dataset_path = temp_dir.name
+    dataset_path = TEST_DATA_FOLDER_DATASETS_TEST
+    with open(os.path.join(dataset_path, "dataset_info.yaml"), "w") as f:
         f.write(
             yaml.dump(
                 DatasetInfo(
                     name="test",
                     inp_file="model.inp",
                     dataset=DatasetInfoDatasetProperty(
-                        evaluation=DatasetInfoDatasetObject(
-                            start="2018-01-01 00:10:00",
-                            end="2018-01-01 00:19:00",
-                        ),
                         training=DatasetInfoDatasetObject(
                             start="2018-01-01 00:00:00",
                             end="2018-01-1 00:09:00",
+                        ),
+                        evaluation=DatasetInfoDatasetObject(
+                            start="2018-01-01 00:10:00",
+                            end="2018-01-01 00:19:00",
                         ),
                     ),
                 )
@@ -63,14 +65,19 @@ def mocked_dataset1():
         )
     # Datapoints
     for dataset in ["demands", "levels", "flows", "pressures"]:
-        pd.DataFrame(
-            {
-                "a": np.ones(20),
-            },
-            index=pd.date_range(
-                start="2018-01-01 00:00:00", end="2018-01-01 00:19:00", freq="T"
-            ),
-        ).to_csv(temp_dir.name + "/" + dataset + ".csv", index_label="Timestamp")
+        os.makedirs(os.path.join(dataset_path, dataset), exist_ok=True)
+        for sensor in ["a", "b"]:
+            pd.DataFrame(
+                {
+                    sensor: np.ones(20),
+                },
+                index=pd.date_range(
+                    start="2018-01-01 00:00:00", end="2018-01-01 00:19:00", freq="T"
+                ),
+            ).to_csv(
+                os.path.join(dataset_path, dataset, f"{sensor}.csv"),
+                index_label="Timestamp",
+            )
 
     # Leaks
     pd.DataFrame(
@@ -85,31 +92,33 @@ def mocked_dataset1():
             "leak_max_flow": 0.1,
         },
         index=[0],
-    ).to_csv(temp_dir.name + "/leaks.csv")
+    ).to_csv(os.path.join(dataset_path, "leaks.csv"))
 
-    write_inpfile(generatePoulakisNetwork(), temp_dir.name + "/model.inp")
-    yield Dataset(temp_dir.name)
+    write_inpfile(generatePoulakisNetwork(), os.path.join(dataset_path, "model.inp"))
+    yield Dataset(dataset_path)
     # temp_dir.cleanup()
 
 
 @pytest.fixture
 def mocked_dataset_time():
     os.makedirs(TEST_DATA_FOLDER_DATASETS_TEST_TIME, exist_ok=True)
-    temp_dir = tempfile.TemporaryDirectory(dir=TEST_DATA_FOLDER_DATASETS_TEST_TIME)
-    with open(temp_dir.name + "/dataset_info.yaml", "w") as f:
+    # temp_dir = tempfile.TemporaryDirectory(dir=TEST_DATA_FOLDER_DATASETS_TEST_TIME)
+    # dataset_path = temp_dir.name
+    dataset_path = TEST_DATA_FOLDER_DATASETS_TEST_TIME
+    with open(os.path.join(dataset_path, "dataset_info.yaml"), "w") as f:
         f.write(
             yaml.dump(
                 DatasetInfo(
                     name="test",
                     inp_file="model.inp",
                     dataset=DatasetInfoDatasetProperty(
-                        evaluation=DatasetInfoDatasetObject(
-                            start="2018-01-01 00:10:00",
-                            end="2018-01-01 00:19:00",
-                        ),
                         training=DatasetInfoDatasetObject(
                             start="2018-01-01 00:00:00",
                             end="2018-01-1 00:09:00",
+                        ),
+                        evaluation=DatasetInfoDatasetObject(
+                            start="2018-01-01 00:10:00",
+                            end="2018-01-01 00:19:00",
                         ),
                     ),
                 )
@@ -117,14 +126,19 @@ def mocked_dataset_time():
         )
     # Datapoints
     for dataset in ["demands", "levels", "flows", "pressures"]:
-        pd.DataFrame(
-            {
-                "a": range(20),
-            },
-            index=pd.date_range(
-                start="2018-01-01 00:00:00", end="2018-01-01 00:19:00", freq="T"
-            ),
-        ).to_csv(temp_dir.name + "/" + dataset + ".csv", index_label="Timestamp")
+        os.makedirs(os.path.join(dataset_path, dataset), exist_ok=True)
+        for sensor in ["a", "b"]:
+            pd.DataFrame(
+                {
+                    sensor: range(20),
+                },
+                index=pd.date_range(
+                    start="2018-01-01 00:00:00", end="2018-01-01 00:19:00", freq="T"
+                ),
+            ).to_csv(
+                os.path.join(dataset_path, dataset, f"{sensor}.csv"),
+                index_label="Timestamp",
+            )
 
     # Leaks
     pd.DataFrame(
@@ -139,8 +153,8 @@ def mocked_dataset_time():
             "leak_max_flow": 0.1,
         },
         index=[0],
-    ).to_csv(temp_dir.name + "/leaks.csv")
+    ).to_csv(os.path.join(dataset_path, "leaks.csv"))
 
-    write_inpfile(generatePoulakisNetwork(), temp_dir.name + "/model.inp")
-    yield Dataset(temp_dir.name)
+    write_inpfile(generatePoulakisNetwork(), os.path.join(dataset_path, "model.inp"))
+    yield Dataset(dataset_path)
     # temp_dir.cleanup()

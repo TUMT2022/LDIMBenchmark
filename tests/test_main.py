@@ -91,10 +91,10 @@ def test_single_run_local(mocked_dataset1: Dataset):
 
 def test_method(mocked_dataset1: Dataset):
     trainData = (
-        mocked_dataset1.loadDataset().loadBenchmarkData().getTrainingBenchmarkData()
+        mocked_dataset1.loadData().loadBenchmarkData().getTrainingBenchmarkData()
     )
     evaluationData = (
-        mocked_dataset1.loadDataset().loadBenchmarkData().getEvaluationBenchmarkData()
+        mocked_dataset1.loadData().loadBenchmarkData().getEvaluationBenchmarkData()
     )
 
     method = YourCustomLDIMMethod()

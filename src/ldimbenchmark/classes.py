@@ -20,7 +20,7 @@ class BenchmarkData:
         dmas: Dict[str, List[str]],
     ):
         """
-        Hello
+        Initialize the BenchmarkData object.
         """
         self.pressures = pressures
         """Pressures of the System."""

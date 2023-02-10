@@ -17,6 +17,8 @@ from pandas import Timestamp
 import numpy as np
 import pandas as pd
 
+from ldimbenchmark.utilities import simplifyBenchmarkData
+
 
 class MNF(LDIMMethodBase):
     """
@@ -55,35 +57,40 @@ class MNF(LDIMMethodBase):
         )
 
     def train(self, train_data: BenchmarkData):
-        self.train_Data = train_data
+        # self.train_Data = train_data
+        self.simple_train_data = simplifyBenchmarkData(train_data)
+
         pass
 
     def detect(self, evaluation_data: BenchmarkData):
         window = pd.Timedelta(days=self.hyperparameters["window"])
         gamma: float = self.hyperparameters["gamma"]
 
+        simple_evaluation_data = simplifyBenchmarkData(evaluation_data)
+
         if (
-            evaluation_data.flows.index[-1] - evaluation_data.flows.index[0]
+            simple_evaluation_data.flows.index[-1]
+            - simple_evaluation_data.flows.index[0]
             < 3 * window
         ):
             return []
 
-        evaluation_start_date = Timestamp = evaluation_data.flows.index[0]
+        evaluation_start_date = Timestamp = simple_evaluation_data.flows.index[0]
 
-        start_date: Timestamp = evaluation_data.flows.index[0].replace(
+        start_date: Timestamp = simple_evaluation_data.flows.index[0].replace(
             hour=12, minute=0, second=0, microsecond=0, nanosecond=0
         )
         # TODO: find better cut interval function
-        end_date: Timestamp = evaluation_data.flows.index[-100].replace(
+        end_date: Timestamp = simple_evaluation_data.flows.index[-100].replace(
             hour=12, minute=0, second=0, microsecond=0, nanosecond=0
         )
-        previous_data = self.train_Data.flows
+        previous_data = self.simple_train_data.flows
         mask = (previous_data.index >= (start_date - window)) & (
             previous_data.index < evaluation_start_date
         )
-        previous_data = self.train_Data.flows.loc[mask]
+        previous_data = self.simple_train_data.flows.loc[mask]
 
-        all_flows = pd.concat([previous_data, evaluation_data.flows], axis=0)
+        all_flows = pd.concat([previous_data, simple_evaluation_data.flows], axis=0)
         all_flows = all_flows.loc[all_flows.index < end_date]
         # TODO: For now lets say it starts at noon
         hour_24_end = start_date + timedelta(days=1)

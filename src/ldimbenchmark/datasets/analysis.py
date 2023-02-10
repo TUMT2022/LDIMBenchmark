@@ -40,7 +40,7 @@ class DatasetAnalyzer:
 
         loaded_datasets = {}
         for dataset in dataset_list:
-            loadedDataset = dataset.loadDataset()
+            loadedDataset = dataset.loadData()
             loaded_datasets[dataset.id] = loadedDataset
 
         original_dataset = loaded_datasets[original_dataset_id]
@@ -125,34 +125,37 @@ class DatasetAnalyzer:
         network_model_details_fine = {}
 
         for dataset in dataset_list:
-            loadedDataset = dataset.loadDataset()
-            datasets_table[dataset.id] = pd.json_normalize(loadedDataset.info)
+            datasets_table[dataset.id] = pd.json_normalize(dataset.info)
 
             network_model_details[dataset.id] = pd.json_normalize(
-                loadedDataset.model.describe()
+                dataset.model.describe()
             )
             network_model_details_medium[dataset.id] = pd.json_normalize(
-                loadedDataset.model.describe(1)
+                dataset.model.describe(1)
             )
             network_model_details_fine[dataset.id] = pd.json_normalize(
-                loadedDataset.model.describe(2)
+                dataset.model.describe(2)
             )
 
             dataset_analysis_out_dir = os.path.join(self.analyisis_out_dir, dataset.id)
             os.makedirs(dataset_analysis_out_dir, exist_ok=True)
 
+            dataset.loadData()
             # Plot each time series
             for data_name in ["demands", "pressures", "flows", "levels"]:
-                data = getattr(loadedDataset, data_name)
-                if data.shape[1] > 0:
-                    DatasetAnalyzer._plot_time_series(
-                        data, f"{dataset.id}: {data_name}", dataset_analysis_out_dir
-                    )
+                data_group = getattr(dataset, data_name)
+                for sensor_name, sensor_data in data_group.items():
+                    if sensor_data.shape[1] > 0:
+                        DatasetAnalyzer._plot_time_series(
+                            sensor_data,
+                            f"{dataset.id}: {data_name}",
+                            dataset_analysis_out_dir,
+                        )
 
             # Plot Network
             fig, ax = plt.subplots(1, 1, figsize=(60, 40))
             ax = wntr.graphics.plot_network(
-                loadedDataset.model,
+                dataset.model,
                 ax=ax,
                 node_size=10,
                 title=f"{dataset} Network",

@@ -1,5 +1,7 @@
 import os
 
+from pandas import DataFrame
+
 from ldimbenchmark.datasets import Dataset
 
 import numpy as np
@@ -89,7 +91,7 @@ class DatasetDerivator:
                     )
 
                     if not os.path.exists(derivedDatasetPath):
-                        loadedDataset = this_dataset.loadDataset()
+                        loadedDataset = this_dataset.loadData()
 
                         # Derive
                         junctions = loadedDataset.model.junction_name_list
@@ -175,34 +177,17 @@ class DatasetDerivator:
                 derivedDatasetPath = os.path.join(self.out_path, this_dataset.id + "/")
 
                 if not os.path.exists(derivedDatasetPath) or self.force:
-                    loadedDataset = this_dataset.loadDataset()
-                    data = getattr(loadedDataset, apply_to)
-                    if derivation == "precision":
-                        noise = self.__get_random_norm(value, data.index.shape)
-                        data = data.mul(1 + noise, axis=0)
+                    loadedDataset = this_dataset.loadData()
 
-                    if derivation == "sensitivity":
-                        shift = value["value"]
-                        if value["shift"] == "bottom":
-                            shift = 0
-                        if value["shift"] == "middle":
-                            shift = value["value"] / 2
-                        data = np.divmod(data, value["value"])[0] + shift
+                    datasets = getattr(loadedDataset, apply_to)
+                    for key in datasets.keys():
 
-                    if derivation == "downsample":
+                        transformed_data = self._apply_derivation_to_DataFrame(
+                            derivation, value, datasets[key]
+                        )
+                        datasets[key] = transformed_data
 
-                        data = data.reset_index()
-                        data = data.groupby(
-                            (
-                                data["Timestamp"] - data["Timestamp"][0]
-                            ).dt.total_seconds()
-                            // (value),
-                            group_keys=True,
-                        ).first()
-
-                        data = data.set_index("Timestamp")
-
-                    setattr(loadedDataset, apply_to, data)
+                    setattr(loadedDataset, apply_to, datasets)
 
                     os.makedirs(os.path.dirname(derivedDatasetPath), exist_ok=True)
                     loadedDataset.exportTo(derivedDatasetPath)
@@ -259,3 +244,38 @@ class DatasetDerivator:
             size,
             random_state=self.random_gen,
         )
+
+    def _apply_derivation_to_DataFrame(
+        self,
+        derivation: Literal["precision", "sensitivity", "downsample"],
+        value: float,
+        dataframe: DataFrame,
+    ) -> DataFrame:
+        match derivation:
+            case "precision":
+                noise = self.__get_random_norm(value, dataframe.index.shape)
+                dataframe = dataframe.mul(1 + noise, axis=0)
+
+            case "sensitivity":
+                shift = value["value"]
+                if value["shift"] == "bottom":
+                    shift = 0
+                if value["shift"] == "middle":
+                    shift = value["value"] / 2
+                dataframe = np.divmod(dataframe, value["value"])[0] + shift
+
+            case "downsample":
+                dataframe = dataframe.reset_index()
+                dataframe = dataframe.groupby(
+                    (
+                        dataframe["Timestamp"] - dataframe["Timestamp"][0]
+                    ).dt.total_seconds()
+                    // (value),
+                    group_keys=True,
+                ).first()
+                dataframe = dataframe.set_index("Timestamp")
+
+            case _:
+                raise ValueError(f"Derivation {derivation} not implemented")
+
+        return dataframe

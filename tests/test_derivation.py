@@ -24,31 +24,24 @@ def test_derivator_model(snapshot, mocked_dataset1: Dataset):
     derivedDatasets = derivator.derive_model(
         "junctions", "elevation", "accuracy", [0.1]
     )
-    snapshot.assert_match(to_dict(derivedDatasets[0].loadDataset().model))
-
-
-# def test_derivator_data():
-#     dataset = Dataset(TEST_DATA_FOLDER_BATTLEDIM)
-
-#     derivator = DatasetDerivator([dataset], TEST_DATA_FOLDER_DATASETS)
-
-#     derivator.derive_data("demands", "noise", [0.1, 0.2, 0.3])
+    snapshot.assert_match(to_dict(derivedDatasets[0].model))
 
 
 def test_derivator_data_demands(snapshot, mocked_dataset1: Dataset):
     """Testing Derivation for data: demands (and no others)"""
     derivator = DatasetDerivator([mocked_dataset1], TEST_DATA_FOLDER_DATASETS)
     derivedDatasets = derivator.derive_data("demands", "precision", [0.1])
-    snapshot.assert_match(derivedDatasets[0].loadDataset().demands.to_csv())
+    snapshot.assert_match(derivedDatasets[0].loadData().demands["a"].to_csv())
     assert_frame_equal(
-        mocked_dataset1.loadDataset().flows, derivedDatasets[0].loadDataset().flows
+        mocked_dataset1.loadData().flows["a"], derivedDatasets[0].loadData().flows["a"]
     )
     assert_frame_equal(
-        mocked_dataset1.loadDataset().levels, derivedDatasets[0].loadDataset().levels
+        mocked_dataset1.loadData().levels["a"],
+        derivedDatasets[0].loadData().levels["a"],
     )
     assert_frame_equal(
-        mocked_dataset1.loadDataset().pressures,
-        derivedDatasets[0].loadDataset().pressures,
+        mocked_dataset1.loadData().pressures["a"],
+        derivedDatasets[0].loadData().pressures["a"],
     )
 
 
@@ -56,16 +49,17 @@ def test_derivator_data_pressures(snapshot, mocked_dataset1: Dataset):
     """Testing Derivation for data: pressures (and no others)"""
     derivator = DatasetDerivator([mocked_dataset1], TEST_DATA_FOLDER_DATASETS)
     derivedDatasets = derivator.derive_data("pressures", "precision", [0.1])
-    snapshot.assert_match(derivedDatasets[0].loadDataset().pressures.to_csv())
+    snapshot.assert_match(derivedDatasets[0].loadData().pressures["a"].to_csv())
     assert_frame_equal(
-        mocked_dataset1.loadDataset().flows, derivedDatasets[0].loadDataset().flows
+        mocked_dataset1.loadData().flows["a"], derivedDatasets[0].loadData().flows["a"]
     )
     assert_frame_equal(
-        mocked_dataset1.loadDataset().levels, derivedDatasets[0].loadDataset().levels
+        mocked_dataset1.loadData().levels["a"],
+        derivedDatasets[0].loadData().levels["a"],
     )
     assert_frame_equal(
-        mocked_dataset1.loadDataset().demands,
-        derivedDatasets[0].loadDataset().demands,
+        mocked_dataset1.loadData().demands["a"],
+        derivedDatasets[0].loadData().demands["a"],
     )
 
 
@@ -73,16 +67,18 @@ def test_derivator_data_flows(snapshot, mocked_dataset1: Dataset):
     """Testing Derivation for data: flows (and no others)"""
     derivator = DatasetDerivator([mocked_dataset1], TEST_DATA_FOLDER_DATASETS)
     derivedDatasets = derivator.derive_data("flows", "precision", [0.1])
-    snapshot.assert_match(derivedDatasets[0].loadDataset().flows.to_csv())
+    snapshot.assert_match(derivedDatasets[0].loadData().flows["a"].to_csv())
     assert_frame_equal(
-        mocked_dataset1.loadDataset().demands, derivedDatasets[0].loadDataset().demands
+        mocked_dataset1.loadData().demands["a"],
+        derivedDatasets[0].loadData().demands["a"],
     )
     assert_frame_equal(
-        mocked_dataset1.loadDataset().levels, derivedDatasets[0].loadDataset().levels
+        mocked_dataset1.loadData().levels["a"],
+        derivedDatasets[0].loadData().levels["a"],
     )
     assert_frame_equal(
-        mocked_dataset1.loadDataset().pressures,
-        derivedDatasets[0].loadDataset().pressures,
+        mocked_dataset1.loadData().pressures["a"],
+        derivedDatasets[0].loadData().pressures["a"],
     )
 
 
@@ -90,16 +86,17 @@ def test_derivator_data_levels(snapshot, mocked_dataset1: Dataset):
     """Testing Derivation for data: levels (and no others)"""
     derivator = DatasetDerivator([mocked_dataset1], TEST_DATA_FOLDER_DATASETS)
     derivedDatasets = derivator.derive_data("levels", "precision", [0.1])
-    snapshot.assert_match(derivedDatasets[0].loadDataset().levels.to_csv())
+    snapshot.assert_match(derivedDatasets[0].loadData().levels["a"].to_csv())
     assert_frame_equal(
-        mocked_dataset1.loadDataset().flows, derivedDatasets[0].loadDataset().flows
+        mocked_dataset1.loadData().flows["a"], derivedDatasets[0].loadData().flows["a"]
     )
     assert_frame_equal(
-        mocked_dataset1.loadDataset().demands, derivedDatasets[0].loadDataset().demands
+        mocked_dataset1.loadData().demands["a"],
+        derivedDatasets[0].loadData().demands["a"],
     )
     assert_frame_equal(
-        mocked_dataset1.loadDataset().pressures,
-        derivedDatasets[0].loadDataset().pressures,
+        mocked_dataset1.loadData().pressures["a"],
+        derivedDatasets[0].loadData().pressures["a"],
     )
 
 
@@ -109,15 +106,16 @@ def test_derivator_data_sampling(snapshot, mocked_dataset_time: Dataset):
         [mocked_dataset_time], TEST_DATA_FOLDER_DATASETS, force=True
     )
     derivedDatasets = derivator.derive_data("levels", "downsample", [540])
-    snapshot.assert_match(derivedDatasets[0].loadDataset().levels.to_csv())
+    snapshot.assert_match(derivedDatasets[0].loadData().levels["a"].to_csv())
     assert_frame_equal(
-        mocked_dataset_time.loadDataset().flows, derivedDatasets[0].loadDataset().flows
+        mocked_dataset_time.loadData().flows["a"],
+        derivedDatasets[0].loadData().flows["a"],
     )
     assert_frame_equal(
-        mocked_dataset_time.loadDataset().demands,
-        derivedDatasets[0].loadDataset().demands,
+        mocked_dataset_time.loadData().demands["a"],
+        derivedDatasets[0].loadData().demands["a"],
     )
     assert_frame_equal(
-        mocked_dataset_time.loadDataset().pressures,
-        derivedDatasets[0].loadDataset().pressures,
+        mocked_dataset_time.loadData().pressures["a"],
+        derivedDatasets[0].loadData().pressures["a"],
     )

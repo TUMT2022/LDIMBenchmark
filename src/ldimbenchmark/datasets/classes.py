@@ -1,3 +1,4 @@
+from multiprocessing import Pool, cpu_count
 import numpy as np
 import pandas as pd
 import os
@@ -19,6 +20,7 @@ from pandas import DataFrame
 import json
 import hashlib
 import logging
+import copy
 
 
 class DatasetInfoDatasetOverwrites(TypedDict):
@@ -67,30 +69,128 @@ class DatasetInfo(TypedDict):
     derivations: DatasetInfoDerivations
 
 
+class _LoadedDatasetPartNew:
+    """
+    A sub-dataset of a loaded dataset (e.g. training or evaluation)
+    """
+
+    def __init__(self, dict: Dict[str, DataFrame]):
+        self.pressures: Dict[str, DataFrame] = dict["pressures"]
+        self.demands: Dict[str, DataFrame] = dict["demands"]
+        self.flows: Dict[str, DataFrame] = dict["flows"]
+        self.levels: Dict[str, DataFrame] = dict["levels"]
+        self.leaks: DataFrame = dict["leaks"]
+
+
+def write_to_csv(dataframe, file_path):
+    dataframe.to_csv(file_path, index=True, header=True)
+
+
+def parse_frame_dates(frame):
+    frame.index = pd.to_datetime(frame.index)
+    return frame
+
+
+def loadDatasetsDirectly(
+    dataset_path: str, dataset_info: DatasetInfo
+) -> _LoadedDatasetPartNew:
+    """
+    Load the dataset directly from the files.
+    """
+    datasets = {}
+
+    # TODO: Run checks as to confirm that the dataset_info.yaml information are right
+    # eg. check start and end times
+
+    data_dirs = ["demands", "flows", "levels", "pressures"]
+    for data_dir in data_dirs:
+        data_dir_in_dataset_dir = os.path.join(dataset_path, data_dir)
+        if not os.path.exists(data_dir_in_dataset_dir):
+            raise FileNotFoundError(
+                f"Could not find the {data_dir} directory in the dataset directory"
+            )
+        datasets[data_dir] = {}
+        for sensor_readings_file in glob(
+            os.path.join(data_dir_in_dataset_dir + "/" + "*.csv")
+        ):
+            d = pd.read_csv(
+                sensor_readings_file,
+                index_col="Timestamp",
+                chunksize=100000,
+            )
+            frames = Pool(processes=cpu_count() - 1).imap_unordered(
+                parse_frame_dates, d
+            )
+            sensor_readings = pd.concat(frames)
+
+            datasets[data_dir][
+                os.path.basename(sensor_readings_file)[:-4]
+            ] = sensor_readings
+
+    datasets["leaks"] = pd.read_csv(
+        os.path.join(dataset_path, "leaks.csv"),
+        parse_dates=True,
+    )
+
+    return _LoadedDatasetPartNew(datasets)
+
+
 class Dataset:
     """
-    The lighweight dataset class (no data loaded)
+    The dataset class.
+    Loads data lazily and caches it.
+
+        Config values Example:
+            dataset:
+                evaluation:
+                    start: 2019-01-01 00:00
+                    end: 2019-12-31 23:55
+                training:
+                    start: 2018-01-01 00:00
+                    end: 2019-12-31 23:55
+    See :class:`~ldimbenchmark.datasets.classes.DatasetInfo` for the all configuration option.
+
+    This is an Adapter for loading the Datasets in the Dataset Format specified in the Design.
+    It converts and represents the Low Level Interface for the LDIMBenchmark.
     """
 
     def __init__(self, path):
         """
-        :param path: Path to the dataset (or where to download it)
+        :param path: Path to the dataset folder
         """
 
         self.path = path
+        path_to_dataset_info = os.path.join(self.path, "dataset_info.yaml")
         # Read dataset_info.yaml
-        with open(os.path.join(path, "dataset_info.yaml")) as f:
-            self.info: DatasetInfo = yaml.safe_load(f)
-            if "overwrites" not in self.info["dataset"]:
-                self.info["dataset"]["overwrites"] = {}
+        if os.path.isfile(path_to_dataset_info):
+            # file exists
+            with open(path_to_dataset_info) as f:
+                self.info: DatasetInfo = yaml.safe_load(f)
+                if "overwrites" not in self.info["dataset"]:
+                    self.info["dataset"]["overwrites"] = {}
+        else:
+            raise Exception(
+                f"No dataset_info.yaml file found! (not at: '{path_to_dataset_info}')"
+            )
 
         self.name = self.info["name"]
         self._update_id()
 
-    def loadDataset(self):
-        return LoadedDataset(self)
+        self.model = read_inpfile(os.path.join(self.path, self.info["inp_file"]))
+        dma_path = os.path.join(self.path, "dmas.json")
+        if os.path.isfile(dma_path):
+            # file exists
+            with open(dma_path, "r") as f:
+                self.dmas = json.load(f)
+        else:
+            logging.warning("No dmas.json file found. Skipping loading of DMAs.")
+            self.dmas = None
 
     def _update_id(self):
+        """
+        Sets the id (hash) according to the information in "dataset_info.yaml"
+        """
+
         if "derivations" in self.info:
             derivations_hash = (
                 "-"
@@ -102,122 +202,85 @@ class Dataset:
             derivations_hash = ""
         self.id = self.info["name"] + derivations_hash
 
+    ######
+    # Getters and Setters with direct lazy loading because they
+    ######
 
-class _LoadedDatasetPart:
-    """
-    A sub-dataset of a loaded dataset (e.g. training or evaluation)
-    """
+    @property
+    def pressures(self) -> DataFrame:
+        if self.full_dataset_part.pressures is None:
+            raise Exception("Call `loadData()` before accessing pressure data.")
+        return self.full_dataset_part.pressures
 
-    def __init__(self, dict: Dict[str, DataFrame]):
-        self.pressures: DataFrame = dict["pressures"]
-        self.demands: DataFrame = dict["demands"]
-        self.flows: DataFrame = dict["flows"]
-        self.levels: DataFrame = dict["levels"]
-        self.leaks: DataFrame = dict["leaks"]
+    @pressures.setter
+    def pressures(self, pressures: DataFrame):
+        if self.full_dataset_part.pressures is None:
+            raise Exception("Call `loadData()` before accessing pressure data.")
+        self.full_dataset_part.pressures = pressures
 
+    @property
+    def demands(self) -> DataFrame:
+        if self.full_dataset_part.demands is None:
+            raise Exception("Call `loadData()` before accessing demand data.")
+        return self.full_dataset_part.demands
 
-class LoadedDataset(Dataset, _LoadedDatasetPart):
-    """
-    The heavy dataset class (data loaded)
-    Represents the Low Level Interface as Code + Some Convience Methods
-    """
+    @demands.setter
+    def demands(self, demands: DataFrame):
+        if self.full_dataset_part.demands is None:
+            raise Exception("Call `loadData()` before accessing demand data.")
+        self.full_dataset_part.demands = demands
 
-    def __init__(self, dataset: Dataset):
-        """
-        Loads a dataset from a given path.
-        Config values Example:
-            dataset:
-                evaluation:
-                    start: 2019-01-01 00:00
-                    end: 2019-12-31 23:55
-                    overwrites:
-                    filePath: "2019"
-                    index_column: Timestamp
-                    delimiter: ;
-                    decimal: ','
-                training:
-                    start: 2018-01-01 00:00
-                    end: 2019-12-31 23:55
-                    overwrites:
-                    filePath: "2018"
-                    index_column: Timestamp
-                    delimiter: ;
-                    decimal: ','
-        """
-        # Keep already loaded data
-        self.path = dataset.path
-        self.name = dataset.name
-        self.info = dataset.info
-        self.id = dataset.id
+    @property
+    def flows(self) -> DataFrame:
+        if self.full_dataset_part.flows is None:
+            raise Exception("Call `loadData()` before accessing flow data.")
+        return self.full_dataset_part.flows
 
-        super(Dataset, self).__init__(
-            dict=DatasetTransformer._loadDatasetsDirectly(
-                dataset.path, self.info["dataset"]["overwrites"]
-            )
-        )
+    @flows.setter
+    def flows(self, flows: DataFrame):
+        if self.full_dataset_part.flows is None:
+            raise Exception("Call `loadData()` before accessing flow data.")
+        self.full_dataset_part.flows = flows
 
+    @property
+    def levels(self) -> DataFrame:
+        if self.full_dataset_part.levels is None:
+            raise Exception("Call `loadData()` before accessing level data.")
+        return self.full_dataset_part.levels
+
+    @levels.setter
+    def levels(self, levels: DataFrame):
+        if self.full_dataset_part.levels is None:
+            raise Exception("Call `loadData()` before accessing level data.")
+        self.full_dataset_part.levels = levels
+
+    @property
+    def leaks(self) -> DataFrame:
+        if self.full_dataset_part.leaks is None:
+            raise Exception("Call `loadData()` before accessing leak data.")
+        return self.full_dataset_part.leaks
+
+    @leaks.setter
+    def leaks(self, leaks: DataFrame):
+        if self.full_dataset_part.leaks is None:
+            raise Exception("Call `loadData()` before accessing leak data.")
+        self.full_dataset_part.leaks = leaks
+
+    def loadData(self):
+        self.full_dataset_part = loadDatasetsDirectly(self.path, self.info)
         # TODO: Cache dataset
-        # TODO: Run checks as to confirm that the dataset_info.yaml information are right
-        # eg. check start and end times
-
-        self.model: WaterNetworkModel = read_inpfile(
-            os.path.join(self.path, self.info["inp_file"])
-        )
-
-        # Load DMAs
-        dma_path = os.path.join(self.path, "dmas.json")
-        if os.path.isfile(dma_path):
-            # file exists
-            with open(os.path.join(self.path, f"dmas.json"), "r") as f:
-                self.dmas = json.load(f)
-        else:
-            logging.warning("No dmas.json file found. Skipping loading of DMAs.")
-            self.dmas = None
+        return self
 
     def loadBenchmarkData(self):
-        return BenchmarkDatasets(self)
-
-    def exportTo(self, folder: str):
         """
-        Exports the dataset to a given folder
+        Preloads the dataset that contains the benchmark data for the training and evaluation dataset
         """
-
-        reset_overwrite_keys = ["index_column", "decimal", "delimiter"]
-        for key in reset_overwrite_keys:
-            if key in self.info["dataset"]["overwrites"]:
-                del self.info["dataset"]["overwrites"][key]
-        write_inpfile(self.model, os.path.join(folder, self.info["inp_file"]))
-        # TODO: Speed up by multiprocessing
-        self.pressures.to_csv(os.path.join(folder, "pressures.csv"))
-        self.demands.to_csv(os.path.join(folder, "demands.csv"))
-        self.flows.to_csv(os.path.join(folder, "flows.csv"))
-        self.levels.to_csv(os.path.join(folder, "levels.csv"))
-        self.leaks.to_csv(os.path.join(folder, "leaks.csv"))
-        with open(os.path.join(folder, f"dataset_info.yaml"), "w") as f:
-            yaml.dump(self.info, f)
-
-
-class BenchmarkDatasets(LoadedDataset):
-    """
-    A dataset that contains the benchmark data for the training and evaluation dataset
-    """
-
-    def __init__(self, dataset: LoadedDataset):
-        """
-        Loads the benchmark data for the training and evaluation dataset
-        """
-        (training_dataset, evaluation_dataset) = DatasetTransformer(
-            dataset, dataset.info
-        ).splitIntoTrainingEvaluationDatasets()
-        self.name = dataset.name
-        self.model = dataset.model
-        self.info = dataset.info
-        self.id = dataset.id
-        self.dmas = dataset.dmas
-
         # Load Data
-        self.train = _LoadedDatasetPart(training_dataset)
-        self.evaluation = _LoadedDatasetPart(evaluation_dataset)
+        self.train = extractSubDataset("training", self.info, self.full_dataset_part)
+        self.evaluation = extractSubDataset(
+            "evaluation", self.info, self.full_dataset_part
+        )
+        return self
 
     def getTrainingBenchmarkData(self):
         return BenchmarkData(
@@ -239,155 +302,85 @@ class BenchmarkDatasets(LoadedDataset):
             dmas=self.dmas,
         )
 
+    def exportTo(self, folder: str):
+        """
+        Exports the dataset to a given folder
+        """
 
-class DatasetTransformer:
+        write_inpfile(self.model, os.path.join(folder, self.info["inp_file"]))
+
+        for sensor_type in ["pressures", "demands", "flows", "levels"]:
+            os.makedirs(os.path.join(folder, sensor_type), exist_ok=True)
+            filepaths = [
+                os.path.join(folder, sensor_type, f"{sensor}.csv")
+                for sensor in getattr(self, sensor_type).keys()
+            ]
+            print(filepaths)
+            with Pool(processes=cpu_count() - 1) as p:
+                p.starmap(
+                    write_to_csv, zip(getattr(self, sensor_type).values(), filepaths)
+                )
+
+        self.leaks.to_csv(os.path.join(folder, "leaks.csv"))
+        with open(os.path.join(folder, f"dataset_info.yaml"), "w") as f:
+            yaml.dump(self.info, f)
+
+
+def getTimeSliceOfDataset(
+    dataset: Dict[str, DataFrame], start: datetime, end: datetime
+) -> DataFrame:
     """
-    Transform a dataset to a test dataset
-
-    It does not change the values of the dataset (in contrast to DatasetDerivator, which adds noise)
+    Get a time slice of a dataframe.
     """
 
-    def __init__(
-        self,
-        dataset: Dataset,
-        config: DatasetInfo,
-        cache_dir: str = LDIM_BENCHMARK_CACHE_DIR,
-    ):
-        self.dataset = dataset
-        self.config = config
-        self.cache_dir = cache_dir
+    new_dataset_slice = {}
+    for key in dataset:
+        new_dataset_slice[key] = dataset[key].loc[start:end]
+    return new_dataset_slice
 
-        self.dataset_dir = os.path.join(self.cache_dir, self.dataset.id)
-        self.dataset_hash_file = os.path.join(self.dataset_dir, ".hash")
 
-    def _extractDataType(
-        self,
-        type: Literal["training", "evaluation"],
-    ):
-        if type != "training" and type != "evaluation":
-            raise ValueError("type must be either 'training' or 'evaluation'")
-        # TODO: Speed up by multiprocessing
-        specific_dataset_dir = os.path.join(self.dataset_dir, type)
-        os.makedirs(specific_dataset_dir, exist_ok=True)
+def extractSubDataset(
+    type: Literal["training", "evaluation"],
+    config: DatasetInfo,
+    full_data: _LoadedDatasetPartNew,
+):
+    if type != "training" and type != "evaluation":
+        raise ValueError("type must be either 'training' or 'evaluation'")
 
-        full_dataset = DatasetTransformer._loadDatasetsDirectly(
-            self.dataset.path, self.config["dataset"]["overwrites"]
-        )
+    start_time = config["dataset"][type]["start"]
+    end_time = config["dataset"][type]["end"]
 
-        pressures = full_dataset["pressures"].loc[
-            self.config["dataset"][type]["start"] : self.config["dataset"][type]["end"]
-        ]
-        pressures.to_csv(os.path.join(specific_dataset_dir, "pressures.csv"))
-        demands = full_dataset["demands"].loc[
-            self.config["dataset"][type]["start"] : self.config["dataset"][type]["end"]
-        ]
-        demands.to_csv(os.path.join(specific_dataset_dir, "demands.csv"))
-        flows = full_dataset["flows"].loc[
-            self.config["dataset"][type]["start"] : self.config["dataset"][type]["end"]
-        ]
-        flows.to_csv(os.path.join(specific_dataset_dir, "flows.csv"))
-        levels = full_dataset["levels"].loc[
-            self.config["dataset"][type]["start"] : self.config["dataset"][type]["end"]
-        ]
-        levels.to_csv(os.path.join(specific_dataset_dir, "levels.csv"))
+    mask = (full_data.leaks["leak_time_start"] > start_time) & (
+        full_data.leaks["leak_time_start"] < end_time
+    )
+    leaks = full_data.leaks[mask]
 
-        mask = (
-            full_dataset["leaks"]["leak_time_start"]
-            > self.config["dataset"][type]["start"]
-        ) & (
-            full_dataset["leaks"]["leak_time_start"]
-            < self.config["dataset"][type]["end"]
-        )
-        leaks = full_dataset["leaks"][mask]
-        leaks.to_csv(os.path.join(specific_dataset_dir, "leaks.csv"))
-
-        return {
-            "pressures": pressures,
-            "demands": demands,
-            "flows": flows,
-            "levels": levels,
+    return _LoadedDatasetPartNew(
+        {
+            "pressures": getTimeSliceOfDataset(
+                full_data.pressures, start_time, end_time
+            ),
+            "demands": getTimeSliceOfDataset(full_data.demands, start_time, end_time),
+            "flows": getTimeSliceOfDataset(full_data.flows, start_time, end_time),
+            "levels": getTimeSliceOfDataset(full_data.levels, start_time, end_time),
             "leaks": leaks,
         }
+    )
 
-    @staticmethod
-    def _loadDatasetsDirectly(
-        datastet_dir: str, overwrites: DatasetInfoDatasetOverwrites = None
-    ):
-        """
-        Load the dataset directly from the files
-        """
-        index_column = "Timestamp"
-        delimiter = ","
-        decimal = "."
-        if overwrites is not None:
-            config_name = "index_column"
-            if config_name in overwrites:
-                index_column = overwrites[config_name]
-            config_name = "delimiter"
-            if config_name in overwrites:
-                delimiter = overwrites[config_name]
-            config_name = "decimal"
-            if config_name in overwrites:
-                decimal = overwrites[config_name]
 
-        dataset = {}
-        for file in filter(
-            lambda x: not "leaks" in os.path.basename(x),
-            glob(os.path.join(datastet_dir + "/" + "*.csv")),
-        ):
-            # TODO: Use Multicore implementation from gjovik
-            dataset[os.path.basename(file).lower()[:-4]] = pd.read_csv(
-                file,
-                index_col=index_column,
-                parse_dates=True,
-                delimiter=delimiter,
-                decimal=decimal,
-            )
-        dataset["leaks"] = pd.read_csv(
-            os.path.join(datastet_dir, "leaks.csv"),
-            parse_dates=True,
-            delimiter=delimiter,
-            decimal=decimal,
-        )
-        return dataset
+CACHE = {}
 
-    def splitIntoTrainingEvaluationDatasets(
-        self,
-    ):
-        """
-        Splits the dataset into training and evaluation datasets, according to the configration in dataset_info.yml
 
-        """
+def __cache_dataset(id: str, dataset: Dataset):
+    CACHE[id] = copy.deepcopy(dataset)
 
-        dataset_config = self.config["dataset"]
-        # Hash of configuration params
-        # TODO: also include the files themselves
-        dataset_config_hash = hashlib.md5(
-            json.dumps(dataset_config, sort_keys=True).encode("utf-8")
-        ).hexdigest()
 
-        # Check if dataset is already transformed
-        if os.path.exists(self.dataset_dir) and os.path.exists(self.dataset_hash_file):
-            with open(self.dataset_hash_file, "r") as f:
-                existing_hash = f.read()
-                if existing_hash == dataset_config_hash:
-                    # is equal, no need to transform, just load
-                    training_data = DatasetTransformer._loadDatasetsDirectly(
-                        os.path.join(self.dataset_dir, "training"),
-                    )
-                    evaluation_data = DatasetTransformer._loadDatasetsDirectly(
-                        os.path.join(self.dataset_dir, "evaluation")
-                    )
-                    return (training_data, evaluation_data)
+def __load_cached_dataset(id: str) -> Dataset:
+    if id in CACHE:
+        return copy.deepcopy(CACHE[id])
 
-        logging.info("Transforming Dataset")
-        # is not equal, remove old dataset
-        shutil.rmtree(self.dataset_dir, ignore_errors=True)
-        training_data = self._extractDataType("training")
-        evaluation_data = self._extractDataType("evaluation")
 
-        # Create hash file
-        with open(self.dataset_hash_file, "w") as f:
-            f.write(str(dataset_config_hash))
-
-        return (training_data, evaluation_data)
+def __cached_dataset_exists(id: str) -> bool:
+    if id in CACHE:
+        return True
+    return False

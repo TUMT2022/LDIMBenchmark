@@ -15,6 +15,8 @@ import numpy as np
 import pandas as pd
 import os
 
+from ldimbenchmark.utilities import simplifyBenchmarkData
+
 
 class Ref_node:
     def __init__(self, name):
@@ -75,10 +77,12 @@ class LILA(LDIMMethodBase):
         # Load Data
         scada_data = SCADA_data()
 
-        scada_data.pressures = train_data.pressures
-        nodes = train_data.pressures.keys()
+        simple_train_data = simplifyBenchmarkData(train_data)
 
-        flows = train_data.flows
+        scada_data.pressures = simple_train_data.pressures
+        nodes = simple_train_data.pressures.keys()
+
+        flows = simple_train_data.flows
         # TODO: Remove this to be generalized:
         # Try it with all flows combined?
 
@@ -118,12 +122,14 @@ class LILA(LDIMMethodBase):
     def detect(self, evaluation_data: BenchmarkData) -> List[BenchmarkLeakageResult]:
         scada_data = SCADA_data()
 
+        simple_evaluation_data = simplifyBenchmarkData(evaluation_data)
+
         # TODO: Implement reoccuring training on trailing timeframe?
 
-        scada_data.pressures = evaluation_data.pressures
-        nodes = evaluation_data.pressures.keys()
+        scada_data.pressures = simple_evaluation_data.pressures
+        nodes = simple_evaluation_data.pressures.keys()
 
-        flows = evaluation_data.flows
+        flows = simple_evaluation_data.flows
         # TODO: Make algorithm independent of pump name
         flows = flows.rename(
             columns={"P-01": "PUMP_1", "a": "PUMP_1", "Inflow [l/s]": "PUMP_1"}
