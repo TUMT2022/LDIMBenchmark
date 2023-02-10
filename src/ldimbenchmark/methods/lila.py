@@ -77,7 +77,7 @@ class LILA(LDIMMethodBase):
         # Load Data
         scada_data = SCADA_data()
 
-        simple_train_data = simplifyBenchmarkData(train_data)
+        simple_train_data = simplifyBenchmarkData(train_data, resample_frequency="5T")
 
         scada_data.pressures = simple_train_data.pressures
         nodes = simple_train_data.pressures.keys()

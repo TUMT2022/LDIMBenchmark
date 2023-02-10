@@ -1,4 +1,5 @@
 from multiprocessing import Pool, cpu_count
+import pickle
 import numpy as np
 import pandas as pd
 import os
@@ -267,19 +268,34 @@ class Dataset:
         self.full_dataset_part.leaks = leaks
 
     def loadData(self):
-        self.full_dataset_part = loadDatasetsDirectly(self.path, self.info)
-        # TODO: Cache dataset
+        logging.info("Loading data...")
+        if not hasattr(self, "full_dataset_part"):
+            path_to_pickle = os.path.join(self.path, "dataset.pickle")
+            if os.path.isfile(path_to_pickle):
+                with open(path_to_pickle, "rb") as f:
+                    self.full_dataset_part = pickle.load(f)
+            else:
+                self.full_dataset_part = loadDatasetsDirectly(self.path, self.info)
+                with open(path_to_pickle, "wb") as f:
+                    pickle.dump(self.full_dataset_part, f)
+        logging.info("Stopped Loading data...")
         return self
 
     def loadBenchmarkData(self):
         """
         Preloads the dataset that contains the benchmark data for the training and evaluation dataset
         """
+        logging.info("Start Loading benchmark data...")
         # Load Data
-        self.train = extractSubDataset("training", self.info, self.full_dataset_part)
-        self.evaluation = extractSubDataset(
-            "evaluation", self.info, self.full_dataset_part
-        )
+        if not hasattr(self, "train"):
+            self.train = extractSubDataset(
+                "training", self.info, self.full_dataset_part
+            )
+        if not hasattr(self, "evaluation"):
+            self.evaluation = extractSubDataset(
+                "evaluation", self.info, self.full_dataset_part
+            )
+        logging.info("Stop Loading benchmark data...")
         return self
 
     def getTrainingBenchmarkData(self):

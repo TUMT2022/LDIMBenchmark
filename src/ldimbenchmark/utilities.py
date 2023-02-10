@@ -58,14 +58,16 @@ def resampleAndConcatSensors(
     return pd.concat(concatenated_sensors, axis=1)
 
 
-def simplifyBenchmarkData(data: BenchmarkData) -> SimpleBenchmarkData:
+def simplifyBenchmarkData(
+    data: BenchmarkData, resample_frequency="1T"
+) -> SimpleBenchmarkData:
     """Convert multiple timeseries to one timeseries"""
 
     return SimpleBenchmarkData(
-        pressures=resampleAndConcatSensors(data.pressures),
-        demands=resampleAndConcatSensors(data.demands),
-        flows=resampleAndConcatSensors(data.flows),
-        levels=resampleAndConcatSensors(data.levels),
+        pressures=resampleAndConcatSensors(data.pressures, resample_frequency),
+        demands=resampleAndConcatSensors(data.demands, resample_frequency),
+        flows=resampleAndConcatSensors(data.flows, resample_frequency),
+        levels=resampleAndConcatSensors(data.levels, resample_frequency),
         model=data.model,
         dmas=data.dmas,
     )
