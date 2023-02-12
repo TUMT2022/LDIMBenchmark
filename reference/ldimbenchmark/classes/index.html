@@ -1607,7 +1607,7 @@
 <span class="normal"><a href="#__codelineno-0-39">39</a></span>
 <span class="normal"><a href="#__codelineno-0-40">40</a></span>
 <span class="normal"><a href="#__codelineno-0-41">41</a></span></pre></div></td><td class="code"><div><pre><span></span><code><a id="__codelineno-0-8" name="__codelineno-0-8"></a><span class="k">class</span> <span class="nc">BenchmarkData</span><span class="p">:</span>
-<a id="__codelineno-0-9" name="__codelineno-0-9"></a>    <span class="sd">&quot;&quot;&quot;</span>
+<a id="__codelineno-0-9" name="__codelineno-0-9"></a><span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <a id="__codelineno-0-10" name="__codelineno-0-10"></a><span class="sd">    Representation of the File Based Benchmark Dataset</span>
 <a id="__codelineno-0-11" name="__codelineno-0-11"></a><span class="sd">    &quot;&quot;&quot;</span>
 <a id="__codelineno-0-12" name="__codelineno-0-12"></a>
@@ -1620,26 +1620,26 @@
 <a id="__codelineno-0-19" name="__codelineno-0-19"></a>        <span class="n">model</span><span class="p">:</span> <span class="n">WaterNetworkModel</span><span class="p">,</span>
 <a id="__codelineno-0-20" name="__codelineno-0-20"></a>        <span class="n">dmas</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]],</span>
 <a id="__codelineno-0-21" name="__codelineno-0-21"></a>    <span class="p">):</span>
-<a id="__codelineno-0-22" name="__codelineno-0-22"></a>        <span class="sd">&quot;&quot;&quot;</span>
+<a id="__codelineno-0-22" name="__codelineno-0-22"></a><span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <a id="__codelineno-0-23" name="__codelineno-0-23"></a><span class="sd">        Initialize the BenchmarkData object.</span>
 <a id="__codelineno-0-24" name="__codelineno-0-24"></a><span class="sd">        &quot;&quot;&quot;</span>
 <a id="__codelineno-0-25" name="__codelineno-0-25"></a>        <span class="bp">self</span><span class="o">.</span><span class="n">pressures</span> <span class="o">=</span> <span class="n">pressures</span>
-<a id="__codelineno-0-26" name="__codelineno-0-26"></a>        <span class="sd">&quot;&quot;&quot;Pressures of the System.&quot;&quot;&quot;</span>
+<a id="__codelineno-0-26" name="__codelineno-0-26"></a><span class="w">        </span><span class="sd">&quot;&quot;&quot;Pressures of the System.&quot;&quot;&quot;</span>
 <a id="__codelineno-0-27" name="__codelineno-0-27"></a>        <span class="bp">self</span><span class="o">.</span><span class="n">demands</span> <span class="o">=</span> <span class="n">demands</span>
-<a id="__codelineno-0-28" name="__codelineno-0-28"></a>        <span class="sd">&quot;&quot;&quot;Demands of the System.&quot;&quot;&quot;</span>
+<a id="__codelineno-0-28" name="__codelineno-0-28"></a><span class="w">        </span><span class="sd">&quot;&quot;&quot;Demands of the System.&quot;&quot;&quot;</span>
 <a id="__codelineno-0-29" name="__codelineno-0-29"></a>        <span class="bp">self</span><span class="o">.</span><span class="n">flows</span> <span class="o">=</span> <span class="n">flows</span>
-<a id="__codelineno-0-30" name="__codelineno-0-30"></a>        <span class="sd">&quot;&quot;&quot;Flows of the System.&quot;&quot;&quot;</span>
+<a id="__codelineno-0-30" name="__codelineno-0-30"></a><span class="w">        </span><span class="sd">&quot;&quot;&quot;Flows of the System.&quot;&quot;&quot;</span>
 <a id="__codelineno-0-31" name="__codelineno-0-31"></a>        <span class="bp">self</span><span class="o">.</span><span class="n">levels</span> <span class="o">=</span> <span class="n">levels</span>
-<a id="__codelineno-0-32" name="__codelineno-0-32"></a>        <span class="sd">&quot;&quot;&quot;Levels of the System.&quot;&quot;&quot;</span>
+<a id="__codelineno-0-32" name="__codelineno-0-32"></a><span class="w">        </span><span class="sd">&quot;&quot;&quot;Levels of the System.&quot;&quot;&quot;</span>
 <a id="__codelineno-0-33" name="__codelineno-0-33"></a>        <span class="bp">self</span><span class="o">.</span><span class="n">model</span> <span class="o">=</span> <span class="n">model</span>
-<a id="__codelineno-0-34" name="__codelineno-0-34"></a>        <span class="sd">&quot;&quot;&quot;Model of the System (INP).&quot;&quot;&quot;</span>
+<a id="__codelineno-0-34" name="__codelineno-0-34"></a><span class="w">        </span><span class="sd">&quot;&quot;&quot;Model of the System (INP).&quot;&quot;&quot;</span>
 <a id="__codelineno-0-35" name="__codelineno-0-35"></a>        <span class="bp">self</span><span class="o">.</span><span class="n">dmas</span> <span class="o">=</span> <span class="n">dmas</span>
-<a id="__codelineno-0-36" name="__codelineno-0-36"></a>        <span class="sd">&quot;&quot;&quot;</span>
+<a id="__codelineno-0-36" name="__codelineno-0-36"></a><span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <a id="__codelineno-0-37" name="__codelineno-0-37"></a><span class="sd">        District Metered Areas</span>
 <a id="__codelineno-0-38" name="__codelineno-0-38"></a><span class="sd">        Dictionary with names of the areas as key and list of WN nodes as value.</span>
 <a id="__codelineno-0-39" name="__codelineno-0-39"></a><span class="sd">        &quot;&quot;&quot;</span>
 <a id="__codelineno-0-40" name="__codelineno-0-40"></a>        <span class="bp">self</span><span class="o">.</span><span class="n">metadata</span> <span class="o">=</span> <span class="p">{}</span>
-<a id="__codelineno-0-41" name="__codelineno-0-41"></a>        <span class="sd">&quot;&quot;&quot;Metadata of the System. e.g. Metering zones and included sensors.&quot;&quot;&quot;</span>
+<a id="__codelineno-0-41" name="__codelineno-0-41"></a><span class="w">        </span><span class="sd">&quot;&quot;&quot;Metadata of the System. e.g. Metering zones and included sensors.&quot;&quot;&quot;</span>
 </code></pre></div></td></tr></table></div>
         </details>
 
@@ -1856,26 +1856,26 @@ Dictionary with names of the areas as key and list of WN nodes as value.</p>
 <a id="__codelineno-0-19" name="__codelineno-0-19"></a>    <span class="n">model</span><span class="p">:</span> <span class="n">WaterNetworkModel</span><span class="p">,</span>
 <a id="__codelineno-0-20" name="__codelineno-0-20"></a>    <span class="n">dmas</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]],</span>
 <a id="__codelineno-0-21" name="__codelineno-0-21"></a><span class="p">):</span>
-<a id="__codelineno-0-22" name="__codelineno-0-22"></a>    <span class="sd">&quot;&quot;&quot;</span>
+<a id="__codelineno-0-22" name="__codelineno-0-22"></a><span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <a id="__codelineno-0-23" name="__codelineno-0-23"></a><span class="sd">    Initialize the BenchmarkData object.</span>
 <a id="__codelineno-0-24" name="__codelineno-0-24"></a><span class="sd">    &quot;&quot;&quot;</span>
 <a id="__codelineno-0-25" name="__codelineno-0-25"></a>    <span class="bp">self</span><span class="o">.</span><span class="n">pressures</span> <span class="o">=</span> <span class="n">pressures</span>
-<a id="__codelineno-0-26" name="__codelineno-0-26"></a>    <span class="sd">&quot;&quot;&quot;Pressures of the System.&quot;&quot;&quot;</span>
+<a id="__codelineno-0-26" name="__codelineno-0-26"></a><span class="w">    </span><span class="sd">&quot;&quot;&quot;Pressures of the System.&quot;&quot;&quot;</span>
 <a id="__codelineno-0-27" name="__codelineno-0-27"></a>    <span class="bp">self</span><span class="o">.</span><span class="n">demands</span> <span class="o">=</span> <span class="n">demands</span>
-<a id="__codelineno-0-28" name="__codelineno-0-28"></a>    <span class="sd">&quot;&quot;&quot;Demands of the System.&quot;&quot;&quot;</span>
+<a id="__codelineno-0-28" name="__codelineno-0-28"></a><span class="w">    </span><span class="sd">&quot;&quot;&quot;Demands of the System.&quot;&quot;&quot;</span>
 <a id="__codelineno-0-29" name="__codelineno-0-29"></a>    <span class="bp">self</span><span class="o">.</span><span class="n">flows</span> <span class="o">=</span> <span class="n">flows</span>
-<a id="__codelineno-0-30" name="__codelineno-0-30"></a>    <span class="sd">&quot;&quot;&quot;Flows of the System.&quot;&quot;&quot;</span>
+<a id="__codelineno-0-30" name="__codelineno-0-30"></a><span class="w">    </span><span class="sd">&quot;&quot;&quot;Flows of the System.&quot;&quot;&quot;</span>
 <a id="__codelineno-0-31" name="__codelineno-0-31"></a>    <span class="bp">self</span><span class="o">.</span><span class="n">levels</span> <span class="o">=</span> <span class="n">levels</span>
-<a id="__codelineno-0-32" name="__codelineno-0-32"></a>    <span class="sd">&quot;&quot;&quot;Levels of the System.&quot;&quot;&quot;</span>
+<a id="__codelineno-0-32" name="__codelineno-0-32"></a><span class="w">    </span><span class="sd">&quot;&quot;&quot;Levels of the System.&quot;&quot;&quot;</span>
 <a id="__codelineno-0-33" name="__codelineno-0-33"></a>    <span class="bp">self</span><span class="o">.</span><span class="n">model</span> <span class="o">=</span> <span class="n">model</span>
-<a id="__codelineno-0-34" name="__codelineno-0-34"></a>    <span class="sd">&quot;&quot;&quot;Model of the System (INP).&quot;&quot;&quot;</span>
+<a id="__codelineno-0-34" name="__codelineno-0-34"></a><span class="w">    </span><span class="sd">&quot;&quot;&quot;Model of the System (INP).&quot;&quot;&quot;</span>
 <a id="__codelineno-0-35" name="__codelineno-0-35"></a>    <span class="bp">self</span><span class="o">.</span><span class="n">dmas</span> <span class="o">=</span> <span class="n">dmas</span>
-<a id="__codelineno-0-36" name="__codelineno-0-36"></a>    <span class="sd">&quot;&quot;&quot;</span>
+<a id="__codelineno-0-36" name="__codelineno-0-36"></a><span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <a id="__codelineno-0-37" name="__codelineno-0-37"></a><span class="sd">    District Metered Areas</span>
 <a id="__codelineno-0-38" name="__codelineno-0-38"></a><span class="sd">    Dictionary with names of the areas as key and list of WN nodes as value.</span>
 <a id="__codelineno-0-39" name="__codelineno-0-39"></a><span class="sd">    &quot;&quot;&quot;</span>
 <a id="__codelineno-0-40" name="__codelineno-0-40"></a>    <span class="bp">self</span><span class="o">.</span><span class="n">metadata</span> <span class="o">=</span> <span class="p">{}</span>
-<a id="__codelineno-0-41" name="__codelineno-0-41"></a>    <span class="sd">&quot;&quot;&quot;Metadata of the System. e.g. Metering zones and included sensors.&quot;&quot;&quot;</span>
+<a id="__codelineno-0-41" name="__codelineno-0-41"></a><span class="w">    </span><span class="sd">&quot;&quot;&quot;Metadata of the System. e.g. Metering zones and included sensors.&quot;&quot;&quot;</span>
 </code></pre></div></td></tr></table></div>
       </details>
   </div>
@@ -2003,7 +2003,7 @@ Dictionary with names of the areas as key and list of WN nodes as value.</p>
 <span class="normal"><a href="#__codelineno-0-179">179</a></span>
 <span class="normal"><a href="#__codelineno-0-180">180</a></span>
 <span class="normal"><a href="#__codelineno-0-181">181</a></span></pre></div></td><td class="code"><div><pre><span></span><code><a id="__codelineno-0-98" name="__codelineno-0-98"></a><span class="k">class</span> <span class="nc">LDIMMethodBase</span><span class="p">(</span><span class="n">ABC</span><span class="p">):</span>
-<a id="__codelineno-0-99" name="__codelineno-0-99"></a>    <span class="sd">&quot;&quot;&quot;</span>
+<a id="__codelineno-0-99" name="__codelineno-0-99"></a><span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <a id="__codelineno-0-100" name="__codelineno-0-100"></a><span class="sd">    Skeleton for implementing an instance of a leakage detection method.</span>
 <a id="__codelineno-0-101" name="__codelineno-0-101"></a><span class="sd">    Should implement the following methods:</span>
 <a id="__codelineno-0-102" name="__codelineno-0-102"></a><span class="sd">     - train(): If needed, to train the algorithm</span>
@@ -2019,7 +2019,7 @@ Dictionary with names of the areas as key and list of WN nodes as value.</p>
 <a id="__codelineno-0-112" name="__codelineno-0-112"></a>        <span class="n">metadata</span><span class="p">:</span> <span class="n">MethodMetadata</span><span class="p">,</span>
 <a id="__codelineno-0-113" name="__codelineno-0-113"></a>        <span class="n">additional_output_path</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
 <a id="__codelineno-0-114" name="__codelineno-0-114"></a>    <span class="p">):</span>
-<a id="__codelineno-0-115" name="__codelineno-0-115"></a>        <span class="sd">&quot;&quot;&quot;</span>
+<a id="__codelineno-0-115" name="__codelineno-0-115"></a><span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <a id="__codelineno-0-116" name="__codelineno-0-116"></a><span class="sd">        Initialize the Leakage Detection Method</span>
 <a id="__codelineno-0-117" name="__codelineno-0-117"></a><span class="sd">        additional_output_path: Path to the output folder of the benchmark. Only use if set.</span>
 <a id="__codelineno-0-118" name="__codelineno-0-118"></a><span class="sd">        &quot;&quot;&quot;</span>
@@ -2035,7 +2035,7 @@ Dictionary with names of the areas as key and list of WN nodes as value.</p>
 <a id="__codelineno-0-128" name="__codelineno-0-128"></a>    <span class="k">def</span> <span class="nf">init_with_benchmark_params</span><span class="p">(</span>
 <a id="__codelineno-0-129" name="__codelineno-0-129"></a>        <span class="bp">self</span><span class="p">,</span> <span class="n">additional_output_path</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">hyperparameters</span><span class="o">=</span><span class="p">{}</span>
 <a id="__codelineno-0-130" name="__codelineno-0-130"></a>    <span class="p">):</span>
-<a id="__codelineno-0-131" name="__codelineno-0-131"></a>        <span class="sd">&quot;&quot;&quot;</span>
+<a id="__codelineno-0-131" name="__codelineno-0-131"></a><span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <a id="__codelineno-0-132" name="__codelineno-0-132"></a><span class="sd">        Used for initializing the method in the runner (not needed if run manually).</span>
 <a id="__codelineno-0-133" name="__codelineno-0-133"></a>
 <a id="__codelineno-0-134" name="__codelineno-0-134"></a><span class="sd">        :param hyperparameters: Hyperparameters for the method</span>
@@ -2051,7 +2051,7 @@ Dictionary with names of the areas as key and list of WN nodes as value.</p>
 <a id="__codelineno-0-144" name="__codelineno-0-144"></a>
 <a id="__codelineno-0-145" name="__codelineno-0-145"></a>    <span class="nd">@abstractmethod</span>
 <a id="__codelineno-0-146" name="__codelineno-0-146"></a>    <span class="k">def</span> <span class="nf">train</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">train_data</span><span class="p">:</span> <span class="n">BenchmarkData</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-<a id="__codelineno-0-147" name="__codelineno-0-147"></a>        <span class="sd">&quot;&quot;&quot;</span>
+<a id="__codelineno-0-147" name="__codelineno-0-147"></a><span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <a id="__codelineno-0-148" name="__codelineno-0-148"></a><span class="sd">        Train the algorithm on Test data (if needed)</span>
 <a id="__codelineno-0-149" name="__codelineno-0-149"></a>
 <a id="__codelineno-0-150" name="__codelineno-0-150"></a><span class="sd">        The only metric calculated will be the time your model needs to train.</span>
@@ -2065,7 +2065,7 @@ Dictionary with names of the areas as key and list of WN nodes as value.</p>
 <a id="__codelineno-0-158" name="__codelineno-0-158"></a>    <span class="k">def</span> <span class="nf">detect_offline</span><span class="p">(</span>
 <a id="__codelineno-0-159" name="__codelineno-0-159"></a>        <span class="bp">self</span><span class="p">,</span> <span class="n">evaluation_data</span><span class="p">:</span> <span class="n">BenchmarkData</span>
 <a id="__codelineno-0-160" name="__codelineno-0-160"></a>    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="n">BenchmarkLeakageResult</span><span class="p">]:</span>
-<a id="__codelineno-0-161" name="__codelineno-0-161"></a>        <span class="sd">&quot;&quot;&quot;</span>
+<a id="__codelineno-0-161" name="__codelineno-0-161"></a><span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <a id="__codelineno-0-162" name="__codelineno-0-162"></a><span class="sd">        Detect Leakage in an &quot;offline&quot; (historical) manner.</span>
 <a id="__codelineno-0-163" name="__codelineno-0-163"></a><span class="sd">        Detect Leakages on never before seen data. (BenchmarkData)</span>
 <a id="__codelineno-0-164" name="__codelineno-0-164"></a>
@@ -2076,7 +2076,7 @@ Dictionary with names of the areas as key and list of WN nodes as value.</p>
 <a id="__codelineno-0-169" name="__codelineno-0-169"></a>
 <a id="__codelineno-0-170" name="__codelineno-0-170"></a>    <span class="nd">@abstractmethod</span>
 <a id="__codelineno-0-171" name="__codelineno-0-171"></a>    <span class="k">def</span> <span class="nf">detect_online</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">evaluation_data</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">BenchmarkLeakageResult</span><span class="p">:</span>
-<a id="__codelineno-0-172" name="__codelineno-0-172"></a>        <span class="sd">&quot;&quot;&quot;</span>
+<a id="__codelineno-0-172" name="__codelineno-0-172"></a><span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <a id="__codelineno-0-173" name="__codelineno-0-173"></a><span class="sd">        Detect Leakage in an &quot;online&quot; (real-time) manner.</span>
 <a id="__codelineno-0-174" name="__codelineno-0-174"></a><span class="sd">        This method is called multiple times for each data point in the evaluation data.</span>
 <a id="__codelineno-0-175" name="__codelineno-0-175"></a><span class="sd">        It is your responsibility to store the new data point, if you want to use it for refining your model.</span>
@@ -2143,7 +2143,7 @@ additional_output_path: Path to the output folder of the benchmark. Only use if 
 <a id="__codelineno-0-112" name="__codelineno-0-112"></a>    <span class="n">metadata</span><span class="p">:</span> <span class="n">MethodMetadata</span><span class="p">,</span>
 <a id="__codelineno-0-113" name="__codelineno-0-113"></a>    <span class="n">additional_output_path</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
 <a id="__codelineno-0-114" name="__codelineno-0-114"></a><span class="p">):</span>
-<a id="__codelineno-0-115" name="__codelineno-0-115"></a>    <span class="sd">&quot;&quot;&quot;</span>
+<a id="__codelineno-0-115" name="__codelineno-0-115"></a><span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <a id="__codelineno-0-116" name="__codelineno-0-116"></a><span class="sd">    Initialize the Leakage Detection Method</span>
 <a id="__codelineno-0-117" name="__codelineno-0-117"></a><span class="sd">    additional_output_path: Path to the output folder of the benchmark. Only use if set.</span>
 <a id="__codelineno-0-118" name="__codelineno-0-118"></a><span class="sd">    &quot;&quot;&quot;</span>
@@ -2198,7 +2198,7 @@ Detect Leakages on never before seen data. (BenchmarkData)</p>
 <a id="__codelineno-0-158" name="__codelineno-0-158"></a><span class="k">def</span> <span class="nf">detect_offline</span><span class="p">(</span>
 <a id="__codelineno-0-159" name="__codelineno-0-159"></a>    <span class="bp">self</span><span class="p">,</span> <span class="n">evaluation_data</span><span class="p">:</span> <span class="n">BenchmarkData</span>
 <a id="__codelineno-0-160" name="__codelineno-0-160"></a><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="n">BenchmarkLeakageResult</span><span class="p">]:</span>
-<a id="__codelineno-0-161" name="__codelineno-0-161"></a>    <span class="sd">&quot;&quot;&quot;</span>
+<a id="__codelineno-0-161" name="__codelineno-0-161"></a><span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <a id="__codelineno-0-162" name="__codelineno-0-162"></a><span class="sd">    Detect Leakage in an &quot;offline&quot; (historical) manner.</span>
 <a id="__codelineno-0-163" name="__codelineno-0-163"></a><span class="sd">    Detect Leakages on never before seen data. (BenchmarkData)</span>
 <a id="__codelineno-0-164" name="__codelineno-0-164"></a>
@@ -2249,7 +2249,7 @@ It is your responsibility to store the new data point, if you want to use it for
 <span class="normal"><a href="#__codelineno-0-180">180</a></span>
 <span class="normal"><a href="#__codelineno-0-181">181</a></span></pre></div></td><td class="code"><div><pre><span></span><code><a id="__codelineno-0-170" name="__codelineno-0-170"></a><span class="nd">@abstractmethod</span>
 <a id="__codelineno-0-171" name="__codelineno-0-171"></a><span class="k">def</span> <span class="nf">detect_online</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">evaluation_data</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">BenchmarkLeakageResult</span><span class="p">:</span>
-<a id="__codelineno-0-172" name="__codelineno-0-172"></a>    <span class="sd">&quot;&quot;&quot;</span>
+<a id="__codelineno-0-172" name="__codelineno-0-172"></a><span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <a id="__codelineno-0-173" name="__codelineno-0-173"></a><span class="sd">    Detect Leakage in an &quot;online&quot; (real-time) manner.</span>
 <a id="__codelineno-0-174" name="__codelineno-0-174"></a><span class="sd">    This method is called multiple times for each data point in the evaluation data.</span>
 <a id="__codelineno-0-175" name="__codelineno-0-175"></a><span class="sd">    It is your responsibility to store the new data point, if you want to use it for refining your model.</span>
@@ -2303,7 +2303,7 @@ It is your responsibility to store the new data point, if you want to use it for
 <span class="normal"><a href="#__codelineno-0-143">143</a></span></pre></div></td><td class="code"><div><pre><span></span><code><a id="__codelineno-0-128" name="__codelineno-0-128"></a><span class="k">def</span> <span class="nf">init_with_benchmark_params</span><span class="p">(</span>
 <a id="__codelineno-0-129" name="__codelineno-0-129"></a>    <span class="bp">self</span><span class="p">,</span> <span class="n">additional_output_path</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">hyperparameters</span><span class="o">=</span><span class="p">{}</span>
 <a id="__codelineno-0-130" name="__codelineno-0-130"></a><span class="p">):</span>
-<a id="__codelineno-0-131" name="__codelineno-0-131"></a>    <span class="sd">&quot;&quot;&quot;</span>
+<a id="__codelineno-0-131" name="__codelineno-0-131"></a><span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <a id="__codelineno-0-132" name="__codelineno-0-132"></a><span class="sd">    Used for initializing the method in the runner (not needed if run manually).</span>
 <a id="__codelineno-0-133" name="__codelineno-0-133"></a>
 <a id="__codelineno-0-134" name="__codelineno-0-134"></a><span class="sd">    :param hyperparameters: Hyperparameters for the method</span>
@@ -2356,7 +2356,7 @@ It is your responsibility to store the new data point, if you want to use it for
 <span class="normal"><a href="#__codelineno-0-154">154</a></span>
 <span class="normal"><a href="#__codelineno-0-155">155</a></span></pre></div></td><td class="code"><div><pre><span></span><code><a id="__codelineno-0-145" name="__codelineno-0-145"></a><span class="nd">@abstractmethod</span>
 <a id="__codelineno-0-146" name="__codelineno-0-146"></a><span class="k">def</span> <span class="nf">train</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">train_data</span><span class="p">:</span> <span class="n">BenchmarkData</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-<a id="__codelineno-0-147" name="__codelineno-0-147"></a>    <span class="sd">&quot;&quot;&quot;</span>
+<a id="__codelineno-0-147" name="__codelineno-0-147"></a><span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <a id="__codelineno-0-148" name="__codelineno-0-148"></a><span class="sd">    Train the algorithm on Test data (if needed)</span>
 <a id="__codelineno-0-149" name="__codelineno-0-149"></a>
 <a id="__codelineno-0-150" name="__codelineno-0-150"></a><span class="sd">    The only metric calculated will be the time your model needs to train.</span>
@@ -2478,7 +2478,7 @@ ignored - The data is not necessary for the method and its presence would not en
 <span class="normal"><a href="#__codelineno-0-88">88</a></span>
 <span class="normal"><a href="#__codelineno-0-89">89</a></span>
 <span class="normal"><a href="#__codelineno-0-90">90</a></span></pre></div></td><td class="code"><div><pre><span></span><code><a id="__codelineno-0-65" name="__codelineno-0-65"></a><span class="k">class</span> <span class="nc">MethodMetadataDataNeeded</span><span class="p">(</span><span class="n">TypedDict</span><span class="p">):</span>
-<a id="__codelineno-0-66" name="__codelineno-0-66"></a>    <span class="sd">&quot;&quot;&quot;</span>
+<a id="__codelineno-0-66" name="__codelineno-0-66"></a><span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <a id="__codelineno-0-67" name="__codelineno-0-67"></a><span class="sd">    Describing the necessity of the data for the method.</span>
 <a id="__codelineno-0-68" name="__codelineno-0-68"></a>
 <a id="__codelineno-0-69" name="__codelineno-0-69"></a><span class="sd">    necessary - The method needs the data to work, otherwise it would fail.</span>

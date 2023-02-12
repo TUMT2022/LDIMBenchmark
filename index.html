@@ -1407,7 +1407,7 @@
 <p>It provides a close to real-world conditions environment and forces researchers to provide a reproducible method implementation, which is supposed to run automated on any input dataset, thus hindering custom solutions which work well in one specific case.</p>
 <h2 id="usage">Usage</h2>
 <h3 id="installation">Installation</h3>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a>pip install ldimbenchmark
+<div class="highlight"><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a>pip<span class="w"> </span>install<span class="w"> </span>ldimbenchmark
 </code></pre></div>
 <h3 id="python">Python</h3>
 <div class="highlight"><pre><span></span><code><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a><span class="kn">from</span> <span class="nn">ldimbenchmark.datasets</span> <span class="kn">import</span> <span class="n">DatasetLibrary</span><span class="p">,</span> <span class="n">DATASETS</span>
@@ -1459,7 +1459,7 @@
 <a id="__codelineno-1-47" name="__codelineno-1-47" href="#__codelineno-1-47"></a><span class="n">benchmark</span><span class="o">.</span><span class="n">evaluate</span><span class="p">()</span>
 </code></pre></div>
 <h3 id="cli">CLI</h3>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a>ldimbenchmark --help
+<div class="highlight"><pre><span></span><code><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a>ldimbenchmark<span class="w"> </span>--help
 </code></pre></div>
 <h2 id="roadmap">Roadmap</h2>
 <ul>
@@ -1471,36 +1471,36 @@
 <p>https://python-poetry.org/docs/basic-usage/</p>
 <div class="highlight"><pre><span></span><code><a id="__codelineno-3-1" name="__codelineno-3-1" href="#__codelineno-3-1"></a><span class="c1"># python 3.10</span>
 <a id="__codelineno-3-2" name="__codelineno-3-2" href="#__codelineno-3-2"></a><span class="c1"># Use Environment</span>
-<a id="__codelineno-3-3" name="__codelineno-3-3" href="#__codelineno-3-3"></a>poetry config virtualenvs.in-project <span class="nb">true</span>
-<a id="__codelineno-3-4" name="__codelineno-3-4" href="#__codelineno-3-4"></a>poetry shell
-<a id="__codelineno-3-5" name="__codelineno-3-5" href="#__codelineno-3-5"></a>poetry install --without ci <span class="c1"># --with ci</span>
+<a id="__codelineno-3-3" name="__codelineno-3-3" href="#__codelineno-3-3"></a>poetry<span class="w"> </span>config<span class="w"> </span>virtualenvs.in-project<span class="w"> </span><span class="nb">true</span>
+<a id="__codelineno-3-4" name="__codelineno-3-4" href="#__codelineno-3-4"></a>poetry<span class="w"> </span>shell
+<a id="__codelineno-3-5" name="__codelineno-3-5" href="#__codelineno-3-5"></a>poetry<span class="w"> </span>install<span class="w"> </span>--without<span class="w"> </span>ci<span class="w"> </span><span class="c1"># --with ci</span>
 <a id="__codelineno-3-6" name="__codelineno-3-6" href="#__codelineno-3-6"></a>
 <a id="__codelineno-3-7" name="__codelineno-3-7" href="#__codelineno-3-7"></a>
 <a id="__codelineno-3-8" name="__codelineno-3-8" href="#__codelineno-3-8"></a><span class="c1"># Test</span>
-<a id="__codelineno-3-9" name="__codelineno-3-9" href="#__codelineno-3-9"></a>poetry build
-<a id="__codelineno-3-10" name="__codelineno-3-10" href="#__codelineno-3-10"></a>cp -r dist tests/dist
-<a id="__codelineno-3-11" name="__codelineno-3-11" href="#__codelineno-3-11"></a><span class="nb">cd</span> tests
-<a id="__codelineno-3-12" name="__codelineno-3-12" href="#__codelineno-3-12"></a>docker build . -t testmethod
-<a id="__codelineno-3-13" name="__codelineno-3-13" href="#__codelineno-3-13"></a>pytest -s -o <span class="nv">log_cli</span><span class="o">=</span><span class="nb">true</span>
-<a id="__codelineno-3-14" name="__codelineno-3-14" href="#__codelineno-3-14"></a>pytest tests/test_derivation.py -k <span class="s1">&#39;test_mything&#39;</span>
-<a id="__codelineno-3-15" name="__codelineno-3-15" href="#__codelineno-3-15"></a>pytest --testmon
+<a id="__codelineno-3-9" name="__codelineno-3-9" href="#__codelineno-3-9"></a>poetry<span class="w"> </span>build
+<a id="__codelineno-3-10" name="__codelineno-3-10" href="#__codelineno-3-10"></a>cp<span class="w"> </span>-r<span class="w"> </span>dist<span class="w"> </span>tests/dist
+<a id="__codelineno-3-11" name="__codelineno-3-11" href="#__codelineno-3-11"></a><span class="nb">cd</span><span class="w"> </span>tests
+<a id="__codelineno-3-12" name="__codelineno-3-12" href="#__codelineno-3-12"></a>docker<span class="w"> </span>build<span class="w"> </span>.<span class="w"> </span>-t<span class="w"> </span>testmethod
+<a id="__codelineno-3-13" name="__codelineno-3-13" href="#__codelineno-3-13"></a>pytest<span class="w"> </span>-s<span class="w"> </span>-o<span class="w"> </span><span class="nv">log_cli</span><span class="o">=</span><span class="nb">true</span>
+<a id="__codelineno-3-14" name="__codelineno-3-14" href="#__codelineno-3-14"></a>pytest<span class="w"> </span>tests/test_derivation.py<span class="w"> </span>-k<span class="w"> </span><span class="s1">&#39;test_mything&#39;</span>
+<a id="__codelineno-3-15" name="__codelineno-3-15" href="#__codelineno-3-15"></a>pytest<span class="w"> </span>--testmon
 <a id="__codelineno-3-16" name="__codelineno-3-16" href="#__codelineno-3-16"></a>
 <a id="__codelineno-3-17" name="__codelineno-3-17" href="#__codelineno-3-17"></a><span class="c1"># Pytest watch</span>
 <a id="__codelineno-3-18" name="__codelineno-3-18" href="#__codelineno-3-18"></a>ptw
-<a id="__codelineno-3-19" name="__codelineno-3-19" href="#__codelineno-3-19"></a>ptw -- --testmon
+<a id="__codelineno-3-19" name="__codelineno-3-19" href="#__codelineno-3-19"></a>ptw<span class="w"> </span>--<span class="w"> </span>--testmon
 <a id="__codelineno-3-20" name="__codelineno-3-20" href="#__codelineno-3-20"></a>
 <a id="__codelineno-3-21" name="__codelineno-3-21" href="#__codelineno-3-21"></a><span class="c1"># Watch a file during development</span>
-<a id="__codelineno-3-22" name="__codelineno-3-22" href="#__codelineno-3-22"></a>npm install -g nodemon
-<a id="__codelineno-3-23" name="__codelineno-3-23" href="#__codelineno-3-23"></a>nodemon -L experiments/auto_hyperparameter.py
+<a id="__codelineno-3-22" name="__codelineno-3-22" href="#__codelineno-3-22"></a>npm<span class="w"> </span>install<span class="w"> </span>-g<span class="w"> </span>nodemon
+<a id="__codelineno-3-23" name="__codelineno-3-23" href="#__codelineno-3-23"></a>nodemon<span class="w"> </span>-L<span class="w"> </span>experiments/auto_hyperparameter.py
 <a id="__codelineno-3-24" name="__codelineno-3-24" href="#__codelineno-3-24"></a>
 <a id="__codelineno-3-25" name="__codelineno-3-25" href="#__codelineno-3-25"></a><span class="c1"># Test-Publish</span>
-<a id="__codelineno-3-26" name="__codelineno-3-26" href="#__codelineno-3-26"></a>poetry config repositories.testpypi https://test.pypi.org/legacy/
-<a id="__codelineno-3-27" name="__codelineno-3-27" href="#__codelineno-3-27"></a>poetry config http-basic.testpypi __token__ pypi-your-api-token-here
-<a id="__codelineno-3-28" name="__codelineno-3-28" href="#__codelineno-3-28"></a>poetry build
-<a id="__codelineno-3-29" name="__codelineno-3-29" href="#__codelineno-3-29"></a>poetry publish -r testpypi
+<a id="__codelineno-3-26" name="__codelineno-3-26" href="#__codelineno-3-26"></a>poetry<span class="w"> </span>config<span class="w"> </span>repositories.testpypi<span class="w"> </span>https://test.pypi.org/legacy/
+<a id="__codelineno-3-27" name="__codelineno-3-27" href="#__codelineno-3-27"></a>poetry<span class="w"> </span>config<span class="w"> </span>http-basic.testpypi<span class="w"> </span>__token__<span class="w"> </span>pypi-your-api-token-here
+<a id="__codelineno-3-28" name="__codelineno-3-28" href="#__codelineno-3-28"></a>poetry<span class="w"> </span>build
+<a id="__codelineno-3-29" name="__codelineno-3-29" href="#__codelineno-3-29"></a>poetry<span class="w"> </span>publish<span class="w"> </span>-r<span class="w"> </span>testpypi
 <a id="__codelineno-3-30" name="__codelineno-3-30" href="#__codelineno-3-30"></a>
 <a id="__codelineno-3-31" name="__codelineno-3-31" href="#__codelineno-3-31"></a><span class="c1"># Real Publish</span>
-<a id="__codelineno-3-32" name="__codelineno-3-32" href="#__codelineno-3-32"></a>poetry config pypi-token.pypi pypi-your-token-here
+<a id="__codelineno-3-32" name="__codelineno-3-32" href="#__codelineno-3-32"></a>poetry<span class="w"> </span>config<span class="w"> </span>pypi-token.pypi<span class="w"> </span>pypi-your-token-here
 </code></pre></div>
 <h3 id="documentation">Documentation</h3>
 <p>https://squidfunk.github.io/mkdocs-material/
