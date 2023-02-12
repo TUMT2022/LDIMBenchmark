@@ -25,11 +25,11 @@ numpy = "^1.23.5"
 
 [tool.poetry.group.dev.dependencies]
 tox = "^3.27.1"
-black = "^22.10.0"
-pytest = "^7.2.0"
-syrupy = "^3.0.5"
-pytest-xdist = "^3.1.0"
-pytest-benchmark = "^4.0.0"
+black = "23.1.0"
+pytest = "7.2.1"
+syrupy = "3.0.6"
+pytest-xdist = "3.2.0"
+pytest-benchmark = "4.0.0"
 pyright = "^1.1.293"
 pytest-testmon = { version = "^1.4.5", python = "<3.12" }
 pytest-watch = "^4.2.0"
@@ -71,10 +71,11 @@ python =
 
 [testenv]
 deps =
-    black
-    pytest
-    syrupy
-    pytest-xdist
+    black==23.1.0
+    pytest==7.2.1
+    syrupy==3.0.6
+    pytest-xdist==3.2.0
+    pytest-benchmark==4.0.0
 commands =
     black --check --verbose src/ldimbenchmark
     pytest .
