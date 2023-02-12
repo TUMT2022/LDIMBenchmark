@@ -103,7 +103,6 @@ class DUALMethod(LDIMMethodBase):
             r4 = 0.005  # 0.3838801559425374
 
             for pipename in wn.link_name_list:
-
                 pipe = wn.get_link(pipename)
 
                 if pipe.link_type == "Pipe":

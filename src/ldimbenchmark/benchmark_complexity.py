@@ -62,7 +62,7 @@ def run_benchmark_complexity(
     with Pool(processes=cpu_count() - 1) as p:
         max_ = len(dataset_dirs)
         with tqdm(total=max_) as pbar:
-            for (datasetid, training, evaluation) in p.imap_unordered(
+            for datasetid, training, evaluation in p.imap_unordered(
                 loadDataset_local, dataset_dirs
             ):
                 datasets[datasetid] = {}
@@ -89,7 +89,6 @@ def run_benchmark_complexity(
 
     logging.info(" > Starting Complexity analyis")
     for method in methods:
-
         logging.info(f" - {method.name}")
 
         if additionalOutput:

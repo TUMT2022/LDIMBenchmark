@@ -30,7 +30,6 @@ class DatasetDerivator:
         out_path: str,
         force: bool = False,
     ):
-
         if not isinstance(datasets, Sequence):
             datasets = [datasets]
         self.datasets: List[Dataset] = datasets
@@ -69,11 +68,8 @@ class DatasetDerivator:
 
         newDatasets = []
         for dataset in self.datasets:
-
             if derivation == "accuracy":
-
                 for value in values:
-
                     this_dataset = Dataset(dataset.path)
                     this_dataset.info["derivations"] = {}
                     this_dataset.info["derivations"]["model"] = []
@@ -152,7 +148,6 @@ class DatasetDerivator:
                         value = value["value"]
 
                 if derivation == "sensitivity":
-
                     if not isinstance(value, dict):
                         value = {
                             "value": value,
@@ -181,7 +176,6 @@ class DatasetDerivator:
 
                     datasets = getattr(loadedDataset, apply_to)
                     for key in datasets.keys():
-
                         transformed_data = self._apply_derivation_to_DataFrame(
                             derivation, value, datasets[key]
                         )
