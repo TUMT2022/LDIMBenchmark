@@ -47,5 +47,6 @@ jobs:
       - name: Release
         env:
           POETRY_PYPI_TOKEN_PYPI: ${{ secrets.PYPI_TOKEN }}
+          POETRY_HTTP_BASIC_USERNAME: __token__
         run: |
           poetry publish --build
