@@ -1,6 +1,6 @@
 name: ldimbenchmark Release
 
-# on:
+on: workflow_dispatch
 
 env:
   poetry_version: 1.2.2
