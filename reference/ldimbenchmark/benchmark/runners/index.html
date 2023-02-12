@@ -8,19 +8,19 @@
       
       
       
-      <link rel="icon" href="../../assets/images/favicon.png">
+      <link rel="icon" href="../../../../assets/images/favicon.png">
       <meta name="generator" content="mkdocs-1.4.2, mkdocs-material-8.5.10">
     
     
       
-        <title>Dataset - LDIMBenchmark</title>
+        <title>runners - LDIMBenchmark</title>
       
     
     
-      <link rel="stylesheet" href="../../assets/stylesheets/main.975780f9.min.css">
+      <link rel="stylesheet" href="../../../../assets/stylesheets/main.975780f9.min.css">
       
         
-        <link rel="stylesheet" href="../../assets/stylesheets/palette.2505c338.min.css">
+        <link rel="stylesheet" href="../../../../assets/stylesheets/palette.2505c338.min.css">
         
       
       
@@ -37,11 +37,11 @@
       
     
     
-      <link rel="stylesheet" href="../../assets/_mkdocstrings.css">
+      <link rel="stylesheet" href="../../../../assets/_mkdocstrings.css">
     
-      <link rel="stylesheet" href="../../_extra/jupyter.css">
+      <link rel="stylesheet" href="../../../../_extra/jupyter.css">
     
-    <script>__md_scope=new URL("../..",location),__md_hash=e=>[...e].reduce((e,_)=>(e<<5)-e+_.charCodeAt(0),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    <script>__md_scope=new URL("../../../..",location),__md_hash=e=>[...e].reduce((e,_)=>(e<<5)-e+_.charCodeAt(0),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
     
       
 
@@ -66,7 +66,7 @@
     <div data-md-component="skip">
       
         
-        <a href="#datasets" class="md-skip">
+        <a href="#ldimbenchmark.benchmark.runners" class="md-skip">
           Skip to content
         </a>
       
@@ -80,7 +80,7 @@
 
 <header class="md-header" data-md-component="header">
   <nav class="md-header__inner md-grid" aria-label="Header">
-    <a href="../.." title="LDIMBenchmark" class="md-header__button md-logo" aria-label="LDIMBenchmark" data-md-component="logo">
+    <a href="../../../.." title="LDIMBenchmark" class="md-header__button md-logo" aria-label="LDIMBenchmark" data-md-component="logo">
       
   
   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--! Font Awesome Free 6.2.1 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc.--><path d="M512 256c0 141.4-114.6 256-256 256S0 397.4 0 256 114.6 0 256 0s256 114.6 256 256zM288 96c0-17.7-14.3-32-32-32s-32 14.3-32 32 14.3 32 32 32 32-14.3 32-32zm-32 320c35.3 0 64-28.7 64-64 0-17.4-6.9-33.1-18.1-44.6L366 161.7c5.3-12.1-.2-26.3-12.3-31.6s-26.3.2-31.6 12.3L257.9 288H256c-35.3 0-64 28.7-64 64s28.7 64 64 64zm-80-272c0-17.7-14.3-32-32-32s-32 14.3-32 32 14.3 32 32 32 32-14.3 32-32zM96 288c17.7 0 32-14.3 32-32s-14.3-32-32-32-32 14.3-32 32 14.3 32 32 32zm352-32c0-17.7-14.3-32-32-32s-32 14.3-32 32 14.3 32 32 32 32-14.3 32-32z"/></svg>
@@ -99,7 +99,7 @@
         <div class="md-header__topic" data-md-component="header-topic">
           <span class="md-ellipsis">
             
-              Dataset
+              runners
             
           </span>
         </div>
@@ -178,7 +178,7 @@
 
 <nav class="md-nav md-nav--primary" aria-label="Navigation" data-md-level="0">
   <label class="md-nav__title" for="__drawer">
-    <a href="../.." title="LDIMBenchmark" class="md-nav__button md-logo" aria-label="LDIMBenchmark" data-md-component="logo">
+    <a href="../../../.." title="LDIMBenchmark" class="md-nav__button md-logo" aria-label="LDIMBenchmark" data-md-component="logo">
       
   
   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--! Font Awesome Free 6.2.1 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc.--><path d="M512 256c0 141.4-114.6 256-256 256S0 397.4 0 256 114.6 0 256 0s256 114.6 256 256zM288 96c0-17.7-14.3-32-32-32s-32 14.3-32 32 14.3 32 32 32 32-14.3 32-32zm-32 320c35.3 0 64-28.7 64-64 0-17.4-6.9-33.1-18.1-44.6L366 161.7c5.3-12.1-.2-26.3-12.3-31.6s-26.3.2-31.6 12.3L257.9 288H256c-35.3 0-64 28.7-64 64s28.7 64 64 64zm-80-272c0-17.7-14.3-32-32-32s-32 14.3-32 32 14.3 32 32 32 32-14.3 32-32zM96 288c17.7 0 32-14.3 32-32s-14.3-32-32-32-32 14.3-32 32 14.3 32 32 32zm352-32c0-17.7-14.3-32-32-32s-32 14.3-32 32 14.3 32 32 32 32-14.3 32-32z"/></svg>
@@ -209,7 +209,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../.." class="md-nav__link">
+      <a href="../../../.." class="md-nav__link">
         Index
       </a>
     </li>
@@ -235,7 +235,7 @@
         
         
         <div class="md-nav__link md-nav__link--index ">
-          <a href="../../story/">Story</a>
+          <a href="../../../../story/">Story</a>
           
             <label for="__nav_2">
               <span class="md-nav__icon md-icon"></span>
@@ -256,7 +256,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../story/testing/" class="md-nav__link">
+      <a href="../../../../story/testing/" class="md-nav__link">
         Testing
       </a>
     </li>
@@ -276,14 +276,12 @@
 
   
   
-    
-  
   
     
-    <li class="md-nav__item md-nav__item--active md-nav__item--nested">
+    <li class="md-nav__item md-nav__item--nested">
       
       
-        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_3" type="checkbox" id="__nav_3" checked>
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_3" type="checkbox" id="__nav_3" >
       
       
       
@@ -291,7 +289,7 @@
         
         
         <div class="md-nav__link md-nav__link--index ">
-          <a href="../">Design</a>
+          <a href="../../../../design/">Design</a>
           
             <label for="__nav_3">
               <span class="md-nav__icon md-icon"></span>
@@ -310,61 +308,11 @@
               
   
   
-    
   
-  
-    <li class="md-nav__item md-nav__item--active">
-      
-      <input class="md-nav__toggle md-toggle" data-md-toggle="toc" type="checkbox" id="__toc">
-      
-      
-      
-        <label class="md-nav__link md-nav__link--active" for="__toc">
-          Dataset
-          <span class="md-nav__icon md-icon"></span>
-        </label>
-      
-      <a href="./" class="md-nav__link md-nav__link--active">
+    <li class="md-nav__item">
+      <a href="../../../../design/datasets.md" class="md-nav__link">
         Dataset
       </a>
-      
-        
-
-<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
-  
-  
-  
-  
-    <label class="md-nav__title" for="__toc">
-      <span class="md-nav__icon md-icon"></span>
-      Table of contents
-    </label>
-    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
-      
-        <li class="md-nav__item">
-  <a href="#datasets" class="md-nav__link">
-    Datasets
-  </a>
-  
-    <nav class="md-nav" aria-label="Datasets">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#derived-datasets" class="md-nav__link">
-    Derived Datasets
-  </a>
-  
-</li>
-        
-      </ul>
-    </nav>
-  
-</li>
-      
-    </ul>
-  
-</nav>
-      
     </li>
   
 
@@ -376,7 +324,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../file-level-interface/" class="md-nav__link">
+      <a href="../../../../design/file-level-interface/" class="md-nav__link">
         File Level API
       </a>
     </li>
@@ -390,7 +338,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../programming-interface/" class="md-nav__link">
+      <a href="../../../../design/programming-interface/" class="md-nav__link">
         Programming Interface
       </a>
     </li>
@@ -438,7 +386,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../user-guides/run-on-your-dataset/" class="md-nav__link">
+      <a href="../../../../user-guides/run-on-your-dataset/" class="md-nav__link">
         Use own Datasets
       </a>
     </li>
@@ -452,7 +400,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../user-guides/run-your-method/" class="md-nav__link">
+      <a href="../../../../user-guides/run-your-method/" class="md-nav__link">
         Implement a new Method
       </a>
     </li>
@@ -466,7 +414,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../user-guides/run-complexity-analysis/" class="md-nav__link">
+      <a href="../../../../user-guides/run-complexity-analysis/" class="md-nav__link">
         Complexity Analysis
       </a>
     </li>
@@ -480,7 +428,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../user-guides/run-sensitivity-analysis/" class="md-nav__link">
+      <a href="../../../../user-guides/run-sensitivity-analysis/" class="md-nav__link">
         Sensitivity Analysis
       </a>
     </li>
@@ -494,7 +442,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../user-guides/docker/" class="md-nav__link">
+      <a href="../../../../user-guides/docker/" class="md-nav__link">
         Run Method in Docker Container
       </a>
     </li>
@@ -516,7 +464,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../roadmap/" class="md-nav__link">
+      <a href="../../../../roadmap/" class="md-nav__link">
         Roadmap
       </a>
     </li>
@@ -529,12 +477,14 @@
 
   
   
+    
+  
   
     
-    <li class="md-nav__item md-nav__item--nested">
+    <li class="md-nav__item md-nav__item--active md-nav__item--nested">
       
       
-        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_6" type="checkbox" id="__nav_6" >
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_6" type="checkbox" id="__nav_6" checked>
       
       
       
@@ -555,12 +505,14 @@
               
   
   
+    
+  
   
     
-    <li class="md-nav__item md-nav__item--nested">
+    <li class="md-nav__item md-nav__item--active md-nav__item--nested">
       
       
-        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_6_1" type="checkbox" id="__nav_6_1" >
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_6_1" type="checkbox" id="__nav_6_1" checked>
       
       
       
@@ -568,7 +520,7 @@
         
         
         <div class="md-nav__link md-nav__link--index ">
-          <a href="../../reference/ldimbenchmark/">ldimbenchmark</a>
+          <a href="../../">ldimbenchmark</a>
           
             <label for="__nav_6_1">
               <span class="md-nav__icon md-icon"></span>
@@ -587,10 +539,92 @@
               
   
   
+    
+  
+  
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--nested">
+      
+      
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_6_1_1" type="checkbox" id="__nav_6_1_1" checked>
+      
+      
+      
+      
+        
+        
+        <div class="md-nav__link md-nav__link--index ">
+          <a href="../">benchmark</a>
+          
+            <label for="__nav_6_1_1">
+              <span class="md-nav__icon md-icon"></span>
+            </label>
+          
+        </div>
+      
+      <nav class="md-nav" aria-label="benchmark" data-md-level="3">
+        <label class="md-nav__title" for="__nav_6_1_1">
+          <span class="md-nav__icon md-icon"></span>
+          benchmark
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+            
+              
+  
+  
   
     <li class="md-nav__item">
-      <a href="../../reference/ldimbenchmark/benchmark/" class="md-nav__link">
+      <a href="../benchmark/" class="md-nav__link">
         benchmark
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+    
+  
+  
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--nested">
+      
+      
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_6_1_1_2" type="checkbox" id="__nav_6_1_1_2" checked>
+      
+      
+      
+      
+        
+        
+        <div class="md-nav__link md-nav__link--index md-nav__link--active">
+          <a href="./">runners</a>
+          
+            <label for="__nav_6_1_1_2">
+              <span class="md-nav__icon md-icon"></span>
+            </label>
+          
+        </div>
+      
+      <nav class="md-nav" aria-label="runners" data-md-level="4">
+        <label class="md-nav__title" for="__nav_6_1_1_2">
+          <span class="md-nav__icon md-icon"></span>
+          runners
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="BaseMethodRunner/" class="md-nav__link">
+        BaseMethodRunner
       </a>
     </li>
   
@@ -603,7 +637,63 @@
   
   
     <li class="md-nav__item">
-      <a href="../../reference/ldimbenchmark/benchmark_complexity/" class="md-nav__link">
+      <a href="DockerMethodRunner/" class="md-nav__link">
+        DockerMethodRunner
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="FileMethodRunner/" class="md-nav__link">
+        FileMethodRunner
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="LocalMethodRunner/" class="md-nav__link">
+        LocalMethodRunner
+      </a>
+    </li>
+  
+
+            
+          
+        </ul>
+      </nav>
+    </li>
+  
+
+            
+          
+        </ul>
+      </nav>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../benchmark_complexity/" class="md-nav__link">
         benchmark_complexity
       </a>
     </li>
@@ -617,7 +707,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../reference/ldimbenchmark/benchmark_evaluation/" class="md-nav__link">
+      <a href="../../benchmark_evaluation/" class="md-nav__link">
         benchmark_evaluation
       </a>
     </li>
@@ -631,7 +721,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../reference/ldimbenchmark/classes/" class="md-nav__link">
+      <a href="../../classes/" class="md-nav__link">
         classes
       </a>
     </li>
@@ -645,7 +735,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../reference/ldimbenchmark/cli/" class="md-nav__link">
+      <a href="../../cli/" class="md-nav__link">
         cli
       </a>
     </li>
@@ -659,7 +749,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../reference/ldimbenchmark/constants/" class="md-nav__link">
+      <a href="../../constants/" class="md-nav__link">
         constants
       </a>
     </li>
@@ -684,7 +774,7 @@
         
         
         <div class="md-nav__link md-nav__link--index ">
-          <a href="../../reference/ldimbenchmark/datasets/">datasets</a>
+          <a href="../../datasets/">datasets</a>
           
             <label for="__nav_6_1_7">
               <span class="md-nav__icon md-icon"></span>
@@ -705,7 +795,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../reference/ldimbenchmark/datasets/analysis/" class="md-nav__link">
+      <a href="../../datasets/analysis/" class="md-nav__link">
         analysis
       </a>
     </li>
@@ -719,7 +809,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../reference/ldimbenchmark/datasets/classes/" class="md-nav__link">
+      <a href="../../datasets/classes/" class="md-nav__link">
         classes
       </a>
     </li>
@@ -733,7 +823,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../reference/ldimbenchmark/datasets/derivation/" class="md-nav__link">
+      <a href="../../datasets/derivation/" class="md-nav__link">
         derivation
       </a>
     </li>
@@ -747,7 +837,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../reference/ldimbenchmark/datasets/derivation_show/" class="md-nav__link">
+      <a href="../../datasets/derivation_show/" class="md-nav__link">
         derivation_show
       </a>
     </li>
@@ -761,7 +851,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../reference/ldimbenchmark/datasets/library/" class="md-nav__link">
+      <a href="../../datasets/library/" class="md-nav__link">
         library
       </a>
     </li>
@@ -786,7 +876,7 @@
         
         
         <div class="md-nav__link md-nav__link--index ">
-          <a href="../../reference/ldimbenchmark/datasets/loaders/">loaders</a>
+          <a href="../../datasets/loaders/">loaders</a>
           
             <label for="__nav_6_1_7_6">
               <span class="md-nav__icon md-icon"></span>
@@ -807,7 +897,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../reference/ldimbenchmark/datasets/loaders/load_battledim/" class="md-nav__link">
+      <a href="../../datasets/loaders/load_battledim/" class="md-nav__link">
         load_battledim
       </a>
     </li>
@@ -821,7 +911,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../reference/ldimbenchmark/datasets/loaders/load_dataset_base/" class="md-nav__link">
+      <a href="../../datasets/loaders/load_dataset_base/" class="md-nav__link">
         load_dataset_base
       </a>
     </li>
@@ -849,8 +939,8 @@
   
   
     <li class="md-nav__item">
-      <a href="../../reference/ldimbenchmark/evaluation/" class="md-nav__link">
-        evaluation
+      <a href="../../evaluation_metrics/" class="md-nav__link">
+        evaluation_metrics
       </a>
     </li>
   
@@ -874,7 +964,7 @@
         
         
         <div class="md-nav__link md-nav__link--index ">
-          <a href="../../reference/ldimbenchmark/generator/">generator</a>
+          <a href="../../generator/">generator</a>
           
             <label for="__nav_6_1_9">
               <span class="md-nav__icon md-icon"></span>
@@ -895,7 +985,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../reference/ldimbenchmark/generator/dataset_generator/" class="md-nav__link">
+      <a href="../../generator/dataset_generator/" class="md-nav__link">
         dataset_generator
       </a>
     </li>
@@ -909,7 +999,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../reference/ldimbenchmark/generator/poulakis_network/" class="md-nav__link">
+      <a href="../../generator/poulakis_network/" class="md-nav__link">
         poulakis_network
       </a>
     </li>
@@ -941,7 +1031,7 @@
         
         
         <div class="md-nav__link md-nav__link--index ">
-          <a href="../../reference/ldimbenchmark/methods/">methods</a>
+          <a href="../../methods/">methods</a>
           
             <label for="__nav_6_1_10">
               <span class="md-nav__icon md-icon"></span>
@@ -962,7 +1052,21 @@
   
   
     <li class="md-nav__item">
-      <a href="../../reference/ldimbenchmark/methods/lila/" class="md-nav__link">
+      <a href="../../methods/dualmodel/" class="md-nav__link">
+        dualmodel
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../methods/lila/" class="md-nav__link">
         lila
       </a>
     </li>
@@ -976,7 +1080,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../reference/ldimbenchmark/methods/mnf/" class="md-nav__link">
+      <a href="../../methods/mnf/" class="md-nav__link">
         mnf
       </a>
     </li>
@@ -990,7 +1094,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../reference/ldimbenchmark/methods/null/" class="md-nav__link">
+      <a href="../../methods/null/" class="md-nav__link">
         null
       </a>
     </li>
@@ -1004,7 +1108,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../reference/ldimbenchmark/methods/random/" class="md-nav__link">
+      <a href="../../methods/random/" class="md-nav__link">
         random
       </a>
     </li>
@@ -1021,7 +1125,7 @@
     <li class="md-nav__item md-nav__item--nested">
       
       
-        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_6_1_10_5" type="checkbox" id="__nav_6_1_10_5" >
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_6_1_10_6" type="checkbox" id="__nav_6_1_10_6" >
       
       
       
@@ -1029,16 +1133,16 @@
         
         
         <div class="md-nav__link md-nav__link--index ">
-          <a href="../../reference/ldimbenchmark/methods/utils/">utils</a>
+          <a href="../../methods/utils/">utils</a>
           
-            <label for="__nav_6_1_10_5">
+            <label for="__nav_6_1_10_6">
               <span class="md-nav__icon md-icon"></span>
             </label>
           
         </div>
       
       <nav class="md-nav" aria-label="utils" data-md-level="4">
-        <label class="md-nav__title" for="__nav_6_1_10_5">
+        <label class="md-nav__title" for="__nav_6_1_10_6">
           <span class="md-nav__icon md-icon"></span>
           utils
         </label>
@@ -1050,7 +1154,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../reference/ldimbenchmark/methods/utils/cusum/" class="md-nav__link">
+      <a href="../../methods/utils/cusum/" class="md-nav__link">
         cusum
       </a>
     </li>
@@ -1067,6 +1171,20 @@
           
         </ul>
       </nav>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../utilities/" class="md-nav__link">
+        utilities
+      </a>
     </li>
   
 
@@ -1110,22 +1228,9 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
-  <a href="#datasets" class="md-nav__link">
-    Datasets
+  <a href="#ldimbenchmark.benchmark.runners" class="md-nav__link">
+    ldimbenchmark.benchmark.runners
   </a>
-  
-    <nav class="md-nav" aria-label="Datasets">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#derived-datasets" class="md-nav__link">
-    Derived Datasets
-  </a>
-  
-</li>
-        
-      </ul>
-    </nav>
   
 </li>
       
@@ -1143,73 +1248,38 @@
                 
                   
 
-  <a href="https://github.com/TUMT2022/LDIMBench.git/edit/master/docs/design/datasets.md" title="Edit this page" class="md-content__button md-icon">
+  <a href="https://github.com/TUMT2022/LDIMBench.git/edit/master/docs/src/ldimbenchmark/benchmark/runners/__init__.py" title="Edit this page" class="md-content__button md-icon">
     
     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20.71 7.04c.39-.39.39-1.04 0-1.41l-2.34-2.34c-.37-.39-1.02-.39-1.41 0l-1.84 1.83 3.75 3.75M3 17.25V21h3.75L17.81 9.93l-3.75-3.75L3 17.25Z"/></svg>
   </a>
 
 
-  <h1>Dataset</h1>
+  <h1>runners</h1>
 
-<h2 id="datasets">Datasets</h2>
-<p>Datasets follow this structure:
-We do not split the data into training and evaluation data, but instead provide the start and end of the training and evaluation data in the <code>dataset_info.yml</code> file (to make it more configurable).</p>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a>./dataset
-<a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a> | -- demands/
-<a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a> |    | -- &lt;sensorname&gt;.csv
-<a id="__codelineno-0-4" name="__codelineno-0-4" href="#__codelineno-0-4"></a> | -- pressures/
-<a id="__codelineno-0-5" name="__codelineno-0-5" href="#__codelineno-0-5"></a> |    | -- &lt;sensorname&gt;.csv
-<a id="__codelineno-0-6" name="__codelineno-0-6" href="#__codelineno-0-6"></a> | -- flows/
-<a id="__codelineno-0-7" name="__codelineno-0-7" href="#__codelineno-0-7"></a> |    | -- &lt;sensorname&gt;.csv
-<a id="__codelineno-0-8" name="__codelineno-0-8" href="#__codelineno-0-8"></a> | -- levels/
-<a id="__codelineno-0-9" name="__codelineno-0-9" href="#__codelineno-0-9"></a> |    | -- &lt;sensorname&gt;.csv
-<a id="__codelineno-0-10" name="__codelineno-0-10" href="#__codelineno-0-10"></a> | -- leaks.csv            # Labeled Leaks
-<a id="__codelineno-0-11" name="__codelineno-0-11" href="#__codelineno-0-11"></a> | -- model.inp            # The water network model
-<a id="__codelineno-0-12" name="__codelineno-0-12" href="#__codelineno-0-12"></a> | -- dma.json             # Layout of the district metering zones
-<a id="__codelineno-0-13" name="__codelineno-0-13" href="#__codelineno-0-13"></a> | -- dataset_info.yml     # Information about the dataset
-</code></pre></div>
-<p>The <code>dataset_info.yml</code> file contains the following information:</p>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">&lt;name of the dataset&gt;</span><span class="w"> </span><span class="c1"># root name (important for )</span><span class="w"></span>
-<a id="__codelineno-1-2" name="__codelineno-1-2" href="#__codelineno-1-2"></a><span class="nt">derivation</span><span class="p">:</span><span class="w"> </span><span class="c1"># Filled in by a DatasetDerivator</span><span class="w"></span>
-<a id="__codelineno-1-3" name="__codelineno-1-3" href="#__codelineno-1-3"></a><span class="w">  </span><span class="nt">&lt;type&gt;</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">&lt;key&gt;</span><span class="w"></span>
-<a id="__codelineno-1-4" name="__codelineno-1-4" href="#__codelineno-1-4"></a><span class="nt">description</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">&lt;optional; description of the dataset&gt;</span><span class="w"></span>
-<a id="__codelineno-1-5" name="__codelineno-1-5" href="#__codelineno-1-5"></a><span class="nt">source</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">&lt;optional;link to source the dataset&gt;</span><span class="w"></span>
-<a id="__codelineno-1-6" name="__codelineno-1-6" href="#__codelineno-1-6"></a><span class="nt">dataset</span><span class="p">:</span><span class="w"> </span><span class="c1"># required, start and end of evaluation and training data</span><span class="w"></span>
-<a id="__codelineno-1-7" name="__codelineno-1-7" href="#__codelineno-1-7"></a><span class="w">  </span><span class="nt">evaluation</span><span class="p">:</span><span class="w"></span>
-<a id="__codelineno-1-8" name="__codelineno-1-8" href="#__codelineno-1-8"></a><span class="w">    </span><span class="nt">end</span><span class="p">:</span><span class="w"> </span><span class="s">&#39;2016-04-12</span><span class="nv"> </span><span class="s">05:12:00&#39;</span><span class="w"></span>
-<a id="__codelineno-1-9" name="__codelineno-1-9" href="#__codelineno-1-9"></a><span class="w">    </span><span class="nt">start</span><span class="p">:</span><span class="w"> </span><span class="s">&#39;2016-04-12</span><span class="nv"> </span><span class="s">01:45:00&#39;</span><span class="w"></span>
-<a id="__codelineno-1-10" name="__codelineno-1-10" href="#__codelineno-1-10"></a><span class="w">  </span><span class="nt">training</span><span class="p">:</span><span class="w"></span>
-<a id="__codelineno-1-11" name="__codelineno-1-11" href="#__codelineno-1-11"></a><span class="w">    </span><span class="nt">end</span><span class="p">:</span><span class="w"> </span><span class="s">&#39;2016-04-12</span><span class="nv"> </span><span class="s">01:45:00&#39;</span><span class="w"></span>
-<a id="__codelineno-1-12" name="__codelineno-1-12" href="#__codelineno-1-12"></a><span class="w">    </span><span class="nt">start</span><span class="p">:</span><span class="w"> </span><span class="s">&#39;2016-04-12</span><span class="nv"> </span><span class="s">01:15:00&#39;</span><span class="w"></span>
-<a id="__codelineno-1-13" name="__codelineno-1-13" href="#__codelineno-1-13"></a><span class="nt">inp_file</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Ragnitz_Calibrated_Zones.inp</span><span class="w"></span>
-<a id="__codelineno-1-14" name="__codelineno-1-14" href="#__codelineno-1-14"></a>
-<a id="__codelineno-1-15" name="__codelineno-1-15" href="#__codelineno-1-15"></a><span class="c1"># Leakages found in the dataset</span><span class="w"></span>
-<a id="__codelineno-1-16" name="__codelineno-1-16" href="#__codelineno-1-16"></a><span class="nt">leakages</span><span class="p">:</span><span class="w"></span>
-<a id="__codelineno-1-17" name="__codelineno-1-17" href="#__codelineno-1-17"></a><span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">description</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">S1</span><span class="w"></span>
-<a id="__codelineno-1-18" name="__codelineno-1-18" href="#__codelineno-1-18"></a><span class="w">    </span><span class="nt">leak_start_time</span><span class="p">:</span><span class="w"> </span><span class="s">&#39;2016-04-12T01:37:45&#39;</span><span class="w"></span>
-<a id="__codelineno-1-19" name="__codelineno-1-19" href="#__codelineno-1-19"></a><span class="w">    </span><span class="nt">leak_peak_time</span><span class="p">:</span><span class="w"> </span><span class="s">&#39;2016-04-12T01:37:45&#39;</span><span class="w"></span>
-<a id="__codelineno-1-20" name="__codelineno-1-20" href="#__codelineno-1-20"></a><span class="w">    </span><span class="nt">leak_end_time</span><span class="p">:</span><span class="w"> </span><span class="s">&#39;2016-04-12T01:40:30&#39;</span><span class="w"></span>
-<a id="__codelineno-1-21" name="__codelineno-1-21" href="#__codelineno-1-21"></a><span class="w">    </span><span class="nt">leak_pipe</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">LHG3879</span><span class="w"></span>
-<a id="__codelineno-1-22" name="__codelineno-1-22" href="#__codelineno-1-22"></a><span class="w">    </span><span class="nt">leak_max_flow</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">15.03</span><span class="w"></span>
-<a id="__codelineno-1-23" name="__codelineno-1-23" href="#__codelineno-1-23"></a><span class="w">    </span><span class="nt">leak_out_flow</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">15.03</span><span class="w"></span>
-</code></pre></div>
-<h3 id="derived-datasets">Derived Datasets</h3>
-<p>For testing the robustness of the leakage detection methods, we derive datasets from the original datasets.
-These datasets are subject to additional noise, missing data (sensors, timespans), etc.</p>
+<div class="doc doc-object doc-module">
 
-  <hr>
-<div class="md-source-file">
-  <small>
-    
-      Last update:
-      <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date">December 13, 2022</span>
-      
-        <br>
-        Created:
-        <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date">December 13, 2022</span>
-      
-    
-  </small>
+
+<a id="ldimbenchmark.benchmark.runners"></a>
+  <div class="doc doc-contents first">
+
+  
+
+  <div class="doc doc-children">
+
+
+
+
+
+
+
+
+
+
+
+  </div>
+
+  </div>
+
 </div>
 
 
@@ -1231,7 +1301,7 @@ These datasets are subject to additional noise, missing data (sensors, timespans
     <nav class="md-footer__inner md-grid" aria-label="Footer" >
       
         
-        <a href="../" class="md-footer__link md-footer__link--prev" aria-label="Previous: Design" rel="prev">
+        <a href="../benchmark/" class="md-footer__link md-footer__link--prev" aria-label="Previous: benchmark" rel="prev">
           <div class="md-footer__button md-icon">
             <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11h12Z"/></svg>
           </div>
@@ -1240,20 +1310,20 @@ These datasets are subject to additional noise, missing data (sensors, timespans
               <span class="md-footer__direction">
                 Previous
               </span>
-              Design
+              benchmark
             </div>
           </div>
         </a>
       
       
         
-        <a href="../file-level-interface/" class="md-footer__link md-footer__link--next" aria-label="Next: File Level API" rel="next">
+        <a href="BaseMethodRunner/" class="md-footer__link md-footer__link--next" aria-label="Next: BaseMethodRunner" rel="next">
           <div class="md-footer__title">
             <div class="md-ellipsis">
               <span class="md-footer__direction">
                 Next
               </span>
-              File Level API
+              BaseMethodRunner
             </div>
           </div>
           <div class="md-footer__button md-icon">
@@ -1284,12 +1354,12 @@ These datasets are subject to additional noise, missing data (sensors, timespans
       <div class="md-dialog__inner md-typeset"></div>
     </div>
     
-    <script id="__config" type="application/json">{"base": "../..", "features": [], "search": "../../assets/javascripts/workers/search.16e2a7d4.min.js", "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.config.lang": "en", "search.config.pipeline": "trimmer, stopWordFilter", "search.config.separator": "[\\s\\-]+", "search.placeholder": "Search", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version.title": "Select version"}}</script>
+    <script id="__config" type="application/json">{"base": "../../../..", "features": [], "search": "../../../../assets/javascripts/workers/search.16e2a7d4.min.js", "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.config.lang": "en", "search.config.pipeline": "trimmer, stopWordFilter", "search.config.separator": "[\\s\\-]+", "search.placeholder": "Search", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version.title": "Select version"}}</script>
     
     
-      <script src="../../assets/javascripts/bundle.5a2dcb6a.min.js"></script>
+      <script src="../../../../assets/javascripts/bundle.5a2dcb6a.min.js"></script>
       
-        <script src="../../_extra/jupyter.js"></script>
+        <script src="../../../../_extra/jupyter.js"></script>
       
     
     

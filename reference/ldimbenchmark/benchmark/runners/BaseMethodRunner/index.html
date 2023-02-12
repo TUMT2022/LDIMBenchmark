@@ -8,19 +8,19 @@
       
       
       
-      <link rel="icon" href="../../../../assets/images/favicon.png">
+      <link rel="icon" href="../../../../../assets/images/favicon.png">
       <meta name="generator" content="mkdocs-1.4.2, mkdocs-material-8.5.10">
     
     
       
-        <title>library - LDIMBenchmark</title>
+        <title>BaseMethodRunner - LDIMBenchmark</title>
       
     
     
-      <link rel="stylesheet" href="../../../../assets/stylesheets/main.975780f9.min.css">
+      <link rel="stylesheet" href="../../../../../assets/stylesheets/main.975780f9.min.css">
       
         
-        <link rel="stylesheet" href="../../../../assets/stylesheets/palette.2505c338.min.css">
+        <link rel="stylesheet" href="../../../../../assets/stylesheets/palette.2505c338.min.css">
         
       
       
@@ -37,11 +37,11 @@
       
     
     
-      <link rel="stylesheet" href="../../../../assets/_mkdocstrings.css">
+      <link rel="stylesheet" href="../../../../../assets/_mkdocstrings.css">
     
-      <link rel="stylesheet" href="../../../../_extra/jupyter.css">
+      <link rel="stylesheet" href="../../../../../_extra/jupyter.css">
     
-    <script>__md_scope=new URL("../../../..",location),__md_hash=e=>[...e].reduce((e,_)=>(e<<5)-e+_.charCodeAt(0),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    <script>__md_scope=new URL("../../../../..",location),__md_hash=e=>[...e].reduce((e,_)=>(e<<5)-e+_.charCodeAt(0),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
     
       
 
@@ -66,7 +66,7 @@
     <div data-md-component="skip">
       
         
-        <a href="#ldimbenchmark.datasets.library" class="md-skip">
+        <a href="#ldimbenchmark.benchmark.runners.BaseMethodRunner" class="md-skip">
           Skip to content
         </a>
       
@@ -80,7 +80,7 @@
 
 <header class="md-header" data-md-component="header">
   <nav class="md-header__inner md-grid" aria-label="Header">
-    <a href="../../../.." title="LDIMBenchmark" class="md-header__button md-logo" aria-label="LDIMBenchmark" data-md-component="logo">
+    <a href="../../../../.." title="LDIMBenchmark" class="md-header__button md-logo" aria-label="LDIMBenchmark" data-md-component="logo">
       
   
   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--! Font Awesome Free 6.2.1 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc.--><path d="M512 256c0 141.4-114.6 256-256 256S0 397.4 0 256 114.6 0 256 0s256 114.6 256 256zM288 96c0-17.7-14.3-32-32-32s-32 14.3-32 32 14.3 32 32 32 32-14.3 32-32zm-32 320c35.3 0 64-28.7 64-64 0-17.4-6.9-33.1-18.1-44.6L366 161.7c5.3-12.1-.2-26.3-12.3-31.6s-26.3.2-31.6 12.3L257.9 288H256c-35.3 0-64 28.7-64 64s28.7 64 64 64zm-80-272c0-17.7-14.3-32-32-32s-32 14.3-32 32 14.3 32 32 32 32-14.3 32-32zM96 288c17.7 0 32-14.3 32-32s-14.3-32-32-32-32 14.3-32 32 14.3 32 32 32zm352-32c0-17.7-14.3-32-32-32s-32 14.3-32 32 14.3 32 32 32 32-14.3 32-32z"/></svg>
@@ -99,7 +99,7 @@
         <div class="md-header__topic" data-md-component="header-topic">
           <span class="md-ellipsis">
             
-              library
+              BaseMethodRunner
             
           </span>
         </div>
@@ -178,7 +178,7 @@
 
 <nav class="md-nav md-nav--primary" aria-label="Navigation" data-md-level="0">
   <label class="md-nav__title" for="__drawer">
-    <a href="../../../.." title="LDIMBenchmark" class="md-nav__button md-logo" aria-label="LDIMBenchmark" data-md-component="logo">
+    <a href="../../../../.." title="LDIMBenchmark" class="md-nav__button md-logo" aria-label="LDIMBenchmark" data-md-component="logo">
       
   
   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--! Font Awesome Free 6.2.1 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc.--><path d="M512 256c0 141.4-114.6 256-256 256S0 397.4 0 256 114.6 0 256 0s256 114.6 256 256zM288 96c0-17.7-14.3-32-32-32s-32 14.3-32 32 14.3 32 32 32 32-14.3 32-32zm-32 320c35.3 0 64-28.7 64-64 0-17.4-6.9-33.1-18.1-44.6L366 161.7c5.3-12.1-.2-26.3-12.3-31.6s-26.3.2-31.6 12.3L257.9 288H256c-35.3 0-64 28.7-64 64s28.7 64 64 64zm-80-272c0-17.7-14.3-32-32-32s-32 14.3-32 32 14.3 32 32 32 32-14.3 32-32zM96 288c17.7 0 32-14.3 32-32s-14.3-32-32-32-32 14.3-32 32 14.3 32 32 32zm352-32c0-17.7-14.3-32-32-32s-32 14.3-32 32 14.3 32 32 32 32-14.3 32-32z"/></svg>
@@ -209,7 +209,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../.." class="md-nav__link">
+      <a href="../../../../.." class="md-nav__link">
         Index
       </a>
     </li>
@@ -235,7 +235,7 @@
         
         
         <div class="md-nav__link md-nav__link--index ">
-          <a href="../../../../story/">Story</a>
+          <a href="../../../../../story/">Story</a>
           
             <label for="__nav_2">
               <span class="md-nav__icon md-icon"></span>
@@ -256,7 +256,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../../story/testing/" class="md-nav__link">
+      <a href="../../../../../story/testing/" class="md-nav__link">
         Testing
       </a>
     </li>
@@ -289,7 +289,7 @@
         
         
         <div class="md-nav__link md-nav__link--index ">
-          <a href="../../../../design/">Design</a>
+          <a href="../../../../../design/">Design</a>
           
             <label for="__nav_3">
               <span class="md-nav__icon md-icon"></span>
@@ -310,7 +310,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../../design/datasets.md" class="md-nav__link">
+      <a href="../../../../../design/datasets.md" class="md-nav__link">
         Dataset
       </a>
     </li>
@@ -324,7 +324,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../../design/file-level-interface/" class="md-nav__link">
+      <a href="../../../../../design/file-level-interface/" class="md-nav__link">
         File Level API
       </a>
     </li>
@@ -338,7 +338,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../../design/programming-interface/" class="md-nav__link">
+      <a href="../../../../../design/programming-interface/" class="md-nav__link">
         Programming Interface
       </a>
     </li>
@@ -386,7 +386,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../../user-guides/run-on-your-dataset/" class="md-nav__link">
+      <a href="../../../../../user-guides/run-on-your-dataset/" class="md-nav__link">
         Use own Datasets
       </a>
     </li>
@@ -400,7 +400,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../../user-guides/run-your-method/" class="md-nav__link">
+      <a href="../../../../../user-guides/run-your-method/" class="md-nav__link">
         Implement a new Method
       </a>
     </li>
@@ -414,7 +414,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../../user-guides/run-complexity-analysis/" class="md-nav__link">
+      <a href="../../../../../user-guides/run-complexity-analysis/" class="md-nav__link">
         Complexity Analysis
       </a>
     </li>
@@ -428,7 +428,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../../user-guides/run-sensitivity-analysis/" class="md-nav__link">
+      <a href="../../../../../user-guides/run-sensitivity-analysis/" class="md-nav__link">
         Sensitivity Analysis
       </a>
     </li>
@@ -442,7 +442,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../../user-guides/docker/" class="md-nav__link">
+      <a href="../../../../../user-guides/docker/" class="md-nav__link">
         Run Method in Docker Container
       </a>
     </li>
@@ -464,7 +464,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../../roadmap/" class="md-nav__link">
+      <a href="../../../../../roadmap/" class="md-nav__link">
         Roadmap
       </a>
     </li>
@@ -520,7 +520,7 @@
         
         
         <div class="md-nav__link md-nav__link--index ">
-          <a href="../../">ldimbenchmark</a>
+          <a href="../../../">ldimbenchmark</a>
           
             <label for="__nav_6_1">
               <span class="md-nav__icon md-icon"></span>
@@ -539,12 +539,14 @@
               
   
   
+    
+  
   
     
-    <li class="md-nav__item md-nav__item--nested">
+    <li class="md-nav__item md-nav__item--active md-nav__item--nested">
       
       
-        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_6_1_1" type="checkbox" id="__nav_6_1_1" >
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_6_1_1" type="checkbox" id="__nav_6_1_1" checked>
       
       
       
@@ -552,7 +554,7 @@
         
         
         <div class="md-nav__link md-nav__link--index ">
-          <a href="../../benchmark/">benchmark</a>
+          <a href="../../">benchmark</a>
           
             <label for="__nav_6_1_1">
               <span class="md-nav__icon md-icon"></span>
@@ -573,7 +575,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../benchmark/benchmark/" class="md-nav__link">
+      <a href="../../benchmark/" class="md-nav__link">
         benchmark
       </a>
     </li>
@@ -585,12 +587,14 @@
               
   
   
+    
+  
   
     
-    <li class="md-nav__item md-nav__item--nested">
+    <li class="md-nav__item md-nav__item--active md-nav__item--nested">
       
       
-        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_6_1_1_2" type="checkbox" id="__nav_6_1_1_2" >
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_6_1_1_2" type="checkbox" id="__nav_6_1_1_2" checked>
       
       
       
@@ -598,7 +602,7 @@
         
         
         <div class="md-nav__link md-nav__link--index ">
-          <a href="../../benchmark/runners/">runners</a>
+          <a href="../">runners</a>
           
             <label for="__nav_6_1_1_2">
               <span class="md-nav__icon md-icon"></span>
@@ -617,11 +621,81 @@
               
   
   
+    
   
-    <li class="md-nav__item">
-      <a href="../../benchmark/runners/BaseMethodRunner/" class="md-nav__link">
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" data-md-toggle="toc" type="checkbox" id="__toc">
+      
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          BaseMethodRunner
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
         BaseMethodRunner
       </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#ldimbenchmark.benchmark.runners.BaseMethodRunner" class="md-nav__link">
+    ldimbenchmark.benchmark.runners.BaseMethodRunner
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#ldimbenchmark.benchmark.runners.BaseMethodRunner.MethodRunner" class="md-nav__link">
+    MethodRunner
+  </a>
+  
+    <nav class="md-nav" aria-label="MethodRunner">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#ldimbenchmark.benchmark.runners.BaseMethodRunner.MethodRunner.__init__" class="md-nav__link">
+    __init__()
+  </a>
+  
+    <nav class="md-nav" aria-label="__init__()">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#ldimbenchmark.benchmark.runners.BaseMethodRunner.MethodRunner.__init__--parameters" class="md-nav__link">
+    Parameters
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
     </li>
   
 
@@ -633,7 +707,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../benchmark/runners/DockerMethodRunner/" class="md-nav__link">
+      <a href="../DockerMethodRunner/" class="md-nav__link">
         DockerMethodRunner
       </a>
     </li>
@@ -647,7 +721,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../benchmark/runners/FileMethodRunner/" class="md-nav__link">
+      <a href="../FileMethodRunner/" class="md-nav__link">
         FileMethodRunner
       </a>
     </li>
@@ -661,7 +735,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../benchmark/runners/LocalMethodRunner/" class="md-nav__link">
+      <a href="../LocalMethodRunner/" class="md-nav__link">
         LocalMethodRunner
       </a>
     </li>
@@ -689,7 +763,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../benchmark_complexity/" class="md-nav__link">
+      <a href="../../../benchmark_complexity/" class="md-nav__link">
         benchmark_complexity
       </a>
     </li>
@@ -703,7 +777,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../benchmark_evaluation/" class="md-nav__link">
+      <a href="../../../benchmark_evaluation/" class="md-nav__link">
         benchmark_evaluation
       </a>
     </li>
@@ -717,7 +791,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../classes/" class="md-nav__link">
+      <a href="../../../classes/" class="md-nav__link">
         classes
       </a>
     </li>
@@ -731,7 +805,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../cli/" class="md-nav__link">
+      <a href="../../../cli/" class="md-nav__link">
         cli
       </a>
     </li>
@@ -745,7 +819,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../constants/" class="md-nav__link">
+      <a href="../../../constants/" class="md-nav__link">
         constants
       </a>
     </li>
@@ -757,14 +831,12 @@
               
   
   
-    
-  
   
     
-    <li class="md-nav__item md-nav__item--active md-nav__item--nested">
+    <li class="md-nav__item md-nav__item--nested">
       
       
-        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_6_1_7" type="checkbox" id="__nav_6_1_7" checked>
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_6_1_7" type="checkbox" id="__nav_6_1_7" >
       
       
       
@@ -772,7 +844,7 @@
         
         
         <div class="md-nav__link md-nav__link--index ">
-          <a href="../">datasets</a>
+          <a href="../../../datasets/">datasets</a>
           
             <label for="__nav_6_1_7">
               <span class="md-nav__icon md-icon"></span>
@@ -793,7 +865,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../analysis/" class="md-nav__link">
+      <a href="../../../datasets/analysis/" class="md-nav__link">
         analysis
       </a>
     </li>
@@ -807,7 +879,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../classes/" class="md-nav__link">
+      <a href="../../../datasets/classes/" class="md-nav__link">
         classes
       </a>
     </li>
@@ -821,7 +893,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../derivation/" class="md-nav__link">
+      <a href="../../../datasets/derivation/" class="md-nav__link">
         derivation
       </a>
     </li>
@@ -835,7 +907,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../derivation_show/" class="md-nav__link">
+      <a href="../../../datasets/derivation_show/" class="md-nav__link">
         derivation_show
       </a>
     </li>
@@ -847,75 +919,11 @@
               
   
   
-    
   
-  
-    <li class="md-nav__item md-nav__item--active">
-      
-      <input class="md-nav__toggle md-toggle" data-md-toggle="toc" type="checkbox" id="__toc">
-      
-      
-      
-        <label class="md-nav__link md-nav__link--active" for="__toc">
-          library
-          <span class="md-nav__icon md-icon"></span>
-        </label>
-      
-      <a href="./" class="md-nav__link md-nav__link--active">
+    <li class="md-nav__item">
+      <a href="../../../datasets/library/" class="md-nav__link">
         library
       </a>
-      
-        
-
-<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
-  
-  
-  
-  
-    <label class="md-nav__title" for="__toc">
-      <span class="md-nav__icon md-icon"></span>
-      Table of contents
-    </label>
-    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
-      
-        <li class="md-nav__item">
-  <a href="#ldimbenchmark.datasets.library" class="md-nav__link">
-    ldimbenchmark.datasets.library
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#ldimbenchmark.datasets.library.DATASETS" class="md-nav__link">
-    DATASETS
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#ldimbenchmark.datasets.library.DatasetLibrary" class="md-nav__link">
-    DatasetLibrary
-  </a>
-  
-    <nav class="md-nav" aria-label="DatasetLibrary">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#ldimbenchmark.datasets.library.DatasetLibrary.download" class="md-nav__link">
-    download()
-  </a>
-  
-</li>
-        
-      </ul>
-    </nav>
-  
-</li>
-      
-    </ul>
-  
-</nav>
-      
     </li>
   
 
@@ -938,7 +946,7 @@
         
         
         <div class="md-nav__link md-nav__link--index ">
-          <a href="../loaders/">loaders</a>
+          <a href="../../../datasets/loaders/">loaders</a>
           
             <label for="__nav_6_1_7_6">
               <span class="md-nav__icon md-icon"></span>
@@ -959,7 +967,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../loaders/load_battledim/" class="md-nav__link">
+      <a href="../../../datasets/loaders/load_battledim/" class="md-nav__link">
         load_battledim
       </a>
     </li>
@@ -973,7 +981,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../loaders/load_dataset_base/" class="md-nav__link">
+      <a href="../../../datasets/loaders/load_dataset_base/" class="md-nav__link">
         load_dataset_base
       </a>
     </li>
@@ -1001,7 +1009,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../evaluation_metrics/" class="md-nav__link">
+      <a href="../../../evaluation_metrics/" class="md-nav__link">
         evaluation_metrics
       </a>
     </li>
@@ -1026,7 +1034,7 @@
         
         
         <div class="md-nav__link md-nav__link--index ">
-          <a href="../../generator/">generator</a>
+          <a href="../../../generator/">generator</a>
           
             <label for="__nav_6_1_9">
               <span class="md-nav__icon md-icon"></span>
@@ -1047,7 +1055,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../generator/dataset_generator/" class="md-nav__link">
+      <a href="../../../generator/dataset_generator/" class="md-nav__link">
         dataset_generator
       </a>
     </li>
@@ -1061,7 +1069,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../generator/poulakis_network/" class="md-nav__link">
+      <a href="../../../generator/poulakis_network/" class="md-nav__link">
         poulakis_network
       </a>
     </li>
@@ -1093,7 +1101,7 @@
         
         
         <div class="md-nav__link md-nav__link--index ">
-          <a href="../../methods/">methods</a>
+          <a href="../../../methods/">methods</a>
           
             <label for="__nav_6_1_10">
               <span class="md-nav__icon md-icon"></span>
@@ -1114,7 +1122,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../methods/dualmodel/" class="md-nav__link">
+      <a href="../../../methods/dualmodel/" class="md-nav__link">
         dualmodel
       </a>
     </li>
@@ -1128,7 +1136,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../methods/lila/" class="md-nav__link">
+      <a href="../../../methods/lila/" class="md-nav__link">
         lila
       </a>
     </li>
@@ -1142,7 +1150,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../methods/mnf/" class="md-nav__link">
+      <a href="../../../methods/mnf/" class="md-nav__link">
         mnf
       </a>
     </li>
@@ -1156,7 +1164,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../methods/null/" class="md-nav__link">
+      <a href="../../../methods/null/" class="md-nav__link">
         null
       </a>
     </li>
@@ -1170,7 +1178,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../methods/random/" class="md-nav__link">
+      <a href="../../../methods/random/" class="md-nav__link">
         random
       </a>
     </li>
@@ -1195,7 +1203,7 @@
         
         
         <div class="md-nav__link md-nav__link--index ">
-          <a href="../../methods/utils/">utils</a>
+          <a href="../../../methods/utils/">utils</a>
           
             <label for="__nav_6_1_10_6">
               <span class="md-nav__icon md-icon"></span>
@@ -1216,7 +1224,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../methods/utils/cusum/" class="md-nav__link">
+      <a href="../../../methods/utils/cusum/" class="md-nav__link">
         cusum
       </a>
     </li>
@@ -1244,7 +1252,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../utilities/" class="md-nav__link">
+      <a href="../../../utilities/" class="md-nav__link">
         utilities
       </a>
     </li>
@@ -1290,31 +1298,37 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
-  <a href="#ldimbenchmark.datasets.library" class="md-nav__link">
-    ldimbenchmark.datasets.library
+  <a href="#ldimbenchmark.benchmark.runners.BaseMethodRunner" class="md-nav__link">
+    ldimbenchmark.benchmark.runners.BaseMethodRunner
   </a>
   
 </li>
       
         <li class="md-nav__item">
-  <a href="#ldimbenchmark.datasets.library.DATASETS" class="md-nav__link">
-    DATASETS
+  <a href="#ldimbenchmark.benchmark.runners.BaseMethodRunner.MethodRunner" class="md-nav__link">
+    MethodRunner
   </a>
   
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#ldimbenchmark.datasets.library.DatasetLibrary" class="md-nav__link">
-    DatasetLibrary
-  </a>
-  
-    <nav class="md-nav" aria-label="DatasetLibrary">
+    <nav class="md-nav" aria-label="MethodRunner">
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
-  <a href="#ldimbenchmark.datasets.library.DatasetLibrary.download" class="md-nav__link">
-    download()
+  <a href="#ldimbenchmark.benchmark.runners.BaseMethodRunner.MethodRunner.__init__" class="md-nav__link">
+    __init__()
   </a>
+  
+    <nav class="md-nav" aria-label="__init__()">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#ldimbenchmark.benchmark.runners.BaseMethodRunner.MethodRunner.__init__--parameters" class="md-nav__link">
+    Parameters
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
   
 </li>
         
@@ -1337,18 +1351,18 @@
                 
                   
 
-  <a href="https://github.com/TUMT2022/LDIMBench.git/edit/master/docs/src/ldimbenchmark/datasets/library.py" title="Edit this page" class="md-content__button md-icon">
+  <a href="https://github.com/TUMT2022/LDIMBench.git/edit/master/docs/src/ldimbenchmark/benchmark/runners/BaseMethodRunner.py" title="Edit this page" class="md-content__button md-icon">
     
     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20.71 7.04c.39-.39.39-1.04 0-1.41l-2.34-2.34c-.37-.39-1.02-.39-1.41 0l-1.84 1.83 3.75 3.75M3 17.25V21h3.75L17.81 9.93l-3.75-3.75L3 17.25Z"/></svg>
   </a>
 
 
-  <h1>library</h1>
+  <h1>BaseMethodRunner</h1>
 
 <div class="doc doc-object doc-module">
 
 
-<a id="ldimbenchmark.datasets.library"></a>
+<a id="ldimbenchmark.benchmark.runners.BaseMethodRunner"></a>
   <div class="doc doc-contents first">
 
   
@@ -1366,8 +1380,8 @@
 
 
 
-<h2 id="ldimbenchmark.datasets.library.DATASETS" class="doc doc-heading">
-        <code>DATASETS</code>
+<h2 id="ldimbenchmark.benchmark.runners.BaseMethodRunner.MethodRunner" class="doc doc-heading">
+        <code>MethodRunner</code>
 
 
 </h2>
@@ -1375,68 +1389,31 @@
 
   <div class="doc doc-contents ">
       <p class="doc doc-class-bases">
-        Bases: <code><span title="enum.Enum">Enum</span></code></p>
+        Bases: <code><span title="abc.ABC">ABC</span></code></p>
 
   
-      <p>Enum of available datasets</p>
+      <p>Runner for a single method and dataset.</p>
 
 
         <details class="quote">
-          <summary>Source code in <code>ldimbenchmark/datasets/library.py</code></summary>
-          <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-0-13">13</a></span>
+          <summary>Source code in <code>ldimbenchmark/benchmark/runners/BaseMethodRunner.py</code></summary>
+          <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-0-5"> 5</a></span>
+<span class="normal"><a href="#__codelineno-0-6"> 6</a></span>
+<span class="normal"><a href="#__codelineno-0-7"> 7</a></span>
+<span class="normal"><a href="#__codelineno-0-8"> 8</a></span>
+<span class="normal"><a href="#__codelineno-0-9"> 9</a></span>
+<span class="normal"><a href="#__codelineno-0-10">10</a></span>
+<span class="normal"><a href="#__codelineno-0-11">11</a></span>
+<span class="normal"><a href="#__codelineno-0-12">12</a></span>
+<span class="normal"><a href="#__codelineno-0-13">13</a></span>
 <span class="normal"><a href="#__codelineno-0-14">14</a></span>
 <span class="normal"><a href="#__codelineno-0-15">15</a></span>
 <span class="normal"><a href="#__codelineno-0-16">16</a></span>
 <span class="normal"><a href="#__codelineno-0-17">17</a></span>
-<span class="normal"><a href="#__codelineno-0-18">18</a></span></pre></div></td><td class="code"><div><pre><span></span><code><a id="__codelineno-0-13" name="__codelineno-0-13"></a><span class="k">class</span> <span class="nc">DATASETS</span><span class="p">(</span><span class="n">Enum</span><span class="p">):</span>
-<a id="__codelineno-0-14" name="__codelineno-0-14"></a>    <span class="sd">&quot;&quot;&quot;</span>
-<a id="__codelineno-0-15" name="__codelineno-0-15"></a><span class="sd">    Enum of available datasets</span>
-<a id="__codelineno-0-16" name="__codelineno-0-16"></a><span class="sd">    &quot;&quot;&quot;</span>
-<a id="__codelineno-0-17" name="__codelineno-0-17"></a>
-<a id="__codelineno-0-18" name="__codelineno-0-18"></a>    <span class="n">BATTLEDIM</span> <span class="o">=</span> <span class="s2">&quot;battledim&quot;</span>
-</code></pre></div></td></tr></table></div>
-        </details>
-
-  
-
-  <div class="doc doc-children">
-
-
-
-
-
-
-
-
-
-
-
-  </div>
-
-  </div>
-
-</div>
-
-<div class="doc doc-object doc-class">
-
-
-
-<h2 id="ldimbenchmark.datasets.library.DatasetLibrary" class="doc doc-heading">
-        <code>DatasetLibrary</code>
-
-
-</h2>
-
-
-  <div class="doc doc-contents ">
-
-  
-      <p>Library of datasets</p>
-
-
-        <details class="quote">
-          <summary>Source code in <code>ldimbenchmark/datasets/library.py</code></summary>
-          <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-0-21">21</a></span>
+<span class="normal"><a href="#__codelineno-0-18">18</a></span>
+<span class="normal"><a href="#__codelineno-0-19">19</a></span>
+<span class="normal"><a href="#__codelineno-0-20">20</a></span>
+<span class="normal"><a href="#__codelineno-0-21">21</a></span>
 <span class="normal"><a href="#__codelineno-0-22">22</a></span>
 <span class="normal"><a href="#__codelineno-0-23">23</a></span>
 <span class="normal"><a href="#__codelineno-0-24">24</a></span>
@@ -1482,53 +1459,71 @@
 <span class="normal"><a href="#__codelineno-0-64">64</a></span>
 <span class="normal"><a href="#__codelineno-0-65">65</a></span>
 <span class="normal"><a href="#__codelineno-0-66">66</a></span>
-<span class="normal"><a href="#__codelineno-0-67">67</a></span></pre></div></td><td class="code"><div><pre><span></span><code><a id="__codelineno-0-21" name="__codelineno-0-21"></a><span class="k">class</span> <span class="nc">DatasetLibrary</span><span class="p">:</span>
-<a id="__codelineno-0-22" name="__codelineno-0-22"></a>    <span class="sd">&quot;&quot;&quot;</span>
-<a id="__codelineno-0-23" name="__codelineno-0-23"></a><span class="sd">    Library of datasets</span>
-<a id="__codelineno-0-24" name="__codelineno-0-24"></a><span class="sd">    &quot;&quot;&quot;</span>
-<a id="__codelineno-0-25" name="__codelineno-0-25"></a>
-<a id="__codelineno-0-26" name="__codelineno-0-26"></a>    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">download_path</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
-<a id="__codelineno-0-27" name="__codelineno-0-27"></a>        <span class="bp">self</span><span class="o">.</span><span class="n">path</span> <span class="o">=</span> <span class="n">download_path</span>
-<a id="__codelineno-0-28" name="__codelineno-0-28"></a>
-<a id="__codelineno-0-29" name="__codelineno-0-29"></a>    <span class="k">def</span> <span class="nf">download</span><span class="p">(</span>
-<a id="__codelineno-0-30" name="__codelineno-0-30"></a>        <span class="bp">self</span><span class="p">,</span> <span class="n">dataset_name</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">],</span> <span class="n">DATASETS</span><span class="p">,</span> <span class="n">List</span><span class="p">[</span><span class="n">DATASETS</span><span class="p">]],</span> <span class="n">force</span><span class="o">=</span><span class="kc">False</span>
-<a id="__codelineno-0-31" name="__codelineno-0-31"></a>    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="n">Dataset</span><span class="p">]:</span>
-<a id="__codelineno-0-32" name="__codelineno-0-32"></a>        <span class="sd">&quot;&quot;&quot;</span>
-<a id="__codelineno-0-33" name="__codelineno-0-33"></a><span class="sd">        Downloads a dataset from the internet</span>
-<a id="__codelineno-0-34" name="__codelineno-0-34"></a>
-<a id="__codelineno-0-35" name="__codelineno-0-35"></a><span class="sd">        :param dataset_name: Name of the dataset to download</span>
-<a id="__codelineno-0-36" name="__codelineno-0-36"></a><span class="sd">        :param force: Force download even if dataset is already downloaded</span>
-<a id="__codelineno-0-37" name="__codelineno-0-37"></a><span class="sd">        &quot;&quot;&quot;</span>
-<a id="__codelineno-0-38" name="__codelineno-0-38"></a>        <span class="c1"># TODO: Try to import download module for &quot;dataset_name&quot; and execute it.</span>
-<a id="__codelineno-0-39" name="__codelineno-0-39"></a>        <span class="c1"># TODO: Implement force download</span>
-<a id="__codelineno-0-40" name="__codelineno-0-40"></a>
-<a id="__codelineno-0-41" name="__codelineno-0-41"></a>        <span class="k">if</span> <span class="n">dataset_name</span> <span class="ow">is</span> <span class="nb">str</span><span class="p">:</span>
-<a id="__codelineno-0-42" name="__codelineno-0-42"></a>            <span class="n">dataset_name</span> <span class="o">=</span> <span class="p">[</span><span class="n">DATASETS</span><span class="p">[</span><span class="n">dataset_name</span><span class="o">.</span><span class="n">upper</span><span class="p">()]]</span>
-<a id="__codelineno-0-43" name="__codelineno-0-43"></a>        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">dataset_name</span><span class="p">,</span> <span class="n">DATASETS</span><span class="p">):</span>
-<a id="__codelineno-0-44" name="__codelineno-0-44"></a>            <span class="n">dataset_name</span> <span class="o">=</span> <span class="p">[</span><span class="n">dataset_name</span><span class="p">]</span>
+<span class="normal"><a href="#__codelineno-0-67">67</a></span>
+<span class="normal"><a href="#__codelineno-0-68">68</a></span></pre></div></td><td class="code"><div><pre><span></span><code><a id="__codelineno-0-5" name="__codelineno-0-5"></a><span class="k">class</span> <span class="nc">MethodRunner</span><span class="p">(</span><span class="n">ABC</span><span class="p">):</span>
+<a id="__codelineno-0-6" name="__codelineno-0-6"></a>    <span class="sd">&quot;&quot;&quot;</span>
+<a id="__codelineno-0-7" name="__codelineno-0-7"></a><span class="sd">    Runner for a single method and dataset.</span>
+<a id="__codelineno-0-8" name="__codelineno-0-8"></a><span class="sd">    &quot;&quot;&quot;</span>
+<a id="__codelineno-0-9" name="__codelineno-0-9"></a>
+<a id="__codelineno-0-10" name="__codelineno-0-10"></a>    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
+<a id="__codelineno-0-11" name="__codelineno-0-11"></a>        <span class="bp">self</span><span class="p">,</span>
+<a id="__codelineno-0-12" name="__codelineno-0-12"></a>        <span class="n">hyperparameters</span><span class="p">:</span> <span class="nb">dict</span><span class="p">,</span>
+<a id="__codelineno-0-13" name="__codelineno-0-13"></a>        <span class="n">goal</span><span class="p">:</span> <span class="n">Literal</span><span class="p">[</span>
+<a id="__codelineno-0-14" name="__codelineno-0-14"></a>            <span class="s2">&quot;assessment&quot;</span><span class="p">,</span> <span class="s2">&quot;detection&quot;</span><span class="p">,</span> <span class="s2">&quot;identification&quot;</span><span class="p">,</span> <span class="s2">&quot;localization&quot;</span><span class="p">,</span> <span class="s2">&quot;control&quot;</span>
+<a id="__codelineno-0-15" name="__codelineno-0-15"></a>        <span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;detection&quot;</span><span class="p">,</span>
+<a id="__codelineno-0-16" name="__codelineno-0-16"></a>        <span class="n">stage</span><span class="p">:</span> <span class="n">Literal</span><span class="p">[</span><span class="s2">&quot;train&quot;</span><span class="p">,</span> <span class="s2">&quot;detect&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;detect&quot;</span><span class="p">,</span>
+<a id="__codelineno-0-17" name="__codelineno-0-17"></a>        <span class="n">method</span><span class="p">:</span> <span class="n">Literal</span><span class="p">[</span><span class="s2">&quot;offline&quot;</span><span class="p">,</span> <span class="s2">&quot;online&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;offline&quot;</span><span class="p">,</span>
+<a id="__codelineno-0-18" name="__codelineno-0-18"></a>        <span class="n">debug</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+<a id="__codelineno-0-19" name="__codelineno-0-19"></a>        <span class="n">resultsFolder</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="kc">None</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+<a id="__codelineno-0-20" name="__codelineno-0-20"></a>    <span class="p">):</span>
+<a id="__codelineno-0-21" name="__codelineno-0-21"></a>        <span class="sd">&quot;&quot;&quot;</span>
+<a id="__codelineno-0-22" name="__codelineno-0-22"></a><span class="sd">        Base Class for a Method Runner.</span>
+<a id="__codelineno-0-23" name="__codelineno-0-23"></a>
+<a id="__codelineno-0-24" name="__codelineno-0-24"></a>
+<a id="__codelineno-0-25" name="__codelineno-0-25"></a><span class="sd">        Parameters</span>
+<a id="__codelineno-0-26" name="__codelineno-0-26"></a><span class="sd">        ----------</span>
+<a id="__codelineno-0-27" name="__codelineno-0-27"></a><span class="sd">        detection_method : LDIMMethodBase</span>
+<a id="__codelineno-0-28" name="__codelineno-0-28"></a><span class="sd">            The LDIM method object.</span>
+<a id="__codelineno-0-29" name="__codelineno-0-29"></a>
+<a id="__codelineno-0-30" name="__codelineno-0-30"></a><span class="sd">        dataset : Union[Dataset, str]</span>
+<a id="__codelineno-0-31" name="__codelineno-0-31"></a><span class="sd">            The dataset object or the path to the dataset.</span>
+<a id="__codelineno-0-32" name="__codelineno-0-32"></a>
+<a id="__codelineno-0-33" name="__codelineno-0-33"></a><span class="sd">        hyperparameters : dict, optional</span>
+<a id="__codelineno-0-34" name="__codelineno-0-34"></a><span class="sd">            The hyperparameters for the LDIM object, by default None</span>
+<a id="__codelineno-0-35" name="__codelineno-0-35"></a>
+<a id="__codelineno-0-36" name="__codelineno-0-36"></a><span class="sd">        goal : Literal[</span>
+<a id="__codelineno-0-37" name="__codelineno-0-37"></a><span class="sd">            &quot;assessment&quot;, &quot;detection&quot;, &quot;identification&quot;, &quot;localization&quot;, &quot;control&quot;</span>
+<a id="__codelineno-0-38" name="__codelineno-0-38"></a><span class="sd">        ], optional</span>
+<a id="__codelineno-0-39" name="__codelineno-0-39"></a><span class="sd">            Goal of the benchmark. Possible goals:</span>
+<a id="__codelineno-0-40" name="__codelineno-0-40"></a><span class="sd">            &quot;assessment&quot; - Asses if there are any leaks</span>
+<a id="__codelineno-0-41" name="__codelineno-0-41"></a><span class="sd">            &quot;detection&quot; - Detect leaks and their onset</span>
+<a id="__codelineno-0-42" name="__codelineno-0-42"></a><span class="sd">            &quot;localization&quot; - Detect leaks and their location</span>
+<a id="__codelineno-0-43" name="__codelineno-0-43"></a><span class="sd">            &quot;control&quot; - Detect leaks and fomulate a control strategy</span>
+<a id="__codelineno-0-44" name="__codelineno-0-44"></a><span class="sd">            by default &quot;detection&quot;</span>
 <a id="__codelineno-0-45" name="__codelineno-0-45"></a>
-<a id="__codelineno-0-46" name="__codelineno-0-46"></a>        <span class="n">datasets</span> <span class="o">=</span> <span class="p">[]</span>
-<a id="__codelineno-0-47" name="__codelineno-0-47"></a>
-<a id="__codelineno-0-48" name="__codelineno-0-48"></a>        <span class="k">for</span> <span class="n">dataset</span> <span class="ow">in</span> <span class="n">dataset_name</span><span class="p">:</span>
-<a id="__codelineno-0-49" name="__codelineno-0-49"></a>            <span class="n">logging</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;Loading dataset: &quot;</span> <span class="o">+</span> <span class="n">dataset</span><span class="o">.</span><span class="n">value</span><span class="p">)</span>
-<a id="__codelineno-0-50" name="__codelineno-0-50"></a>            <span class="n">tempdir</span> <span class="o">=</span> <span class="n">tempfile</span><span class="o">.</span><span class="n">TemporaryDirectory</span><span class="p">()</span>
-<a id="__codelineno-0-51" name="__codelineno-0-51"></a>            <span class="n">tempdir_path</span> <span class="o">=</span> <span class="n">tempdir</span><span class="o">.</span><span class="n">name</span>
-<a id="__codelineno-0-52" name="__codelineno-0-52"></a>            <span class="n">dataset_download_path</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">path</span><span class="p">,</span> <span class="n">dataset</span><span class="o">.</span><span class="n">value</span><span class="p">)</span>
-<a id="__codelineno-0-53" name="__codelineno-0-53"></a>            <span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">dataset_download_path</span><span class="p">)</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">force</span><span class="p">:</span>
-<a id="__codelineno-0-54" name="__codelineno-0-54"></a>                <span class="n">logging</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;Dataset already downloaded&quot;</span><span class="p">)</span>
-<a id="__codelineno-0-55" name="__codelineno-0-55"></a>                <span class="n">datasets</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">Dataset</span><span class="p">(</span><span class="n">dataset_download_path</span><span class="p">))</span>
-<a id="__codelineno-0-56" name="__codelineno-0-56"></a>                <span class="k">continue</span>
-<a id="__codelineno-0-57" name="__codelineno-0-57"></a>            <span class="n">shutil</span><span class="o">.</span><span class="n">rmtree</span><span class="p">(</span><span class="n">dataset_download_path</span><span class="p">,</span> <span class="n">ignore_errors</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
-<a id="__codelineno-0-58" name="__codelineno-0-58"></a>            <span class="k">if</span> <span class="n">dataset</span> <span class="o">==</span> <span class="n">DATASETS</span><span class="o">.</span><span class="n">BATTLEDIM</span><span class="p">:</span>
-<a id="__codelineno-0-59" name="__codelineno-0-59"></a>                <span class="n">BattledimDatasetLoader</span><span class="o">.</span><span class="n">download_dataset</span><span class="p">(</span><span class="n">tempdir_path</span><span class="p">)</span>
-<a id="__codelineno-0-60" name="__codelineno-0-60"></a>                <span class="n">BattledimDatasetLoader</span><span class="o">.</span><span class="n">prepare_dataset</span><span class="p">(</span>
-<a id="__codelineno-0-61" name="__codelineno-0-61"></a>                    <span class="n">tempdir_path</span><span class="p">,</span> <span class="n">dataset_download_path</span>
-<a id="__codelineno-0-62" name="__codelineno-0-62"></a>                <span class="p">)</span>
-<a id="__codelineno-0-63" name="__codelineno-0-63"></a>
-<a id="__codelineno-0-64" name="__codelineno-0-64"></a>                <span class="n">datasets</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">Dataset</span><span class="p">(</span><span class="n">dataset_download_path</span><span class="p">))</span>
+<a id="__codelineno-0-46" name="__codelineno-0-46"></a><span class="sd">        stage : Literal[&quot;train&quot;, &quot;detect&quot;], optional</span>
+<a id="__codelineno-0-47" name="__codelineno-0-47"></a><span class="sd">            List of stages that should be executed. Possible stages: &quot;train&quot;, &quot;detect&quot;</span>
+<a id="__codelineno-0-48" name="__codelineno-0-48"></a>
+<a id="__codelineno-0-49" name="__codelineno-0-49"></a><span class="sd">        method : Literal[&quot;offline&quot;, &quot;online&quot;], optional</span>
+<a id="__codelineno-0-50" name="__codelineno-0-50"></a><span class="sd">            The method of the LDIM object, by default &quot;offline&quot;</span>
+<a id="__codelineno-0-51" name="__codelineno-0-51"></a>
+<a id="__codelineno-0-52" name="__codelineno-0-52"></a><span class="sd">        debug : bool, optional</span>
+<a id="__codelineno-0-53" name="__codelineno-0-53"></a><span class="sd">            Whether to print debug information, by default False</span>
+<a id="__codelineno-0-54" name="__codelineno-0-54"></a>
+<a id="__codelineno-0-55" name="__codelineno-0-55"></a><span class="sd">        resultsFolder : None, optional</span>
+<a id="__codelineno-0-56" name="__codelineno-0-56"></a><span class="sd">            The path to the results folder, by default None</span>
+<a id="__codelineno-0-57" name="__codelineno-0-57"></a>
+<a id="__codelineno-0-58" name="__codelineno-0-58"></a><span class="sd">        &quot;&quot;&quot;</span>
+<a id="__codelineno-0-59" name="__codelineno-0-59"></a>        <span class="bp">self</span><span class="o">.</span><span class="n">hyperparameters</span> <span class="o">=</span> <span class="n">hyperparameters</span>
+<a id="__codelineno-0-60" name="__codelineno-0-60"></a>        <span class="bp">self</span><span class="o">.</span><span class="n">goal</span> <span class="o">=</span> <span class="n">goal</span>
+<a id="__codelineno-0-61" name="__codelineno-0-61"></a>        <span class="bp">self</span><span class="o">.</span><span class="n">stages</span> <span class="o">=</span> <span class="n">stage</span>
+<a id="__codelineno-0-62" name="__codelineno-0-62"></a>        <span class="bp">self</span><span class="o">.</span><span class="n">method</span> <span class="o">=</span> <span class="n">method</span>
+<a id="__codelineno-0-63" name="__codelineno-0-63"></a>        <span class="bp">self</span><span class="o">.</span><span class="n">debug</span> <span class="o">=</span> <span class="n">debug</span>
+<a id="__codelineno-0-64" name="__codelineno-0-64"></a>        <span class="bp">self</span><span class="o">.</span><span class="n">resultsFolder</span> <span class="o">=</span> <span class="n">resultsFolder</span>
 <a id="__codelineno-0-65" name="__codelineno-0-65"></a>
-<a id="__codelineno-0-66" name="__codelineno-0-66"></a>            <span class="n">tempdir</span><span class="o">.</span><span class="n">cleanup</span><span class="p">()</span>
-<a id="__codelineno-0-67" name="__codelineno-0-67"></a>        <span class="k">return</span> <span class="n">datasets</span>
+<a id="__codelineno-0-66" name="__codelineno-0-66"></a>    <span class="nd">@abstractmethod</span>
+<a id="__codelineno-0-67" name="__codelineno-0-67"></a>    <span class="k">def</span> <span class="nf">run</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
+<a id="__codelineno-0-68" name="__codelineno-0-68"></a>        <span class="k">pass</span>
 </code></pre></div></td></tr></table></div>
         </details>
 
@@ -1548,21 +1543,78 @@
 
 
 
-<h3 id="ldimbenchmark.datasets.library.DatasetLibrary.download" class="doc doc-heading">
-<code class="highlight language-python"><span class="n">download</span><span class="p">(</span><span class="n">dataset_name</span><span class="p">,</span> <span class="n">force</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span></code>
+<h3 id="ldimbenchmark.benchmark.runners.BaseMethodRunner.MethodRunner.__init__" class="doc doc-heading">
+<code class="highlight language-python"><span class="fm">__init__</span><span class="p">(</span><span class="n">hyperparameters</span><span class="p">,</span> <span class="n">goal</span><span class="o">=</span><span class="s1">&#39;detection&#39;</span><span class="p">,</span> <span class="n">stage</span><span class="o">=</span><span class="s1">&#39;detect&#39;</span><span class="p">,</span> <span class="n">method</span><span class="o">=</span><span class="s1">&#39;offline&#39;</span><span class="p">,</span> <span class="n">debug</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">resultsFolder</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span></code>
 
 </h3>
 
 
   <div class="doc doc-contents ">
   
-      <p>Downloads a dataset from the internet</p>
-<p>:param dataset_name: Name of the dataset to download
-:param force: Force download even if dataset is already downloaded</p>
+      <p>Base Class for a Method Runner.</p>
+<h5 id="ldimbenchmark.benchmark.runners.BaseMethodRunner.MethodRunner.__init__--parameters">Parameters</h5>
 
+<details class="detection_method-">
+  <summary>LDIMMethodBase</summary>
+  <p>The LDIM method object.</p>
+</details>
+<details class="dataset-">
+  <summary>Union[Dataset, str]</summary>
+  <p>The dataset object or the path to the dataset.</p>
+</details>
+<details class="hyperparameters-">
+  <summary>dict, optional</summary>
+  <p>The hyperparameters for the LDIM object, by default None</p>
+</details>
+<details class="goal-">
+  <summary>Literal[</summary>
+  <p>"assessment", "detection", "identification", "localization", "control"</p>
+</details>      <p>], optional
+    Goal of the benchmark. Possible goals:
+    "assessment" - Asses if there are any leaks
+    "detection" - Detect leaks and their onset
+    "localization" - Detect leaks and their location
+    "control" - Detect leaks and fomulate a control strategy
+    by default "detection"</p>
+
+<details class="stage-">
+  <summary>Literal["train", "detect"], optional</summary>
+  <p>List of stages that should be executed. Possible stages: "train", "detect"</p>
+</details>
+<details class="method-">
+  <summary>Literal["offline", "online"], optional</summary>
+  <p>The method of the LDIM object, by default "offline"</p>
+</details>
+<details class="debug-">
+  <summary>bool, optional</summary>
+  <p>Whether to print debug information, by default False</p>
+</details>
+<details class="resultsfolder-">
+  <summary>None, optional</summary>
+  <p>The path to the results folder, by default None</p>
+</details>
       <details class="quote">
-        <summary>Source code in <code>ldimbenchmark/datasets/library.py</code></summary>
-        <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-0-29">29</a></span>
+        <summary>Source code in <code>ldimbenchmark/benchmark/runners/BaseMethodRunner.py</code></summary>
+        <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-0-10">10</a></span>
+<span class="normal"><a href="#__codelineno-0-11">11</a></span>
+<span class="normal"><a href="#__codelineno-0-12">12</a></span>
+<span class="normal"><a href="#__codelineno-0-13">13</a></span>
+<span class="normal"><a href="#__codelineno-0-14">14</a></span>
+<span class="normal"><a href="#__codelineno-0-15">15</a></span>
+<span class="normal"><a href="#__codelineno-0-16">16</a></span>
+<span class="normal"><a href="#__codelineno-0-17">17</a></span>
+<span class="normal"><a href="#__codelineno-0-18">18</a></span>
+<span class="normal"><a href="#__codelineno-0-19">19</a></span>
+<span class="normal"><a href="#__codelineno-0-20">20</a></span>
+<span class="normal"><a href="#__codelineno-0-21">21</a></span>
+<span class="normal"><a href="#__codelineno-0-22">22</a></span>
+<span class="normal"><a href="#__codelineno-0-23">23</a></span>
+<span class="normal"><a href="#__codelineno-0-24">24</a></span>
+<span class="normal"><a href="#__codelineno-0-25">25</a></span>
+<span class="normal"><a href="#__codelineno-0-26">26</a></span>
+<span class="normal"><a href="#__codelineno-0-27">27</a></span>
+<span class="normal"><a href="#__codelineno-0-28">28</a></span>
+<span class="normal"><a href="#__codelineno-0-29">29</a></span>
 <span class="normal"><a href="#__codelineno-0-30">30</a></span>
 <span class="normal"><a href="#__codelineno-0-31">31</a></span>
 <span class="normal"><a href="#__codelineno-0-32">32</a></span>
@@ -1597,48 +1649,61 @@
 <span class="normal"><a href="#__codelineno-0-61">61</a></span>
 <span class="normal"><a href="#__codelineno-0-62">62</a></span>
 <span class="normal"><a href="#__codelineno-0-63">63</a></span>
-<span class="normal"><a href="#__codelineno-0-64">64</a></span>
-<span class="normal"><a href="#__codelineno-0-65">65</a></span>
-<span class="normal"><a href="#__codelineno-0-66">66</a></span>
-<span class="normal"><a href="#__codelineno-0-67">67</a></span></pre></div></td><td class="code"><div><pre><span></span><code><a id="__codelineno-0-29" name="__codelineno-0-29"></a><span class="k">def</span> <span class="nf">download</span><span class="p">(</span>
-<a id="__codelineno-0-30" name="__codelineno-0-30"></a>    <span class="bp">self</span><span class="p">,</span> <span class="n">dataset_name</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">],</span> <span class="n">DATASETS</span><span class="p">,</span> <span class="n">List</span><span class="p">[</span><span class="n">DATASETS</span><span class="p">]],</span> <span class="n">force</span><span class="o">=</span><span class="kc">False</span>
-<a id="__codelineno-0-31" name="__codelineno-0-31"></a><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="n">Dataset</span><span class="p">]:</span>
-<a id="__codelineno-0-32" name="__codelineno-0-32"></a>    <span class="sd">&quot;&quot;&quot;</span>
-<a id="__codelineno-0-33" name="__codelineno-0-33"></a><span class="sd">    Downloads a dataset from the internet</span>
-<a id="__codelineno-0-34" name="__codelineno-0-34"></a>
-<a id="__codelineno-0-35" name="__codelineno-0-35"></a><span class="sd">    :param dataset_name: Name of the dataset to download</span>
-<a id="__codelineno-0-36" name="__codelineno-0-36"></a><span class="sd">    :param force: Force download even if dataset is already downloaded</span>
-<a id="__codelineno-0-37" name="__codelineno-0-37"></a><span class="sd">    &quot;&quot;&quot;</span>
-<a id="__codelineno-0-38" name="__codelineno-0-38"></a>    <span class="c1"># TODO: Try to import download module for &quot;dataset_name&quot; and execute it.</span>
-<a id="__codelineno-0-39" name="__codelineno-0-39"></a>    <span class="c1"># TODO: Implement force download</span>
-<a id="__codelineno-0-40" name="__codelineno-0-40"></a>
-<a id="__codelineno-0-41" name="__codelineno-0-41"></a>    <span class="k">if</span> <span class="n">dataset_name</span> <span class="ow">is</span> <span class="nb">str</span><span class="p">:</span>
-<a id="__codelineno-0-42" name="__codelineno-0-42"></a>        <span class="n">dataset_name</span> <span class="o">=</span> <span class="p">[</span><span class="n">DATASETS</span><span class="p">[</span><span class="n">dataset_name</span><span class="o">.</span><span class="n">upper</span><span class="p">()]]</span>
-<a id="__codelineno-0-43" name="__codelineno-0-43"></a>    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">dataset_name</span><span class="p">,</span> <span class="n">DATASETS</span><span class="p">):</span>
-<a id="__codelineno-0-44" name="__codelineno-0-44"></a>        <span class="n">dataset_name</span> <span class="o">=</span> <span class="p">[</span><span class="n">dataset_name</span><span class="p">]</span>
+<span class="normal"><a href="#__codelineno-0-64">64</a></span></pre></div></td><td class="code"><div><pre><span></span><code><a id="__codelineno-0-10" name="__codelineno-0-10"></a><span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
+<a id="__codelineno-0-11" name="__codelineno-0-11"></a>    <span class="bp">self</span><span class="p">,</span>
+<a id="__codelineno-0-12" name="__codelineno-0-12"></a>    <span class="n">hyperparameters</span><span class="p">:</span> <span class="nb">dict</span><span class="p">,</span>
+<a id="__codelineno-0-13" name="__codelineno-0-13"></a>    <span class="n">goal</span><span class="p">:</span> <span class="n">Literal</span><span class="p">[</span>
+<a id="__codelineno-0-14" name="__codelineno-0-14"></a>        <span class="s2">&quot;assessment&quot;</span><span class="p">,</span> <span class="s2">&quot;detection&quot;</span><span class="p">,</span> <span class="s2">&quot;identification&quot;</span><span class="p">,</span> <span class="s2">&quot;localization&quot;</span><span class="p">,</span> <span class="s2">&quot;control&quot;</span>
+<a id="__codelineno-0-15" name="__codelineno-0-15"></a>    <span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;detection&quot;</span><span class="p">,</span>
+<a id="__codelineno-0-16" name="__codelineno-0-16"></a>    <span class="n">stage</span><span class="p">:</span> <span class="n">Literal</span><span class="p">[</span><span class="s2">&quot;train&quot;</span><span class="p">,</span> <span class="s2">&quot;detect&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;detect&quot;</span><span class="p">,</span>
+<a id="__codelineno-0-17" name="__codelineno-0-17"></a>    <span class="n">method</span><span class="p">:</span> <span class="n">Literal</span><span class="p">[</span><span class="s2">&quot;offline&quot;</span><span class="p">,</span> <span class="s2">&quot;online&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;offline&quot;</span><span class="p">,</span>
+<a id="__codelineno-0-18" name="__codelineno-0-18"></a>    <span class="n">debug</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+<a id="__codelineno-0-19" name="__codelineno-0-19"></a>    <span class="n">resultsFolder</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="kc">None</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+<a id="__codelineno-0-20" name="__codelineno-0-20"></a><span class="p">):</span>
+<a id="__codelineno-0-21" name="__codelineno-0-21"></a>    <span class="sd">&quot;&quot;&quot;</span>
+<a id="__codelineno-0-22" name="__codelineno-0-22"></a><span class="sd">    Base Class for a Method Runner.</span>
+<a id="__codelineno-0-23" name="__codelineno-0-23"></a>
+<a id="__codelineno-0-24" name="__codelineno-0-24"></a>
+<a id="__codelineno-0-25" name="__codelineno-0-25"></a><span class="sd">    Parameters</span>
+<a id="__codelineno-0-26" name="__codelineno-0-26"></a><span class="sd">    ----------</span>
+<a id="__codelineno-0-27" name="__codelineno-0-27"></a><span class="sd">    detection_method : LDIMMethodBase</span>
+<a id="__codelineno-0-28" name="__codelineno-0-28"></a><span class="sd">        The LDIM method object.</span>
+<a id="__codelineno-0-29" name="__codelineno-0-29"></a>
+<a id="__codelineno-0-30" name="__codelineno-0-30"></a><span class="sd">    dataset : Union[Dataset, str]</span>
+<a id="__codelineno-0-31" name="__codelineno-0-31"></a><span class="sd">        The dataset object or the path to the dataset.</span>
+<a id="__codelineno-0-32" name="__codelineno-0-32"></a>
+<a id="__codelineno-0-33" name="__codelineno-0-33"></a><span class="sd">    hyperparameters : dict, optional</span>
+<a id="__codelineno-0-34" name="__codelineno-0-34"></a><span class="sd">        The hyperparameters for the LDIM object, by default None</span>
+<a id="__codelineno-0-35" name="__codelineno-0-35"></a>
+<a id="__codelineno-0-36" name="__codelineno-0-36"></a><span class="sd">    goal : Literal[</span>
+<a id="__codelineno-0-37" name="__codelineno-0-37"></a><span class="sd">        &quot;assessment&quot;, &quot;detection&quot;, &quot;identification&quot;, &quot;localization&quot;, &quot;control&quot;</span>
+<a id="__codelineno-0-38" name="__codelineno-0-38"></a><span class="sd">    ], optional</span>
+<a id="__codelineno-0-39" name="__codelineno-0-39"></a><span class="sd">        Goal of the benchmark. Possible goals:</span>
+<a id="__codelineno-0-40" name="__codelineno-0-40"></a><span class="sd">        &quot;assessment&quot; - Asses if there are any leaks</span>
+<a id="__codelineno-0-41" name="__codelineno-0-41"></a><span class="sd">        &quot;detection&quot; - Detect leaks and their onset</span>
+<a id="__codelineno-0-42" name="__codelineno-0-42"></a><span class="sd">        &quot;localization&quot; - Detect leaks and their location</span>
+<a id="__codelineno-0-43" name="__codelineno-0-43"></a><span class="sd">        &quot;control&quot; - Detect leaks and fomulate a control strategy</span>
+<a id="__codelineno-0-44" name="__codelineno-0-44"></a><span class="sd">        by default &quot;detection&quot;</span>
 <a id="__codelineno-0-45" name="__codelineno-0-45"></a>
-<a id="__codelineno-0-46" name="__codelineno-0-46"></a>    <span class="n">datasets</span> <span class="o">=</span> <span class="p">[]</span>
-<a id="__codelineno-0-47" name="__codelineno-0-47"></a>
-<a id="__codelineno-0-48" name="__codelineno-0-48"></a>    <span class="k">for</span> <span class="n">dataset</span> <span class="ow">in</span> <span class="n">dataset_name</span><span class="p">:</span>
-<a id="__codelineno-0-49" name="__codelineno-0-49"></a>        <span class="n">logging</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;Loading dataset: &quot;</span> <span class="o">+</span> <span class="n">dataset</span><span class="o">.</span><span class="n">value</span><span class="p">)</span>
-<a id="__codelineno-0-50" name="__codelineno-0-50"></a>        <span class="n">tempdir</span> <span class="o">=</span> <span class="n">tempfile</span><span class="o">.</span><span class="n">TemporaryDirectory</span><span class="p">()</span>
-<a id="__codelineno-0-51" name="__codelineno-0-51"></a>        <span class="n">tempdir_path</span> <span class="o">=</span> <span class="n">tempdir</span><span class="o">.</span><span class="n">name</span>
-<a id="__codelineno-0-52" name="__codelineno-0-52"></a>        <span class="n">dataset_download_path</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">path</span><span class="p">,</span> <span class="n">dataset</span><span class="o">.</span><span class="n">value</span><span class="p">)</span>
-<a id="__codelineno-0-53" name="__codelineno-0-53"></a>        <span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">dataset_download_path</span><span class="p">)</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">force</span><span class="p">:</span>
-<a id="__codelineno-0-54" name="__codelineno-0-54"></a>            <span class="n">logging</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;Dataset already downloaded&quot;</span><span class="p">)</span>
-<a id="__codelineno-0-55" name="__codelineno-0-55"></a>            <span class="n">datasets</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">Dataset</span><span class="p">(</span><span class="n">dataset_download_path</span><span class="p">))</span>
-<a id="__codelineno-0-56" name="__codelineno-0-56"></a>            <span class="k">continue</span>
-<a id="__codelineno-0-57" name="__codelineno-0-57"></a>        <span class="n">shutil</span><span class="o">.</span><span class="n">rmtree</span><span class="p">(</span><span class="n">dataset_download_path</span><span class="p">,</span> <span class="n">ignore_errors</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
-<a id="__codelineno-0-58" name="__codelineno-0-58"></a>        <span class="k">if</span> <span class="n">dataset</span> <span class="o">==</span> <span class="n">DATASETS</span><span class="o">.</span><span class="n">BATTLEDIM</span><span class="p">:</span>
-<a id="__codelineno-0-59" name="__codelineno-0-59"></a>            <span class="n">BattledimDatasetLoader</span><span class="o">.</span><span class="n">download_dataset</span><span class="p">(</span><span class="n">tempdir_path</span><span class="p">)</span>
-<a id="__codelineno-0-60" name="__codelineno-0-60"></a>            <span class="n">BattledimDatasetLoader</span><span class="o">.</span><span class="n">prepare_dataset</span><span class="p">(</span>
-<a id="__codelineno-0-61" name="__codelineno-0-61"></a>                <span class="n">tempdir_path</span><span class="p">,</span> <span class="n">dataset_download_path</span>
-<a id="__codelineno-0-62" name="__codelineno-0-62"></a>            <span class="p">)</span>
-<a id="__codelineno-0-63" name="__codelineno-0-63"></a>
-<a id="__codelineno-0-64" name="__codelineno-0-64"></a>            <span class="n">datasets</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">Dataset</span><span class="p">(</span><span class="n">dataset_download_path</span><span class="p">))</span>
-<a id="__codelineno-0-65" name="__codelineno-0-65"></a>
-<a id="__codelineno-0-66" name="__codelineno-0-66"></a>        <span class="n">tempdir</span><span class="o">.</span><span class="n">cleanup</span><span class="p">()</span>
-<a id="__codelineno-0-67" name="__codelineno-0-67"></a>    <span class="k">return</span> <span class="n">datasets</span>
+<a id="__codelineno-0-46" name="__codelineno-0-46"></a><span class="sd">    stage : Literal[&quot;train&quot;, &quot;detect&quot;], optional</span>
+<a id="__codelineno-0-47" name="__codelineno-0-47"></a><span class="sd">        List of stages that should be executed. Possible stages: &quot;train&quot;, &quot;detect&quot;</span>
+<a id="__codelineno-0-48" name="__codelineno-0-48"></a>
+<a id="__codelineno-0-49" name="__codelineno-0-49"></a><span class="sd">    method : Literal[&quot;offline&quot;, &quot;online&quot;], optional</span>
+<a id="__codelineno-0-50" name="__codelineno-0-50"></a><span class="sd">        The method of the LDIM object, by default &quot;offline&quot;</span>
+<a id="__codelineno-0-51" name="__codelineno-0-51"></a>
+<a id="__codelineno-0-52" name="__codelineno-0-52"></a><span class="sd">    debug : bool, optional</span>
+<a id="__codelineno-0-53" name="__codelineno-0-53"></a><span class="sd">        Whether to print debug information, by default False</span>
+<a id="__codelineno-0-54" name="__codelineno-0-54"></a>
+<a id="__codelineno-0-55" name="__codelineno-0-55"></a><span class="sd">    resultsFolder : None, optional</span>
+<a id="__codelineno-0-56" name="__codelineno-0-56"></a><span class="sd">        The path to the results folder, by default None</span>
+<a id="__codelineno-0-57" name="__codelineno-0-57"></a>
+<a id="__codelineno-0-58" name="__codelineno-0-58"></a><span class="sd">    &quot;&quot;&quot;</span>
+<a id="__codelineno-0-59" name="__codelineno-0-59"></a>    <span class="bp">self</span><span class="o">.</span><span class="n">hyperparameters</span> <span class="o">=</span> <span class="n">hyperparameters</span>
+<a id="__codelineno-0-60" name="__codelineno-0-60"></a>    <span class="bp">self</span><span class="o">.</span><span class="n">goal</span> <span class="o">=</span> <span class="n">goal</span>
+<a id="__codelineno-0-61" name="__codelineno-0-61"></a>    <span class="bp">self</span><span class="o">.</span><span class="n">stages</span> <span class="o">=</span> <span class="n">stage</span>
+<a id="__codelineno-0-62" name="__codelineno-0-62"></a>    <span class="bp">self</span><span class="o">.</span><span class="n">method</span> <span class="o">=</span> <span class="n">method</span>
+<a id="__codelineno-0-63" name="__codelineno-0-63"></a>    <span class="bp">self</span><span class="o">.</span><span class="n">debug</span> <span class="o">=</span> <span class="n">debug</span>
+<a id="__codelineno-0-64" name="__codelineno-0-64"></a>    <span class="bp">self</span><span class="o">.</span><span class="n">resultsFolder</span> <span class="o">=</span> <span class="n">resultsFolder</span>
 </code></pre></div></td></tr></table></div>
       </details>
   </div>
@@ -1681,7 +1746,7 @@
     <nav class="md-footer__inner md-grid" aria-label="Footer" >
       
         
-        <a href="../derivation_show/" class="md-footer__link md-footer__link--prev" aria-label="Previous: derivation_show" rel="prev">
+        <a href="../" class="md-footer__link md-footer__link--prev" aria-label="Previous: runners" rel="prev">
           <div class="md-footer__button md-icon">
             <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11h12Z"/></svg>
           </div>
@@ -1690,20 +1755,20 @@
               <span class="md-footer__direction">
                 Previous
               </span>
-              derivation_show
+              runners
             </div>
           </div>
         </a>
       
       
         
-        <a href="../loaders/" class="md-footer__link md-footer__link--next" aria-label="Next: loaders" rel="next">
+        <a href="../DockerMethodRunner/" class="md-footer__link md-footer__link--next" aria-label="Next: DockerMethodRunner" rel="next">
           <div class="md-footer__title">
             <div class="md-ellipsis">
               <span class="md-footer__direction">
                 Next
               </span>
-              loaders
+              DockerMethodRunner
             </div>
           </div>
           <div class="md-footer__button md-icon">
@@ -1734,12 +1799,12 @@
       <div class="md-dialog__inner md-typeset"></div>
     </div>
     
-    <script id="__config" type="application/json">{"base": "../../../..", "features": [], "search": "../../../../assets/javascripts/workers/search.16e2a7d4.min.js", "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.config.lang": "en", "search.config.pipeline": "trimmer, stopWordFilter", "search.config.separator": "[\\s\\-]+", "search.placeholder": "Search", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version.title": "Select version"}}</script>
+    <script id="__config" type="application/json">{"base": "../../../../..", "features": [], "search": "../../../../../assets/javascripts/workers/search.16e2a7d4.min.js", "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.config.lang": "en", "search.config.pipeline": "trimmer, stopWordFilter", "search.config.separator": "[\\s\\-]+", "search.placeholder": "Search", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version.title": "Select version"}}</script>
     
     
-      <script src="../../../../assets/javascripts/bundle.5a2dcb6a.min.js"></script>
+      <script src="../../../../../assets/javascripts/bundle.5a2dcb6a.min.js"></script>
       
-        <script src="../../../../_extra/jupyter.js"></script>
+        <script src="../../../../../_extra/jupyter.js"></script>
       
     
     
