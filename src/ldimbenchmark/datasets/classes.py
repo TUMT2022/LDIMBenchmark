@@ -120,9 +120,7 @@ def loadDatasetsDirectly(
                 index_col="Timestamp",
                 chunksize=100000,
             )
-            frames = Pool(processes=cpu_count() - 1).imap_unordered(
-                parse_frame_dates, d
-            )
+            frames = Pool(processes=cpu_count() - 1).imap(parse_frame_dates, d)
 
             sensor_readings = pd.concat(frames)
 
