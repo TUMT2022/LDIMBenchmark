@@ -40,8 +40,8 @@ class DatasetInfoDatasetObject(TypedDict):
     Dataset Config.yml representation
     """
 
-    start: datetime
-    end: datetime
+    start: pd.Timestamp
+    end: pd.Timestamp
 
 
 class DatasetInfoDatasetProperty(TypedDict):
@@ -88,7 +88,7 @@ def write_to_csv(dataframe, file_path):
 
 
 def parse_frame_dates(frame):
-    frame.index = pd.to_datetime(frame.index)
+    frame.index = pd.to_datetime(frame.index, utc=True)
     return frame
 
 
@@ -114,6 +114,7 @@ def loadDatasetsDirectly(
         for sensor_readings_file in glob(
             os.path.join(data_dir_in_dataset_dir + "/" + "*.csv")
         ):
+            logging.debug(f"Trying to load: {sensor_readings_file}")
             d = pd.read_csv(
                 sensor_readings_file,
                 index_col="Timestamp",
@@ -122,15 +123,19 @@ def loadDatasetsDirectly(
             frames = Pool(processes=cpu_count() - 1).imap_unordered(
                 parse_frame_dates, d
             )
+
             sensor_readings = pd.concat(frames)
 
             datasets[data_dir][
                 os.path.basename(sensor_readings_file)[:-4]
             ] = sensor_readings
 
+    date_columns = ["leak_time_start", "leak_time_end", "leak_time_peak"]
     datasets["leaks"] = pd.read_csv(
         os.path.join(dataset_path, "leaks.csv"),
-        parse_dates=True,
+        parse_dates=date_columns,
+        # This fixes differences in dates, aswell as empty columns
+        date_parser=lambda x: pd.to_datetime(x, utc=True),
     )
 
     return _LoadedDatasetPartNew(datasets)
@@ -169,6 +174,18 @@ class Dataset:
                 self.info: DatasetInfo = yaml.safe_load(f)
                 if "overwrites" not in self.info["dataset"]:
                     self.info["dataset"]["overwrites"] = {}
+                self.info["dataset"]["training"]["start"] = pd.to_datetime(
+                    self.info["dataset"]["training"]["start"], utc=True
+                )
+                self.info["dataset"]["training"]["end"] = pd.to_datetime(
+                    self.info["dataset"]["training"]["end"], utc=True
+                )
+                self.info["dataset"]["evaluation"]["start"] = pd.to_datetime(
+                    self.info["dataset"]["evaluation"]["start"], utc=True
+                )
+                self.info["dataset"]["evaluation"]["end"] = pd.to_datetime(
+                    self.info["dataset"]["evaluation"]["end"], utc=True
+                )
         else:
             raise Exception(
                 f"No dataset_info.yaml file found! (not at: '{path_to_dataset_info}')"
@@ -351,7 +368,13 @@ def getTimeSliceOfDataset(
 
     new_dataset_slice = {}
     for key in dataset:
-        new_dataset_slice[key] = dataset[key].loc[start:end]
+        logging.debug(key)
+        new_dataset_slice[key] = dataset[key].sort_index().loc[start:end]
+
+    if len(new_dataset_slice) == 0:
+        logging.warning(
+            "No data from dataset selected, because start- and endtime are outside of the datapoint ranges."
+        )
     return new_dataset_slice
 
 
