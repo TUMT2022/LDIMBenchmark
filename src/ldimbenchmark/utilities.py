@@ -55,7 +55,13 @@ def resampleAndConcatSensors(
     for sensor_name, sensor_data in sensors.items():
         concatenated_sensors.append(sensor_data.resample(resample_frequency).mean())
 
-    return pd.concat(concatenated_sensors, axis=1)
+    if len(concatenated_sensors) == 0:
+        return pd.DataFrame()
+
+    return pd.concat(
+        concatenated_sensors,
+        axis=1,
+    ).interpolate(limit_direction="both")
 
 
 def simplifyBenchmarkData(
