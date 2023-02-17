@@ -1272,6 +1272,10 @@ We do not split the data into training and evaluation data, but instead provide 
 <a id="__codelineno-0-12" name="__codelineno-0-12" href="#__codelineno-0-12"></a> | -- dmas.json            # Layout of the district metering areas
 <a id="__codelineno-0-13" name="__codelineno-0-13" href="#__codelineno-0-13"></a> | -- dataset_info.yml     # Information about the dataset
 </code></pre></div>
+<blockquote>
+<p>Note that multiple readings for the same node and sensor are not allowed.
+This is because the methods are not expected to handle in/out scenarios for flows.</p>
+</blockquote>
 <p>The <code>dataset_info.yml</code> file contains the following information:</p>
 <div class="highlight"><pre><span></span><code><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">&lt;name of the dataset&gt;</span><span class="w"> </span><span class="c1"># root name (important for )</span>
 <a id="__codelineno-1-2" name="__codelineno-1-2" href="#__codelineno-1-2"></a><span class="nt">description</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">&lt;optional; description of the dataset&gt;</span>
@@ -1329,7 +1333,7 @@ training_dataset --&gt;|Benchmark| fileLevelBenchmarkDataset["Benchmark Dataset 
   <small>
     
       Last update:
-      <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date">February 10, 2023</span>
+      <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date">February 17, 2023</span>
       
         <br>
         Created:
