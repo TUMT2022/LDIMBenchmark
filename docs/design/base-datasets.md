@@ -19,6 +19,9 @@ We do not split the data into training and evaluation data, but instead provide 
  | -- dataset_info.yml     # Information about the dataset
 ```
 
+> Note that multiple readings for the same node and sensor are not allowed.
+> This is because the methods are not expected to handle in/out scenarios for flows.
+
 The `dataset_info.yml` file contains the following information:
 
 ```yaml
