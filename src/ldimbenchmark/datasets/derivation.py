@@ -245,31 +245,27 @@ class DatasetDerivator:
         value: float,
         dataframe: DataFrame,
     ) -> DataFrame:
-        match derivation:
-            case "precision":
-                noise = self.__get_random_norm(value, dataframe.index.shape)
-                dataframe = dataframe.mul(1 + noise, axis=0)
-
-            case "sensitivity":
-                shift = value["value"]
-                if value["shift"] == "bottom":
-                    shift = 0
-                if value["shift"] == "middle":
-                    shift = value["value"] / 2
-                dataframe = np.divmod(dataframe, value["value"])[0] + shift
-
-            case "downsample":
-                dataframe = dataframe.reset_index()
-                dataframe = dataframe.groupby(
-                    (
-                        dataframe["Timestamp"] - dataframe["Timestamp"][0]
-                    ).dt.total_seconds()
-                    // (value),
-                    group_keys=True,
-                ).first()
-                dataframe = dataframe.set_index("Timestamp")
-
-            case _:
-                raise ValueError(f"Derivation {derivation} not implemented")
+        if derivation == "precision":
+            noise = self.__get_random_norm(value, dataframe.index.shape)
+            dataframe = dataframe.mul(1 + noise, axis=0)
+        elif derivation == "sensitivity":
+            shift = value["value"]
+            if value["shift"] == "bottom":
+                shift = 0
+            if value["shift"] == "middle":
+                shift = value["value"] / 2
+            dataframe = np.divmod(dataframe, value["value"])[0] + shift
+        elif derivation == "downsample":
+            dataframe = dataframe.reset_index()
+            dataframe = dataframe.groupby(
+                (
+                    dataframe["Timestamp"] - dataframe["Timestamp"][0]
+                ).dt.total_seconds()
+                // (value),
+                group_keys=True,
+            ).first()
+            dataframe = dataframe.set_index("Timestamp")
+        else:
+            raise ValueError(f"Derivation {derivation} not implemented")
 
         return dataframe
