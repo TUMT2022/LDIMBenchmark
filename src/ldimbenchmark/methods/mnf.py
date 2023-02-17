@@ -35,17 +35,17 @@ class MNF(LDIMMethodBase):
                 hyperparameters=[
                     Hyperparameter(
                         name="window",
+                        description="Window size for the sliding window in days",
                         type=int,
                         default=10,
-                        description="Window size for the sliding window in days",
                         min=1,
                         max=365,
                     ),
                     Hyperparameter(
                         name="gamma",
+                        description="Threshold to raise an alert",
                         type=float,
                         default=0.1,
-                        description="Threshold to raise an alert",
                         min=0.0,
                         max=1.0,
                     ),

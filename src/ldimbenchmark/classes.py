@@ -1,6 +1,6 @@
 from pandas import DataFrame
 from wntr.network import WaterNetworkModel
-from typing import Literal, Optional, TypedDict, Dict, Union, List
+from typing import Literal, Optional, TypedDict, Dict, Union, List, Type
 from datetime import datetime
 from abc import ABC, abstractmethod
 
@@ -51,15 +51,81 @@ class BenchmarkLeakageResult(TypedDict):
     leak_max_flow: float
 
 
-class Hyperparameter(TypedDict):
+class Hyperparameter:
+    """
+    Definition of a Hyperparameter for a Leakage Detection Method
+    """
+
     name: str
     type: type
     default: Union[str, int, float, bool]
     description: str
-    # TODO
     min: Union[int, float]
     max: Union[int, float]
-    options: Optional[List[Union[str, int, float]]]
+    options: List[Union[str, int, float]]
+
+    def __init__(
+        self,
+        name: str,
+        description: str,
+        type: Type,
+        default: Union[int, float, bool],
+        options: Optional[List[str]] = None,
+        min: Optional[Union[int, float]] = None,
+        max: Optional[Union[int, float]] = None,
+    ):
+        """
+        ctor.
+        """
+
+        self.name = name
+        self.description = description
+
+        # Validation
+        self.type = type
+        if type != type(default):
+            raise ValueError(
+                f"Parameter 'default' must be of type {type}, but is of type {type(default)}."
+            )
+
+        if isinstance(type, bool):
+            if options is not None and (min is not None or max is not None):
+                raise ValueError(
+                    f"Parameter 'options' and 'min/max cannot be set if using type 'bool'."
+                )
+
+        if isinstance(type, str):
+            if options is None:
+                raise ValueError(
+                    f"Parameter 'options' must be set if using type 'str'."
+                )
+
+        if isinstance(type, int) or isinstance(type, float):
+            if options is None and (min is None or max is None):
+                raise ValueError(
+                    f"Parameter 'options' or 'min/max' must be set if using type 'int/float'."
+                )
+
+        if options is not None and (min is not None or max is not None):
+            raise ValueError(
+                f"Parameters 'options' and 'min/max' cannot be supplied at the same time."
+            )
+        self.default = default
+        self.options = options
+        self.min = min
+        self.max = max
+
+    # def __str__(self):
+    #     return f"{self.name}: {self.value}"
+
+    # def __repr__(self):
+    #     return f"{self.name}: {self.value}"
+
+    # def __eq__(self, other):
+    #     return self.name == other.name and self.value == other.value
+
+    # def __hash__(self):
+    #     return
 
 
 class MethodMetadataDataNeeded(TypedDict):
@@ -123,7 +189,7 @@ class LDIMMethodBase(ABC):
         self.additional_output_path = additional_output_path
         self.hyperparameters = {}
         for hyperparameter in metadata["hyperparameters"]:
-            self.hyperparameters[hyperparameter["name"]] = hyperparameter["default"]
+            self.hyperparameters[hyperparameter.name] = hyperparameter.default
 
     def init_with_benchmark_params(
         self, additional_output_path=None, hyperparameters={}
