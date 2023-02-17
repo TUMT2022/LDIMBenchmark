@@ -59,7 +59,7 @@ def cusum(df, direction="p", delta=4, C_thr=3, est_length="3 days"):
     ar_K = (delta / 2) * ar_sigma
 
     sumlm = np.frompyfunc(lambda a, b: 0 if a + b < 0 else a + b, 2, 1)
-    df_cs = sumlm.accumulate(df - ar_mean - ar_K, dtype=np.object)
+    df_cs = sumlm.accumulate(df - ar_mean - ar_K, dtype=object)
     df_cs.iloc[0] = 0
 
     leak_det = pd.Series(dtype=object)
