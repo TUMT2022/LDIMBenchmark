@@ -264,6 +264,7 @@ class DatasetGenerator:
                 pd.DataFrame(pres, index=self.time_stamps).round(decimal_size).to_csv(
                     os.path.join(results_folder, "pressures", f"{node_id}.csv"),
                     index_label="Timestamp",
+                    header=[node_id],
                 )
                 # pres = pres[:len(self.time_stamp)]
                 total_pressures[node_id] = pres
@@ -275,6 +276,7 @@ class DatasetGenerator:
                 pd.DataFrame(dem, index=self.time_stamps).round(decimal_size).to_csv(
                     os.path.join(results_folder, "demands", f"{node_id}.csv"),
                     index_label="Timestamp",
+                    header=[node_id],
                 )
                 # dem = dem[:len(self.time_stamp)]
                 # dem = [elem * 3600 * 1000 for elem in dem] #CMH / L/s
@@ -289,6 +291,7 @@ class DatasetGenerator:
                 ).to_csv(
                     os.path.join(results_folder, "levels", f"{node_id}.csv"),
                     index_label="Timestamp",
+                    header=[node_id],
                 )
                 # level_pres = level_pres[:len(self.time_stamp)]
                 # level_pres = [round(elem, decimal_size) for elem in level_pres]
@@ -300,8 +303,9 @@ class DatasetGenerator:
                     : len(self.time_stamps)
                 ]
                 pd.DataFrame(flows, index=self.time_stamps).round(decimal_size).to_csv(
-                    os.path.join(results_folder, "flows", f"{node_id}.csv"),
+                    os.path.join(results_folder, "flows", f"{link_id}.csv"),
                     index_label="Timestamp",
+                    header=[link_id],
                 )
                 total_flows[link_id] = flows
 
