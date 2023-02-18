@@ -149,7 +149,6 @@ class LDIMBenchmark:
                     ):
                         results.append(result)
                         pbar.update()
-            # TODO: preload datasets (as to not overwrite each other during the parallel loop)
             pass
         else:
             for experiment in self.experiments:
@@ -206,7 +205,6 @@ class LDIMBenchmark:
             else:
                 loaded = dataset
 
-            # TODO: Check if cached, if not cache before
             loaded_datasets[dataset.id] = loaded.loadData()
 
         results = []

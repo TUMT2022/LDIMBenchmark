@@ -46,7 +46,7 @@ class LILA(LDIMMethodBase):
                         name="est_length",
                         description="Length of the estimation period in hours",
                         default=72,  # 3 days
-                        type=int,
+                        value_type=int,
                         max=8760,  # 1 year
                         min=1,
                     ),
@@ -54,7 +54,7 @@ class LILA(LDIMMethodBase):
                         name="C_threshold",
                         description="Threshold for the CUSUM statistic",
                         default=3,
-                        type=float,
+                        value_type=float,
                         max=10,
                         min=0,
                     ),
@@ -62,7 +62,7 @@ class LILA(LDIMMethodBase):
                         name="delta",
                         description="Delta for the CUSUM statistic",
                         default=4,
-                        type=float,
+                        value_type=float,
                         max=10,
                         min=0,
                     ),

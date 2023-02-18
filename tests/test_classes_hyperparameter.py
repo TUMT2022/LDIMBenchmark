@@ -7,7 +7,7 @@ class MyTestCase(unittest.TestCase):
         hyperparameter_int_minmax = Hyperparameter(
             name="test",
             description="test",
-            type=int,
+            value_type=int,
             default=1,
             min=0,
             max=10,
@@ -16,7 +16,7 @@ class MyTestCase(unittest.TestCase):
         hyperparameter_int_options = Hyperparameter(
             name="test",
             description="test",
-            type=int,
+            value_type=int,
             default=1,
             options=[1, 2, 3],
         )
@@ -24,64 +24,64 @@ class MyTestCase(unittest.TestCase):
         hyperparameter_float_minmax = Hyperparameter(
             name="test",
             description="test",
-            type=float,
-            default=1,
-            min=0,
-            max=10,
+            value_type=float,
+            default=1.0,
+            min=0.0,
+            max=10.0,
         )
 
         hyperparameter_float_options = Hyperparameter(
             name="test",
             description="test",
-            type=float,
-            default=1,
-            options=[1, 2, 3],
+            value_type=float,
+            default=1.0,
+            options=[1.0, 2.0, 3.0],
         )
 
         hyperparameter_bool = Hyperparameter(
             name="test",
             description="test",
-            type=bool,
+            value_type=bool,
             default=True,
         )
 
         hyperparameter_string = Hyperparameter(
             name="test",
             description="test",
-            type=str,
+            value_type=str,
             default="option1",
             options=["option1", "option2"],
         )
 
     def test_cusum_error_usage(self):
-        # Hyperparameter with type str must have options
+        # Hyperparameter with value_type str must have options
         with self.assertRaises(Exception) as context:
             hyperparameter = Hyperparameter(
                 name="test",
                 description="test",
-                type=str,
+                value_type=str,
             )
 
-        # Hyperparameter with type int or float must have min and max or options
+        # Hyperparameter with value_type int or float must have min and max or options
         with self.assertRaises(Exception) as context:
             hyperparameter = Hyperparameter(
                 name="test",
                 description="test",
-                type=int,
+                value_type=int,
             )
 
             hyperparameter = Hyperparameter(
                 name="test",
                 description="test",
-                type=float,
+                value_type=float,
             )
 
-        # Hyperparameter with type int or float must not have options and min and max
+        # Hyperparameter with value_type int or float must not have options and min and max
         with self.assertRaises(Exception) as context:
             hyperparameter = Hyperparameter(
                 name="test",
                 description="test",
-                type=int,
+                value_type=int,
                 options=[1, 2, 3],
                 min=0,
                 max=10,
@@ -90,18 +90,18 @@ class MyTestCase(unittest.TestCase):
             hyperparameter = Hyperparameter(
                 name="test",
                 description="test",
-                type=float,
+                value_type=float,
                 options=[1, 2, 3],
                 min=0,
                 max=10,
             )
 
-        # Hyperparameter with type bool must not have options and min and max
+        # Hyperparameter with value_type bool must not have options and min and max
         with self.assertRaises(Exception) as context:
             hyperparameter = Hyperparameter(
                 name="test",
                 description="test",
-                type=bool,
+                value_type=bool,
                 min=0,
                 max=10,
             )
@@ -109,16 +109,16 @@ class MyTestCase(unittest.TestCase):
             hyperparameter = Hyperparameter(
                 name="test",
                 description="test",
-                type=bool,
+                value_type=bool,
                 options=[1, 2, 3],
             )
 
-        # Hyperparameter default value does not match type
+        # Hyperparameter default value does not match value_type
         with self.assertRaises(Exception) as context:
             hyperparameter = Hyperparameter(
                 name="test",
                 description="test",
-                type=int,
+                value_type=int,
                 default="1",
             )
 

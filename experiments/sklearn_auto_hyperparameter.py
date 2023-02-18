@@ -23,7 +23,6 @@ class LDIMMethodScikitAdapter:
         return self.method.detect(X)
 
     def score(self, X, y):
-        # TODO: Return F1?
         return 0
 
 

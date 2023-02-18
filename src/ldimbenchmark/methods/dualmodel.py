@@ -41,7 +41,7 @@ class DUALMethod(LDIMMethodBase):
                     Hyperparameter(
                         name="est_length",
                         description="Length of the estimation period in hours",
-                        type=int,
+                        value_type=int,
                         default=20 * 24,  # 20 days
                         min=1,
                         max=8760,  # 1 year
@@ -49,7 +49,7 @@ class DUALMethod(LDIMMethodBase):
                     Hyperparameter(
                         name="C_threshold",
                         description="Threshold for the CUSUM statistic",
-                        type=float,
+                        value_type=float,
                         default=0.2,
                         max=10,
                         min=0,
@@ -57,7 +57,7 @@ class DUALMethod(LDIMMethodBase):
                     Hyperparameter(
                         name="delta",
                         description="Delta for the CUSUM statistic",
-                        type=float,
+                        value_type=float,
                         default=0.3,
                         max=10,
                         min=0,
