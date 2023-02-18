@@ -1484,23 +1484,24 @@
 <a id="__codelineno-3-13" name="__codelineno-3-13" href="#__codelineno-3-13"></a>pytest<span class="w"> </span>-s<span class="w"> </span>-o<span class="w"> </span><span class="nv">log_cli</span><span class="o">=</span><span class="nb">true</span>
 <a id="__codelineno-3-14" name="__codelineno-3-14" href="#__codelineno-3-14"></a>pytest<span class="w"> </span>tests/test_derivation.py<span class="w"> </span>-k<span class="w"> </span><span class="s1">&#39;test_mything&#39;</span>
 <a id="__codelineno-3-15" name="__codelineno-3-15" href="#__codelineno-3-15"></a>pytest<span class="w"> </span>--testmon
-<a id="__codelineno-3-16" name="__codelineno-3-16" href="#__codelineno-3-16"></a>
-<a id="__codelineno-3-17" name="__codelineno-3-17" href="#__codelineno-3-17"></a><span class="c1"># Pytest watch</span>
-<a id="__codelineno-3-18" name="__codelineno-3-18" href="#__codelineno-3-18"></a>ptw
-<a id="__codelineno-3-19" name="__codelineno-3-19" href="#__codelineno-3-19"></a>ptw<span class="w"> </span>--<span class="w"> </span>--testmon
-<a id="__codelineno-3-20" name="__codelineno-3-20" href="#__codelineno-3-20"></a>
-<a id="__codelineno-3-21" name="__codelineno-3-21" href="#__codelineno-3-21"></a><span class="c1"># Watch a file during development</span>
-<a id="__codelineno-3-22" name="__codelineno-3-22" href="#__codelineno-3-22"></a>npm<span class="w"> </span>install<span class="w"> </span>-g<span class="w"> </span>nodemon
-<a id="__codelineno-3-23" name="__codelineno-3-23" href="#__codelineno-3-23"></a>nodemon<span class="w"> </span>-L<span class="w"> </span>experiments/auto_hyperparameter.py
-<a id="__codelineno-3-24" name="__codelineno-3-24" href="#__codelineno-3-24"></a>
-<a id="__codelineno-3-25" name="__codelineno-3-25" href="#__codelineno-3-25"></a><span class="c1"># Test-Publish</span>
-<a id="__codelineno-3-26" name="__codelineno-3-26" href="#__codelineno-3-26"></a>poetry<span class="w"> </span>config<span class="w"> </span>repositories.testpypi<span class="w"> </span>https://test.pypi.org/legacy/
-<a id="__codelineno-3-27" name="__codelineno-3-27" href="#__codelineno-3-27"></a>poetry<span class="w"> </span>config<span class="w"> </span>http-basic.testpypi<span class="w"> </span>__token__<span class="w"> </span>pypi-your-api-token-here
-<a id="__codelineno-3-28" name="__codelineno-3-28" href="#__codelineno-3-28"></a>poetry<span class="w"> </span>build
-<a id="__codelineno-3-29" name="__codelineno-3-29" href="#__codelineno-3-29"></a>poetry<span class="w"> </span>publish<span class="w"> </span>-r<span class="w"> </span>testpypi
-<a id="__codelineno-3-30" name="__codelineno-3-30" href="#__codelineno-3-30"></a>
-<a id="__codelineno-3-31" name="__codelineno-3-31" href="#__codelineno-3-31"></a><span class="c1"># Real Publish</span>
-<a id="__codelineno-3-32" name="__codelineno-3-32" href="#__codelineno-3-32"></a>poetry<span class="w"> </span>config<span class="w"> </span>pypi-token.pypi<span class="w"> </span>pypi-your-token-here
+<a id="__codelineno-3-16" name="__codelineno-3-16" href="#__codelineno-3-16"></a>pytest<span class="w"> </span>--snapshot-update
+<a id="__codelineno-3-17" name="__codelineno-3-17" href="#__codelineno-3-17"></a>
+<a id="__codelineno-3-18" name="__codelineno-3-18" href="#__codelineno-3-18"></a><span class="c1"># Pytest watch</span>
+<a id="__codelineno-3-19" name="__codelineno-3-19" href="#__codelineno-3-19"></a>ptw
+<a id="__codelineno-3-20" name="__codelineno-3-20" href="#__codelineno-3-20"></a>ptw<span class="w"> </span>--<span class="w"> </span>--testmon
+<a id="__codelineno-3-21" name="__codelineno-3-21" href="#__codelineno-3-21"></a>
+<a id="__codelineno-3-22" name="__codelineno-3-22" href="#__codelineno-3-22"></a><span class="c1"># Watch a file during development</span>
+<a id="__codelineno-3-23" name="__codelineno-3-23" href="#__codelineno-3-23"></a>npm<span class="w"> </span>install<span class="w"> </span>-g<span class="w"> </span>nodemon
+<a id="__codelineno-3-24" name="__codelineno-3-24" href="#__codelineno-3-24"></a>nodemon<span class="w"> </span>-L<span class="w"> </span>experiments/auto_hyperparameter.py
+<a id="__codelineno-3-25" name="__codelineno-3-25" href="#__codelineno-3-25"></a>
+<a id="__codelineno-3-26" name="__codelineno-3-26" href="#__codelineno-3-26"></a><span class="c1"># Test-Publish</span>
+<a id="__codelineno-3-27" name="__codelineno-3-27" href="#__codelineno-3-27"></a>poetry<span class="w"> </span>config<span class="w"> </span>repositories.testpypi<span class="w"> </span>https://test.pypi.org/legacy/
+<a id="__codelineno-3-28" name="__codelineno-3-28" href="#__codelineno-3-28"></a>poetry<span class="w"> </span>config<span class="w"> </span>http-basic.testpypi<span class="w"> </span>__token__<span class="w"> </span>pypi-your-api-token-here
+<a id="__codelineno-3-29" name="__codelineno-3-29" href="#__codelineno-3-29"></a>poetry<span class="w"> </span>build
+<a id="__codelineno-3-30" name="__codelineno-3-30" href="#__codelineno-3-30"></a>poetry<span class="w"> </span>publish<span class="w"> </span>-r<span class="w"> </span>testpypi
+<a id="__codelineno-3-31" name="__codelineno-3-31" href="#__codelineno-3-31"></a>
+<a id="__codelineno-3-32" name="__codelineno-3-32" href="#__codelineno-3-32"></a><span class="c1"># Real Publish</span>
+<a id="__codelineno-3-33" name="__codelineno-3-33" href="#__codelineno-3-33"></a>poetry<span class="w"> </span>config<span class="w"> </span>pypi-token.pypi<span class="w"> </span>pypi-your-token-here
 </code></pre></div>
 <h3 id="documentation">Documentation</h3>
 <p>https://squidfunk.github.io/mkdocs-material/
