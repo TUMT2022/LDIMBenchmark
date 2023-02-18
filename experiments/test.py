@@ -31,7 +31,7 @@ dataset = Dataset(generated_dataset_path)
 
 
 
-derivator = DatasetDerivator([dataset], os.path.join(test_data_folder_datasets, "test_derive"))
+derivator = DatasetDerivator([dataset], os.path.join(test_data_folder_datasets))
 # derivedDatasets = derivator.derive_data("demands", "precision", [0.01])
 # derivedDatasets = derivator.derive_data("pressures", "precision", [0.01])
 derivedDatasets = derivator.derive_data("pressures", "precision", [0.01])
@@ -39,10 +39,27 @@ derivedDatasets.append(dataset)
 
 analysis = DatasetAnalyzer(os.path.join(test_data_folder, "out"))
 
-analysis.compare(derivedDatasets)
+analysis.compare(derivedDatasets, "pressures")
 
+#%%
 
-# analysis.analyze(derivedDatasets)
+derivator = DatasetDerivator([dataset], os.path.join(test_data_folder_datasets))
+derivedDatasets = derivator.derive_data("pressures", "downsample", [60*10])
+derivedDatasets.append(dataset)
+
+analysis = DatasetAnalyzer(os.path.join(test_data_folder, "out"))
+
+analysis.compare(derivedDatasets, "pressures")
+
+#%%
+
+derivator = DatasetDerivator([dataset], os.path.join(test_data_folder_datasets))
+derivedDatasets = derivator.derive_data("pressures", "sensitivity", [0.5])
+derivedDatasets.append(dataset)
+
+analysis = DatasetAnalyzer(os.path.join(test_data_folder, "out"))
+
+analysis.compare(derivedDatasets, "pressures")
 
 # %%
 

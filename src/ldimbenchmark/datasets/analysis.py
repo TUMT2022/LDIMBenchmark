@@ -4,7 +4,7 @@ import os
 import pandas as pd
 import wntr
 import matplotlib.pyplot as plt
-from typing import Union, List
+from typing import Literal, Union, List
 
 
 class DatasetAnalyzer:
@@ -13,10 +13,14 @@ class DatasetAnalyzer:
     """
 
     def __init__(self, analyisis_out_dir: str):
-        self.analyisis_out_dir = analyisis_out_dir
-        os.makedirs(self.analyisis_out_dir, exist_ok=True)
+        self.analysis_out_dir = analyisis_out_dir
+        os.makedirs(self.analysis_out_dir, exist_ok=True)
 
-    def compare(self, datasets: List[Dataset]):
+    def compare(
+        self,
+        datasets: List[Dataset],
+        data_type: Literal["demands", "pressures", "flows", "levels"],
+    ):
         """
         Compare the datasets, e.g. especially helpful when comparing the original dataset with derived ones.
         """
@@ -46,26 +50,25 @@ class DatasetAnalyzer:
         original_dataset = loaded_datasets[original_dataset_id]
         del loaded_datasets[original_dataset_id]
 
-        # Plot each time series
-        # TODO: Only plot timeseries with difference...
-        for dataset_id, dataset in loaded_datasets.items():
-            if dataset.info["derivations"] is not None:
-                if dataset.info["derivations"]["data"] is not None:
-                    data_name = dataset.info["derivations"]["data"][0]["kind"]
+        # # Plot each time series
+        # # TODO: Only plot timeseries with difference...
+        # for dataset_id, dataset in loaded_datasets.items():
+        #     if dataset.info["derivations"] is not None:
+        #         if dataset.info["derivations"]["data"] is not None:
+        #             data_name = dataset.info["derivations"]["data"][0]["kind"]
 
-        for data_name in ["demands", "pressures", "flows", "levels"]:
-            data = getattr(original_dataset, data_name)
-            for key in data.keys():
-                # data.columns = [f"[Original] {col}" for col in data.columns]
-                DatasetAnalyzer._plot_time_series(
-                    data[key],
-                    data_name,
-                    self.analyisis_out_dir,
-                    [
-                        getattr(ldata, data_name)[key]
-                        for i, ldata in loaded_datasets.items()
-                    ],
-                )
+        data = getattr(original_dataset, data_type)
+        for key in data.keys():
+            # data.columns = [f"[Original] {col}" for col in data.columns]
+            DatasetAnalyzer._plot_time_series(
+                data[key],
+                data_type,
+                self.analysis_out_dir,
+                [
+                    getattr(ldata, data_type)[key]
+                    for i, ldata in loaded_datasets.items()
+                ],
+            )
 
         # original_dataset = pd.read_csv(dataset_source_dir, index_col="Timestamp")
 
@@ -102,15 +105,18 @@ class DatasetAnalyzer:
 
         if compare_df is not None:
             for compare in compare_df:
-                compare.plot(ax=ax, alpha=0.5)
-            df.plot(
-                ax=ax,
-            )
-            ax.legend()
+                compare.plot(
+                    ax=ax,
+                    alpha=0.5,
+                    marker="o",
+                )
+            df.plot(ax=ax, marker="x")
+            ax.legend([f"[Original] {label}" for label in df.columns])
         else:
             df.plot(ax=ax)
 
-        fig.savefig(os.path.join(out_dir, f"{title}.png"))
+        fig.savefig(os.path.join(out_dir, f"{title}_{df.columns[0]}.png"))
+        plt.close(fig)
 
     def analyze(self, datasets: Union[Dataset, List[Dataset]]):
         """
@@ -140,7 +146,7 @@ class DatasetAnalyzer:
                 dataset.model.describe(2)
             )
 
-            dataset_analysis_out_dir = os.path.join(self.analyisis_out_dir, dataset.id)
+            dataset_analysis_out_dir = os.path.join(self.analysis_out_dir, dataset.id)
             os.makedirs(dataset_analysis_out_dir, exist_ok=True)
 
             dataset.loadData()
@@ -219,7 +225,7 @@ class DatasetAnalyzer:
         )
 
         overview_table.to_csv(
-            os.path.join(self.analyisis_out_dir, "network_model_details.csv")
+            os.path.join(self.analysis_out_dir, "network_model_details.csv")
         )
 
         # .hide(axis="index") \
@@ -237,7 +243,7 @@ class DatasetAnalyzer:
             overwrite=False,
         ).to_latex(
             # .relabel_index(["", "B", "C"], axis="columns") \
-            os.path.join(self.analyisis_out_dir, "network_model_details.tex"),
+            os.path.join(self.analysis_out_dir, "network_model_details.tex"),
             position_float="centering",
             clines="all;data",
             column_format="l|rrrrrrr",
