@@ -3,7 +3,6 @@ import pickle
 import numpy as np
 import pandas as pd
 import os
-import yaml
 from wntr.network.io import read_inpfile, write_inpfile
 from wntr.network import WaterNetworkModel
 from datetime import datetime
@@ -23,16 +22,23 @@ import hashlib
 import logging
 import copy
 
+import yaml
+from yaml import CDumper
+from yaml.representer import SafeRepresenter
+import datetime
 
-class DatasetInfoDatasetOverwrites(TypedDict):
-    """
-    Dataset Config.yml representation
-    """
 
-    file_path: str
-    index_column: str
-    decimal: str
-    delimiter: str
+# Fix for Timestamp parsing/dumping in yaml
+class TSDumper(CDumper):
+    pass
+
+
+def timestamp_representer(dumper, data):
+    return SafeRepresenter.represent_datetime(dumper, data.to_pydatetime())
+
+
+TSDumper.add_representer(datetime.datetime, SafeRepresenter.represent_datetime)
+TSDumper.add_representer(pd.Timestamp, timestamp_representer)
 
 
 class DatasetInfoDatasetObject(TypedDict):
@@ -51,7 +57,6 @@ class DatasetInfoDatasetProperty(TypedDict):
 
     evaluation: DatasetInfoDatasetObject
     training: DatasetInfoDatasetObject
-    overwrites: DatasetInfoDatasetOverwrites
 
 
 class DatasetInfoDerivations(TypedDict):
@@ -170,8 +175,6 @@ class Dataset:
             # file exists
             with open(path_to_dataset_info) as f:
                 self.info: DatasetInfo = yaml.safe_load(f)
-                if "overwrites" not in self.info["dataset"]:
-                    self.info["dataset"]["overwrites"] = {}
                 self.info["dataset"]["training"]["start"] = pd.to_datetime(
                     self.info["dataset"]["training"]["start"], utc=True
                 )
@@ -283,7 +286,7 @@ class Dataset:
         self.full_dataset_part.leaks = leaks
 
     def loadData(self):
-        logging.info("Loading data...")
+        logging.debug(f"Loading dataset {self.id}")
         if not hasattr(self, "full_dataset_part"):
             path_to_pickle = os.path.join(self.path, "dataset.pickle")
             if os.path.isfile(path_to_pickle):
@@ -293,7 +296,7 @@ class Dataset:
                 self.full_dataset_part = loadDatasetsDirectly(self.path, self.info)
                 with open(path_to_pickle, "wb") as f:
                     pickle.dump(self.full_dataset_part, f)
-        logging.info("Stopped Loading data...")
+        logging.debug(f"Stopped loading dataset {self.id}")
         return self
 
     def loadBenchmarkData(self):
@@ -353,8 +356,11 @@ class Dataset:
                 )
 
         self.leaks.to_csv(os.path.join(folder, "leaks.csv"))
+
         with open(os.path.join(folder, f"dataset_info.yaml"), "w") as f:
-            yaml.dump(self.info, f)
+            yaml.dump(
+                self.info, f, sort_keys=False, default_flow_style=None, Dumper=TSDumper
+            )
 
 
 def getTimeSliceOfDataset(

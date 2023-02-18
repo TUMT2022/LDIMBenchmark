@@ -102,6 +102,7 @@ docker build . -t testmethod
 pytest -s -o log_cli=true
 pytest tests/test_derivation.py -k 'test_mything'
 pytest --testmon
+pytest --snapshot-update
 
 # Pytest watch
 ptw

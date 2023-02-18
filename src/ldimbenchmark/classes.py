@@ -68,7 +68,7 @@ class Hyperparameter:
         self,
         name: str,
         description: str,
-        type: Type,
+        value_type: Type,
         default: Union[int, float, bool],
         options: Optional[List[str]] = None,
         min: Optional[Union[int, float]] = None,
@@ -82,25 +82,25 @@ class Hyperparameter:
         self.description = description
 
         # Validation
-        self.type = type
-        if type != type(default):
+        self.type = value_type
+        if value_type != type(default):
             raise ValueError(
-                f"Parameter 'default' must be of type {type}, but is of type {type(default)}."
+                f"Parameter 'default' must be of type {value_type}, but is of type {type(default)}."
             )
 
-        if isinstance(type, bool):
+        if isinstance(value_type, bool):
             if options is not None and (min is not None or max is not None):
                 raise ValueError(
                     f"Parameter 'options' and 'min/max cannot be set if using type 'bool'."
                 )
 
-        if isinstance(type, str):
+        if isinstance(value_type, str):
             if options is None:
                 raise ValueError(
                     f"Parameter 'options' must be set if using type 'str'."
                 )
 
-        if isinstance(type, int) or isinstance(type, float):
+        if isinstance(value_type, int) or isinstance(value_type, float):
             if options is None and (min is None or max is None):
                 raise ValueError(
                     f"Parameter 'options' or 'min/max' must be set if using type 'int/float'."

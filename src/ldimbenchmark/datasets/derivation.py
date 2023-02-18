@@ -141,7 +141,6 @@ class DatasetDerivator:
                 this_dataset.info["derivations"]["data"] = []
 
                 # Apply derivation
-                # TODO Implement derivates
                 value = options
                 if derivation == "precision" or derivation == "downsample":
                     if isinstance(value, dict):
