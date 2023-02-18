@@ -110,6 +110,8 @@ class DatasetDerivator:
     def derive_data(
         self,
         apply_to: Literal["demands", "levels", "pressures", "flows"],
+        # TODO: Add Chaos Monkey, introducing missing values, skewed values (way out of bound),
+        # TODO: Add simple skew (static, or linear)
         derivation: Literal["sensitivity", "precision", "downsample"],
         options_list: Union[List[dict], List[float]],
     ):
@@ -125,10 +127,14 @@ class DatasetDerivator:
         ``derivation="sensitivity"``
             Simulates a sensor with a certain sensitivity. Meaning data will be rounded to the nearest multiple of ``value``.
             ``shift`` determines how the dataseries is shifted. ``"top"`` shifts the dataseries to the top, ``"bottom"`` to the bottom and ``"middle"`` to the middle.
+            Default for shift is "bottom"
             e.g.
             realvalues = [1.1, 1.2, 1.3, 1.4, 1.5] and ``value=0.5`` and ``shift="top"`` will result in [1.5, 1.5, 1.5, 1.5, 2]
             realvalues = [1.1, 1.2, 1.3, 1.4, 1.5] and ``value=0.5`` and ``shift="bottom"`` will result in [1, 1, 1, 1, 1.5]
-            realvalues = [1.1, 1.2, 1.3, 1.4, 1.5] and ``value=0.5`` and ``shift="middle"`` will result in [1.25, 1.25, 1.25, 1.25, 1.75]
+
+        ``derivation="downsample"``
+            Simulates a sensor with less readings per timeframe.
+            Values must be given in seconds.
 
         """
 
@@ -248,18 +254,15 @@ class DatasetDerivator:
             noise = self.__get_random_norm(value, dataframe.index.shape)
             dataframe = dataframe.mul(1 + noise, axis=0)
         elif derivation == "sensitivity":
-            shift = value["value"]
-            if value["shift"] == "bottom":
-                shift = 0
-            if value["shift"] == "middle":
-                shift = value["value"] / 2
-            dataframe = np.divmod(dataframe, value["value"])[0] + shift
+            if value["shift"] == "top":
+                dataframe = np.ceil(dataframe / value["value"]) * value["value"]
+            else:
+                dataframe = np.floor(dataframe / value["value"]) * value["value"]
+
         elif derivation == "downsample":
             dataframe = dataframe.reset_index()
             dataframe = dataframe.groupby(
-                (
-                    dataframe["Timestamp"] - dataframe["Timestamp"][0]
-                ).dt.total_seconds()
+                (dataframe["Timestamp"] - dataframe["Timestamp"][0]).dt.total_seconds()
                 // (value),
                 group_keys=True,
             ).first()

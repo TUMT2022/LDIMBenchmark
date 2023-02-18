@@ -1,3 +1,4 @@
+import shutil
 from ldimbenchmark.datasets.classes import (
     Dataset,
     DatasetInfo,
@@ -27,7 +28,7 @@ def test_derivator_model(snapshot, mocked_dataset1: Dataset):
     snapshot.assert_match(to_dict(derivedDatasets[0].model))
 
 
-def test_derivator_data_demands(snapshot, mocked_dataset1: Dataset):
+def test_derivator_data_precision_demands(snapshot, mocked_dataset1: Dataset):
     """Testing Derivation for data: demands (and no others)"""
     derivator = DatasetDerivator([mocked_dataset1], TEST_DATA_FOLDER_DATASETS)
     derivedDatasets = derivator.derive_data("demands", "precision", [0.1])
@@ -45,7 +46,7 @@ def test_derivator_data_demands(snapshot, mocked_dataset1: Dataset):
     )
 
 
-def test_derivator_data_pressures(snapshot, mocked_dataset1: Dataset):
+def test_derivator_data_precision_pressures(snapshot, mocked_dataset1: Dataset):
     """Testing Derivation for data: pressures (and no others)"""
     derivator = DatasetDerivator([mocked_dataset1], TEST_DATA_FOLDER_DATASETS)
     derivedDatasets = derivator.derive_data("pressures", "precision", [0.1])
@@ -63,7 +64,7 @@ def test_derivator_data_pressures(snapshot, mocked_dataset1: Dataset):
     )
 
 
-def test_derivator_data_flows(snapshot, mocked_dataset1: Dataset):
+def test_derivator_data_precision_flows(snapshot, mocked_dataset1: Dataset):
     """Testing Derivation for data: flows (and no others)"""
     derivator = DatasetDerivator([mocked_dataset1], TEST_DATA_FOLDER_DATASETS)
     derivedDatasets = derivator.derive_data("flows", "precision", [0.1])
@@ -82,7 +83,7 @@ def test_derivator_data_flows(snapshot, mocked_dataset1: Dataset):
     )
 
 
-def test_derivator_data_levels(snapshot, mocked_dataset1: Dataset):
+def test_derivator_data_precision_levels(snapshot, mocked_dataset1: Dataset):
     """Testing Derivation for data: levels (and no others)"""
     derivator = DatasetDerivator([mocked_dataset1], TEST_DATA_FOLDER_DATASETS)
     derivedDatasets = derivator.derive_data("levels", "precision", [0.1])
@@ -96,6 +97,114 @@ def test_derivator_data_levels(snapshot, mocked_dataset1: Dataset):
     )
     assert_frame_equal(
         mocked_dataset1.loadData().pressures["a"],
+        derivedDatasets[0].loadData().pressures["a"],
+    )
+
+
+def test_derivator_data_sensitivity_big_top_levels(
+    snapshot, mocked_dataset_time: Dataset
+):
+    """Testing Derivation for data: levels (and no others)"""
+    # shutil.rmtree(
+    #     os.path.join(TEST_DATA_FOLDER_DATASETS, "test-66fc60ba722703cdc4d9d331015fe14f")
+    # )
+
+    derivator = DatasetDerivator([mocked_dataset_time], TEST_DATA_FOLDER_DATASETS)
+    derivedDatasets = derivator.derive_data(
+        "levels", "sensitivity", [{"value": 2, "shift": "top"}]
+    )
+    snapshot.assert_match(derivedDatasets[0].loadData().levels["a"].to_csv())
+    assert_frame_equal(
+        mocked_dataset_time.loadData().flows["a"],
+        derivedDatasets[0].loadData().flows["a"],
+    )
+    assert_frame_equal(
+        mocked_dataset_time.loadData().demands["a"],
+        derivedDatasets[0].loadData().demands["a"],
+    )
+    assert_frame_equal(
+        mocked_dataset_time.loadData().pressures["a"],
+        derivedDatasets[0].loadData().pressures["a"],
+    )
+
+
+def test_derivator_data_sensitivity_big_bottom_levels(
+    snapshot, mocked_dataset_time: Dataset
+):
+    """Testing Derivation for data: levels (and no others)"""
+    # shutil.rmtree(
+    #     os.path.join(TEST_DATA_FOLDER_DATASETS, "test-66fc60ba722703cdc4d9d331015fe14f")
+    # )
+
+    derivator = DatasetDerivator([mocked_dataset_time], TEST_DATA_FOLDER_DATASETS)
+    derivedDatasets = derivator.derive_data(
+        "levels", "sensitivity", [{"value": 2, "shift": "bottom"}]
+    )
+    snapshot.assert_match(derivedDatasets[0].loadData().levels["a"].to_csv())
+    assert_frame_equal(
+        mocked_dataset_time.loadData().flows["a"],
+        derivedDatasets[0].loadData().flows["a"],
+    )
+    assert_frame_equal(
+        mocked_dataset_time.loadData().demands["a"],
+        derivedDatasets[0].loadData().demands["a"],
+    )
+    assert_frame_equal(
+        mocked_dataset_time.loadData().pressures["a"],
+        derivedDatasets[0].loadData().pressures["a"],
+    )
+
+
+def test_derivator_data_sensitivity_small_top_levels(
+    snapshot, mocked_dataset2: Dataset
+):
+    """Testing Derivation for data: levels (and no others)"""
+    # shutil.rmtree(
+    #     os.path.join(TEST_DATA_FOLDER_DATASETS, "test-66fc60ba722703cdc4d9d331015fe14f")
+    # )
+
+    derivator = DatasetDerivator([mocked_dataset2], TEST_DATA_FOLDER_DATASETS)
+    derivedDatasets = derivator.derive_data(
+        "levels", "sensitivity", [{"value": 0.1, "shift": "top"}]
+    )
+    snapshot.assert_match(derivedDatasets[0].loadData().levels["a"].to_csv())
+    assert_frame_equal(
+        mocked_dataset2.loadData().flows["a"],
+        derivedDatasets[0].loadData().flows["a"],
+    )
+    assert_frame_equal(
+        mocked_dataset2.loadData().demands["a"],
+        derivedDatasets[0].loadData().demands["a"],
+    )
+    assert_frame_equal(
+        mocked_dataset2.loadData().pressures["a"],
+        derivedDatasets[0].loadData().pressures["a"],
+    )
+
+
+def test_derivator_data_sensitivity_small_bottom_levels(
+    snapshot, mocked_dataset2: Dataset
+):
+    """Testing Derivation for data: levels (and no others)"""
+    # shutil.rmtree(
+    #     os.path.join(TEST_DATA_FOLDER_DATASETS, "test-66fc60ba722703cdc4d9d331015fe14f")
+    # )
+
+    derivator = DatasetDerivator([mocked_dataset2], TEST_DATA_FOLDER_DATASETS)
+    derivedDatasets = derivator.derive_data(
+        "levels", "sensitivity", [{"value": 0.1, "shift": "bottom"}]
+    )
+    snapshot.assert_match(derivedDatasets[0].loadData().levels["a"].to_csv())
+    assert_frame_equal(
+        mocked_dataset2.loadData().flows["a"],
+        derivedDatasets[0].loadData().flows["a"],
+    )
+    assert_frame_equal(
+        mocked_dataset2.loadData().demands["a"],
+        derivedDatasets[0].loadData().demands["a"],
+    )
+    assert_frame_equal(
+        mocked_dataset2.loadData().pressures["a"],
         derivedDatasets[0].loadData().pressures["a"],
     )
 

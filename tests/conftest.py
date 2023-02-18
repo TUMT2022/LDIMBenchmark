@@ -10,6 +10,7 @@ from ldimbenchmark.datasets.derivation import DatasetDerivator
 
 from tests.shared import (
     TEST_DATA_FOLDER_DATASETS_TEST,
+    TEST_DATA_FOLDER_DATASETS_TEST2,
     TEST_DATA_FOLDER_DATASETS_TEST_TIME,
 )
 import tempfile
@@ -49,7 +50,7 @@ def mocked_dataset1():
         f.write(
             yaml.dump(
                 DatasetInfo(
-                    name="test",
+                    name="test1",
                     inp_file="model.inp",
                     dataset=DatasetInfoDatasetProperty(
                         training=DatasetInfoDatasetObject(
@@ -101,6 +102,68 @@ def mocked_dataset1():
 
 
 @pytest.fixture
+def mocked_dataset2():
+    os.makedirs(TEST_DATA_FOLDER_DATASETS_TEST2, exist_ok=True)
+    temp_dir = tempfile.TemporaryDirectory(dir=TEST_DATA_FOLDER_DATASETS_TEST2)
+    dataset_path = temp_dir.name
+    # For debugging
+    # dataset_path = TEST_DATA_FOLDER_DATASETS_TEST
+    with open(os.path.join(dataset_path, "dataset_info.yaml"), "w") as f:
+        f.write(
+            yaml.dump(
+                DatasetInfo(
+                    name="test2",
+                    inp_file="model.inp",
+                    dataset=DatasetInfoDatasetProperty(
+                        training=DatasetInfoDatasetObject(
+                            start="2018-01-01 00:00:00",
+                            end="2018-01-1 00:09:00",
+                        ),
+                        evaluation=DatasetInfoDatasetObject(
+                            start="2018-01-01 00:10:00",
+                            end="2018-01-01 00:19:00",
+                        ),
+                    ),
+                )
+            )
+        )
+    # Datapoints
+    for dataset in ["demands", "levels", "flows", "pressures"]:
+        os.makedirs(os.path.join(dataset_path, dataset), exist_ok=True)
+        for sensor in ["a", "b"]:
+            pd.DataFrame(
+                {
+                    sensor: np.linspace(0, 7, num=20),
+                },
+                index=pd.date_range(
+                    start="2018-01-01 00:00:00", end="2018-01-01 00:19:00", freq="T"
+                ),
+            ).to_csv(
+                os.path.join(dataset_path, dataset, f"{sensor}.csv"),
+                index_label="Timestamp",
+            )
+
+    # Leaks
+    pd.DataFrame(
+        {
+            "leak_pipe_id": "test",
+            "leak_pipe_nodes": "['A', 'B']",
+            "leak_diameter": 0.1,
+            "leak_area": 0.1,
+            "leak_time_start": "2018-01-01 00:01:00",
+            "leak_time_peak": "2018-01-01 00:03:00",
+            "leak_time_end": "2018-01-01 00:10:00",
+            "leak_max_flow": 0.1,
+        },
+        index=[0],
+    ).to_csv(os.path.join(dataset_path, "leaks.csv"))
+
+    write_inpfile(generatePoulakisNetwork(), os.path.join(dataset_path, "model.inp"))
+    yield Dataset(dataset_path)
+    temp_dir.cleanup()
+
+
+@pytest.fixture
 def mocked_dataset_time():
     os.makedirs(TEST_DATA_FOLDER_DATASETS_TEST_TIME, exist_ok=True)
     temp_dir = tempfile.TemporaryDirectory(dir=TEST_DATA_FOLDER_DATASETS_TEST_TIME)
@@ -111,7 +174,7 @@ def mocked_dataset_time():
         f.write(
             yaml.dump(
                 DatasetInfo(
-                    name="test",
+                    name="test_time",
                     inp_file="model.inp",
                     dataset=DatasetInfoDatasetProperty(
                         training=DatasetInfoDatasetObject(
