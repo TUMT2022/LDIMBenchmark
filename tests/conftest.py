@@ -41,9 +41,10 @@ def change_log_level(request):
 @pytest.fixture
 def mocked_dataset1():
     os.makedirs(TEST_DATA_FOLDER_DATASETS_TEST, exist_ok=True)
-    # temp_dir = tempfile.TemporaryDirectory(dir=TEST_DATA_FOLDER_DATASETS_TEST)
-    # dataset_path = temp_dir.name
-    dataset_path = TEST_DATA_FOLDER_DATASETS_TEST
+    temp_dir = tempfile.TemporaryDirectory(dir=TEST_DATA_FOLDER_DATASETS_TEST)
+    dataset_path = temp_dir.name
+    # For debugging
+    # dataset_path = TEST_DATA_FOLDER_DATASETS_TEST
     with open(os.path.join(dataset_path, "dataset_info.yaml"), "w") as f:
         f.write(
             yaml.dump(
@@ -96,15 +97,16 @@ def mocked_dataset1():
 
     write_inpfile(generatePoulakisNetwork(), os.path.join(dataset_path, "model.inp"))
     yield Dataset(dataset_path)
-    # temp_dir.cleanup()
+    temp_dir.cleanup()
 
 
 @pytest.fixture
 def mocked_dataset_time():
     os.makedirs(TEST_DATA_FOLDER_DATASETS_TEST_TIME, exist_ok=True)
-    # temp_dir = tempfile.TemporaryDirectory(dir=TEST_DATA_FOLDER_DATASETS_TEST_TIME)
-    # dataset_path = temp_dir.name
-    dataset_path = TEST_DATA_FOLDER_DATASETS_TEST_TIME
+    temp_dir = tempfile.TemporaryDirectory(dir=TEST_DATA_FOLDER_DATASETS_TEST_TIME)
+    dataset_path = temp_dir.name
+    # For debugging
+    # dataset_path = TEST_DATA_FOLDER_DATASETS_TEST_TIME
     with open(os.path.join(dataset_path, "dataset_info.yaml"), "w") as f:
         f.write(
             yaml.dump(
@@ -157,4 +159,4 @@ def mocked_dataset_time():
 
     write_inpfile(generatePoulakisNetwork(), os.path.join(dataset_path, "model.inp"))
     yield Dataset(dataset_path)
-    # temp_dir.cleanup()
+    temp_dir.cleanup()
