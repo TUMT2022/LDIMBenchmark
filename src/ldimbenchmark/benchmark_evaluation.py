@@ -33,10 +33,16 @@ def evaluate_leakages(expected_leaks: pd.DataFrame, detected_leaks: pd.DataFrame
     # Make sure dates are the same
 
     expected_leaks = expected_leaks.astype(
-        {"leak_time_start": "datetime64[ns]", "leak_time_end": "datetime64[ns]"}
+        {
+            "leak_time_start": "datetime64[ns, UTC]",
+            "leak_time_end": "datetime64[ns, UTC]",
+        }
     )
     detected_leaks = detected_leaks.astype(
-        {"leak_time_start": "datetime64[ns]", "leak_time_end": "datetime64[ns]"}
+        {
+            "leak_time_start": "datetime64[ns, UTC]",
+            "leak_time_end": "datetime64[ns, UTC]",
+        }
     )
 
     # Match detected Leaks with existing Leaks

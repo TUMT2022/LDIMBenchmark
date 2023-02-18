@@ -13,5 +13,5 @@ docs/user-guides/datasets-analysis
 .ldim_benchmark_cache
 benchmark-results
 test
-tests/test_data
+test_data
 grid-search

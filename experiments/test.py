@@ -4,30 +4,40 @@
 from ldimbenchmark.datasets.analysis import DatasetAnalyzer
 from ldimbenchmark.datasets import Dataset, DatasetLibrary, DATASETS
 from ldimbenchmark.datasets.derivation import DatasetDerivator
+from ldimbenchmark.generator import generateDatasetForTimeSpanDays
 from ldimbenchmark.methods import MNF, LILA
 
 from ldimbenchmark.benchmark import LDIMBenchmark
 import logging
-from shared import TEST_DATA_FOLDER
 import os
 from matplotlib import pyplot as plt
+
+test_data_folder = "test_data"
+test_data_folder_datasets = os.path.join("test_data", "datasets")
 
 # %%
 
 # Download
-battledim_dataset = DatasetLibrary("test_data/datasets").download(DATASETS.BATTLEDIM)
+battledim_dataset = DatasetLibrary(test_data_folder_datasets).download(DATASETS.BATTLEDIM)
+
+#%%
+
+generated_dataset_path = os.path.join(test_data_folder_datasets, "synthetic-days-9")
+generateDatasetForTimeSpanDays(90, generated_dataset_path)
+dataset = Dataset(generated_dataset_path)
 
 
 #%%
-dataset = Dataset("test_data/datasets/generated/synthetic-days-9")
 
-derivator = DatasetDerivator([dataset], os.path.join(TEST_DATA_FOLDER, "test_derive"))
-# derivedDatasets = derivator.derive_data("demands", "noise", [0.01])
-# derivedDatasets = derivator.derive_data("pressures", "noise", [0.01])
-derivedDatasets = derivator.derive_data("pressures", "noise", [0.01])
+
+
+derivator = DatasetDerivator([dataset], os.path.join(test_data_folder_datasets, "test_derive"))
+# derivedDatasets = derivator.derive_data("demands", "precision", [0.01])
+# derivedDatasets = derivator.derive_data("pressures", "precision", [0.01])
+derivedDatasets = derivator.derive_data("pressures", "precision", [0.01])
 derivedDatasets.append(dataset)
 
-analysis = DatasetAnalyzer(os.path.join(TEST_DATA_FOLDER,"out"))
+analysis = DatasetAnalyzer(os.path.join(test_data_folder, "out"))
 
 analysis.compare(derivedDatasets)
 
@@ -77,7 +87,7 @@ benchmark.run_benchmark(
 
 # %%
 
-benchmark.evaluate(False)
+benchmark.evaluate(True, write_results=True, generate_plots=True)
 
 
 

@@ -72,6 +72,7 @@ class DockerMethodRunner(MethodRunner):
         detected_leaks = pd.read_csv(
             os.path.join(outputFolder, "detected_leaks.csv"),
             parse_dates=True,
+            date_parser=lambda x: pd.to_datetime(x, utc=True),
         ).to_dict("records")
         # if tempfolder:
         #     tempfolder.cleanup()

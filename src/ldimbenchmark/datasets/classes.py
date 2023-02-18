@@ -349,7 +349,7 @@ class Dataset:
                 os.path.join(folder, sensor_type, f"{sensor}.csv")
                 for sensor in getattr(self, sensor_type).keys()
             ]
-            print(filepaths)
+            # logging.debug(filepaths)
             with Pool(processes=cpu_count() - 1) as p:
                 p.starmap(
                     write_to_csv, zip(getattr(self, sensor_type).values(), filepaths)

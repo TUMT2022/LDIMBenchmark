@@ -55,13 +55,16 @@ class DatasetAnalyzer:
 
         for data_name in ["demands", "pressures", "flows", "levels"]:
             data = getattr(original_dataset, data_name)
-            if data.shape[1] > 0:
-                data.columns = [f"[Original] {col}" for col in data.columns]
+            for key in data.keys():
+                # data.columns = [f"[Original] {col}" for col in data.columns]
                 DatasetAnalyzer._plot_time_series(
-                    data,
+                    data[key],
                     data_name,
                     self.analyisis_out_dir,
-                    [getattr(ldata, data_name) for i, ldata in loaded_datasets.items()],
+                    [
+                        getattr(ldata, data_name)[key]
+                        for i, ldata in loaded_datasets.items()
+                    ],
                 )
 
         # original_dataset = pd.read_csv(dataset_source_dir, index_col="Timestamp")
