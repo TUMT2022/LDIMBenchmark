@@ -58,7 +58,7 @@ class MethodRunner(ABC):
         """
         self.hyperparameters = hyperparameters
         self.goal = goal
-        self.stages = stage
+        self.stage = stage
         self.method = method
         self.debug = debug
         self.resultsFolder = resultsFolder

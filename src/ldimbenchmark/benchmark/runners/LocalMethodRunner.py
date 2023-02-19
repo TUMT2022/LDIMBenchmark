@@ -1,3 +1,4 @@
+import copy
 import hashlib
 import json
 import logging
@@ -76,7 +77,7 @@ class LocalMethodRunner(MethodRunner):
             matching_params = [
                 item
                 for item in detection_method.metadata["hyperparameters"]
-                if item.get("name") == key
+                if item.name == key
             ]
             # Check if name of the supplied param matches with the ones that can be set
             if len(matching_params) == 0:
@@ -84,13 +85,13 @@ class LocalMethodRunner(MethodRunner):
                     f"Hyperparameter {key} is not known to method {detection_method.name}, must be any of {[param['name'] for param in detection_method.metadata['hyperparameters']]}"
                 )
             # Check if the type of the supplied param matches with the ones that can be set
-            if not isinstance(hyperparameters[key], matching_params[0].get("type")):
+            if not isinstance(hyperparameters[key], matching_params[0].type):
                 # Skip Float for now: https://github.com/pandas-dev/pandas/issues/50633
                 if isinstance(hyperparameters[key], float):
                     pass
                 else:
                     raise Exception(
-                        f"Hyperparameter {key}: {hyperparameters[key]} is not of the correct type ({type(hyperparameters[key])}) for method {detection_method.name}, must be any of {[param['type'] for param in detection_method.metadata['hyperparameters'] if param['name'] == key]}"
+                        f"Hyperparameter {key}: {hyperparameters[key]} is not of the correct type ({type(hyperparameters[key])}) for method {detection_method.name}, must be any of {[param.type for param in detection_method.metadata['hyperparameters'] if param.name == key]}"
                     )
 
         hyperparameter_hash = hashlib.md5(
@@ -108,18 +109,21 @@ class LocalMethodRunner(MethodRunner):
             ),
             debug=debug,
         )
-        logging.info("Loading Datasets")
         if type(dataset) is str:
             self.dataset = Dataset(dataset)
         else:
-            dataset.loadData()
-            dataset.loadBenchmarkData()
             self.dataset = dataset
-        logging.info("Loading Datasets - FINISH")
+
         self.detection_method = detection_method
 
     def run(self):
         logging.info(f"Running {self.id} with params {self.hyperparameters}")
+
+        logging.info(f"LocalMethodRunner - Loading Dataset {self.dataset.id}")
+        self.dataset.loadData()
+        self.dataset.loadBenchmarkData()
+        logging.info("Loading Datasets - FINISH")
+
         if not self.resultsFolder and self.debug:
             raise Exception("Debug mode requires a results folder.")
         elif self.debug == True:
@@ -147,7 +151,7 @@ class LocalMethodRunner(MethodRunner):
 
         start = time.time()
         detected_leaks = self.detection_method.detect_offline(
-            self.dataset.getEvaluationBenchmarkData()
+            copy.deepcopy(self.dataset.getEvaluationBenchmarkData())
         )
 
         end = time.time()
@@ -183,6 +187,9 @@ class LocalMethodRunner(MethodRunner):
                         "method": self.detection_method.name,
                         "dataset": self.dataset.name,
                         "dataset_id": self.dataset.id,
+                        "dataset_options": self.dataset.info["derivations"]
+                        if "derivations" in self.dataset.info
+                        else "{}",
                         "hyperparameters": self.hyperparameters,
                         "goal": self.goal,
                         "stage": self.stages,

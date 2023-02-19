@@ -1,4 +1,6 @@
 from datetime import time
+import hashlib
+import json
 import logging
 import os
 import tempfile
@@ -12,9 +14,10 @@ from ldimbenchmark.classes import BenchmarkLeakageResult, LDIMMethodBase
 from ldimbenchmark.datasets.classes import Dataset
 
 
+# TODO: Probably merge some functionality with LocalMethodRunner as parent class
 class DockerMethodRunner(MethodRunner):
     """
-    Runs a leakaged detection method in a docker container.
+    Runs a leakage detection method in a docker container.
     """
 
     # TODO: add support for bind mount parameters? or just define as standard?
@@ -31,12 +34,19 @@ class DockerMethodRunner(MethodRunner):
         debug=False,
         resultsFolder=None,
     ):
+        hyperparameter_hash = hashlib.md5(
+            json.dumps(hyperparameters, sort_keys=True).encode("utf-8")
+        ).hexdigest()
+
+        self.id = f"{image}_{dataset.id}_{hyperparameter_hash}"
         super().__init__(
             hyperparameters=hyperparameters,
             goal=goal,
             stage=stage,
             method=method,
-            resultsFolder=resultsFolder,
+            resultsFolder=None
+            if resultsFolder == None
+            else os.path.join(resultsFolder, self.id),
             debug=debug,
         )
         self.image = image
@@ -44,10 +54,25 @@ class DockerMethodRunner(MethodRunner):
         self.id = f"{image}_{dataset.name}"
 
     def run(self):
+        folder_parameters = tempfile.TemporaryDirectory()
+        path_options = os.path.join(folder_parameters.name, "options.yaml")
+        with open(path_options, "w") as f:
+            yaml.dump(
+                {
+                    "hyperparameters": self.hyperparameters,
+                    "goal": self.goal,
+                    "stage": self.stage,
+                    "method": self.method,
+                },
+                f,
+            )
+
         outputFolder = self.resultsFolder
         if outputFolder is None:
             tempfolder = tempfile.TemporaryDirectory()
             outputFolder = tempfolder.name
+
+        print(outputFolder)
         # download image
         # test compatibility (stages)
         client = docker.from_env()
@@ -59,8 +84,9 @@ class DockerMethodRunner(MethodRunner):
                 volumes={
                     os.path.abspath(self.dataset.path): {
                         "bind": "/input/",
-                        "mode": "ro",
+                        "mode": "rw",
                     },
+                    path_options: {"bind": "/input/options.yml", "mode": "rw"},
                     os.path.abspath(outputFolder): {"bind": "/output/", "mode": "rw"},
                 },
             )
@@ -75,6 +101,8 @@ class DockerMethodRunner(MethodRunner):
             date_parser=lambda x: pd.to_datetime(x, utc=True),
         ).to_dict("records")
         # if tempfolder:
+        #     tempfolder.cleanup()
+        # if folder_parameters:
         #     tempfolder.cleanup()
         print(outputFolder)
         return detected_leaks

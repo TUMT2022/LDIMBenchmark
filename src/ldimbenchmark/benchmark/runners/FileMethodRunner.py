@@ -1,6 +1,6 @@
-from datetime import time
 import logging
 import os
+import time
 import pandas as pd
 
 import yaml
@@ -30,7 +30,7 @@ class FileBasedMethodRunner(MethodRunner):
             debug=debug,
         )
         self.detection_method = detection_method
-        self.dataset = Dataset(inputFolder).loadDataset().loadBenchmarkData()
+        self.dataset = Dataset(inputFolder)
         self.id = f"{self.dataset.name}"
 
     def run(self):
@@ -41,6 +41,9 @@ class FileBasedMethodRunner(MethodRunner):
             os.makedirs(additional_output_path, exist_ok=True)
         else:
             additional_output_path = None
+
+        self.dataset.loadData()
+        self.dataset.loadBenchmarkData()
 
         self.detection_method.init_with_benchmark_params(
             additional_output_path=additional_output_path,
@@ -81,4 +84,4 @@ class FileBasedMethodRunner(MethodRunner):
             date_format="%Y-%m-%d %H:%M:%S",
         )
         # TODO write to outputFolder
-        return detected_leaks, self.dataset.leaks_evaluation
+        return detected_leaks, self.dataset.evaluation.leaks

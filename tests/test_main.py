@@ -74,19 +74,24 @@ def test_benchmark(mocked_dataset1: Dataset):
 
 def test_single_run_local(mocked_dataset1: Dataset):
     runner = LocalMethodRunner(
-        YourCustomLDIMMethod(), mocked_dataset1, {}, resultsFolder=TEST_DATA_FOLDER
+        YourCustomLDIMMethod(),
+        mocked_dataset1,
+        {},
+        resultsFolder="./benchmark-results/runner_results",
     )
     runner.run()
 
     pass
 
 
-# def test_single_run_docker(mocked_dataset1: Dataset):
-#     runner = DockerMethodRunner(
-#         "testmethod", mocked_dataset, resultsFolder=TEST_DATA_FOLDER
-#     )
-#     (detected_leaks) = runner.run()
-#     assert detected_leaks == True
+def test_single_run_docker(mocked_dataset1: Dataset):
+    runner = DockerMethodRunner(
+        "testmethod",
+        mocked_dataset1,
+        resultsFolder="./benchmark-results/runner_results",
+    )
+    (detected_leaks) = runner.run()
+    assert YourCustomLDIMMethod.get_results() == detected_leaks
 
 
 def test_method(mocked_dataset1: Dataset):

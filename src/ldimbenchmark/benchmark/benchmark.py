@@ -205,7 +205,12 @@ class LDIMBenchmark:
             for method in methods:
                 # TODO: Use right hyperparameters
                 self.experiments.append(
-                    DockerMethodRunner(method, dataset, self.hyperparameters)
+                    DockerMethodRunner(
+                        method,
+                        dataset,
+                        self.hyperparameters,
+                        resultsFolder=self.runner_results_dir,
+                    )
                 )
 
     def run_complexity_analysis(

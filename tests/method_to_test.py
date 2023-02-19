@@ -11,6 +11,19 @@ from ldimbenchmark.classes import MethodMetadata
 
 
 class YourCustomLDIMMethod(LDIMMethodBase):
+    def get_results():
+        return [
+            BenchmarkLeakageResult(
+                leak_pipe_id="test",
+                leak_time_start="2020-01-01",
+                leak_time_end="2020-01-02",
+                leak_time_peak="2020-01-01",
+                leak_area=0.2,
+                leak_diameter=0.1,
+                leak_max_flow=1,
+            )
+        ]
+
     def __init__(self, additional_output_path=""):
         super().__init__(
             name="YourCustomLDIMMethod",
@@ -25,14 +38,7 @@ class YourCustomLDIMMethod(LDIMMethodBase):
         pass
 
     def detect_offline(self, data: BenchmarkData) -> List[BenchmarkLeakageResult]:
-        return [
-            {
-                "leak_start": "2020-01-01",
-                "leak_end": "2020-01-02",
-                "leak_area": 0.2,
-                "pipe_id": "test",
-            }
-        ]
+        return YourCustomLDIMMethod.get_results()
 
     def detect_online(self, evaluation_data) -> BenchmarkLeakageResult:
         return {}
