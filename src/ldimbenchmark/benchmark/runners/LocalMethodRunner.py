@@ -79,6 +79,12 @@ class LocalMethodRunner(MethodRunner):
             debug=debug,
         )
 
+        # Overwrite resultsFolder
+        if resultsFolder == None:
+            self.resultsFolder = None
+        else:
+            self.resultsFolder = os.path.join(resultsFolder, self.id)
+
         # Do some curtesy checks for LocalMethod Executions
         for key in self.hyperparameters.keys():
             if key.startswith("_"):

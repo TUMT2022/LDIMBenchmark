@@ -48,6 +48,11 @@ class DockerMethodRunner(MethodRunner):
 
         self.image = image
         self.docker_base_url = docker_base_url
+        # Overwrite resultsFolder
+        if resultsFolder == None:
+            self.resultsFolder = None
+        else:
+            self.resultsFolder = os.path.join(resultsFolder, self.id)
 
     def run(self):
         folder_parameters = tempfile.TemporaryDirectory()
@@ -89,14 +94,17 @@ class DockerMethodRunner(MethodRunner):
                     path_options: {"bind": "/input/options.yml", "mode": "rw"},
                     os.path.abspath(outputFolder): {"bind": "/output/", "mode": "rw"},
                 },
-                mem_limit="4g",
+                mem_limit="12g",
                 cpu_count=4,
             )
         except docker.errors.ContainerError as e:
-            logging.error("ContainerError:")
+            logging.error(f"Method with image {self.image} errored:")
             for line in e.container.logs().decode().split("\n"):
-                logging.error("Container: " + line)
-            raise e
+                logging.error(f"Container[{self.image}]: " + line)
+            logging.error(
+                f"If not error message is contained it might be a memory issue"
+            )
+            return None
         # mount folder in docker container
         # name, dst = dst.split(':')
         #     container = client.containers.get(name)

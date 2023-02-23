@@ -81,10 +81,7 @@ class MethodRunner(ABC):
         self.stage = stage
         self.method = method
         self.debug = debug
-        if resultsFolder == None:
-            self.resultsFolder = None
-        else:
-            self.resultsFolder = os.path.join(resultsFolder, self.id)
+        self.resultsFolder = resultsFolder
 
     @abstractmethod
     def run(self) -> dict:
