@@ -82,10 +82,11 @@ class Hyperparameter:
         self.name = name
 
         # Warn in name is not lowercase
-        if self.name != self.name.lower():
-            logging.warning(
-                f"Hyperparameter name '{self.name}' is not lowercase. This is not recommended."
-            )
+        # TODO: Rename all hyperparameters to lowercase
+        # if self.name != self.name.lower():
+        #     logging.warning(
+        #         f"Hyperparameter name '{self.name}' is not lowercase. This is not recommended."
+        #     )
 
         self.description = description
 
@@ -191,6 +192,11 @@ class LDIMMethodBase(ABC):
         additional_output_path: Path to the output folder of the benchmark. Only use if set.
         """
         self.name = name
+        # Warn in name is not lowercase
+        if self.name != self.name.lower():
+            logging.warning(
+                f"Method name '{self.name}' is not lowercase. This is not recommended."
+            )
         self.version = version
         self.metadata = metadata
         self.debug = True if additional_output_path != None else False
