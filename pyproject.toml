@@ -55,7 +55,7 @@ build-backend = "poetry.core.masonry.api"
 [tool.pytest.ini_options]
 testpaths = ["tests"]
 norecursedirs="test_data .ldim_benchmark_cache"
-
+markers = ["noci: tests that should not run in ci."]
 
 [tool.tox]
 legacy_tox_ini = """
@@ -78,7 +78,7 @@ deps =
     pytest-benchmark==4.0.0
 commands =
     black --check --verbose src/ldimbenchmark
-    pytest .
+    pytest . -m "not noci"
 """
 
 [tool.pyright]
