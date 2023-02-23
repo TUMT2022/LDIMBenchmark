@@ -17,11 +17,12 @@ class FileBasedMethodRunner(MethodRunner):
         outputFolder: str = "/output",
         debug=False,
     ):
-        # TODO Read from input Folder
         with open(os.path.join(inputFolder, "options.yml")) as f:
             parameters = yaml.safe_load(f)
 
         super().__init__(
+            runner_base_name=detection_method.name,
+            dataset=Dataset(inputFolder),
             hyperparameters=parameters["hyperparameters"],
             goal=parameters["goal"],
             stage=parameters["stage"],
@@ -30,8 +31,6 @@ class FileBasedMethodRunner(MethodRunner):
             debug=debug,
         )
         self.detection_method = detection_method
-        self.dataset = Dataset(inputFolder)
-        self.id = f"{self.dataset.name}"
 
     def run(self):
         if not self.resultsFolder and self.debug:

@@ -25,7 +25,7 @@ class DockerMethodRunner(MethodRunner):
         self,
         image: str,
         dataset: Union[Dataset, str],
-        hyperparameters: dict = {},
+        hyperparameters: dict = None,
         goal: Literal[
             "assessment", "detection", "identification", "localization", "control"
         ] = "detection",
@@ -33,25 +33,21 @@ class DockerMethodRunner(MethodRunner):
         method: Literal["offline", "online"] = "offline",
         debug=False,
         resultsFolder=None,
+        docker_base_url="unix://var/run/docker.sock",
     ):
-        hyperparameter_hash = hashlib.md5(
-            json.dumps(hyperparameters, sort_keys=True).encode("utf-8")
-        ).hexdigest()
-
-        self.id = f"{image}_{dataset.id}_{hyperparameter_hash}"
         super().__init__(
+            runner_base_name=image,
+            dataset=dataset,
             hyperparameters=hyperparameters,
             goal=goal,
             stage=stage,
             method=method,
-            resultsFolder=None
-            if resultsFolder == None
-            else os.path.join(resultsFolder, self.id),
+            resultsFolder=resultsFolder,
             debug=debug,
         )
+
         self.image = image
-        self.dataset = dataset
-        self.id = f"{image}_{dataset.name}"
+        self.docker_base_url = docker_base_url
 
     def run(self):
         folder_parameters = tempfile.TemporaryDirectory()
@@ -72,12 +68,16 @@ class DockerMethodRunner(MethodRunner):
             tempfolder = tempfile.TemporaryDirectory()
             outputFolder = tempfolder.name
 
-        print(outputFolder)
+        # Remove Colons from path
+        outputFolder = outputFolder.replace(":", "_")
         # download image
         # test compatibility (stages)
+
         client = docker.from_env()
+        if self.docker_base_url != "unix://var/run/docker.sock":
+            client = docker.DockerClient(base_url=self.docker_base_url)
         # run docker container
-        print(
+        try:
             client.containers.run(
                 self.image,
                 # ["echo", "hello", "world"],
@@ -89,10 +89,28 @@ class DockerMethodRunner(MethodRunner):
                     path_options: {"bind": "/input/options.yml", "mode": "rw"},
                     os.path.abspath(outputFolder): {"bind": "/output/", "mode": "rw"},
                 },
+                mem_limit="4g",
+                cpu_count=4,
             )
-        )
+        except docker.errors.ContainerError as e:
+            logging.error("ContainerError:")
+            for line in e.container.logs().decode().split("\n"):
+                logging.error("Container: " + line)
+            raise e
         # mount folder in docker container
+        # name, dst = dst.split(':')
+        #     container = client.containers.get(name)
 
+        #     os.chdir(os.path.dirname(src))
+        #     srcname = os.path.basename(src)
+        #     tar = tarfile.open(src + '.tar', mode='w')
+        #     try:
+        #         tar.add(srcname)
+        #     finally:
+        #         tar.close()
+
+        #     data = open(src + '.tar', 'rb').read()
+        #     container.put_archive(os.path.dirname(dst), data)
         # TODO: Read results from output folder
 
         detected_leaks = pd.read_csv(

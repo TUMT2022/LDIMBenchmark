@@ -1,5 +1,10 @@
 from abc import ABC, abstractmethod
+import hashlib
+import json
+import os
 from typing import Literal, Union
+
+from ldimbenchmark.datasets.classes import Dataset
 
 
 class MethodRunner(ABC):
@@ -9,6 +14,8 @@ class MethodRunner(ABC):
 
     def __init__(
         self,
+        runner_base_name: str,
+        dataset: Dataset,
         hyperparameters: dict,
         goal: Literal[
             "assessment", "detection", "identification", "localization", "control"
@@ -56,12 +63,28 @@ class MethodRunner(ABC):
             The path to the results folder, by default None
 
         """
+        if type(dataset) is str:
+            self.dataset = Dataset(dataset)
+        else:
+            self.dataset = dataset
+
         self.hyperparameters = hyperparameters
+        if self.hyperparameters is None:
+            self.hyperparameters = {}
+        hyperparameter_hash = hashlib.md5(
+            json.dumps(hyperparameters, sort_keys=True).encode("utf-8")
+        ).hexdigest()
+
+        self.id = f"{runner_base_name}_{dataset.id}_{hyperparameter_hash}"
+
         self.goal = goal
         self.stage = stage
         self.method = method
         self.debug = debug
-        self.resultsFolder = resultsFolder
+        if resultsFolder == None:
+            self.resultsFolder = None
+        else:
+            self.resultsFolder = os.path.join(resultsFolder, self.id)
 
     @abstractmethod
     def run(self) -> dict:

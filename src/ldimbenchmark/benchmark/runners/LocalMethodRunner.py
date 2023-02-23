@@ -68,10 +68,19 @@ class LocalMethodRunner(MethodRunner):
             If the dataset is not of type Dataset or str.
         """
 
-        if hyperparameters is None:
-            hyperparameters = {}
+        super().__init__(
+            runner_base_name=detection_method.name,
+            dataset=dataset,
+            hyperparameters=hyperparameters,
+            goal=goal,
+            stage=stage,
+            method=method,
+            resultsFolder=resultsFolder,
+            debug=debug,
+        )
 
-        for key in hyperparameters.keys():
+        # Do some curtesy checks for LocalMethod Executions
+        for key in self.hyperparameters.keys():
             if key.startswith("_"):
                 continue
             matching_params = [
@@ -93,26 +102,6 @@ class LocalMethodRunner(MethodRunner):
                     raise Exception(
                         f"Hyperparameter {key}: {hyperparameters[key]} is not of the correct type ({type(hyperparameters[key])}) for method {detection_method.name}, must be any of {[param.type for param in detection_method.metadata['hyperparameters'] if param.name == key]}"
                     )
-
-        hyperparameter_hash = hashlib.md5(
-            json.dumps(hyperparameters, sort_keys=True).encode("utf-8")
-        ).hexdigest()
-
-        self.id = f"{detection_method.name}_{dataset.id}_{hyperparameter_hash}"
-        super().__init__(
-            hyperparameters=hyperparameters,
-            goal=goal,
-            stage=stage,
-            method=method,
-            resultsFolder=(
-                None if resultsFolder == None else os.path.join(resultsFolder, self.id)
-            ),
-            debug=debug,
-        )
-        if type(dataset) is str:
-            self.dataset = Dataset(dataset)
-        else:
-            self.dataset = dataset
 
         self.detection_method = detection_method
 
