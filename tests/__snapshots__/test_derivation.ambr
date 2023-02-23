@@ -1,6 +1,6 @@
 # name: test_derivator_data_precision_demands
   '''
-  Timestamp,a
+  Timestamp,J-02
   2018-01-01 00:00:00+00:00,1.0147486541306483
   2018-01-01 00:01:00+00:00,1.0423298174078832
   2018-01-01 00:02:00+00:00,0.9826790971839656
@@ -26,7 +26,7 @@
 # ---
 # name: test_derivator_data_precision_flows
   '''
-  Timestamp,a
+  Timestamp,J-02
   2018-01-01 00:00:00+00:00,1.0147486541306483
   2018-01-01 00:01:00+00:00,1.0423298174078832
   2018-01-01 00:02:00+00:00,0.9826790971839656
@@ -52,7 +52,7 @@
 # ---
 # name: test_derivator_data_precision_levels
   '''
-  Timestamp,a
+  Timestamp,J-02
   2018-01-01 00:00:00+00:00,1.0147486541306483
   2018-01-01 00:01:00+00:00,1.0423298174078832
   2018-01-01 00:02:00+00:00,0.9826790971839656
@@ -78,7 +78,7 @@
 # ---
 # name: test_derivator_data_precision_pressures
   '''
-  Timestamp,a
+  Timestamp,J-02
   2018-01-01 00:00:00+00:00,1.0147486541306483
   2018-01-01 00:01:00+00:00,1.0423298174078832
   2018-01-01 00:02:00+00:00,0.9826790971839656
@@ -104,7 +104,7 @@
 # ---
 # name: test_derivator_data_sampling
   '''
-  Timestamp,a
+  Timestamp,J-02
   2018-01-01 00:00:00+00:00,0
   2018-01-01 00:09:00+00:00,9
   2018-01-01 00:18:00+00:00,18
@@ -113,7 +113,7 @@
 # ---
 # name: test_derivator_data_sensitivity_big_bottom_levels
   '''
-  Timestamp,a
+  Timestamp,J-02
   2018-01-01 00:00:00+00:00,0.0
   2018-01-01 00:01:00+00:00,0.0
   2018-01-01 00:02:00+00:00,2.0
@@ -139,7 +139,7 @@
 # ---
 # name: test_derivator_data_sensitivity_big_top_levels
   '''
-  Timestamp,a
+  Timestamp,J-02
   2018-01-01 00:00:00+00:00,0.0
   2018-01-01 00:01:00+00:00,2.0
   2018-01-01 00:02:00+00:00,2.0
@@ -165,7 +165,7 @@
 # ---
 # name: test_derivator_data_sensitivity_small_bottom_levels
   '''
-  Timestamp,a
+  Timestamp,J-02
   2018-01-01 00:00:00+00:00,0.0
   2018-01-01 00:01:00+00:00,0.3
   2018-01-01 00:02:00+00:00,0.7000000000000001
@@ -191,7 +191,7 @@
 # ---
 # name: test_derivator_data_sensitivity_small_top_levels
   '''
-  Timestamp,a
+  Timestamp,J-02
   2018-01-01 00:00:00+00:00,0.0
   2018-01-01 00:01:00+00:00,0.4
   2018-01-01 00:02:00+00:00,0.8
