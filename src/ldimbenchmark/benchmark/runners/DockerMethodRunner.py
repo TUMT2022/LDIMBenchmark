@@ -55,6 +55,7 @@ class DockerMethodRunner(MethodRunner):
             self.resultsFolder = os.path.join(resultsFolder, self.id)
 
     def run(self):
+        logging.info(f"Running {self.id} with params {self.hyperparameters}")
         folder_parameters = tempfile.TemporaryDirectory()
         path_options = os.path.join(folder_parameters.name, "options.yaml")
         with open(path_options, "w") as f:
@@ -64,6 +65,7 @@ class DockerMethodRunner(MethodRunner):
                     "goal": self.goal,
                     "stage": self.stage,
                     "method": self.method,
+                    "debug": self.debug,
                 },
                 f,
             )
@@ -83,27 +85,31 @@ class DockerMethodRunner(MethodRunner):
             client = docker.DockerClient(base_url=self.docker_base_url)
         # run docker container
         try:
-            client.containers.run(
+            containerLog = client.containers.run(
                 self.image,
                 # ["echo", "hello", "world"],
                 volumes={
                     os.path.abspath(self.dataset.path): {
                         "bind": "/input/",
-                        "mode": "rw",
+                        "mode": "ro",
                     },
-                    path_options: {"bind": "/input/options.yml", "mode": "rw"},
+                    path_options: {"bind": "/input/options.yml", "mode": "ro"},
                     os.path.abspath(outputFolder): {"bind": "/output/", "mode": "rw"},
                 },
                 mem_limit="12g",
                 cpu_count=4,
             )
+            logging.warn(containerLog)
+
         except docker.errors.ContainerError as e:
             logging.error(f"Method with image {self.image} errored:")
             for line in e.container.logs().decode().split("\n"):
                 logging.error(f"Container[{self.image}]: " + line)
-            logging.error(
-                f"If not error message is contained it might be a memory issue"
-            )
+            if e.exit_status == 137:
+                logging.error("Process in container was killed.")
+                logging.error(
+                    "This might be due to a memory limit. Try increasing the memory limit."
+                )
             return None
         # mount folder in docker container
         # name, dst = dst.split(':')

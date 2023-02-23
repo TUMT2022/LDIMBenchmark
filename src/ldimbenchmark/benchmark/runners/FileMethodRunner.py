@@ -28,11 +28,12 @@ class FileBasedMethodRunner(MethodRunner):
             stage=parameters["stage"],
             method=parameters["method"],
             resultsFolder=outputFolder,
-            debug=debug,
+            debug=parameters["debug"],
         )
         self.detection_method = detection_method
 
     def run(self):
+        logging.info(f"Running {self.id} with params {self.hyperparameters}")
         if not self.resultsFolder and self.debug:
             raise Exception("Debug mode requires a results folder.")
         elif self.debug == True:
