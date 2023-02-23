@@ -37,7 +37,7 @@ class SCADA_data:
 class LILA(LDIMMethodBase):
     def __init__(self):
         super().__init__(
-            name="LILA",
+            name="lila",
             version="0.1.0",
             metadata=MethodMetadata(
                 data_needed=["pressures", "flows"],

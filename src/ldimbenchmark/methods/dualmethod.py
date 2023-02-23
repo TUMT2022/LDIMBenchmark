@@ -22,11 +22,13 @@ from tqdm import tqdm
 from typing import List, Dict
 import copy
 
+from ldimbenchmark.utilities import simplifyBenchmarkData
+
 
 class DUALMethod(LDIMMethodBase):
     def __init__(self):
         super().__init__(
-            name="DUAL",
+            name="dualmethod",
             version="0.1.0",
             metadata=MethodMetadata(
                 data_needed=MethodMetadataDataNeeded(
@@ -51,16 +53,16 @@ class DUALMethod(LDIMMethodBase):
                         description="Threshold for the CUSUM statistic",
                         value_type=float,
                         default=0.2,
-                        max=10,
-                        min=0,
+                        max=10.0,
+                        min=0.0,
                     ),
                     Hyperparameter(
                         name="delta",
                         description="Delta for the CUSUM statistic",
                         value_type=float,
                         default=0.3,
-                        max=10,
-                        min=0,
+                        max=10.0,
+                        min=0.0,
                     ),
                 ],
             ),
@@ -126,24 +128,29 @@ class DUALMethod(LDIMMethodBase):
     def detect_offline(
         self, evaluation_data: BenchmarkData
     ) -> List[BenchmarkLeakageResult]:
-        pressure_sensors_with_data = evaluation_data.pressures.keys()
+        simple_evaluation_data = simplifyBenchmarkData(
+            evaluation_data, resample_frequency="5T"
+        )
+
+        pressure_sensors_with_data = simple_evaluation_data.pressures.keys()
         pipelist = list(
             filter(
                 lambda link: self.wn.get_link(link).link_type == "Pipe",
                 self.wn.link_name_list,
             )
         )
-        start = evaluation_data.pressures.index[0]
-        end = evaluation_data.pressures.index[-1]
+        start = simple_evaluation_data.pressures.index[0]
+        end = simple_evaluation_data.pressures.index[-1]
         duration = end - start
         frequency = (
-            evaluation_data.pressures.index[1] - evaluation_data.pressures.index[0]
+            simple_evaluation_data.pressures.index[1]
+            - simple_evaluation_data.pressures.index[0]
         )
 
         ###
         # 1. Step: Build the Dual model
         ###
-        pressure_sensors_with_data = evaluation_data.pressures.keys()
+        pressure_sensors_with_data = simple_evaluation_data.pressures.keys()
 
         for sensor in pressure_sensors_with_data:
             node = self.wn.get_node(sensor)
@@ -160,7 +167,9 @@ class DUALMethod(LDIMMethodBase):
             # As a result, the previous boundary conditionnode becomes a free variable available for modelled input
             self.wn.add_pattern(
                 name=pattern_name,
-                pattern=list(evaluation_data.pressures[sensor].values + elevation),
+                pattern=list(
+                    simple_evaluation_data.pressures[sensor].values + elevation
+                ),
             )
 
             self.wn.add_reservoir(
@@ -199,7 +208,7 @@ class DUALMethod(LDIMMethodBase):
         # TODO: Incorporate Flows into model
         # TODO: Also incorporate Tank Levels to the model
         # Set patterns for reservoirs from measurements
-        # for reservoir in evaluation_data.levels.keys():
+        # for reservoir in simple_evaluation_data.levels.keys():
         #     res = wn.get_node(reservoir)
         #     base_head = res.base_head
         #     wn.add_pattern(name=f'reservoirhead_{res_name}', pattern=list(
@@ -241,13 +250,13 @@ class DUALMethod(LDIMMethodBase):
             "dualmodel_" + sensor for sensor in pressure_sensors_with_data
         ]
         leakflow = result.link["flowrate"][dualmodel_nodes].abs()
-        # leakflow.index = evaluation_data.pressures.index
+        # leakflow.index = simple_evaluation_data.pressures.index
         squareflow = leakflow  # **2
         tot_outflow = leakflow
         # tot_outflow = squareflow.sum(axis=1)  # sum per timestamp
 
         tot_outflow = pd.DataFrame(tot_outflow)
-        tot_outflow.index = evaluation_data.pressures.index
+        tot_outflow.index = simple_evaluation_data.pressures.index
 
         if self.debug:
             tot_outflow.to_csv(
@@ -260,7 +269,7 @@ class DUALMethod(LDIMMethodBase):
             # fig = plot.get_figure()
             # fig.savefig(self.additional_output_path + "tot_outflow.png")
 
-            # plot = evaluation_data.pressures.plot()
+            # plot = simple_evaluation_data.pressures.plot()
             # fig = plot.get_figure()
             # fig.savefig(self.additional_output_path + "pressures.png")
 

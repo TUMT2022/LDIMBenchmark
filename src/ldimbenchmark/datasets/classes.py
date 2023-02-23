@@ -377,7 +377,7 @@ def getTimeSliceOfDataset(
 
     if len(new_dataset_slice) == 0:
         logging.warning(
-            "No data from dataset selected, because start- and endtime are outside of the datapoint ranges."
+            f"No data from dataset selected, because start- and endtime ({start} / {end}) are outside of the datapoint ranges."
         )
     return new_dataset_slice
 

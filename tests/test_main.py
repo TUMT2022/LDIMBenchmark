@@ -5,6 +5,7 @@ from ldimbenchmark import (
     DockerMethodRunner,
     FileBasedMethodRunner,
 )
+from ldimbenchmark.methods.dualmethod import DUALMethod
 from tests.method_to_test import YourCustomLDIMMethod
 from ldimbenchmark.methods import LILA, MNF
 
@@ -17,18 +18,16 @@ import logging
 def test_benchmark(mocked_dataset1: Dataset):
     # dataset = Dataset(TEST_DATA_FOLDER_BATTLEDIM)
 
-    local_methods = [MNF(), LILA()]
+    local_methods = [MNF(), LILA(), DUALMethod()]
 
     hyperparameters = {
-        "LILA": {
-            "synthetic-days-60": {
-                "window": "10 days",
-                "gamma": 0.1,
-                "_dma_specific": {
-                    "dma_a": {
-                        "window": "10 days",
-                        "gamma": 0.1,
-                    },
+        "mnf": {
+            "window": 10,
+            "gamma": 0.1,
+            "_dma_specific": {
+                "dma_a": {
+                    "window": "10 days",
+                    "gamma": 0.1,
                 },
             },
         }

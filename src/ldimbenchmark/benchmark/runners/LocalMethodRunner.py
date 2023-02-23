@@ -82,7 +82,7 @@ class LocalMethodRunner(MethodRunner):
             # Check if name of the supplied param matches with the ones that can be set
             if len(matching_params) == 0:
                 raise Exception(
-                    f"Hyperparameter {key} is not known to method {detection_method.name}, must be any of {[param['name'] for param in detection_method.metadata['hyperparameters']]}"
+                    f"Hyperparameter {key} is not known to method {detection_method.name}, must be any of {[param.name for param in detection_method.metadata['hyperparameters']]}"
                 )
             # Check if the type of the supplied param matches with the ones that can be set
             if not isinstance(hyperparameters[key], matching_params[0].type):
@@ -192,7 +192,7 @@ class LocalMethodRunner(MethodRunner):
                         else "{}",
                         "hyperparameters": self.hyperparameters,
                         "goal": self.goal,
-                        "stage": self.stages,
+                        "stage": self.stage,
                         "train_time": time_training,
                         "detect_time": time_detection,
                     }

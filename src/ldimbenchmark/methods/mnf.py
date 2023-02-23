@@ -28,7 +28,7 @@ class MNF(LDIMMethodBase):
 
     def __init__(self):
         super().__init__(
-            name="MNF",
+            name="mnf",
             version="1.0",
             metadata=MethodMetadata(
                 data_needed=["flow"],

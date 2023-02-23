@@ -1,3 +1,4 @@
+import logging
 from pandas import DataFrame
 from wntr.network import WaterNetworkModel
 from typing import Literal, Optional, TypedDict, Dict, Union, List, Type
@@ -79,6 +80,13 @@ class Hyperparameter:
         """
 
         self.name = name
+
+        # Warn in name is not lowercase
+        if self.name != self.name.lower():
+            logging.warning(
+                f"Hyperparameter name '{self.name}' is not lowercase. This is not recommended."
+            )
+
         self.description = description
 
         # Validation

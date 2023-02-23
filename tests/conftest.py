@@ -39,6 +39,9 @@ def change_log_level(request):
     logging.getLogger().setLevel(numeric_level)
 
 
+mocked_dataset_nodes = ["J-02", "J-03"]
+
+
 @pytest.fixture
 def mocked_dataset1():
     os.makedirs(TEST_DATA_FOLDER_DATASETS_TEST, exist_ok=True)
@@ -68,7 +71,7 @@ def mocked_dataset1():
     # Datapoints
     for dataset in ["demands", "levels", "flows", "pressures"]:
         os.makedirs(os.path.join(dataset_path, dataset), exist_ok=True)
-        for sensor in ["a", "b"]:
+        for sensor in mocked_dataset_nodes:
             pd.DataFrame(
                 {
                     sensor: np.ones(20),
@@ -85,7 +88,7 @@ def mocked_dataset1():
     pd.DataFrame(
         {
             "leak_pipe_id": "test",
-            "leak_pipe_nodes": "['A', 'B']",
+            "leak_pipe_nodes": str(mocked_dataset_nodes),
             "leak_diameter": 0.1,
             "leak_area": 0.1,
             "leak_time_start": "2018-01-01 00:01:00",
@@ -130,7 +133,7 @@ def mocked_dataset2():
     # Datapoints
     for dataset in ["demands", "levels", "flows", "pressures"]:
         os.makedirs(os.path.join(dataset_path, dataset), exist_ok=True)
-        for sensor in ["a", "b"]:
+        for sensor in mocked_dataset_nodes:
             pd.DataFrame(
                 {
                     sensor: np.linspace(0, 7, num=20),
@@ -147,7 +150,7 @@ def mocked_dataset2():
     pd.DataFrame(
         {
             "leak_pipe_id": "test",
-            "leak_pipe_nodes": "['A', 'B']",
+            "leak_pipe_nodes": str(mocked_dataset_nodes),
             "leak_diameter": 0.1,
             "leak_area": 0.1,
             "leak_time_start": "2018-01-01 00:01:00",
@@ -192,7 +195,7 @@ def mocked_dataset_time():
     # Datapoints
     for dataset in ["demands", "levels", "flows", "pressures"]:
         os.makedirs(os.path.join(dataset_path, dataset), exist_ok=True)
-        for sensor in ["a", "b"]:
+        for sensor in mocked_dataset_nodes:
             pd.DataFrame(
                 {
                     sensor: range(20),
@@ -209,7 +212,7 @@ def mocked_dataset_time():
     pd.DataFrame(
         {
             "leak_pipe_id": "test",
-            "leak_pipe_nodes": "['A', 'B']",
+            "leak_pipe_nodes": str(mocked_dataset_nodes),
             "leak_diameter": 0.1,
             "leak_area": 0.1,
             "leak_time_start": "2018-01-01 00:01:00",

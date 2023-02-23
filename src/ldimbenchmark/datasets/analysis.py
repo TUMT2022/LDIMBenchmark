@@ -110,7 +110,10 @@ class DatasetAnalyzer:
                     alpha=0.5,
                     marker="o",
                 )
-            df.plot(ax=ax, marker="x")
+            df.plot(
+                ax=ax,
+                marker="x",
+            )
             ax.legend([f"[Original] {label}" for label in df.columns])
         else:
             df.plot(ax=ax)
