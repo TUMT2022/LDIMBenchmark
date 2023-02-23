@@ -1048,8 +1048,8 @@
   
   
     <li class="md-nav__item">
-      <a href="../methods/dualmodel/" class="md-nav__link">
-        dualmodel
+      <a href="../methods/dualmethod/" class="md-nav__link">
+        dualmethod
       </a>
     </li>
   
@@ -1854,7 +1854,7 @@ Dictionary with names of the areas as key and list of WN nodes as value.</p>
 <span class="normal"><a href="#__codelineno-0-62">62</a></span>
 <span class="normal"><a href="#__codelineno-0-63">63</a></span>
 <span class="normal"><a href="#__codelineno-0-64">64</a></span></pre></div></td><td class="code"><div><pre><span></span><code><a id="__codelineno-0-49" name="__codelineno-0-49"></a><span class="k">def</span> <span class="nf">resampleAndConcatSensors</span><span class="p">(</span>
-<a id="__codelineno-0-50" name="__codelineno-0-50"></a>    <span class="n">sensors</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">DataFrame</span><span class="p">],</span> <span class="n">resample_frequency</span><span class="o">=</span><span class="s2">&quot;1T&quot;</span>
+<a id="__codelineno-0-50" name="__codelineno-0-50"></a>    <span class="n">sensors</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">DataFrame</span><span class="p">],</span> <span class="n">resample_frequency</span><span class="o">=</span><span class="s2">&quot;1T&quot;</span>
 <a id="__codelineno-0-51" name="__codelineno-0-51"></a><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">DataFrame</span><span class="p">:</span>
 <a id="__codelineno-0-52" name="__codelineno-0-52"></a><span class="w">    </span><span class="sd">&quot;&quot;&quot;Resample all sensors to the same time interval and concatenate them into one single DataFrame&quot;&quot;&quot;</span>
 <a id="__codelineno-0-53" name="__codelineno-0-53"></a>
