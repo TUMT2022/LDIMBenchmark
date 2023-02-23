@@ -1,4 +1,4 @@
-from typing import List
+from typing import Dict, List
 from pandas import DataFrame
 from ldimbenchmark.classes import BenchmarkData
 from wntr.network import WaterNetworkModel
@@ -47,7 +47,7 @@ class SimpleBenchmarkData:
 
 
 def resampleAndConcatSensors(
-    sensors: dict[str, DataFrame], resample_frequency="1T"
+    sensors: Dict[str, DataFrame], resample_frequency="1T"
 ) -> DataFrame:
     """Resample all sensors to the same time interval and concatenate them into one single DataFrame"""
 
