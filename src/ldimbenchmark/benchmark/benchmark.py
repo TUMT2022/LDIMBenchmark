@@ -1,3 +1,4 @@
+from concurrent.futures import as_completed
 import itertools
 from ldimbenchmark.benchmark.runners import DockerMethodRunner, LocalMethodRunner
 from ldimbenchmark.benchmark.runners.BaseMethodRunner import MethodRunner
@@ -18,8 +19,6 @@ from ldimbenchmark.benchmark_evaluation import evaluate_leakages
 from tabulate import tabulate
 from ldimbenchmark.benchmark_complexity import run_benchmark_complexity
 from ldimbenchmark.classes import LDIMMethodBase, BenchmarkLeakageResult
-import json
-import hashlib
 import matplotlib.pyplot as plt
 from multiprocessing import Pool, cpu_count
 from tqdm import tqdm
@@ -31,6 +30,7 @@ from ldimbenchmark.evaluation_metrics import (
     falseNegativeRate,
     f1Score,
 )
+from concurrent.futures.process import ProcessPoolExecutor
 
 
 def execute_experiment(experiment: MethodRunner):
@@ -85,7 +85,7 @@ def plot_leak(
         )
 
         sensor_readings = sensor_readings[mask]
-        sensor_readings.plot(ax=ax, alpha=0.2)
+        sensor_readings.plot(ax=ax, alpha=0.2, linestyle="solid")
 
         # Plot debug data:
     debug_folder = os.path.join(additional_data_dir, "debug/")
@@ -108,7 +108,7 @@ def plot_leak(
                     boundarys if boundarys != None else alternative_boundarys,
                 )
                 debug_data = debug_data[mask]
-                debug_data.plot(ax=ax, alpha=1)
+                debug_data.plot(ax=ax, alpha=1, linestyle="dashed")
             except Exception as e:
                 print(e)
                 pass
@@ -184,6 +184,13 @@ class LDIMBenchmark:
                         hyperparameters = self.hyperparameters[method.name][
                             dataset.name
                         ]
+                    else:
+                        hyperparameters = {
+                            k: v
+                            for k, v in self.hyperparameters[method.name].items()
+                            if k not in dataset.name
+                        }
+
                 # TODO: Use right hyperparameters
                 self.experiments.append(
                     LocalMethodRunner(
@@ -237,7 +244,7 @@ class LDIMBenchmark:
                 additionalOutput=self.debug,
             )
 
-    def run_benchmark(self, parallel=False):
+    def run_benchmark(self, parallel=False, parallel_max_workers=0):
         """
         Runs the benchmark.
 
@@ -247,15 +254,19 @@ class LDIMBenchmark:
         # TODO: Caching (don't run same experiment twice, if its already there)
         results = []
         if parallel:
-            with Pool(processes=cpu_count() - 1) as p:
-                max_ = len(self.experiments)
-                with tqdm(total=max_) as pbar:
-                    for result in p.imap_unordered(
-                        execute_experiment, self.experiments
-                    ):
-                        results.append(result)
-                        pbar.update()
-            pass
+            worker_num = cpu_count() - 1
+            if parallel_max_workers > 0:
+                worker_num = parallel_max_workers
+            with ProcessPoolExecutor(max_workers=worker_num) as executor:
+                # submit all tasks and get future objects
+                futures = [
+                    executor.submit(execute_experiment, runner)
+                    for runner in self.experiments
+                ]
+                # process results from tasks in order of task completion
+                for future in tqdm(as_completed(futures)):
+                    future.result()
+                    pass
         else:
             for experiment in self.experiments:
                 results.append(experiment.run())
@@ -324,8 +335,13 @@ class LDIMBenchmark:
         for experiment_result in [
             os.path.join(result, "") for result in result_folders
         ]:
+            detected_leaks_file = os.path.join(experiment_result, "detected_leaks.csv")
+            if not os.path.exists(detected_leaks_file):
+                results.append({})
+                continue
+
             detected_leaks = pd.read_csv(
-                os.path.join(experiment_result, "detected_leaks.csv"),
+                detected_leaks_file,
                 parse_dates=True,
                 date_parser=lambda x: pd.to_datetime(x, utc=True),
             )
@@ -348,6 +364,7 @@ class LDIMBenchmark:
             # TODO: generate name with derivations in brackets
             evaluation_results["dataset"] = run_info["dataset"]
             evaluation_results["dataset_id"] = run_info["dataset_id"]
+            evaluation_results["dataset_derivations"] = run_info["dataset_options"]
             results.append(evaluation_results)
 
             logging.debug(evaluation_results)
@@ -389,8 +406,6 @@ class LDIMBenchmark:
                             additional_data_dir=experiment_result,
                             out_dir=graph_dir,
                         )
-                    for experiment in self.experiments:
-                        results.append(experiment.run())
 
         results = pd.DataFrame(results)
 
@@ -402,6 +417,7 @@ class LDIMBenchmark:
 
         os.makedirs(self.evaluation_results_dir, exist_ok=True)
 
+        # TODO: Automatically add selected metrics
         columns = [
             "TP",
             "FP",
@@ -410,6 +426,7 @@ class LDIMBenchmark:
             "TTD",
             "wrongpipe",
             "dataset",
+            "dataset_derivations",
             # "score",
             "precision",
             "recall (TPR)",

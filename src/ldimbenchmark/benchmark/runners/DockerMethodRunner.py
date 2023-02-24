@@ -1,5 +1,5 @@
 import asyncio
-from datetime import time
+import time
 import hashlib
 import io
 import itertools
@@ -87,96 +87,112 @@ class DockerMethodRunner(MethodRunner):
             logging.info("Image does not exist. Pulling it...")
             client.images.pull(self.image)
         image = client.images.get(self.image)
-        wait_script = f"mkdir -p /input/\nmkdir -p /args/\nmkdir -p /output/\nset -e\nwhile [ ! -f /args/options.yml ]; do sleep 1; echo waiting; done\n{' '.join(image.attrs['Config']['Cmd'])}\nls -l /output/\ntar fcz /output.tar  -C / output/\n"
+        wait_script = f"#!/bin/sh\n\nset -e\nset -o errexit\n\nmkdir -p /input/\nmkdir -p /args/\nmkdir -p /output/\nwhile [ ! -f /args/options.yml ]; do sleep 1; echo waiting; done\n{' '.join(image.attrs['Config']['Cmd'])}\n"
         # run docker container
+        container = client.containers.run(
+            self.image,
+            [
+                "/bin/sh",
+                "-c",
+                f"printf '{wait_script}' > ./script.sh && chmod +x ./script.sh && ./script.sh",
+                "echo",
+                "$?",
+            ],
+            volumes={
+                os.path.abspath(self.dataset.path): {
+                    "bind": "/input/",
+                    "mode": "ro",
+                }
+            },
+            mem_limit="12g",
+            cpu_count=4,
+            detach=True,
+        )
+
+        # Prepare Dataset Transfer
+        # stream = io.BytesIO()
+        # with tarfile.open(fileobj=stream, mode="w|") as tar:
+        #     print(self.dataset.path)
+        #     files = Path(os.path.join(os.path.abspath(self.dataset.path))).rglob(
+        #         "*.*"
+        #     )
+        #     for file in files:
+        #         relative_path = os.path.relpath(
+        #             file, os.path.abspath(self.dataset.path)
+        #         )
+        #         print(relative_path)
+        #         with open(file, "rb") as f:
+        #             info = tar.gettarinfo(fileobj=f)
+        #             info.name = relative_path
+        #             tar.addfile(info, f)
+
+        # Upload Arguments
+        stream_tar_args = io.BytesIO()
+        with tarfile.open(fileobj=stream_tar_args, mode="w|") as tar:
+            with open(path_options, "rb") as f:
+                info = tar.gettarinfo(fileobj=f)
+                info.name = "options.yml"
+                tar.addfile(info, f)
+
+        time.sleep(1)
         try:
-            container = client.containers.run(
-                self.image,
-                [
-                    "/bin/sh",
-                    "-c",
-                    f"printf '{wait_script}' > ./script.sh && chmod +x ./script.sh && ./script.sh",
-                ],
-                volumes={
-                    os.path.abspath(self.dataset.path): {
-                        "bind": "/input/",
-                        "mode": "ro",
-                    }
-                },
-                mem_limit="12g",
-                cpu_count=4,
-                detach=True,
-            )
-
-            # Prepare Dataset Transfer
-            # stream = io.BytesIO()
-            # with tarfile.open(fileobj=stream, mode="w|") as tar:
-            #     print(self.dataset.path)
-            #     files = Path(os.path.join(os.path.abspath(self.dataset.path))).rglob(
-            #         "*.*"
-            #     )
-            #     for file in files:
-            #         relative_path = os.path.relpath(
-            #             file, os.path.abspath(self.dataset.path)
-            #         )
-            #         print(relative_path)
-            #         with open(file, "rb") as f:
-            #             info = tar.gettarinfo(fileobj=f)
-            #             info.name = relative_path
-            #             tar.addfile(info, f)
-
-            stream_tar_args = io.BytesIO()
-            with tarfile.open(fileobj=stream_tar_args, mode="w|") as tar:
-                with open(path_options, "rb") as f:
-                    info = tar.gettarinfo(fileobj=f)
-                    info.name = "options.yml"
-                    tar.addfile(info, f)
-
             container.put_archive("/args/", stream_tar_args.getvalue())
+        except:
+            for log_line in container.logs(stream=True):
+                logging.info(f"[{self.id}] {log_line.strip()}")
+            return None
+        finally:
             stream_tar_args.close()
 
-            # TODO: get stats  container.stats(stream=True)
-            for log_line in container.logs(stream=True):
-                logging.info(f"[{self.image}] {log_line.strip()}")
+        # TODO: get stats  container.stats(stream=True)
+        for log_line in container.logs(stream=True):
+            logging.info(f"[{self.id}] {log_line.strip()}")
 
-            # Extract Outputs
-            temp_folder_output = tempfile.TemporaryDirectory()
-            temp_tar_output = os.path.join(temp_folder_output.name, "output.tar")
-            logging.info(temp_tar_output)
-            with open(temp_tar_output, "wb") as f:
-                # get the bits
-                bits, stat = container.get_archive("/output")
-                # write the bits
-                for chunk in bits:
-                    f.write(chunk)
+        # Extract Outputs
+        temp_folder_output = tempfile.TemporaryDirectory()
+        temp_tar_output = os.path.join(temp_folder_output.name, "output.tar")
+        with open(temp_tar_output, "wb") as f:
+            # get the bits
+            bits, stat = container.get_archive("/output")
+            # write the bits
+            for chunk in bits:
+                f.write(chunk)
 
-            # unpack
-            # logging.info(os.path.abspath(self.resultsFolder))
-            def members(tar, strip):
-                for member in tar.getmembers():
-                    member.path = member.path.split("/", strip)[-1]
+        # unpack
+        # logging.info(os.path.abspath(self.resultsFolder))
+        def members(tar, strip: str):
+            # https://stackoverflow.com/questions/8008829/extract-only-a-single-directory-from-tar-in-python/43094365#43094365
+            l = len(strip)
+            for member in tar.getmembers():
+                if member.path.startswith(strip):
+                    member.path = member.path[l:]
                     yield member
 
-            with tarfile.open(temp_tar_output) as tar:
-                strip = 1
-                tar.extractall(
-                    os.path.abspath(self.resultsFolder), members=members(tar, strip)
-                )
+        with tarfile.open(temp_tar_output) as tar:
+            tar.extractall(
+                os.path.abspath(self.resultsFolder), members=members(tar, "output/")
+            )
 
-            container.remove()
-
-        except docker.errors.ContainerError as e:
-            logging.error(f"Method with image {self.image} errored:")
-            for line in e.container.logs().decode().split("\n"):
-                logging.error(f"Container[{self.image}]: " + line)
-            if e.exit_status == 137:
+        status = container.wait()
+        if status["StatusCode"] != 0:
+            logging.error(
+                f"Runner {self.id} errored with status code {status['StatusCode']}!"
+            )
+            # for line in e.container.logs().decode().split("\n"):
+            #     logging.error(f"Container[{self.image}]: " + line)
+            if status["StatusCode"] == 137:
                 logging.error("Process in container was killed.")
                 logging.error(
-                    "This might be due to a memory limit. Try increasing the memory limit."
+                    "This might be due to a memory limit. Try increasing the memory limit or reduce the amount of parallel processes."
                 )
-            return None
+
+        if not self.debug:
+            container.remove()
 
         # TODO: Write results because we should not include them in the container input
         # self.tryWriteEvaluationLeaks()
         logging.info(f"Results in {self.resultsFolder}")
         return self.resultsFolder
+
+    def __run_docker_container(self):
+        pass

@@ -1,3 +1,4 @@
+import os
 from ldimbenchmark.datasets import Dataset, DatasetLibrary, DATASETS
 from ldimbenchmark import (
     LDIMBenchmark,
@@ -8,11 +9,12 @@ from ldimbenchmark import (
 from ldimbenchmark.methods.dualmethod import DUALMethod
 from tests.method_to_test import YourCustomLDIMMethod
 from ldimbenchmark.methods import LILA, MNF
-
+import pandas as pd
 from tests.shared import (
     TEST_DATA_FOLDER,
 )
 import logging
+from pandas.testing import assert_frame_equal
 
 
 def test_benchmark(mocked_dataset1: Dataset):
@@ -49,6 +51,9 @@ def test_benchmark(mocked_dataset1: Dataset):
     )
 
     benchmark.evaluate()
+    benchmark.evaluate(
+        generate_plots=True,
+    )
 
 
 # def test_complexity():
@@ -89,8 +94,11 @@ def test_single_run_docker(mocked_dataset1: Dataset):
         mocked_dataset1,
         resultsFolder="./benchmark-results/runner_results",
     )
-    (detected_leaks) = runner.run()
-    assert YourCustomLDIMMethod.get_results() == detected_leaks
+    # TODO: Refactor to read result from file
+    result_dir = runner.run()
+    asserted_results = pd.DataFrame(YourCustomLDIMMethod.get_results())
+    detected_leaks = pd.read_csv(os.path.join(result_dir, "detected_leaks.csv"))
+    assert_frame_equal(asserted_results, detected_leaks)
 
 
 def test_method(mocked_dataset1: Dataset):
@@ -107,6 +115,6 @@ def test_method(mocked_dataset1: Dataset):
     pass
 
 
-# def test_method_file_based():
-#     runner = FileBasedMethodRunner(YourCustomLDIMMethod())
-#     runner.run()
+def test_method_file_based():
+    runner = FileBasedMethodRunner(YourCustomLDIMMethod())
+    runner.run()
