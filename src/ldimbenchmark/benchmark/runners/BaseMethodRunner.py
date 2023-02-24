@@ -4,6 +4,8 @@ import json
 import os
 from typing import Literal, Union
 
+import pandas as pd
+from ldimbenchmark.classes import BenchmarkLeakageResult
 from ldimbenchmark.datasets.classes import Dataset
 
 
@@ -65,9 +67,12 @@ class MethodRunner(ABC):
         """
         if type(dataset) is str:
             self.dataset = Dataset(dataset)
-        else:
+        if type(dataset) is Dataset:
             self.dataset = dataset
-
+        else:
+            raise Exception(
+                f"Method runner argument 'dataset' only takes str or Dataset you provided {type(dataset)}"
+            )
         self.hyperparameters = hyperparameters
         if self.hyperparameters is None:
             self.hyperparameters = {}
@@ -84,5 +89,50 @@ class MethodRunner(ABC):
         self.resultsFolder = resultsFolder
 
     @abstractmethod
-    def run(self) -> dict:
+    def run(self) -> str:
         pass
+
+    def writeResults(self, detected_leaks, time_training, time_detection):
+        if self.resultsFolder:
+            os.makedirs(self.resultsFolder, exist_ok=True)
+            pd.DataFrame(
+                detected_leaks,
+                columns=list(BenchmarkLeakageResult.__annotations__.keys()),
+            ).to_csv(
+                os.path.join(self.resultsFolder, "detected_leaks.csv"),
+                index=False,
+                date_format="%Y-%m-%d %H:%M:%S",
+            )
+            pd.DataFrame(
+                [
+                    {
+                        "method": self.detection_method.name,
+                        "dataset": self.dataset.name,
+                        "dataset_id": self.dataset.id,
+                        "dataset_options": self.dataset.info["derivations"]
+                        if "derivations" in self.dataset.info
+                        else "{}",
+                        "hyperparameters": self.hyperparameters,
+                        "goal": self.goal,
+                        "stage": self.stage,
+                        "train_time": time_training,
+                        "detect_time": time_detection,
+                    }
+                ],
+            ).to_csv(
+                os.path.join(self.resultsFolder, "run_info.csv"),
+                index=False,
+                date_format="%Y-%m-%d %H:%M:%S",
+            )
+        self.tryWriteEvaluationLeaks()
+
+    def tryWriteEvaluationLeaks(self):
+        if hasattr(self.dataset.evaluation, "leaks"):
+            pd.DataFrame(
+                self.dataset.evaluation.leaks,
+                columns=list(BenchmarkLeakageResult.__annotations__.keys()),
+            ).to_csv(
+                os.path.join(self.resultsFolder, "should_have_detected_leaks.csv"),
+                index=False,
+                date_format="%Y-%m-%d %H:%M:%S",
+            )

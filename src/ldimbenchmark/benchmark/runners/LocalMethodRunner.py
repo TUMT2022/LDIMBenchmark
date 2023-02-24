@@ -69,7 +69,7 @@ class LocalMethodRunner(MethodRunner):
         """
 
         super().__init__(
-            runner_base_name=detection_method.name,
+            runner_base_name=f"{detection_method.name}_{detection_method.version}",
             dataset=dataset,
             hyperparameters=hyperparameters,
             goal=goal,
@@ -158,44 +158,10 @@ class LocalMethodRunner(MethodRunner):
             + str(time_detection)
         )
 
-        if self.resultsFolder:
-            os.makedirs(self.resultsFolder, exist_ok=True)
-            pd.DataFrame(
-                detected_leaks,
-                columns=list(BenchmarkLeakageResult.__annotations__.keys()),
-            ).to_csv(
-                os.path.join(self.resultsFolder, "detected_leaks.csv"),
-                index=False,
-                date_format="%Y-%m-%d %H:%M:%S",
-            )
-            pd.DataFrame(
-                self.dataset.evaluation.leaks,
-                columns=list(BenchmarkLeakageResult.__annotations__.keys()),
-            ).to_csv(
-                os.path.join(self.resultsFolder, "should_have_detected_leaks.csv"),
-                index=False,
-                date_format="%Y-%m-%d %H:%M:%S",
-            )
-            pd.DataFrame(
-                [
-                    {
-                        "method": self.detection_method.name,
-                        "dataset": self.dataset.name,
-                        "dataset_id": self.dataset.id,
-                        "dataset_options": self.dataset.info["derivations"]
-                        if "derivations" in self.dataset.info
-                        else "{}",
-                        "hyperparameters": self.hyperparameters,
-                        "goal": self.goal,
-                        "stage": self.stage,
-                        "train_time": time_training,
-                        "detect_time": time_detection,
-                    }
-                ],
-            ).to_csv(
-                os.path.join(self.resultsFolder, "run_info.csv"),
-                index=False,
-                date_format="%Y-%m-%d %H:%M:%S",
-            )
+        self.writeResults(
+            detected_leaks=detected_leaks,
+            time_training=time_training,
+            time_detection=time_detection,
+        )
 
-        return detected_leaks, self.dataset.evaluation.leaks
+        return self.resultsFolder

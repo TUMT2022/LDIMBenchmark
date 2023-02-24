@@ -1,8 +1,13 @@
+import asyncio
 from datetime import time
 import hashlib
+import io
+import itertools
 import json
 import logging
 import os
+import tarfile
+from pathlib import Path
 import tempfile
 from typing import Literal, Union
 import pandas as pd
@@ -36,7 +41,7 @@ class DockerMethodRunner(MethodRunner):
         docker_base_url="unix://var/run/docker.sock",
     ):
         super().__init__(
-            runner_base_name=image,
+            runner_base_name=image.split("/")[-1].replace(":", "_"),
             dataset=dataset,
             hyperparameters=hyperparameters,
             goal=goal,
@@ -57,7 +62,7 @@ class DockerMethodRunner(MethodRunner):
     def run(self):
         logging.info(f"Running {self.id} with params {self.hyperparameters}")
         folder_parameters = tempfile.TemporaryDirectory()
-        path_options = os.path.join(folder_parameters.name, "options.yaml")
+        path_options = os.path.join(folder_parameters.name, "options.yml")
         with open(path_options, "w") as f:
             yaml.dump(
                 {
@@ -70,36 +75,95 @@ class DockerMethodRunner(MethodRunner):
                 f,
             )
 
-        outputFolder = self.resultsFolder
-        if outputFolder is None:
-            tempfolder = tempfile.TemporaryDirectory()
-            outputFolder = tempfolder.name
-
-        # Remove Colons from path
-        outputFolder = outputFolder.replace(":", "_")
-        # download image
         # test compatibility (stages)
 
         client = docker.from_env()
         if self.docker_base_url != "unix://var/run/docker.sock":
             client = docker.DockerClient(base_url=self.docker_base_url)
+
+        try:
+            image = client.images.get(self.image)
+        except docker.errors.ImageNotFound:
+            logging.info("Image does not exist. Pulling it...")
+            client.images.pull(self.image)
+        image = client.images.get(self.image)
+        wait_script = f"mkdir -p /input/\nmkdir -p /args/\nmkdir -p /output/\nset -e\nwhile [ ! -f /args/options.yml ]; do sleep 1; echo waiting; done\n{' '.join(image.attrs['Config']['Cmd'])}\nls -l /output/\ntar fcz /output.tar  -C / output/\n"
         # run docker container
         try:
-            containerLog = client.containers.run(
+            container = client.containers.run(
                 self.image,
-                # ["echo", "hello", "world"],
+                [
+                    "/bin/sh",
+                    "-c",
+                    f"printf '{wait_script}' > ./script.sh && chmod +x ./script.sh && ./script.sh",
+                ],
                 volumes={
                     os.path.abspath(self.dataset.path): {
                         "bind": "/input/",
                         "mode": "ro",
-                    },
-                    path_options: {"bind": "/input/options.yml", "mode": "ro"},
-                    os.path.abspath(outputFolder): {"bind": "/output/", "mode": "rw"},
+                    }
                 },
                 mem_limit="12g",
                 cpu_count=4,
+                detach=True,
             )
-            logging.warn(containerLog)
+
+            # Prepare Dataset Transfer
+            # stream = io.BytesIO()
+            # with tarfile.open(fileobj=stream, mode="w|") as tar:
+            #     print(self.dataset.path)
+            #     files = Path(os.path.join(os.path.abspath(self.dataset.path))).rglob(
+            #         "*.*"
+            #     )
+            #     for file in files:
+            #         relative_path = os.path.relpath(
+            #             file, os.path.abspath(self.dataset.path)
+            #         )
+            #         print(relative_path)
+            #         with open(file, "rb") as f:
+            #             info = tar.gettarinfo(fileobj=f)
+            #             info.name = relative_path
+            #             tar.addfile(info, f)
+
+            stream_tar_args = io.BytesIO()
+            with tarfile.open(fileobj=stream_tar_args, mode="w|") as tar:
+                with open(path_options, "rb") as f:
+                    info = tar.gettarinfo(fileobj=f)
+                    info.name = "options.yml"
+                    tar.addfile(info, f)
+
+            container.put_archive("/args/", stream_tar_args.getvalue())
+            stream_tar_args.close()
+
+            # TODO: get stats  container.stats(stream=True)
+            for log_line in container.logs(stream=True):
+                logging.info(f"[{self.image}] {log_line.strip()}")
+
+            # Extract Outputs
+            temp_folder_output = tempfile.TemporaryDirectory()
+            temp_tar_output = os.path.join(temp_folder_output.name, "output.tar")
+            logging.info(temp_tar_output)
+            with open(temp_tar_output, "wb") as f:
+                # get the bits
+                bits, stat = container.get_archive("/output")
+                # write the bits
+                for chunk in bits:
+                    f.write(chunk)
+
+            # unpack
+            # logging.info(os.path.abspath(self.resultsFolder))
+            def members(tar, strip):
+                for member in tar.getmembers():
+                    member.path = member.path.split("/", strip)[-1]
+                    yield member
+
+            with tarfile.open(temp_tar_output) as tar:
+                strip = 1
+                tar.extractall(
+                    os.path.abspath(self.resultsFolder), members=members(tar, strip)
+                )
+
+            container.remove()
 
         except docker.errors.ContainerError as e:
             logging.error(f"Method with image {self.image} errored:")
@@ -111,30 +175,8 @@ class DockerMethodRunner(MethodRunner):
                     "This might be due to a memory limit. Try increasing the memory limit."
                 )
             return None
-        # mount folder in docker container
-        # name, dst = dst.split(':')
-        #     container = client.containers.get(name)
 
-        #     os.chdir(os.path.dirname(src))
-        #     srcname = os.path.basename(src)
-        #     tar = tarfile.open(src + '.tar', mode='w')
-        #     try:
-        #         tar.add(srcname)
-        #     finally:
-        #         tar.close()
-
-        #     data = open(src + '.tar', 'rb').read()
-        #     container.put_archive(os.path.dirname(dst), data)
-        # TODO: Read results from output folder
-
-        detected_leaks = pd.read_csv(
-            os.path.join(outputFolder, "detected_leaks.csv"),
-            parse_dates=True,
-            date_parser=lambda x: pd.to_datetime(x, utc=True),
-        ).to_dict("records")
-        # if tempfolder:
-        #     tempfolder.cleanup()
-        # if folder_parameters:
-        #     tempfolder.cleanup()
-        print(outputFolder)
-        return detected_leaks
+        # TODO: Write results because we should not include them in the container input
+        # self.tryWriteEvaluationLeaks()
+        logging.info(f"Results in {self.resultsFolder}")
+        return self.resultsFolder

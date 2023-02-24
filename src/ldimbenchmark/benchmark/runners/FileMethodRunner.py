@@ -1,11 +1,10 @@
 import logging
 import os
 import time
-import pandas as pd
 
 import yaml
 from ldimbenchmark.benchmark.runners.BaseMethodRunner import MethodRunner
-from ldimbenchmark.classes import BenchmarkLeakageResult, LDIMMethodBase
+from ldimbenchmark.classes import LDIMMethodBase
 from ldimbenchmark.datasets.classes import Dataset
 
 
@@ -14,10 +13,10 @@ class FileBasedMethodRunner(MethodRunner):
         self,
         detection_method: LDIMMethodBase,
         inputFolder: str = "/input",
+        argumentsFolder: str = "/args",
         outputFolder: str = "/output",
-        debug=False,
     ):
-        with open(os.path.join(inputFolder, "options.yml")) as f:
+        with open(os.path.join(argumentsFolder, "options.yml")) as f:
             parameters = yaml.safe_load(f)
 
         super().__init__(
@@ -32,7 +31,7 @@ class FileBasedMethodRunner(MethodRunner):
         )
         self.detection_method = detection_method
 
-    def run(self):
+    def run(self) -> str:
         logging.info(f"Running {self.id} with params {self.hyperparameters}")
         if not self.resultsFolder and self.debug:
             raise Exception("Debug mode requires a results folder.")
@@ -51,23 +50,24 @@ class FileBasedMethodRunner(MethodRunner):
         )
 
         start = time.time()
-
         self.detection_method.train(self.dataset.getTrainingBenchmarkData())
         end = time.time()
 
+        time_training = end - start
         logging.info(
             "> Training time for '"
             + self.detection_method.name
             + "': "
-            + str(end - start)
+            + str(time_training)
         )
 
         start = time.time()
         detected_leaks = self.detection_method.detect_offline(
             self.dataset.getEvaluationBenchmarkData()
         )
-
         end = time.time()
+
+        time_detection = end - start
         logging.info(
             "> Detection time for '"
             + self.detection_method.name
@@ -75,13 +75,10 @@ class FileBasedMethodRunner(MethodRunner):
             + str(end - start)
         )
 
-        pd.DataFrame(
-            detected_leaks,
-            columns=list(BenchmarkLeakageResult.__annotations__.keys()),
-        ).to_csv(
-            os.path.join(self.resultsFolder, "detected_leaks.csv"),
-            index=False,
-            date_format="%Y-%m-%d %H:%M:%S",
+        self.writeResults(
+            detected_leaks=detected_leaks,
+            time_training=time_training,
+            time_detection=time_detection,
         )
-        # TODO write to outputFolder
-        return detected_leaks, self.dataset.evaluation.leaks
+
+        return self.resultsFolder
