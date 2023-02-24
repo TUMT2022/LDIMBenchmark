@@ -27,17 +27,19 @@ logging.getLogger().setLevel(numeric_level)
 
 param_grid = {
     "lila": {
-        "est_length": [1, 72],
-        "C_threshold": [3.0],
-        "delta": [4.0],
-        #     "est_length": np.arange(1, 100, 8).tolist(),
-        #     "C_threshold": np.arange(-0.3, 1, 0.05).tolist(),
-        #     "delta": np.arange(0, 10, 0.5).tolist(),
+        # "est_length": np.arange(1, 100, 8).tolist(),
+        # "C_threshold": np.arange(-0.3, 1, 0.1).tolist(),
+        # "delta": np.arange(0, 10, 1).tolist(),
+        # Best
+        "est_length": 169.0,
+        "C_threshold": 8.0,
+        "delta": 8.0,
     },
     "mnf": {
         "gamma": np.arange(-0.3, 1, 0.05).tolist(),
         "window": [1, 5, 10, 20],
     },
+    "dualmethod": {"est_length": 480.0, "C_threshold": 0.4, "delta": 0.4},
 }
 
 
@@ -49,14 +51,14 @@ benchmark = LDIMBenchmark(
     datasets=datasets,
     results_dir="./grid-search",
     debug=True,
-    multi_parameters=True,
+    # multi_parameters=True,
 )
-benchmark.add_docker_methods(["ghcr.io/ldimbenchmark/mnf:0.1.20"])
+benchmark.add_docker_methods(["ghcr.io/ldimbenchmark/lila:0.1.20"])
 
 # execute benchmark
-benchmark.run_benchmark(parallel=True, parallel_max_workers=3)
+# benchmark.run_benchmark(parallel=True, parallel_max_workers=3)
 
-results = benchmark.evaluate()
+results = benchmark.evaluate(current_only=False)
 
 
 # def run_benchmark(method: LDIMMethodBase, dataset: Dataset, params: Dict):

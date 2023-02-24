@@ -22,6 +22,7 @@ from ldimbenchmark.classes import LDIMMethodBase, BenchmarkLeakageResult
 import matplotlib.pyplot as plt
 from multiprocessing import Pool, cpu_count
 from tqdm import tqdm
+import enlighten
 from ldimbenchmark.evaluation_metrics import (
     precision,
     recall,
@@ -135,6 +136,39 @@ def plot_leak(
     ax.legend(loc="center left", bbox_to_anchor=(1, 0.5))
     fig.savefig(os.path.join(out_dir, name + ".png"))
     plt.close(fig)
+
+
+def load_result(folder: str) -> Dict:
+    folder = os.path.join(folder, "")
+    detected_leaks_file = os.path.join(folder, "detected_leaks.csv")
+    if not os.path.exists(detected_leaks_file):
+        return {}
+
+    detected_leaks = pd.read_csv(
+        detected_leaks_file,
+        parse_dates=True,
+        date_parser=lambda x: pd.to_datetime(x, utc=True),
+    )
+
+    evaluation_dataset_leakages = pd.read_csv(
+        os.path.join(folder, "should_have_detected_leaks.csv"),
+        parse_dates=True,
+        date_parser=lambda x: pd.to_datetime(x, utc=True),
+    )
+
+    run_info = pd.read_csv(os.path.join(folder, "run_info.csv")).iloc[0]
+
+    # TODO: Ignore Detections outside of the evaluation period
+    (evaluation_results, matched_list) = evaluate_leakages(
+        evaluation_dataset_leakages, detected_leaks
+    )
+    evaluation_results["method"] = run_info["method"]
+    evaluation_results["dataset"] = run_info["dataset"]
+    evaluation_results["dataset_id"] = run_info["dataset_id"]
+    evaluation_results["dataset_derivations"] = run_info["dataset_options"]
+    evaluation_results["hyperparameters"] = run_info["hyperparameters"]
+
+    return evaluation_results
 
 
 # TODO: Draw plots with leaks and detected leaks
@@ -398,7 +432,24 @@ class LDIMBenchmark:
                         )
                     )
 
-        # TODO: Caching (don't run same experiment twice, if its already there)
+        # Remove already run experiments
+        result_folders = glob(os.path.join(self.runner_results_dir, "*"))
+        num_experiments = len(self.experiments)
+        # for experiment in self.experiments:
+        #     if experiment.resultsFolder in result_folders:
+        #         self.experiments.remove(experiment)
+        self.experiments = list(
+            filter(lambda x: x.resultsFolder not in result_folders, self.experiments)
+        )
+        logging.info(f"Executing {len(self.experiments)} experiments.")
+        manager = enlighten.get_manager()
+        if len(self.experiments) < num_experiments:
+            manager.status_bar(
+                " Using cached experiments! ",
+                position=1,
+                fill="-",
+                justify=enlighten.Justify.CENTER,
+            )
         results = []
         if parallel:
             worker_num = cpu_count() - 1
@@ -411,12 +462,19 @@ class LDIMBenchmark:
                         executor.submit(execute_experiment, runner)
                         for runner in self.experiments
                     ]
-                    with tqdm(total=len(futures)) as pbar:
-                        # process results from tasks in order of task completion
-                        for future in tqdm(as_completed(futures)):
-                            future.result()
-                            pbar.update(1)
+                    pbar = manager.counter(
+                        total=num_experiments, desc="Experiments", unit="experiments"
+                    )
+                    print(num_experiments - len(self.experiments))
+                    pbar.update(incr=num_experiments - len(self.experiments))
+
+                    # process results from tasks in order of task completion
+                    for future in as_completed(futures):
+                        future.result()
+                        pbar.update()
+                    pbar.close()
             except KeyboardInterrupt:
+                manager.stop()
                 executor._processes.clear()
                 os.kill(os.getpid(), 9)
         else:
@@ -474,90 +532,68 @@ class LDIMBenchmark:
                 f"You are generating Plots for {len(result_folders)} results! This will take ages, consider only generating them for the dataset you are interested in."
             )
 
-        loaded_datasets = {}
-        for dataset in self.datasets:
-            if type(dataset) is str:
-                loaded = Dataset(dataset)
-            else:
-                loaded = dataset
-
-            loaded_datasets[dataset.id] = loaded.loadData()
-
         results = []
-        for experiment_result in [
-            os.path.join(result, "") for result in result_folders
-        ]:
-            detected_leaks_file = os.path.join(experiment_result, "detected_leaks.csv")
-            if not os.path.exists(detected_leaks_file):
-                results.append({})
-                continue
+        parallel = True
+        if parallel == True:
+            with ProcessPoolExecutor(max_workers=cpu_count() - 1) as executor:
+                # submit all tasks and get future objects
+                futures = [
+                    executor.submit(load_result, folder) for folder in result_folders
+                ]
+                # process results from tasks in order of task completion
+                for future in as_completed(futures):
+                    result = future.result()
+                    results.append(result)
+        else:
+            for experiment_result in result_folders:
+                results.append(load_result(experiment_result))
 
-            detected_leaks = pd.read_csv(
-                detected_leaks_file,
-                parse_dates=True,
-                date_parser=lambda x: pd.to_datetime(x, utc=True),
-            )
+        # if generate_plots:
 
-            evaluation_dataset_leakages = pd.read_csv(
-                os.path.join(experiment_result, "should_have_detected_leaks.csv"),
-                parse_dates=True,
-                date_parser=lambda x: pd.to_datetime(x, utc=True),
-            )
+        # loaded_datasets = {}
+        # for dataset in self.datasets:
+        #     if type(dataset) is str:
+        #         loaded = Dataset(dataset)
+        #     else:
+        #         loaded = dataset
 
-            run_info = pd.read_csv(
-                os.path.join(experiment_result, "run_info.csv")
-            ).iloc[0]
+        #     loaded_datasets[dataset.id] = loaded.loadData()
+        #     logging.info("Generating plots...")
+        #     graph_dir = os.path.join(self.evaluation_results_dir, "per_run")
+        #     os.makedirs(graph_dir, exist_ok=True)
 
-            # TODO: Ignore Detections outside of the evaluation period
-            (evaluation_results, matched_list) = evaluate_leakages(
-                evaluation_dataset_leakages, detected_leaks
-            )
-            evaluation_results["method"] = run_info["method"]
-            # TODO: generate name with derivations in brackets
-            evaluation_results["dataset"] = run_info["dataset"]
-            evaluation_results["dataset_id"] = run_info["dataset_id"]
-            evaluation_results["dataset_derivations"] = run_info["dataset_options"]
-            results.append(evaluation_results)
+        #     parallel = True
+        #     if parallel:
+        #         arguments_list = zip(
+        #             itertools.repeat(
+        #                 getattr(
+        #                     loaded_datasets[run_info["dataset_id"]], "pressures"
+        #                 ),
+        #                 len(matched_list),
+        #             ),
+        #             matched_list,
+        #             itertools.repeat(experiment_result, len(matched_list)),
+        #             itertools.repeat(graph_dir, len(matched_list)),
+        #         )
 
-            logging.debug(evaluation_results)
+        #         with Pool(processes=cpu_count() - 1) as p:
+        #             jobs = [
+        #                 p.apply_async(func=plot_leak, args=arguments)
+        #                 for arguments in arguments_list
+        #             ]
+        #             for job in tqdm(jobs):
+        #                 job.get()  # wait for jobs being executed
 
-            if generate_plots:
-                logging.info("Generating plots...")
-                graph_dir = os.path.join(self.evaluation_results_dir, "per_run")
-                os.makedirs(graph_dir, exist_ok=True)
-
-                parallel = True
-                if parallel:
-                    arguments_list = zip(
-                        itertools.repeat(
-                            getattr(
-                                loaded_datasets[run_info["dataset_id"]], "pressures"
-                            ),
-                            len(matched_list),
-                        ),
-                        matched_list,
-                        itertools.repeat(experiment_result, len(matched_list)),
-                        itertools.repeat(graph_dir, len(matched_list)),
-                    )
-
-                    with Pool(processes=cpu_count() - 1) as p:
-                        jobs = [
-                            p.apply_async(func=plot_leak, args=arguments)
-                            for arguments in arguments_list
-                        ]
-                        for job in tqdm(jobs):
-                            job.get()  # wait for jobs being executed
-
-                else:
-                    for leak_pair in matched_list:
-                        plot_leak(
-                            getattr(
-                                loaded_datasets[run_info["dataset_id"]], "pressures"
-                            ),
-                            leak_pair=leak_pair,
-                            additional_data_dir=experiment_result,
-                            out_dir=graph_dir,
-                        )
+        #     else:
+        #         for leak_pair in matched_list:
+        #             plot_leak(
+        #                 getattr(
+        #                     loaded_datasets[run_info["dataset_id"]], "pressures"
+        #                 ),
+        #                 leak_pair=leak_pair,
+        #                 additional_data_dir=experiment_result,
+        #                 out_dir=graph_dir,
+        #             )
 
         results = pd.DataFrame(results)
 
@@ -567,6 +603,7 @@ class LDIMBenchmark:
         # https://towardsdatascience.com/performance-metrics-confusion-matrix-precision-recall-and-f1-score-a8fe076a2262
         results = results.set_index(["method", "dataset_id"])
         results = results.sort_values(by=["F1"])
+        results = results[results["F1"].notna()]
 
         os.makedirs(self.evaluation_results_dir, exist_ok=True)
 
@@ -580,6 +617,7 @@ class LDIMBenchmark:
             "wrongpipe",
             "dataset",
             "dataset_derivations",
+            "hyperparameters",
             # "score",
             "precision",
             "recall (TPR)",
