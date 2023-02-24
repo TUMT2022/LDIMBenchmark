@@ -1,4 +1,3 @@
-
 ### File level Interface
 
 The file level interface is the low level interface of the benchmark suite.
@@ -26,6 +25,7 @@ It is designed to make it easy to implement the interface in any environment (do
 The following assumptions are made about the input data:
 
 - the model is the leading datasource (meaning any sensor names in the other files must be present in the model)
+  - The name of the csv files is corresponding to the name of the sensor in the inp file.
 - the model is a valid EPANET model
 
 Maybe:
@@ -36,11 +36,21 @@ The following assumptions are not made:
 
 - Timestamps are not required to be the same for all input files, to make it possible for the methods to do their own resample and interpolation of the data
 
+#### Arguments
+
+```
+./args
+ | -- options.yml   # Options for running the Method Runner.
+
+```
+
 #### Output:
 
 ```
 ./output
- | -- leaks.csv    # The leaks found by the algorithm
+ | -- detected_leaks.csv # The leaks found by the method
+ | -- should_have_detected_leaks.csv
+ | -- run_info.csv
+ | -- debug
+ | --  | -- ...      # Any information the method seems suitable as debug information. If the information should be plotted by the evaluation Methods the Timestamps should be the roughly the same as in the supplied dataset.
 ```
-
-
