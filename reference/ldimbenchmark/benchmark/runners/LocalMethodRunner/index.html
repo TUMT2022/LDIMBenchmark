@@ -1563,41 +1563,7 @@
 <span class="normal"><a href="#__codelineno-0-164">164</a></span>
 <span class="normal"><a href="#__codelineno-0-165">165</a></span>
 <span class="normal"><a href="#__codelineno-0-166">166</a></span>
-<span class="normal"><a href="#__codelineno-0-167">167</a></span>
-<span class="normal"><a href="#__codelineno-0-168">168</a></span>
-<span class="normal"><a href="#__codelineno-0-169">169</a></span>
-<span class="normal"><a href="#__codelineno-0-170">170</a></span>
-<span class="normal"><a href="#__codelineno-0-171">171</a></span>
-<span class="normal"><a href="#__codelineno-0-172">172</a></span>
-<span class="normal"><a href="#__codelineno-0-173">173</a></span>
-<span class="normal"><a href="#__codelineno-0-174">174</a></span>
-<span class="normal"><a href="#__codelineno-0-175">175</a></span>
-<span class="normal"><a href="#__codelineno-0-176">176</a></span>
-<span class="normal"><a href="#__codelineno-0-177">177</a></span>
-<span class="normal"><a href="#__codelineno-0-178">178</a></span>
-<span class="normal"><a href="#__codelineno-0-179">179</a></span>
-<span class="normal"><a href="#__codelineno-0-180">180</a></span>
-<span class="normal"><a href="#__codelineno-0-181">181</a></span>
-<span class="normal"><a href="#__codelineno-0-182">182</a></span>
-<span class="normal"><a href="#__codelineno-0-183">183</a></span>
-<span class="normal"><a href="#__codelineno-0-184">184</a></span>
-<span class="normal"><a href="#__codelineno-0-185">185</a></span>
-<span class="normal"><a href="#__codelineno-0-186">186</a></span>
-<span class="normal"><a href="#__codelineno-0-187">187</a></span>
-<span class="normal"><a href="#__codelineno-0-188">188</a></span>
-<span class="normal"><a href="#__codelineno-0-189">189</a></span>
-<span class="normal"><a href="#__codelineno-0-190">190</a></span>
-<span class="normal"><a href="#__codelineno-0-191">191</a></span>
-<span class="normal"><a href="#__codelineno-0-192">192</a></span>
-<span class="normal"><a href="#__codelineno-0-193">193</a></span>
-<span class="normal"><a href="#__codelineno-0-194">194</a></span>
-<span class="normal"><a href="#__codelineno-0-195">195</a></span>
-<span class="normal"><a href="#__codelineno-0-196">196</a></span>
-<span class="normal"><a href="#__codelineno-0-197">197</a></span>
-<span class="normal"><a href="#__codelineno-0-198">198</a></span>
-<span class="normal"><a href="#__codelineno-0-199">199</a></span>
-<span class="normal"><a href="#__codelineno-0-200">200</a></span>
-<span class="normal"><a href="#__codelineno-0-201">201</a></span></pre></div></td><td class="code"><div><pre><span></span><code><a id="__codelineno-0-16" name="__codelineno-0-16"></a><span class="k">class</span> <span class="nc">LocalMethodRunner</span><span class="p">(</span><span class="n">MethodRunner</span><span class="p">):</span>
+<span class="normal"><a href="#__codelineno-0-167">167</a></span></pre></div></td><td class="code"><div><pre><span></span><code><a id="__codelineno-0-16" name="__codelineno-0-16"></a><span class="k">class</span> <span class="nc">LocalMethodRunner</span><span class="p">(</span><span class="n">MethodRunner</span><span class="p">):</span>
 <a id="__codelineno-0-17" name="__codelineno-0-17"></a><span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <a id="__codelineno-0-18" name="__codelineno-0-18"></a><span class="sd">    Runner for a local method.</span>
 <a id="__codelineno-0-19" name="__codelineno-0-19"></a>
@@ -1653,7 +1619,7 @@
 <a id="__codelineno-0-69" name="__codelineno-0-69"></a><span class="sd">        &quot;&quot;&quot;</span>
 <a id="__codelineno-0-70" name="__codelineno-0-70"></a>
 <a id="__codelineno-0-71" name="__codelineno-0-71"></a>        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span>
-<a id="__codelineno-0-72" name="__codelineno-0-72"></a>            <span class="n">runner_base_name</span><span class="o">=</span><span class="n">detection_method</span><span class="o">.</span><span class="n">name</span><span class="p">,</span>
+<a id="__codelineno-0-72" name="__codelineno-0-72"></a>            <span class="n">runner_base_name</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">detection_method</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2">_</span><span class="si">{</span><span class="n">detection_method</span><span class="o">.</span><span class="n">version</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span>
 <a id="__codelineno-0-73" name="__codelineno-0-73"></a>            <span class="n">dataset</span><span class="o">=</span><span class="n">dataset</span><span class="p">,</span>
 <a id="__codelineno-0-74" name="__codelineno-0-74"></a>            <span class="n">hyperparameters</span><span class="o">=</span><span class="n">hyperparameters</span><span class="p">,</span>
 <a id="__codelineno-0-75" name="__codelineno-0-75"></a>            <span class="n">goal</span><span class="o">=</span><span class="n">goal</span><span class="p">,</span>
@@ -1742,47 +1708,13 @@
 <a id="__codelineno-0-158" name="__codelineno-0-158"></a>            <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">time_detection</span><span class="p">)</span>
 <a id="__codelineno-0-159" name="__codelineno-0-159"></a>        <span class="p">)</span>
 <a id="__codelineno-0-160" name="__codelineno-0-160"></a>
-<a id="__codelineno-0-161" name="__codelineno-0-161"></a>        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">resultsFolder</span><span class="p">:</span>
-<a id="__codelineno-0-162" name="__codelineno-0-162"></a>            <span class="n">os</span><span class="o">.</span><span class="n">makedirs</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">resultsFolder</span><span class="p">,</span> <span class="n">exist_ok</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
-<a id="__codelineno-0-163" name="__codelineno-0-163"></a>            <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span>
-<a id="__codelineno-0-164" name="__codelineno-0-164"></a>                <span class="n">detected_leaks</span><span class="p">,</span>
-<a id="__codelineno-0-165" name="__codelineno-0-165"></a>                <span class="n">columns</span><span class="o">=</span><span class="nb">list</span><span class="p">(</span><span class="n">BenchmarkLeakageResult</span><span class="o">.</span><span class="vm">__annotations__</span><span class="o">.</span><span class="n">keys</span><span class="p">()),</span>
-<a id="__codelineno-0-166" name="__codelineno-0-166"></a>            <span class="p">)</span><span class="o">.</span><span class="n">to_csv</span><span class="p">(</span>
-<a id="__codelineno-0-167" name="__codelineno-0-167"></a>                <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">resultsFolder</span><span class="p">,</span> <span class="s2">&quot;detected_leaks.csv&quot;</span><span class="p">),</span>
-<a id="__codelineno-0-168" name="__codelineno-0-168"></a>                <span class="n">index</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
-<a id="__codelineno-0-169" name="__codelineno-0-169"></a>                <span class="n">date_format</span><span class="o">=</span><span class="s2">&quot;%Y-%m-</span><span class="si">%d</span><span class="s2"> %H:%M:%S&quot;</span><span class="p">,</span>
-<a id="__codelineno-0-170" name="__codelineno-0-170"></a>            <span class="p">)</span>
-<a id="__codelineno-0-171" name="__codelineno-0-171"></a>            <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span>
-<a id="__codelineno-0-172" name="__codelineno-0-172"></a>                <span class="bp">self</span><span class="o">.</span><span class="n">dataset</span><span class="o">.</span><span class="n">evaluation</span><span class="o">.</span><span class="n">leaks</span><span class="p">,</span>
-<a id="__codelineno-0-173" name="__codelineno-0-173"></a>                <span class="n">columns</span><span class="o">=</span><span class="nb">list</span><span class="p">(</span><span class="n">BenchmarkLeakageResult</span><span class="o">.</span><span class="vm">__annotations__</span><span class="o">.</span><span class="n">keys</span><span class="p">()),</span>
-<a id="__codelineno-0-174" name="__codelineno-0-174"></a>            <span class="p">)</span><span class="o">.</span><span class="n">to_csv</span><span class="p">(</span>
-<a id="__codelineno-0-175" name="__codelineno-0-175"></a>                <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">resultsFolder</span><span class="p">,</span> <span class="s2">&quot;should_have_detected_leaks.csv&quot;</span><span class="p">),</span>
-<a id="__codelineno-0-176" name="__codelineno-0-176"></a>                <span class="n">index</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
-<a id="__codelineno-0-177" name="__codelineno-0-177"></a>                <span class="n">date_format</span><span class="o">=</span><span class="s2">&quot;%Y-%m-</span><span class="si">%d</span><span class="s2"> %H:%M:%S&quot;</span><span class="p">,</span>
-<a id="__codelineno-0-178" name="__codelineno-0-178"></a>            <span class="p">)</span>
-<a id="__codelineno-0-179" name="__codelineno-0-179"></a>            <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span>
-<a id="__codelineno-0-180" name="__codelineno-0-180"></a>                <span class="p">[</span>
-<a id="__codelineno-0-181" name="__codelineno-0-181"></a>                    <span class="p">{</span>
-<a id="__codelineno-0-182" name="__codelineno-0-182"></a>                        <span class="s2">&quot;method&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">detection_method</span><span class="o">.</span><span class="n">name</span><span class="p">,</span>
-<a id="__codelineno-0-183" name="__codelineno-0-183"></a>                        <span class="s2">&quot;dataset&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">dataset</span><span class="o">.</span><span class="n">name</span><span class="p">,</span>
-<a id="__codelineno-0-184" name="__codelineno-0-184"></a>                        <span class="s2">&quot;dataset_id&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">dataset</span><span class="o">.</span><span class="n">id</span><span class="p">,</span>
-<a id="__codelineno-0-185" name="__codelineno-0-185"></a>                        <span class="s2">&quot;dataset_options&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">dataset</span><span class="o">.</span><span class="n">info</span><span class="p">[</span><span class="s2">&quot;derivations&quot;</span><span class="p">]</span>
-<a id="__codelineno-0-186" name="__codelineno-0-186"></a>                        <span class="k">if</span> <span class="s2">&quot;derivations&quot;</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">dataset</span><span class="o">.</span><span class="n">info</span>
-<a id="__codelineno-0-187" name="__codelineno-0-187"></a>                        <span class="k">else</span> <span class="s2">&quot;</span><span class="si">{}</span><span class="s2">&quot;</span><span class="p">,</span>
-<a id="__codelineno-0-188" name="__codelineno-0-188"></a>                        <span class="s2">&quot;hyperparameters&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">hyperparameters</span><span class="p">,</span>
-<a id="__codelineno-0-189" name="__codelineno-0-189"></a>                        <span class="s2">&quot;goal&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">goal</span><span class="p">,</span>
-<a id="__codelineno-0-190" name="__codelineno-0-190"></a>                        <span class="s2">&quot;stage&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">stage</span><span class="p">,</span>
-<a id="__codelineno-0-191" name="__codelineno-0-191"></a>                        <span class="s2">&quot;train_time&quot;</span><span class="p">:</span> <span class="n">time_training</span><span class="p">,</span>
-<a id="__codelineno-0-192" name="__codelineno-0-192"></a>                        <span class="s2">&quot;detect_time&quot;</span><span class="p">:</span> <span class="n">time_detection</span><span class="p">,</span>
-<a id="__codelineno-0-193" name="__codelineno-0-193"></a>                    <span class="p">}</span>
-<a id="__codelineno-0-194" name="__codelineno-0-194"></a>                <span class="p">],</span>
-<a id="__codelineno-0-195" name="__codelineno-0-195"></a>            <span class="p">)</span><span class="o">.</span><span class="n">to_csv</span><span class="p">(</span>
-<a id="__codelineno-0-196" name="__codelineno-0-196"></a>                <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">resultsFolder</span><span class="p">,</span> <span class="s2">&quot;run_info.csv&quot;</span><span class="p">),</span>
-<a id="__codelineno-0-197" name="__codelineno-0-197"></a>                <span class="n">index</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
-<a id="__codelineno-0-198" name="__codelineno-0-198"></a>                <span class="n">date_format</span><span class="o">=</span><span class="s2">&quot;%Y-%m-</span><span class="si">%d</span><span class="s2"> %H:%M:%S&quot;</span><span class="p">,</span>
-<a id="__codelineno-0-199" name="__codelineno-0-199"></a>            <span class="p">)</span>
-<a id="__codelineno-0-200" name="__codelineno-0-200"></a>
-<a id="__codelineno-0-201" name="__codelineno-0-201"></a>        <span class="k">return</span> <span class="n">detected_leaks</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">dataset</span><span class="o">.</span><span class="n">evaluation</span><span class="o">.</span><span class="n">leaks</span>
+<a id="__codelineno-0-161" name="__codelineno-0-161"></a>        <span class="bp">self</span><span class="o">.</span><span class="n">writeResults</span><span class="p">(</span>
+<a id="__codelineno-0-162" name="__codelineno-0-162"></a>            <span class="n">detected_leaks</span><span class="o">=</span><span class="n">detected_leaks</span><span class="p">,</span>
+<a id="__codelineno-0-163" name="__codelineno-0-163"></a>            <span class="n">time_training</span><span class="o">=</span><span class="n">time_training</span><span class="p">,</span>
+<a id="__codelineno-0-164" name="__codelineno-0-164"></a>            <span class="n">time_detection</span><span class="o">=</span><span class="n">time_detection</span><span class="p">,</span>
+<a id="__codelineno-0-165" name="__codelineno-0-165"></a>        <span class="p">)</span>
+<a id="__codelineno-0-166" name="__codelineno-0-166"></a>
+<a id="__codelineno-0-167" name="__codelineno-0-167"></a>        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">resultsFolder</span>
 </code></pre></div></td></tr></table></div>
         </details>
 
@@ -1992,7 +1924,7 @@ ValueError
 <a id="__codelineno-0-69" name="__codelineno-0-69"></a><span class="sd">    &quot;&quot;&quot;</span>
 <a id="__codelineno-0-70" name="__codelineno-0-70"></a>
 <a id="__codelineno-0-71" name="__codelineno-0-71"></a>    <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span>
-<a id="__codelineno-0-72" name="__codelineno-0-72"></a>        <span class="n">runner_base_name</span><span class="o">=</span><span class="n">detection_method</span><span class="o">.</span><span class="n">name</span><span class="p">,</span>
+<a id="__codelineno-0-72" name="__codelineno-0-72"></a>        <span class="n">runner_base_name</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">detection_method</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2">_</span><span class="si">{</span><span class="n">detection_method</span><span class="o">.</span><span class="n">version</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span>
 <a id="__codelineno-0-73" name="__codelineno-0-73"></a>        <span class="n">dataset</span><span class="o">=</span><span class="n">dataset</span><span class="p">,</span>
 <a id="__codelineno-0-74" name="__codelineno-0-74"></a>        <span class="n">hyperparameters</span><span class="o">=</span><span class="n">hyperparameters</span><span class="p">,</span>
 <a id="__codelineno-0-75" name="__codelineno-0-75"></a>        <span class="n">goal</span><span class="o">=</span><span class="n">goal</span><span class="p">,</span>
