@@ -89,93 +89,97 @@ class DockerMethodRunner(MethodRunner):
         image = client.images.get(self.image)
         wait_script = f"#!/bin/sh\n\nset -e\nset -o errexit\n\nmkdir -p /input/\nmkdir -p /args/\nmkdir -p /output/\nwhile [ ! -f /args/options.yml ]; do sleep 1; echo waiting; done\n{' '.join(image.attrs['Config']['Cmd'])}\n"
         # run docker container
-        container = client.containers.run(
-            self.image,
-            [
-                "/bin/sh",
-                "-c",
-                f"printf '{wait_script}' > ./script.sh && chmod +x ./script.sh && ./script.sh",
-                "echo",
-                "$?",
-            ],
-            volumes={
-                os.path.abspath(self.dataset.path): {
-                    "bind": "/input/",
-                    "mode": "ro",
-                }
-            },
-            mem_limit="12g",
-            cpu_count=4,
-            detach=True,
-        )
-
-        # Prepare Dataset Transfer
-        # stream = io.BytesIO()
-        # with tarfile.open(fileobj=stream, mode="w|") as tar:
-        #     print(self.dataset.path)
-        #     files = Path(os.path.join(os.path.abspath(self.dataset.path))).rglob(
-        #         "*.*"
-        #     )
-        #     for file in files:
-        #         relative_path = os.path.relpath(
-        #             file, os.path.abspath(self.dataset.path)
-        #         )
-        #         print(relative_path)
-        #         with open(file, "rb") as f:
-        #             info = tar.gettarinfo(fileobj=f)
-        #             info.name = relative_path
-        #             tar.addfile(info, f)
-
-        # Upload Arguments
-        stream_tar_args = io.BytesIO()
-        with tarfile.open(fileobj=stream_tar_args, mode="w|") as tar:
-            with open(path_options, "rb") as f:
-                info = tar.gettarinfo(fileobj=f)
-                info.name = "options.yml"
-                tar.addfile(info, f)
-
-        time.sleep(1)
         try:
-            container.put_archive("/args/", stream_tar_args.getvalue())
-        except:
+            container = client.containers.run(
+                self.image,
+                [
+                    "/bin/sh",
+                    "-c",
+                    f"printf '{wait_script}' > ./script.sh && chmod +x ./script.sh && ./script.sh",
+                    "echo",
+                    "$?",
+                ],
+                volumes={
+                    os.path.abspath(self.dataset.path): {
+                        "bind": "/input/",
+                        "mode": "ro",
+                    }
+                },
+                mem_limit="12g",
+                cpu_count=4,
+                detach=True,
+            )
+
+            # Prepare Dataset Transfer
+            # stream = io.BytesIO()
+            # with tarfile.open(fileobj=stream, mode="w|") as tar:
+            #     print(self.dataset.path)
+            #     files = Path(os.path.join(os.path.abspath(self.dataset.path))).rglob(
+            #         "*.*"
+            #     )
+            #     for file in files:
+            #         relative_path = os.path.relpath(
+            #             file, os.path.abspath(self.dataset.path)
+            #         )
+            #         print(relative_path)
+            #         with open(file, "rb") as f:
+            #             info = tar.gettarinfo(fileobj=f)
+            #             info.name = relative_path
+            #             tar.addfile(info, f)
+
+            # Upload Arguments
+            stream_tar_args = io.BytesIO()
+            with tarfile.open(fileobj=stream_tar_args, mode="w|") as tar:
+                with open(path_options, "rb") as f:
+                    info = tar.gettarinfo(fileobj=f)
+                    info.name = "options.yml"
+                    tar.addfile(info, f)
+
+            time.sleep(1)
+            try:
+                container.put_archive("/args/", stream_tar_args.getvalue())
+            except:
+                for log_line in container.logs(stream=True):
+                    logging.info(f"[{self.id}] {log_line.strip()}")
+                return None
+            finally:
+                stream_tar_args.close()
+
+            # TODO: get stats  container.stats(stream=True)
             for log_line in container.logs(stream=True):
                 logging.info(f"[{self.id}] {log_line.strip()}")
-            return None
-        finally:
-            stream_tar_args.close()
 
-        # TODO: get stats  container.stats(stream=True)
-        for log_line in container.logs(stream=True):
-            logging.info(f"[{self.id}] {log_line.strip()}")
-
-        status = container.wait()
-        if status["StatusCode"] != 0:
-            logging.error(
-                f"Runner {self.id} errored with status code {status['StatusCode']}!"
-            )
-            # for line in e.container.logs().decode().split("\n"):
-            #     logging.error(f"Container[{self.image}]: " + line)
-            if status["StatusCode"] == 137:
-                logging.error("Process in container was killed.")
+            status = container.wait()
+            if status["StatusCode"] != 0:
                 logging.error(
-                    "This might be due to a memory limit. Try increasing the memory limit or reduce the amount of parallel processes."
+                    f"Runner {self.id} errored with status code {status['StatusCode']}!"
                 )
-            if not self.debug:
-                container.remove()
-            return None
+                # for line in e.container.logs().decode().split("\n"):
+                #     logging.error(f"Container[{self.image}]: " + line)
+                if status["StatusCode"] == 137:
+                    logging.error("Process in container was killed.")
+                    logging.error(
+                        "This might be due to a memory limit. Try increasing the memory limit or reduce the amount of parallel processes."
+                    )
+                if not self.debug:
+                    container.remove()
+                return None
 
-        # Always remove containers which have no errors
-        container.remove()
+            # Extract Outputs
+            temp_folder_output = tempfile.TemporaryDirectory()
+            temp_tar_output = os.path.join(temp_folder_output.name, "output.tar")
+            with open(temp_tar_output, "wb") as f:
+                # get the bits
+                bits, stat = container.get_archive("/output")
+                # write the bits
+                for chunk in bits:
+                    f.write(chunk)
+            # Always remove containers which have no errors
+            container.remove()
 
-        # Extract Outputs
-        temp_folder_output = tempfile.TemporaryDirectory()
-        temp_tar_output = os.path.join(temp_folder_output.name, "output.tar")
-        with open(temp_tar_output, "wb") as f:
-            # get the bits
-            bits, stat = container.get_archive("/output")
-            # write the bits
-            for chunk in bits:
-                f.write(chunk)
+        except KeyboardInterrupt:
+            container.stop()
+            container.remove()
 
         # unpack
         # logging.info(os.path.abspath(self.resultsFolder))

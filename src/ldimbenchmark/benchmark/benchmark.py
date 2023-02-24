@@ -376,6 +376,7 @@ class LDIMBenchmark:
                             dataset,
                             hyperparameters,
                             resultsFolder=self.runner_results_dir,
+                            debug=self.debug,
                         )
                     )
 
@@ -403,16 +404,21 @@ class LDIMBenchmark:
             worker_num = cpu_count() - 1
             if parallel_max_workers > 0:
                 worker_num = parallel_max_workers
-            with ProcessPoolExecutor(max_workers=worker_num) as executor:
-                # submit all tasks and get future objects
-                futures = [
-                    executor.submit(execute_experiment, runner)
-                    for runner in self.experiments
-                ]
-                # process results from tasks in order of task completion
-                for future in tqdm(as_completed(futures)):
-                    future.result()
-                    pass
+            try:
+                with ProcessPoolExecutor(max_workers=worker_num) as executor:
+                    # submit all tasks and get future objects
+                    futures = [
+                        executor.submit(execute_experiment, runner)
+                        for runner in self.experiments
+                    ]
+                    with tqdm(total=len(futures)) as pbar:
+                        # process results from tasks in order of task completion
+                        for future in tqdm(as_completed(futures)):
+                            future.result()
+                            pbar.update(1)
+            except KeyboardInterrupt:
+                executor._processes.clear()
+                os.kill(os.getpid(), 9)
         else:
             for experiment in self.experiments:
                 results.append(experiment.run())
