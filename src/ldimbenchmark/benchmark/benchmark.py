@@ -138,8 +138,6 @@ def plot_leak(
 
 
 # TODO: Draw plots with leaks and detected leaks
-
-
 class LDIMBenchmark:
     def __init__(
         self,
@@ -148,7 +146,34 @@ class LDIMBenchmark:
         debug=False,
         results_dir: str = None,
         cache_dir: str = LDIM_BENCHMARK_CACHE_DIR,
+        multi_parameters: bool = False,
     ):
+        """
+        Bechmark for leakage detection methods.
+
+        ====================  ========================================================
+        **Argument**          **Description**
+        --------------------  --------------------------------------------------------
+        hyperparameters       A dictionary of hyperparameters for the benchmark.
+        datasets              A list of datasets to be used for the benchmark.
+        debug                 A boolean indicating whether to run the benchmark in
+                                debug mode. If True, the benchmark will run in debug
+                                mode. Default is False.
+        results_dir           A string indicating the directory where the results
+                                should be stored. If None, the results won't be
+                                stored. Default is None.
+        cache_dir             A string indicating the directory where the cache
+                                should be stored. Default is
+                                LDIM_BENCHMARK_CACHE_DIR.
+        grid_search           A boolean indicating whether the hyperparameters should
+                                 be given as lists to run the algorithms with
+                                 multiple variations of the parameters.
+                                If True, the product of the given hyperparameters
+                                will be calculated and the algorithms will be run
+                                with all of theses parameters. Default is False.
+
+
+        """
         self.hyperparameters: dict = hyperparameters
         if not isinstance(datasets, list):
             datasets = [datasets]
@@ -165,9 +190,110 @@ class LDIMBenchmark:
             self.results_dir, "complexity_results"
         )
         self.debug = debug
+        self.multi_parameters = multi_parameters
+        self.methods_docker = []
+        self.methods_local = []
 
-    # TODO: Make Faster/Inform user about updates
-    def add_local_methods(self, methods, goal="detect_offline"):
+    @staticmethod
+    def _get_hyperparameters_for_methods_and_datasets(
+        method_ids: List[str], dataset_base_ids: List[str], hyperparameters
+    ) -> Dict[str, Dict]:
+        """ """
+
+        ######
+        # Map Method level
+        ######
+
+        hyperparameters_method_map = {}
+        # If any method is specified in the hyperparameters
+        if bool(set(method_ids) & set(hyperparameters.keys())):
+            # hyperparameters_without_methods = hyperparameters.copy()
+            # for method_id in list(set(method_ids) & set(hyperparameters.keys())):
+            #     del hyperparameters_without_methods[method_id]
+
+            for method_id in method_ids:
+                hyperparameters_method_map[
+                    method_id
+                ] = {}  # hyperparameters_without_methods
+                if method_id in hyperparameters:
+                    hyperparameters_method_map[method_id] = hyperparameters[method_id]
+
+                    # **hyperparameters_without_methods,
+
+        # If any dataset is specified in the hyperparameters
+        elif bool(set(dataset_base_ids) & set(hyperparameters.keys())):
+            for dataset_base_id in dataset_base_ids:
+                if dataset_base_id in hyperparameters:
+                    hyperparameters_method_map[dataset_base_id] = hyperparameters[
+                        dataset_base_id
+                    ]
+
+        else:
+            # If no method or dataset is specified in the hyperparameters use default root values for all methods
+            for method_id in method_ids:
+                hyperparameters_method_map[method_id] = hyperparameters
+
+        ######
+        # Map Dataset level
+        ######
+        hyperparameters_map = {}
+        for method_id in method_ids:
+            hyperparameters_map[method_id] = {}
+            if bool(
+                set(dataset_base_ids)
+                & set(hyperparameters_method_map[method_id].keys())
+            ):
+                # hyperparameters_without_datasets = hyperparameters_method_map[
+                #     method_id
+                # ].copy()
+                # for dataset_base_id in list(
+                #     set(dataset_base_ids)
+                #     & set(hyperparameters_method_map[method_id].keys())
+                # ):
+                #     del hyperparameters_without_datasets[dataset_base_id]
+
+                for dataset_base_id in dataset_base_ids:
+                    hyperparameters_map[method_id][
+                        dataset_base_id
+                    ] = {}  # hyperparameters_without_datasets
+                    for key in hyperparameters_method_map[method_id].keys():
+                        if dataset_base_id.startswith(key):
+                            hyperparameters_map[method_id][
+                                dataset_base_id
+                            ] = hyperparameters_method_map[method_id][key]
+                            # {
+                            #     **hyperparameters_without_datasets,
+                            #     **hyperparameters_method_map[method_id][key],
+                            # }
+            else:
+                for dataset_base_id in dataset_base_ids:
+                    hyperparameters_map[method_id][
+                        dataset_base_id
+                    ] = hyperparameters_method_map[method_id]
+
+        # if method_id in hyperparameters:
+        #     if dataset_base_id in hyperparameters[method_id]:
+        #         hyperparameters = hyperparameters[method_id][dataset_base_id]
+        #     else:
+        #         hyperparameters = {
+        #             k: v
+        #             for k, v in hyperparameters[method_id].items()
+        #             if k not in dataset_base_id
+        #         }
+        return hyperparameters_map
+
+    @staticmethod
+    def _get_hyperparameters_matrix_from_hyperparameters_with_list(
+        hyperparameters: Dict[str, List[Union[str, int, List]]]
+    ):
+        index = pd.MultiIndex.from_product(
+            hyperparameters.values(), names=hyperparameters.keys()
+        )
+        param_matrix = pd.DataFrame(index=index).reset_index()
+
+        return [param_matrix.iloc[n].to_dict() for n in range(param_matrix.shape[0])]
+
+    def add_local_methods(self, methods):
         """
         Adds local methods to the benchmark.
 
@@ -176,31 +302,7 @@ class LDIMBenchmark:
 
         if not isinstance(methods, list):
             methods = [methods]
-        for dataset in self.datasets:
-            for method in methods:
-                hyperparameters = None
-                if method.name in self.hyperparameters:
-                    if dataset.name in self.hyperparameters[method.name]:
-                        hyperparameters = self.hyperparameters[method.name][
-                            dataset.name
-                        ]
-                    else:
-                        hyperparameters = {
-                            k: v
-                            for k, v in self.hyperparameters[method.name].items()
-                            if k not in dataset.name
-                        }
-
-                # TODO: Use right hyperparameters
-                self.experiments.append(
-                    LocalMethodRunner(
-                        method,
-                        dataset,
-                        hyperparameters=hyperparameters,
-                        resultsFolder=self.runner_results_dir,
-                        debug=self.debug,
-                    )
-                )
+        self.methods_local = self.methods_local + methods
 
     def add_docker_methods(self, methods: List[str]):
         """
@@ -208,17 +310,10 @@ class LDIMBenchmark:
 
         :param methods: List of docker images (with tag) which run the according method
         """
-        for dataset in self.datasets:
-            for method in methods:
-                # TODO: Use right hyperparameters
-                self.experiments.append(
-                    DockerMethodRunner(
-                        method,
-                        dataset,
-                        self.hyperparameters,
-                        resultsFolder=self.runner_results_dir,
-                    )
-                )
+        if not isinstance(methods, list):
+            methods = [methods]
+
+        self.methods_docker = self.methods_docker + methods
 
     def run_complexity_analysis(
         self,
@@ -251,6 +346,57 @@ class LDIMBenchmark:
         :param parallel: If the benchmark should be run in parallel
         :param results_dir: Directory where the results should be stored
         """
+
+        if len(self.methods_docker) > 0 and len(self.methods_local) > 0:
+            raise ValueError("Cannot run local and docker methods at the same time")
+
+        hyperparameters_map = self._get_hyperparameters_for_methods_and_datasets(
+            hyperparameters=self.hyperparameters,
+            method_ids=[
+                dmethod.split(":")[0].split("/")[-1] for dmethod in self.methods_docker
+            ]
+            + [lmethod.id for lmethod in self.methods_local],
+            dataset_base_ids=[dataset.id for dataset in self.datasets],
+        )
+
+        # Generate Experiments
+        for dataset in self.datasets:
+            for method in self.methods_docker:
+                method_name = method.split(":")[0].split("/")[-1]
+                hyperparameter_list = [hyperparameters_map[method_name][dataset.id]]
+                if self.multi_parameters:
+                    hyperparameter_list = LDIMBenchmark._get_hyperparameters_matrix_from_hyperparameters_with_list(
+                        hyperparameters_map[method_name][dataset.id]
+                    )
+
+                for hyperparameters in hyperparameter_list:
+                    self.experiments.append(
+                        DockerMethodRunner(
+                            method,
+                            dataset,
+                            hyperparameters,
+                            resultsFolder=self.runner_results_dir,
+                        )
+                    )
+
+            for method in self.methods_local:
+                hyperparameter_list = [hyperparameters_map[method.id][dataset.id]]
+                if self.multi_parameters:
+                    hyperparameter_list = LDIMBenchmark._get_hyperparameters_matrix_from_hyperparameters_with_list(
+                        hyperparameters_map[method.id][dataset.id]
+                    )
+
+                for hyperparameters in hyperparameter_list:
+                    self.experiments.append(
+                        LocalMethodRunner(
+                            method,
+                            dataset,
+                            hyperparameters_map[method.id][dataset.id],
+                            resultsFolder=self.runner_results_dir,
+                            debug=self.debug,
+                        )
+                    )
+
         # TODO: Caching (don't run same experiment twice, if its already there)
         results = []
         if parallel:
@@ -414,6 +560,7 @@ class LDIMBenchmark:
 
         # https://towardsdatascience.com/performance-metrics-confusion-matrix-precision-recall-and-f1-score-a8fe076a2262
         results = results.set_index(["method", "dataset_id"])
+        results = results.sort_values(by=["F1"])
 
         os.makedirs(self.evaluation_results_dir, exist_ok=True)
 

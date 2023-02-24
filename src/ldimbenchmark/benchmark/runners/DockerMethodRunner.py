@@ -148,6 +148,25 @@ class DockerMethodRunner(MethodRunner):
         for log_line in container.logs(stream=True):
             logging.info(f"[{self.id}] {log_line.strip()}")
 
+        status = container.wait()
+        if status["StatusCode"] != 0:
+            logging.error(
+                f"Runner {self.id} errored with status code {status['StatusCode']}!"
+            )
+            # for line in e.container.logs().decode().split("\n"):
+            #     logging.error(f"Container[{self.image}]: " + line)
+            if status["StatusCode"] == 137:
+                logging.error("Process in container was killed.")
+                logging.error(
+                    "This might be due to a memory limit. Try increasing the memory limit or reduce the amount of parallel processes."
+                )
+            if not self.debug:
+                container.remove()
+            return None
+
+        # Always remove containers which have no errors
+        container.remove()
+
         # Extract Outputs
         temp_folder_output = tempfile.TemporaryDirectory()
         temp_tar_output = os.path.join(temp_folder_output.name, "output.tar")
@@ -172,22 +191,6 @@ class DockerMethodRunner(MethodRunner):
             tar.extractall(
                 os.path.abspath(self.resultsFolder), members=members(tar, "output/")
             )
-
-        status = container.wait()
-        if status["StatusCode"] != 0:
-            logging.error(
-                f"Runner {self.id} errored with status code {status['StatusCode']}!"
-            )
-            # for line in e.container.logs().decode().split("\n"):
-            #     logging.error(f"Container[{self.image}]: " + line)
-            if status["StatusCode"] == 137:
-                logging.error("Process in container was killed.")
-                logging.error(
-                    "This might be due to a memory limit. Try increasing the memory limit or reduce the amount of parallel processes."
-                )
-
-        if not self.debug:
-            container.remove()
 
         # TODO: Write results because we should not include them in the container input
         # self.tryWriteEvaluationLeaks()
