@@ -76,7 +76,7 @@ logging.getLogger().setLevel(numeric_level)
 local_methods = [LILA()]
 
 hyperparameters = {
-    "LILA": {
+    "lila": {
         "synthetic-days-9": {
             "est_length": "10T",
             "C_threshold": 0.01,

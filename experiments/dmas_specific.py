@@ -22,7 +22,7 @@ logging.getLogger().setLevel(numeric_level)
 local_methods = [LILA()]
 
 hyperparameters = {
-    "LILA": {
+    "lila": {
         "battledim": {
             "est_length": 10,
             "delta": 0.1,
