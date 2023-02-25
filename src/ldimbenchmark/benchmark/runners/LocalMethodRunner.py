@@ -119,17 +119,9 @@ class LocalMethodRunner(MethodRunner):
         self.dataset.loadBenchmarkData()
         logging.info("Loading Datasets - FINISH")
 
-        if not self.resultsFolder and self.debug:
-            raise Exception("Debug mode requires a results folder.")
-        elif self.debug == True:
-            additional_output_path = os.path.join(self.resultsFolder, "debug")
-            os.makedirs(additional_output_path, exist_ok=True)
-        else:
-            additional_output_path = None
-
         # TODO: test compatibility (stages)
         self.detection_method.init_with_benchmark_params(
-            additional_output_path=additional_output_path,
+            additional_output_path=self.additional_output_path,
             hyperparameters=self.hyperparameters,
         )
         start = time.time()

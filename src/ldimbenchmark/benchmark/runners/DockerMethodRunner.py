@@ -19,7 +19,6 @@ from ldimbenchmark.classes import BenchmarkLeakageResult, LDIMMethodBase
 from ldimbenchmark.datasets.classes import Dataset
 
 
-# TODO: Probably merge some functionality with LocalMethodRunner as parent class
 class DockerMethodRunner(MethodRunner):
     """
     Runs a leakage detection method in a docker container.

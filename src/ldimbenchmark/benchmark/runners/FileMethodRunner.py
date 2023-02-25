@@ -33,20 +33,12 @@ class FileBasedMethodRunner(MethodRunner):
 
     def run(self) -> str:
         logging.info(f"Running {self.id} with params {self.hyperparameters}")
-        if not self.resultsFolder and self.debug:
-            raise Exception("Debug mode requires a results folder.")
-        elif self.debug == True:
-            logging.info("Debug logging activated.")
-            additional_output_path = os.path.join(self.resultsFolder, "debug", "")
-            os.makedirs(additional_output_path, exist_ok=True)
-        else:
-            additional_output_path = None
 
         self.dataset.loadData()
         self.dataset.loadBenchmarkData()
 
         self.detection_method.init_with_benchmark_params(
-            additional_output_path=additional_output_path,
+            additional_output_path=self.additional_output_path,
             hyperparameters=self.hyperparameters,
         )
 

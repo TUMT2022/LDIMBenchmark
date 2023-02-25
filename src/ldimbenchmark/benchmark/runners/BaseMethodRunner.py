@@ -1,6 +1,7 @@
 from abc import ABC, abstractmethod
 import hashlib
 import json
+import logging
 import os
 from typing import Literal, Union
 
@@ -87,6 +88,15 @@ class MethodRunner(ABC):
         self.method = method
         self.debug = debug
         self.resultsFolder = resultsFolder
+
+        if not self.resultsFolder and self.debug:
+            raise Exception("Debug mode requires a results folder.")
+        elif self.debug == True:
+            logging.info("Debug logging activated.")
+            self.additional_output_path = os.path.join(self.resultsFolder, "debug", "")
+            os.makedirs(self.additional_output_path, exist_ok=True)
+        else:
+            self.additional_output_path = None
 
     @abstractmethod
     def run(self) -> str:
