@@ -238,13 +238,24 @@ class DUALMethod(LDIMMethodBase):
         ############################################################
         tot_outflow = {}
 
+        # path = os.path.join(
+        #     self.additional_output_path, "tot_outflow_simulations", "test.pickle"
+        # )
+        # os.makedirs(os.path.dirname(path), exist_ok=True)
+        # if os.path.exists(path):
+        #     with open(path, "rb") as f:
+        #         result = pickle.load(f)
+        # else:
         temp_dir = tempfile.TemporaryDirectory()
         sim = wntr.sim.EpanetSimulator(self.wn)
         # TODO: With multiprocessing this line produces a deadlock
         result = sim.run_sim(file_prefix=os.path.join(temp_dir.name, "all"))
         temp_dir.cleanup()
+        # if not os.path.exists(path):
+        #     with open(path, "wb") as f:
+        #         pickle.dump(result, f)
 
-        # Get the floware to the previously created extra reservoirs
+        # Get the flow rate to the previously created extra reservoirs
         # in m³/s
         dualmodel_nodes = [
             "dualmodel_" + sensor for sensor in pressure_sensors_with_data
@@ -303,7 +314,7 @@ class DUALMethod(LDIMMethodBase):
                 )
             )
 
-        results = pd.DataFrame()
+        # results = pd.DataFrame(results)
 
         return results
 
