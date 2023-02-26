@@ -1,27 +1,19 @@
-from concurrent.futures import as_completed
+from concurrent.futures import ThreadPoolExecutor, as_completed
 import itertools
 from ldimbenchmark.benchmark.runners import DockerMethodRunner, LocalMethodRunner
 from ldimbenchmark.benchmark.runners.BaseMethodRunner import MethodRunner
 from ldimbenchmark.datasets import Dataset
-from ldimbenchmark.classes import BenchmarkData
-from abc import ABC, abstractmethod
 import pandas as pd
-from datetime import datetime, timedelta
 from typing import Dict, Literal, TypedDict, Union, List, Callable
 import os
-import time
 import logging
-import tempfile
-import yaml
 from ldimbenchmark.constants import LDIM_BENCHMARK_CACHE_DIR
 from glob import glob
 from ldimbenchmark.benchmark_evaluation import evaluate_leakages
 from tabulate import tabulate
 from ldimbenchmark.benchmark_complexity import run_benchmark_complexity
-from ldimbenchmark.classes import LDIMMethodBase, BenchmarkLeakageResult
 import matplotlib.pyplot as plt
-from multiprocessing import Pool, cpu_count
-from tqdm import tqdm
+from multiprocessing import cpu_count
 import enlighten
 from ldimbenchmark.evaluation_metrics import (
     precision,
@@ -167,6 +159,8 @@ def load_result(folder: str) -> Dict:
     evaluation_results["dataset_id"] = run_info["dataset_id"]
     evaluation_results["dataset_derivations"] = run_info["dataset_options"]
     evaluation_results["hyperparameters"] = run_info["hyperparameters"]
+    evaluation_results["matched_leaks_list"] = matched_list
+    evaluation_results["_folder"] = folder
 
     return evaluation_results
 
@@ -486,6 +480,7 @@ class LDIMBenchmark:
         else:
             for experiment in self.experiments:
                 results.append(experiment.run())
+        manager.stop()
 
     def evaluate(
         self,
@@ -536,7 +531,7 @@ class LDIMBenchmark:
             )
         if len(result_folders) > 1 and generate_plots:
             logging.warning(
-                f"You are generating Plots for {len(result_folders)} results! This will take ages, consider only generating them for the dataset you are interested in."
+                f"You are generating Plots for {len(result_folders)} results! This will take ages, consider only generating them for the benchmark run you are interested in."
             )
 
         results = []
@@ -555,53 +550,60 @@ class LDIMBenchmark:
             for experiment_result in result_folders:
                 results.append(load_result(experiment_result))
 
-        # if generate_plots:
+        if generate_plots:
+            logging.info("Generating plots...")
+            loaded_datasets = {}
+            for dataset in self.datasets:
+                if type(dataset) is str:
+                    loaded = Dataset(dataset)
+                else:
+                    loaded = dataset
 
-        # loaded_datasets = {}
-        # for dataset in self.datasets:
-        #     if type(dataset) is str:
-        #         loaded = Dataset(dataset)
-        #     else:
-        #         loaded = dataset
+                loaded_datasets[dataset.id] = loaded.loadData()
+            manager = enlighten.get_manager()
+            pbar = manager.counter(total=len(results), desc="Results:", unit="results")
 
-        #     loaded_datasets[dataset.id] = loaded.loadData()
-        #     logging.info("Generating plots...")
-        #     graph_dir = os.path.join(self.evaluation_results_dir, "per_run")
-        #     os.makedirs(graph_dir, exist_ok=True)
+            for result in results:
+                pbar.update()
+                graph_dir = os.path.join(self.evaluation_results_dir, "per_run")
+                os.makedirs(graph_dir, exist_ok=True)
+                parallel = True
+                if parallel:
+                    with ProcessPoolExecutor(max_workers=cpu_count() - 1) as executor:
+                        # submit all tasks and get future objects
+                        futures = []
+                        for leak_pair in result["matched_leaks_list"]:
+                            future = executor.submit(
+                                plot_leak,
+                                getattr(
+                                    loaded_datasets[result["dataset_id"]],
+                                    "pressures",
+                                ),
+                                leak_pair=leak_pair,
+                                additional_data_dir=result["_folder"],
+                                out_dir=graph_dir,
+                            )
+                            futures.append(future)
 
-        #     parallel = True
-        #     if parallel:
-        #         arguments_list = zip(
-        #             itertools.repeat(
-        #                 getattr(
-        #                     loaded_datasets[run_info["dataset_id"]], "pressures"
-        #                 ),
-        #                 len(matched_list),
-        #             ),
-        #             matched_list,
-        #             itertools.repeat(experiment_result, len(matched_list)),
-        #             itertools.repeat(graph_dir, len(matched_list)),
-        #         )
+                        pbar2 = manager.counter(
+                            total=len(futures), desc="Graphs:", unit="graphs"
+                        )
 
-        #         with Pool(processes=cpu_count() - 1) as p:
-        #             jobs = [
-        #                 p.apply_async(func=plot_leak, args=arguments)
-        #                 for arguments in arguments_list
-        #             ]
-        #             for job in tqdm(jobs):
-        #                 job.get()  # wait for jobs being executed
+                        # process results from tasks in order of task completion
+                        for future in as_completed(futures):
+                            future.result()
+                            pbar2.update()
+                        pbar2.close()
 
-        #     else:
-        #         for leak_pair in matched_list:
-        #             plot_leak(
-        #                 getattr(
-        #                     loaded_datasets[run_info["dataset_id"]], "pressures"
-        #                 ),
-        #                 leak_pair=leak_pair,
-        #                 additional_data_dir=experiment_result,
-        #                 out_dir=graph_dir,
-        #             )
-
+                else:
+                    for leak_pair in result["matched_leaks_list"]:
+                        plot_leak(
+                            getattr(loaded_datasets[result["dataset_id"]], "pressures"),
+                            leak_pair=leak_pair,
+                            additional_data_dir=experiment_result,
+                            out_dir=graph_dir,
+                        )
+        manager.close()
         results = pd.DataFrame(results)
 
         for function in evaluations:
