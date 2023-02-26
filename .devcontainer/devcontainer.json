@@ -24,14 +24,15 @@
   "customizations": {
     "vscode": {
       "extensions": [
-        "ms-python.python",
-        "GitHub.copilot",
-        "GitHub.copilot-labs",
-        "mechatroner.rainbow-csv",
-        "esbenp.prettier-vscode",
-        "bierner.markdown-mermaid",
-        "streetsidesoftware.code-spell-checker"
-      ]
+		"ms-python.python",
+		"GitHub.copilot",
+		"GitHub.copilot-labs",
+		"mechatroner.rainbow-csv",
+		"esbenp.prettier-vscode",
+		"bierner.markdown-mermaid",
+		"streetsidesoftware.code-spell-checker",
+		"RandomFractalsInc.vscode-data-preview"
+	]
     }
   },
   "runArgs": ["--mount", "type=volume,target=/workspaces/LDIMBench/.venv/"],
