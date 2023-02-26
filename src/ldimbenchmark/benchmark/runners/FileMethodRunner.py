@@ -30,6 +30,8 @@ class FileBasedMethodRunner(MethodRunner):
             debug=parameters["debug"],
         )
         self.detection_method = detection_method
+        if self.debug:
+            logging.info("Debug logging activated.")
 
     def run(self) -> str:
         logging.info(f"Running {self.id} with params {self.hyperparameters}")

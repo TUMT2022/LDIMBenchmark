@@ -105,7 +105,7 @@ class DockerMethodRunner(MethodRunner):
                     }
                 },
                 mem_limit="12g",
-                cpu_count=4,
+                cpu_count=7,
                 detach=True,
             )
 

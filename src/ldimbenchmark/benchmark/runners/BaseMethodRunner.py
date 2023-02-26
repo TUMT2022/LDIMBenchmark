@@ -92,7 +92,6 @@ class MethodRunner(ABC):
         if not self.resultsFolder and self.debug:
             raise Exception("Debug mode requires a results folder.")
         elif self.debug == True:
-            logging.info("Debug logging activated.")
             self.additional_output_path = os.path.join(self.resultsFolder, "debug", "")
             os.makedirs(self.additional_output_path, exist_ok=True)
         else:
