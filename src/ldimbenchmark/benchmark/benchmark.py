@@ -320,6 +320,8 @@ class LDIMBenchmark:
     def _get_hyperparameters_matrix_from_hyperparameters_with_list(
         hyperparameters: Dict[str, List[Union[str, int, List]]]
     ):
+        if len(hyperparameters.keys()) == 0:
+            return [{}]
         index = pd.MultiIndex.from_product(
             hyperparameters.values(), names=hyperparameters.keys()
         )
@@ -373,7 +375,7 @@ class LDIMBenchmark:
                 additionalOutput=self.debug,
             )
 
-    def run_benchmark(self, parallel=False, parallel_max_workers=0):
+    def run_benchmark(self, use_cached=True, parallel=False, parallel_max_workers=0):
         """
         Runs the benchmark.
 
@@ -435,12 +437,16 @@ class LDIMBenchmark:
         # Remove already run experiments
         result_folders = glob(os.path.join(self.runner_results_dir, "*"))
         num_experiments = len(self.experiments)
+        self.initial_experiments = self.experiments
         # for experiment in self.experiments:
         #     if experiment.resultsFolder in result_folders:
         #         self.experiments.remove(experiment)
-        self.experiments = list(
-            filter(lambda x: x.resultsFolder not in result_folders, self.experiments)
-        )
+        if use_cached:
+            self.experiments = list(
+                filter(
+                    lambda x: x.resultsFolder not in result_folders, self.experiments
+                )
+            )
         logging.info(f"Executing {len(self.experiments)} experiments.")
         manager = enlighten.get_manager()
         if len(self.experiments) < num_experiments:
@@ -484,6 +490,7 @@ class LDIMBenchmark:
     def evaluate(
         self,
         current_only=True,
+        resultFilter: Callable = lambda r: r,
         write_results=False,
         generate_plots=False,
         evaluations: List[Callable] = [
@@ -523,7 +530,7 @@ class LDIMBenchmark:
             result_folders = list(
                 filter(
                     lambda x: os.path.basename(x)
-                    in [exp.id for exp in self.experiments],
+                    in [exp.id for exp in self.initial_experiments],
                     result_folders,
                 )
             )
@@ -600,10 +607,10 @@ class LDIMBenchmark:
         for function in evaluations:
             results = function(results)
 
+        results = resultFilter(results)
         # https://towardsdatascience.com/performance-metrics-confusion-matrix-precision-recall-and-f1-score-a8fe076a2262
         results = results.set_index(["method", "dataset_id"])
         results = results.sort_values(by=["F1"])
-        results = results[results["F1"].notna()]
 
         os.makedirs(self.evaluation_results_dir, exist_ok=True)
 

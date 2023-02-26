@@ -101,7 +101,13 @@ class MethodRunner(ABC):
     def run(self) -> str:
         pass
 
-    def writeResults(self, detected_leaks, time_training, time_detection):
+    def writeResults(
+        self,
+        method_default_hyperparameters,
+        detected_leaks,
+        time_training,
+        time_detection,
+    ):
         if self.resultsFolder:
             os.makedirs(self.resultsFolder, exist_ok=True)
             pd.DataFrame(
@@ -112,6 +118,7 @@ class MethodRunner(ABC):
                 index=False,
                 date_format="%Y-%m-%d %H:%M:%S",
             )
+
             pd.DataFrame(
                 [
                     {
@@ -121,7 +128,10 @@ class MethodRunner(ABC):
                         "dataset_options": self.dataset.info["derivations"]
                         if "derivations" in self.dataset.info
                         else "{}",
-                        "hyperparameters": self.hyperparameters,
+                        "hyperparameters": {
+                            **method_default_hyperparameters,
+                            **self.hyperparameters,
+                        },
                         "goal": self.goal,
                         "stage": self.stage,
                         "train_time": time_training,

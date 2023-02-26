@@ -71,6 +71,7 @@ class FileBasedMethodRunner(MethodRunner):
         )
 
         self.writeResults(
+            method_default_hyperparameters=self.detection_method.hyperparameters,
             detected_leaks=detected_leaks,
             time_training=time_training,
             time_detection=time_detection,
