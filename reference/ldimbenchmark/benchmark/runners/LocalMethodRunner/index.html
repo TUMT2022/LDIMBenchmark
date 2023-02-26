@@ -1555,7 +1555,8 @@
 <span class="normal"><a href="#__codelineno-0-156">156</a></span>
 <span class="normal"><a href="#__codelineno-0-157">157</a></span>
 <span class="normal"><a href="#__codelineno-0-158">158</a></span>
-<span class="normal"><a href="#__codelineno-0-159">159</a></span></pre></div></td><td class="code"><div><pre><span></span><code><a id="__codelineno-0-16" name="__codelineno-0-16"></a><span class="k">class</span> <span class="nc">LocalMethodRunner</span><span class="p">(</span><span class="n">MethodRunner</span><span class="p">):</span>
+<span class="normal"><a href="#__codelineno-0-159">159</a></span>
+<span class="normal"><a href="#__codelineno-0-160">160</a></span></pre></div></td><td class="code"><div><pre><span></span><code><a id="__codelineno-0-16" name="__codelineno-0-16"></a><span class="k">class</span> <span class="nc">LocalMethodRunner</span><span class="p">(</span><span class="n">MethodRunner</span><span class="p">):</span>
 <a id="__codelineno-0-17" name="__codelineno-0-17"></a><span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <a id="__codelineno-0-18" name="__codelineno-0-18"></a><span class="sd">    Runner for a local method.</span>
 <a id="__codelineno-0-19" name="__codelineno-0-19"></a>
@@ -1693,12 +1694,13 @@
 <a id="__codelineno-0-151" name="__codelineno-0-151"></a>        <span class="p">)</span>
 <a id="__codelineno-0-152" name="__codelineno-0-152"></a>
 <a id="__codelineno-0-153" name="__codelineno-0-153"></a>        <span class="bp">self</span><span class="o">.</span><span class="n">writeResults</span><span class="p">(</span>
-<a id="__codelineno-0-154" name="__codelineno-0-154"></a>            <span class="n">detected_leaks</span><span class="o">=</span><span class="n">detected_leaks</span><span class="p">,</span>
-<a id="__codelineno-0-155" name="__codelineno-0-155"></a>            <span class="n">time_training</span><span class="o">=</span><span class="n">time_training</span><span class="p">,</span>
-<a id="__codelineno-0-156" name="__codelineno-0-156"></a>            <span class="n">time_detection</span><span class="o">=</span><span class="n">time_detection</span><span class="p">,</span>
-<a id="__codelineno-0-157" name="__codelineno-0-157"></a>        <span class="p">)</span>
-<a id="__codelineno-0-158" name="__codelineno-0-158"></a>
-<a id="__codelineno-0-159" name="__codelineno-0-159"></a>        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">resultsFolder</span>
+<a id="__codelineno-0-154" name="__codelineno-0-154"></a>            <span class="n">method_default_hyperparameters</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">detection_method</span><span class="o">.</span><span class="n">hyperparameters</span><span class="p">,</span>
+<a id="__codelineno-0-155" name="__codelineno-0-155"></a>            <span class="n">detected_leaks</span><span class="o">=</span><span class="n">detected_leaks</span><span class="p">,</span>
+<a id="__codelineno-0-156" name="__codelineno-0-156"></a>            <span class="n">time_training</span><span class="o">=</span><span class="n">time_training</span><span class="p">,</span>
+<a id="__codelineno-0-157" name="__codelineno-0-157"></a>            <span class="n">time_detection</span><span class="o">=</span><span class="n">time_detection</span><span class="p">,</span>
+<a id="__codelineno-0-158" name="__codelineno-0-158"></a>        <span class="p">)</span>
+<a id="__codelineno-0-159" name="__codelineno-0-159"></a>
+<a id="__codelineno-0-160" name="__codelineno-0-160"></a>        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">resultsFolder</span>
 </code></pre></div></td></tr></table></div>
         </details>
 
