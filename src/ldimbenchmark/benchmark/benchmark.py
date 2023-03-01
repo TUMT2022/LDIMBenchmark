@@ -1,5 +1,7 @@
 from concurrent.futures import ThreadPoolExecutor, as_completed
 import itertools
+
+from numpy import timedelta64
 from ldimbenchmark.benchmark.runners import DockerMethodRunner, LocalMethodRunner
 from ldimbenchmark.benchmark.runners.BaseMethodRunner import MethodRunner
 from ldimbenchmark.datasets import Dataset
@@ -65,16 +67,20 @@ def plot_leak(
 
     for sensor_id, sensor_readings in data_to_plot.items():
         if boundarys == None:
-            alternative_boundarys = (
-                sensor_readings.index[-1] - sensor_readings.index[0]
-            ) / (sensor_readings.shape[0] / 6)
+            # Just use first sensor_readings for all...
+            boundarys = (sensor_readings.index[-1] - sensor_readings.index[0]) / (
+                sensor_readings.shape[0] / 6
+            )
+            minimum_boundary = timedelta64(1, "D")
+            if boundarys < minimum_boundary:
+                boundarys = minimum_boundary
         mask = get_mask(
             sensor_readings,
             reference_leak.leak_time_start,
             reference_leak.leak_time_end
             if reference_leak.leak_time_end != None
             else reference_leak.leak_time_start,
-            boundarys if boundarys != None else alternative_boundarys,
+            boundarys,
         )
 
         sensor_readings = sensor_readings[mask]
@@ -98,7 +104,7 @@ def plot_leak(
                     reference_leak.leak_time_end
                     if reference_leak.leak_time_end != None
                     else reference_leak.leak_time_start,
-                    boundarys if boundarys != None else alternative_boundarys,
+                    boundarys,
                 )
                 debug_data = debug_data[mask]
                 debug_data.plot(ax=ax, alpha=1, linestyle="dashed")
@@ -110,7 +116,9 @@ def plot_leak(
     if expected_leak is not None:
         ax.axvspan(
             expected_leak.leak_time_start,
-            expected_leak.leak_time_end,
+            expected_leak.leak_time_end
+            if expected_leak.leak_time_end != None
+            else expected_leak.leak_time_start,
             color="red",
             alpha=0.1,
             lw=0,
@@ -534,6 +542,7 @@ class LDIMBenchmark:
                 f"You are generating Plots for {len(result_folders)} results! This will take ages, consider only generating them for the benchmark run you are interested in."
             )
 
+        logging.info(f"Loading {len(result_folders)} results...")
         results = []
         parallel = True
         if parallel == True:
@@ -564,9 +573,14 @@ class LDIMBenchmark:
             pbar = manager.counter(total=len(results), desc="Results:", unit="results")
 
             for result in results:
-                pbar.update()
                 graph_dir = os.path.join(self.evaluation_results_dir, "per_run")
                 os.makedirs(graph_dir, exist_ok=True)
+
+                pbar2 = manager.counter(
+                    total=len(result["matched_leaks_list"]),
+                    desc="Graphs:",
+                    unit="graphs",
+                )
                 parallel = True
                 if parallel:
                     with ProcessPoolExecutor(max_workers=cpu_count() - 1) as executor:
@@ -585,15 +599,10 @@ class LDIMBenchmark:
                             )
                             futures.append(future)
 
-                        pbar2 = manager.counter(
-                            total=len(futures), desc="Graphs:", unit="graphs"
-                        )
-
                         # process results from tasks in order of task completion
                         for future in as_completed(futures):
                             future.result()
                             pbar2.update()
-                        pbar2.close()
 
                 else:
                     for leak_pair in result["matched_leaks_list"]:
@@ -603,7 +612,10 @@ class LDIMBenchmark:
                             additional_data_dir=experiment_result,
                             out_dir=graph_dir,
                         )
-        manager.close()
+                        pbar2.update()
+                pbar2.close()
+                pbar.update()
+            manager.close()
         results = pd.DataFrame(results)
 
         for function in evaluations:
@@ -615,7 +627,7 @@ class LDIMBenchmark:
         results = results.sort_values(by=["F1"])
 
         os.makedirs(self.evaluation_results_dir, exist_ok=True)
-
+        results = results.drop(columns=["_folder", "matched_leaks_list"])
         # TODO: Automatically add selected metrics
         columns = [
             "TP",
