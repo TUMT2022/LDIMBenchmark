@@ -164,11 +164,13 @@ def load_result(folder: str) -> Dict:
     )
     evaluation_results["method"] = run_info["method"]
     evaluation_results["dataset"] = run_info["dataset"]
+    evaluation_results["dataset_part"] = run_info.get("dataset_part", None)
     evaluation_results["dataset_id"] = run_info["dataset_id"]
     evaluation_results["dataset_derivations"] = run_info["dataset_options"]
     evaluation_results["hyperparameters"] = run_info["hyperparameters"]
     evaluation_results["matched_leaks_list"] = matched_list
     evaluation_results["_folder"] = folder
+    evaluation_results["executed_at"] = run_info.get("executed_at", None)
 
     return evaluation_results
 
@@ -213,6 +215,9 @@ class LDIMBenchmark:
         self.hyperparameters: dict = hyperparameters
         if not isinstance(datasets, list):
             datasets = [datasets]
+        for index, data in enumerate(datasets):
+            if isinstance(data, str):
+                datasets[index] = Dataset(data)
         self.datasets: List[Dataset] = datasets
         self.experiments: List[MethodRunner] = []
         self.results = {}
@@ -377,12 +382,23 @@ class LDIMBenchmark:
                 additionalOutput=self.debug,
             )
 
-    def run_benchmark(self, use_cached=True, parallel=False, parallel_max_workers=0):
+    def run_benchmark(
+        self,
+        evaluation_mode: Union["training", "evaluation"],
+        use_cached=True,
+        parallel=False,
+        parallel_max_workers=0,
+    ):
         """
         Runs the benchmark.
 
         :param parallel: If the benchmark should be run in parallel
         :param results_dir: Directory where the results should be stored
+                evaluation_mode       A string indicating the mode of the benchmark. If
+                                "training", the benchmark will be run in training mode and the training data of a data set will be used.
+                                If "evaluation", the benchmark will be run in
+                                evaluation mode and the evaluation data of a data set will be used.
+                                Default is "training".
         """
 
         if len(self.methods_docker) > 0 and len(self.methods_local) > 0:
@@ -393,7 +409,7 @@ class LDIMBenchmark:
             method_ids=[
                 dmethod.split(":")[0].split("/")[-1] for dmethod in self.methods_docker
             ]
-            + [lmethod.id for lmethod in self.methods_local],
+            + [lmethod.name for lmethod in self.methods_local],
             dataset_base_ids=[dataset.id for dataset in self.datasets],
         )
 
@@ -412,6 +428,7 @@ class LDIMBenchmark:
                         DockerMethodRunner(
                             method,
                             dataset,
+                            evaluation_mode,
                             hyperparameters,
                             resultsFolder=self.runner_results_dir,
                             debug=self.debug,
@@ -419,18 +436,19 @@ class LDIMBenchmark:
                     )
 
             for method in self.methods_local:
-                hyperparameter_list = [hyperparameters_map[method.id][dataset.id]]
+                hyperparameter_list = [hyperparameters_map[method.name][dataset.id]]
                 if self.multi_parameters:
                     hyperparameter_list = LDIMBenchmark._get_hyperparameters_matrix_from_hyperparameters_with_list(
-                        hyperparameters_map[method.id][dataset.id]
+                        hyperparameters_map[method.name][dataset.id]
                     )
 
                 for hyperparameters in hyperparameter_list:
                     self.experiments.append(
                         LocalMethodRunner(
-                            method,
-                            dataset,
-                            hyperparameters_map[method.id][dataset.id],
+                            detection_method=method,
+                            dataset=dataset,
+                            dataset_part=evaluation_mode,
+                            hyperparameters=hyperparameters,
                             resultsFolder=self.runner_results_dir,
                             debug=self.debug,
                         )
@@ -637,9 +655,11 @@ class LDIMBenchmark:
             "TTD",
             "wrongpipe",
             "dataset",
+            "dataset_part",
             "dataset_derivations",
             "hyperparameters",
             # "score",
+            "executed_at",
             "precision",
             "recall (TPR)",
             "TNR",

@@ -24,6 +24,7 @@ class LocalMethodRunner(MethodRunner):
         self,
         detection_method: LDIMMethodBase,
         dataset: Union[Dataset, str],
+        dataset_part: Union["training", "evaluation"] = "training",
         hyperparameters: dict = None,
         goal: Literal[
             "assessment", "detection", "identification", "localization", "control"
@@ -32,6 +33,7 @@ class LocalMethodRunner(MethodRunner):
         method: Literal["offline", "online"] = "offline",
         debug=False,
         resultsFolder=None,
+        createFolder: bool = True,
     ):
         """Initialize the LocalMethodRunner.
 
@@ -71,6 +73,7 @@ class LocalMethodRunner(MethodRunner):
         super().__init__(
             runner_base_name=f"{detection_method.name}_{detection_method.version}",
             dataset=dataset,
+            dataset_part=dataset_part,
             hyperparameters=hyperparameters,
             goal=goal,
             stage=stage,
@@ -82,10 +85,11 @@ class LocalMethodRunner(MethodRunner):
         # Overwrite resultsFolder
         if resultsFolder == None:
             self.resultsFolder = None
-        else:
+        elif createFolder:
             self.resultsFolder = os.path.join(resultsFolder, self.id)
-
-        # Do some curtesy checks for LocalMethod Executions
+        else:
+            self.resultsFolder = resultsFolder
+        # Do some courtesy checks for LocalMethod Executions
         for key in self.hyperparameters.keys():
             if key.startswith("_"):
                 continue
@@ -101,17 +105,32 @@ class LocalMethodRunner(MethodRunner):
                 )
             # Check if the type of the supplied param matches with the ones that can be set
             if not isinstance(hyperparameters[key], matching_params[0].type):
-                # Skip Float for now: https://github.com/pandas-dev/pandas/issues/50633
-                if isinstance(hyperparameters[key], float):
+                if (
+                    # Ignore int to float conversion
+                    (
+                        isinstance(hyperparameters[key], int)
+                        and matching_params[0].type == float
+                    )
+                    or
+                    # Skip Float for now: https://github.com/pandas-dev/pandas/issues/50633
+                    isinstance(hyperparameters[key], float)
+                ):
                     pass
                 else:
                     raise Exception(
                         f"Hyperparameter {key}: {hyperparameters[key]} is not of the correct type ({type(hyperparameters[key])}) for method {detection_method.name}, must be any of {[param.type for param in detection_method.metadata['hyperparameters'] if param.name == key]}"
                     )
+        # Check for mandatory params
+        for param in detection_method.metadata["hyperparameters"]:
+            if param.required == True and param.name not in hyperparameters.keys():
+                raise Exception(
+                    f"Hyperparameter '{param.name}' is required, but is not set."
+                )
 
         self.detection_method = detection_method
 
     def run(self):
+        start = time.time()
         logging.info(f"Running {self.id} with params {self.hyperparameters}")
 
         logging.info(f"LocalMethodRunner - Loading Dataset {self.dataset.id}")
@@ -124,22 +143,37 @@ class LocalMethodRunner(MethodRunner):
             additional_output_path=self.additional_output_path,
             hyperparameters=self.hyperparameters,
         )
-        start = time.time()
-
-        self.detection_method.train(self.dataset.getTrainingBenchmarkData())
         end = time.time()
-        time_training = end - start
+        time_initializing = end - start
         logging.info(
-            "> Training time for '"
+            "> Initialization time for '"
             + self.detection_method.name
             + "': "
-            + str(time_training)
+            + str(time_initializing)
+        )
+
+        preparation_data = self.dataset.getTrainingBenchmarkData()
+        start = time.time()
+        if self.dataset_part == "training":
+            self.detection_method.prepare()
+        elif self.dataset_part == "evaluation":
+            self.detection_method.prepare(preparation_data)
+        end = time.time()
+        time_preparation = end - start
+        logging.info(
+            "> Preparation time for '"
+            + self.detection_method.name
+            + "': "
+            + str(time_preparation)
         )
 
         start = time.time()
-        detected_leaks = self.detection_method.detect_offline(
-            copy.deepcopy(self.dataset.getEvaluationBenchmarkData())
-        )
+        evaluation_data = copy.deepcopy(self.dataset.getEvaluationBenchmarkData())
+        start = time.time()
+        if self.dataset_part == "training":
+            detected_leaks = self.detection_method.detect_offline(preparation_data)
+        elif self.dataset_part == "evaluation":
+            detected_leaks = self.detection_method.detect_offline(evaluation_data)
 
         end = time.time()
         time_detection = end - start
@@ -151,10 +185,13 @@ class LocalMethodRunner(MethodRunner):
         )
 
         self.writeResults(
+            method_name=self.detection_method.name,
+            method_version=self.detection_method.version,
             method_default_hyperparameters=self.detection_method.hyperparameters,
             detected_leaks=detected_leaks,
-            time_training=time_training,
+            time_training=time_preparation,
             time_detection=time_detection,
+            time_initializing=time_initializing,
         )
 
         return self.resultsFolder

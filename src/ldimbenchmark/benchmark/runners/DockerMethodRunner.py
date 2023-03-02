@@ -29,6 +29,7 @@ class DockerMethodRunner(MethodRunner):
         self,
         image: str,
         dataset: Union[Dataset, str],
+        dataset_part: Union["training", "evaluation"] = "training",
         hyperparameters: dict = None,
         goal: Literal[
             "assessment", "detection", "identification", "localization", "control"
@@ -42,6 +43,7 @@ class DockerMethodRunner(MethodRunner):
         super().__init__(
             runner_base_name=image.split("/")[-1].replace(":", "_"),
             dataset=dataset,
+            dataset_part=dataset_part,
             hyperparameters=hyperparameters,
             goal=goal,
             stage=stage,
@@ -65,6 +67,7 @@ class DockerMethodRunner(MethodRunner):
         with open(path_options, "w") as f:
             yaml.dump(
                 {
+                    "dataset_part": self.dataset_part,
                     "hyperparameters": self.hyperparameters,
                     "goal": self.goal,
                     "stage": self.stage,

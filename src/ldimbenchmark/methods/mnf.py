@@ -22,7 +22,7 @@ from ldimbenchmark.utilities import simplifyBenchmarkData
 
 class MNF(LDIMMethodBase):
     """
-    Minumum Night Flow Method from
+    Minimum Night Flow Method from
     https://github.com/KIOS-Research/LeakDB/tree/master/CCWI-WDSA2018/Detection%20Algorithms/MNF
     """
 
@@ -56,11 +56,12 @@ class MNF(LDIMMethodBase):
             ),
         )
 
-    def train(self, train_data: BenchmarkData):
+    def prepare(self, train_data: BenchmarkData = None):
         # self.train_Data = train_data
-        self.simple_train_data = simplifyBenchmarkData(train_data)
-
-        pass
+        if train_data != None:
+            self.simple_train_data = simplifyBenchmarkData(train_data)
+        else:
+            self.simple_train_data = None
 
     def detect_offline(self, evaluation_data: BenchmarkData):
         window = pd.Timedelta(days=self.hyperparameters["window"])
@@ -75,7 +76,7 @@ class MNF(LDIMMethodBase):
         ):
             return []
 
-        evaluation_start_date = Timestamp = simple_evaluation_data.flows.index[0]
+        evaluation_start_date: Timestamp = simple_evaluation_data.flows.index[0]
 
         start_date: Timestamp = simple_evaluation_data.flows.index[0].replace(
             hour=12, minute=0, second=0, microsecond=0, nanosecond=0
@@ -84,17 +85,28 @@ class MNF(LDIMMethodBase):
         end_date: Timestamp = simple_evaluation_data.flows.index[-100].replace(
             hour=12, minute=0, second=0, microsecond=0, nanosecond=0
         )
-        previous_data = self.simple_train_data.flows
-        mask = (previous_data.index >= (start_date - window)) & (
-            previous_data.index < evaluation_start_date
-        )
-        previous_data = self.simple_train_data.flows.loc[mask]
+        if self.simple_train_data:
+            previous_data = self.simple_train_data.flows
+            mask = (previous_data.index >= (start_date - window)) & (
+                previous_data.index < evaluation_start_date
+            )
+            previous_data = self.simple_train_data.flows.loc[mask]
 
-        all_flows = pd.concat([previous_data, simple_evaluation_data.flows], axis=0)
+            all_flows = pd.concat([previous_data, simple_evaluation_data.flows], axis=0)
+        else:
+            start_date: Timestamp = simple_evaluation_data.flows.index[100].replace(
+                hour=12, minute=0, second=0, microsecond=0, nanosecond=0
+            )
+            all_flows = simple_evaluation_data.flows[
+                simple_evaluation_data.flows.index >= start_date
+            ]
+
         all_flows = all_flows.loc[all_flows.index < end_date]
+
         # TODO: For now lets say it starts at noon
         hour_24_end = start_date + timedelta(days=1)
 
+        # better: all_flows.groupby(all_flows.index.date).size()
         entries_per_day = (
             (all_flows.index > start_date) & (all_flows.index <= hour_24_end)
         ).sum()

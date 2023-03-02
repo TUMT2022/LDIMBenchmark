@@ -15,7 +15,7 @@ import numpy as np
 import pandas as pd
 import os
 
-from ldimbenchmark.utilities import simplifyBenchmarkData
+from ldimbenchmark.utilities import SimpleBenchmarkData, simplifyBenchmarkData
 
 
 class Ref_node:
@@ -43,6 +43,24 @@ class LILA(LDIMMethodBase):
                 data_needed=["pressures", "flows"],
                 hyperparameters=[
                     Hyperparameter(
+                        name="leakfree_time_start",
+                        description="Start date of a leakfree period of time inside the dataset. Format should be 'YYYY-MM-DD'. Leaving it empty will use the whole dataset.",
+                        value_type=str,
+                    ),
+                    Hyperparameter(
+                        name="leakfree_time_stop",
+                        description="End date of a leakfree period of time inside the dataset. Format should be 'YYYY-MM-DD'. Leaving it empty will use the whole dataset.",
+                        value_type=str,
+                    ),
+                    Hyperparameter(
+                        name="est_length",
+                        description="Length of the estimation period in hours",
+                        default=72,  # 3 days
+                        value_type=int,
+                        max=8760,  # 1 year
+                        min=1,
+                    ),
+                    Hyperparameter(
                         name="est_length",
                         description="Length of the estimation period in hours",
                         default=72,  # 3 days
@@ -69,15 +87,16 @@ class LILA(LDIMMethodBase):
                 ],
             ),
         )
+        self.trained = False
 
     # TODO: Add DMA specific implementation (and hyperparameters)
 
-    def train(self, train_data: BenchmarkData):
+    def train(self, simple_train_data: SimpleBenchmarkData, start_time, end_time):
+        # TODO: Implement start/end time
+        self.trained = True
         # TODO: implement sensor level data loading
         # Load Data
         scada_data = SCADA_data()
-
-        simple_train_data = simplifyBenchmarkData(train_data, resample_frequency="5T")
 
         scada_data.pressures = simple_train_data.pressures
         nodes = simple_train_data.pressures.keys()
@@ -86,8 +105,15 @@ class LILA(LDIMMethodBase):
         # TODO: Remove this to be generalized:
         # Try it with all flows combined?
 
+        # TODO: Make algorithm independent of pump name
+        # flows["PUMP_1"] = flows.sum(axis=1)
         flows = flows.rename(
-            columns={"P-01": "PUMP_1", "a": "PUMP_1", "Inflow [l/s]": "PUMP_1"}
+            columns={
+                "P-01": "PUMP_1",
+                "J-02": "PUMP_1",
+                "Inflow [l/s]": "PUMP_1",
+                "31664": "PUMP_1",
+            }
         )
         scada_data.flows = flows
 
@@ -103,14 +129,25 @@ class LILA(LDIMMethodBase):
 
             X_tr = np.concatenate(
                 [
-                    scada_data.pressures[node].to_numpy().reshape(-1, 1),
-                    scada_data.flows["PUMP_1"].to_numpy().reshape(-1, 1),
+                    scada_data.pressures[node]
+                    .loc[start_time:end_time]
+                    .to_numpy()
+                    .reshape(-1, 1),
+                    scada_data.flows["PUMP_1"]
+                    .loc[start_time:end_time]
+                    .to_numpy()
+                    .reshape(-1, 1),
                 ],
                 axis=1,
             )
 
             for j, node_cor in enumerate(nodes):
-                y_tr = scada_data.pressures[node_cor].to_numpy().reshape(-1, 1)
+                y_tr = (
+                    scada_data.pressures[node_cor]
+                    .loc[start_time:end_time]
+                    .to_numpy()
+                    .reshape(-1, 1)
+                )
                 model = LinearRegression()
                 models.append(model.fit(X_tr, y_tr))
                 self.K0[i, j] = model.intercept_[0]
@@ -118,6 +155,16 @@ class LILA(LDIMMethodBase):
                 self.Kd[i, j] = model.coef_[0][1]
 
             ref_node.set_models(models)
+
+    def prepare(self, training_data: BenchmarkData = None) -> None:
+        if training_data != None:
+            simple_training_data = simplifyBenchmarkData(
+                training_data, resample_frequency="5T"
+            )
+
+            start_time = pd.to_datetime(self.hyperparameters["leakfree_time_start"])
+            end_time = pd.to_datetime(self.hyperparameters["leakfree_time_stop"])
+            self.train(simple_training_data, start_time, end_time)
 
     def detect_offline(
         self, evaluation_data: BenchmarkData
@@ -128,19 +175,25 @@ class LILA(LDIMMethodBase):
             evaluation_data, resample_frequency="5T"
         )
 
-        # TODO: Implement reoccuring training on trailing timeframe?
+        if self.trained == False:
+            # TODO: Implement reoccuring training on trailing timeframe?
+            start_time = pd.to_datetime(self.hyperparameters["leakfree_time_start"])
+            end_time = pd.to_datetime(self.hyperparameters["leakfree_time_stop"])
+            self.train(simple_evaluation_data, start_time, end_time)
 
         scada_data.pressures = simple_evaluation_data.pressures
         nodes = simple_evaluation_data.pressures.keys()
 
         flows = simple_evaluation_data.flows
         # TODO: Make algorithm independent of pump name
+        # flows["PUMP_1"] = flows.sum(axis=1)
         flows = flows.rename(
-            columns={"P-01": "PUMP_1", "a": "PUMP_1", "Inflow [l/s]": "PUMP_1"}
+            columns={"P-01": "PUMP_1", "J-02": "PUMP_1", "Inflow [l/s]": "PUMP_1"}
         )
+
         scada_data.flows = flows
 
-        # Leak Analyiss Fuction
+        # Leak Analysis Function
         # nodes - List of Nodes which should be.
         # scada - Dataset which holds flow and pressure data.
         # cor_time_frame - Time Frame for where there is no leak.
@@ -155,6 +208,8 @@ class LILA(LDIMMethodBase):
         np.fill_diagonal(self.K1, 1)
         np.fill_diagonal(self.Kd, 0)
 
+        # If there is an error look up the problem at:
+        # https://github.com/numpy/numpy/issues/23244
         e = (
             np.multiply.outer(self.K0, np.ones(T))
             + np.multiply.outer(self.Kd, V)

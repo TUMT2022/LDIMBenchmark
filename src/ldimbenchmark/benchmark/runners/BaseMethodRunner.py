@@ -3,6 +3,7 @@ import hashlib
 import json
 import logging
 import os
+import time
 from typing import Literal, Union
 
 import pandas as pd
@@ -18,6 +19,7 @@ class MethodRunner(ABC):
     def __init__(
         self,
         runner_base_name: str,
+        dataset_part: Union["training", "evaluation"],
         dataset: Dataset,
         hyperparameters: dict,
         goal: Literal[
@@ -66,9 +68,10 @@ class MethodRunner(ABC):
             The path to the results folder, by default None
 
         """
-        if type(dataset) is str:
+        self.runner_start_time = time.time()
+        if isinstance(dataset, str):
             self.dataset = Dataset(dataset)
-        if type(dataset) is Dataset:
+        elif isinstance(dataset, Dataset):
             self.dataset = dataset
         else:
             raise Exception(
@@ -81,8 +84,11 @@ class MethodRunner(ABC):
             json.dumps(hyperparameters, sort_keys=True).encode("utf-8")
         ).hexdigest()
 
-        self.id = f"{runner_base_name}_{dataset.id}_{hyperparameter_hash}"
+        self.id = (
+            f"{runner_base_name}_{self.dataset.id}_{dataset_part}_{hyperparameter_hash}"
+        )
 
+        self.dataset_part = dataset_part
         self.goal = goal
         self.stage = stage
         self.method = method
@@ -103,11 +109,15 @@ class MethodRunner(ABC):
 
     def writeResults(
         self,
+        method_name,
+        method_version,
         method_default_hyperparameters,
         detected_leaks,
         time_training,
         time_detection,
+        time_initializing,
     ):
+        self.runner_stop_time = time.time()
         if self.resultsFolder:
             os.makedirs(self.resultsFolder, exist_ok=True)
             pd.DataFrame(
@@ -122,8 +132,10 @@ class MethodRunner(ABC):
             pd.DataFrame(
                 [
                     {
-                        "method": self.detection_method.name,
+                        "method": method_name,
+                        "method_version": method_version,
                         "dataset": self.dataset.name,
+                        "dataset_part": self.dataset_part,
                         "dataset_id": self.dataset.id,
                         "dataset_options": self.dataset.info["derivations"]
                         if "derivations" in self.dataset.info
@@ -136,6 +148,11 @@ class MethodRunner(ABC):
                         "stage": self.stage,
                         "train_time": time_training,
                         "detect_time": time_detection,
+                        "time_initializing": time_initializing,
+                        "total_time": self.runner_stop_time - self.runner_start_time,
+                        "executed_at": pd.Timestamp("today").strftime(
+                            "%Y-%m-%d %H:%M:%S"
+                        ),
                     }
                 ],
             ).to_csv(

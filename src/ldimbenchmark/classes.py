@@ -1,4 +1,5 @@
 import logging
+import re
 from pandas import DataFrame
 from wntr.network import WaterNetworkModel
 from typing import Literal, Optional, TypedDict, Dict, Union, List, Type
@@ -70,7 +71,8 @@ class Hyperparameter:
         name: str,
         description: str,
         value_type: Type,
-        default: Union[int, float, bool],
+        required: bool = False,
+        default: Union[int, float, bool] = None,
         options: Optional[List[str]] = None,
         min: Optional[Union[int, float]] = None,
         max: Optional[Union[int, float]] = None,
@@ -92,7 +94,7 @@ class Hyperparameter:
 
         # Validation
         self.type = value_type
-        if value_type != type(default):
+        if not (value_type == type(default) or type(None) == type(default)):
             raise ValueError(
                 f"Parameter 'default' must be of type {value_type}, but is of type {type(default)}."
             )
@@ -103,22 +105,23 @@ class Hyperparameter:
                     f"Parameter 'options' and 'min/max cannot be set if using type 'bool'."
                 )
 
-        if isinstance(value_type, str):
-            if options is None:
-                raise ValueError(
-                    f"Parameter 'options' must be set if using type 'str'."
-                )
+        # if isinstance(value_type, str):
+        #     if options is None:
+        #         raise ValueError(
+        #             f"Parameter 'options' must be set if using type 'str'."
+        #         )
 
-        if isinstance(value_type, int) or isinstance(value_type, float):
-            if options is None and (min is None or max is None):
-                raise ValueError(
-                    f"Parameter 'options' or 'min/max' must be set if using type 'int/float'."
-                )
+        # if isinstance(value_type, int) or isinstance(value_type, float):
+        #     if options is None and (min is None or max is None):
+        #         raise ValueError(
+        #             f"Parameter 'options' or 'min/max' must be set if using type 'int/float'."
+        #         )
 
         if options is not None and (min is not None or max is not None):
             raise ValueError(
                 f"Parameters 'options' and 'min/max' cannot be supplied at the same time."
             )
+        self.required = required
         self.default = default
         self.options = options
         self.min = min
@@ -174,8 +177,9 @@ class LDIMMethodBase(ABC):
     """
     Skeleton for implementing an instance of a leakage detection method.
     Should implement the following methods:
-     - train(): If needed, to train the algorithm
-     - detect(): To run the algorithm
+     - prepare(): If needed, to train the algorithm
+     - detect_online(): To run the algorithm
+     - detect_offline(): To run the algorithm
 
     Usage CustomAlgorithm(BenchmarkAlgorithm):
     """
@@ -197,7 +201,12 @@ class LDIMMethodBase(ABC):
             logging.warning(
                 f"Method name '{self.name}' is not lowercase. This is not recommended."
             )
+
         self.version = version
+        if bool(re.compile(r"[^A-z0-9\.\-]").search(self.version)):
+            logging.warning(
+                f"Method version contains not allowed characters. Only [A-z0-9] and . or - are allowed."
+            )
         self.metadata = metadata
         self.debug = True if additional_output_path != None else False
         self.additional_output_path = additional_output_path
@@ -222,22 +231,36 @@ class LDIMMethodBase(ABC):
             self.hyperparameters = {}
         self.hyperparameters.update(hyperparameters)
 
+    # @abstractmethod
+    # def train(self, train_data: BenchmarkData) -> None:
+    #     """
+    #     Train the algorithm on Test data (if needed)
+
+    #     The only metric calculated will be the time your model needs to train.
+
+    #     The Train Data will be an object (BenchmarkData)
+
+    #     """
+    #     raise NotImplementedError("Please Implement this method")
+
     @abstractmethod
-    def train(self, train_data: BenchmarkData) -> None:
+    def prepare(self, training_data: BenchmarkData = None) -> None:
         """
-        Train the algorithm on Test data (if needed)
+        Prepare your method for the detection phase.
+        Called once before detect_online or detect_offline.
 
-        The only metric calculated will be the time your model needs to train.
+        This Method should be used to modify the method as to perform best on future data.
+        This can include fitting the model to the training data.
 
-        The Train Data will be an object (BenchmarkData)
+        Please note that `training_data` might not be supplied (e.g. if the dataset does not contain training data).
 
+
+        This method can be used for methods that need to fit to the data before detecting future leaks.
         """
         raise NotImplementedError("Please Implement this method")
 
     @abstractmethod
-    def detect_offline(
-        self, evaluation_data: BenchmarkData
-    ) -> List[BenchmarkLeakageResult]:
+    def detect_offline(self, data: BenchmarkData) -> List[BenchmarkLeakageResult]:
         """
         Detect Leakage in an "offline" (historical) manner.
         Detect Leakages on never before seen data. (BenchmarkData)

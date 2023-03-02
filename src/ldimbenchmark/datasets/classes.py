@@ -210,15 +210,15 @@ class Dataset:
         Sets the id (hash) according to the information in "dataset_info.yaml"
         """
 
-        if "derivations" in self.info:
-            derivations_hash = (
-                "-"
-                + hashlib.md5(
-                    json.dumps(self.info["derivations"], sort_keys=True).encode("utf-8")
-                ).hexdigest()
-            )
-        else:
-            derivations_hash = ""
+        # if "derivations" in self.info:
+        derivations_hash = (
+            "-"
+            + hashlib.md5(
+                json.dumps(self.info, sort_keys=True, default=str).encode("utf-8")
+            ).hexdigest()
+        )
+        # else:
+        #     derivations_hash = ""
         self.id = self.info["name"] + derivations_hash
 
     ######

@@ -77,19 +77,8 @@ class DUALMethod(LDIMMethodBase):
                 additional_output_path, "dualmodel.pickle"
             )
 
-    def train(self, train_data: BenchmarkData):
+    def prepare(self, train_data: BenchmarkData = None):
         # TODO: Calibrate Model (for now just use the model given)
-
-        # Custom Deepcopy
-        # self.wn = copy.deepcopy(train_data.model)
-        temp_dir = tempfile.TemporaryDirectory()
-        path_to_model_pickle = path.join(temp_dir.name, "dualmodel.pickle")
-        with open(path_to_model_pickle, "wb") as f:
-            pickle.dump(train_data.model, f)
-
-        with open(path_to_model_pickle, "rb") as f:
-            self.wn = pickle.load(f)
-        temp_dir.cleanup()
 
         # TODO: Calibrate roughness values of the pipes
         if False:
@@ -131,6 +120,17 @@ class DUALMethod(LDIMMethodBase):
         simple_evaluation_data = simplifyBenchmarkData(
             evaluation_data, resample_frequency="5T"
         )
+
+        # Custom Deepcopy
+        # self.wn = copy.deepcopy(train_data.model)
+        temp_dir = tempfile.TemporaryDirectory()
+        path_to_model_pickle = path.join(temp_dir.name, "dualmodel.pickle")
+        with open(path_to_model_pickle, "wb") as f:
+            pickle.dump(evaluation_data.model, f)
+
+        with open(path_to_model_pickle, "rb") as f:
+            self.wn = pickle.load(f)
+        temp_dir.cleanup()
 
         pressure_sensors_with_data = simple_evaluation_data.pressures.keys()
         pipelist = list(
