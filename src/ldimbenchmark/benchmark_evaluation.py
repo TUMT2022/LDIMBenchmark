@@ -71,7 +71,6 @@ def evaluate_leakages(expected_leaks: pd.DataFrame, detected_leaks: pd.DataFrame
         if list_of_all["used"][index] == 1:
             continue
         source_array_index = list_of_all["index"][index]
-        source_array_index = list_of_all["index"][index]
 
         if leak["type"] == "expected":
             # If the type is expected try to find the closest leak from the detected array
@@ -87,7 +86,12 @@ def evaluate_leakages(expected_leaks: pd.DataFrame, detected_leaks: pd.DataFrame
             ref = ref[ref["index"] == min_x]
             index_new = ref.index
 
-            if dist_mat.iloc[min_x, :].idxmin(skipna=True) == source_array_index:
+            # TODO: If leak is outside the known leak interval don't match it too!
+            if dist_mat.iloc[min_x, :].idxmin(skipna=True) == source_array_index and (
+                # Leak also has to be within the expected leak time
+                expected_leaks.loc[source_array_index].leak_time_end
+                >= detected_leaks.loc[min_x].leak_time_start
+            ):
                 # if (ref["used"].values[0] == 0):
                 list_of_all.loc[index_new, "used"] = 1
                 # list_of_all.iloc[index_new]["used"] = 1
@@ -113,6 +117,7 @@ def evaluate_leakages(expected_leaks: pd.DataFrame, detected_leaks: pd.DataFrame
     # print("###########")
     # for detected_leak, expected_leak in itertools.zip_longest(sorted_detected_leaks, sorted_expected_leaks):
 
+    time_to_detection = []
     for expected_leak, detected_leak in matched_list:
         if detected_leak is None:
             existing_leak_not_detected += 1
@@ -127,9 +132,11 @@ def evaluate_leakages(expected_leaks: pd.DataFrame, detected_leaks: pd.DataFrame
         ):
             right_leak_detected += 1
             # Calculate TimeSpan Between Detections
-            time_to_detection = (
-                detected_leak.leak_time_start - expected_leak.leak_time_start
-            ).total_seconds()
+            time_to_detection.append(
+                (
+                    detected_leak.leak_time_start - expected_leak.leak_time_start
+                ).total_seconds()
+            )
             if expected_leak.leak_pipe_id == detected_leak.leak_pipe_id:
                 pass
             else:
@@ -145,7 +152,7 @@ def evaluate_leakages(expected_leaks: pd.DataFrame, detected_leaks: pd.DataFrame
             "false_positives": non_existing_leak_detected,
             "true_negatives": None,  # Not applicable, we dont have information about non-leaks
             "false_negatives": existing_leak_not_detected,
-            "time_to_detection": time_to_detection,
+            "time_to_detection": np.sum(time_to_detection),
             "wrong_pipe": wrong_pipe_detected,
         },
         matched_list,
