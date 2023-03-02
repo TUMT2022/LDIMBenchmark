@@ -55,7 +55,7 @@ jobs:
           poetry run semantic-release publish
           echo "::set-output name=version::$(poetry run semantic-release print-version --current)"
         env:
-          POETRY_PYPI_TOKEN_PYPI: ${{ secrets.PYPI_TOKEN }}
+          PYPI_TOKEN: ${{ secrets.PYPI_TOKEN }}
         # outputs:
         #   matrix: ${{ steps.semantic-release.outputs.version }}
 
@@ -77,3 +77,19 @@ jobs:
           labels: ${{ steps.meta.outputs.labels }}
           build-args: |
             VERSION=${{ steps.semantic-release.outputs.version }}
+
+      - name: Trigger new methods Release
+        uses: actions/github-script@v6
+        with:
+          github-token: ${{ secrets.GHA_WORKFLOW_TRIGGER }}
+          script: |
+            const result = await github.rest.actions.createWorkflowDispatch({
+              owner: 'ldimbenchmark',
+              repo: 'methods',
+              workflow_id: 'main.yml',
+              event_type: 'release_ldimbenchmark',
+              client_payload: {
+                version: '${{ steps.semantic-release.outputs.version }}'
+              }
+            })
+            console.log(result)
