@@ -109,6 +109,4 @@ jobs:
               },
             })
             console.log(result)
-if semantic-release print-version | grep -q 'string'; then
-  echo "matched"
-fi
+  
