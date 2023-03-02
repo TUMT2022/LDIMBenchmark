@@ -64,6 +64,7 @@ jobs:
       - run: pip install ldimbenchmark==${{ steps.semantic-release.outputs.version }} || true
 
       - name: Log in to the Container registry
+        if: steps.semantic-release.outputs.version != null
         uses: docker/login-action@f054a8b539a109f9f41c372932f1ae047eff08c9
         with:
           registry: ghcr.io
@@ -98,9 +99,9 @@ jobs:
               owner: 'ldimbenchmark',
               repo: 'methods',
               workflow_id: 'main.yml',
-              event_type: 'release_ldimbenchmark',
-              client_payload: {
+              ref: 'main',
+              inputs: {
                 version: '${{ steps.semantic-release.outputs.version }}'
-              }
+              },
             })
             console.log(result)
