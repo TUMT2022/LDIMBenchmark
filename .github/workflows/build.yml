@@ -1,4 +1,4 @@
-name: ldimbenchmark CI
+name: ldimbenchmark
 
 on:
   push:

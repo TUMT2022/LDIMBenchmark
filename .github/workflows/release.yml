@@ -47,13 +47,18 @@ jobs:
       - run: poetry install --no-interaction
         if: steps.cache-deps.outputs.cache-hit != 'true'
 
-      - name: Build
-        run: poetry build
+      - name: Semantic Release
+        run: |
+          git config user.name github-actions
+          git config user.email github-actions@github.com
+          semantic-release publish
+      # - name: Build
+      #   run: poetry build
 
-      - name: Release
-        env:
-          POETRY_PYPI_TOKEN_PYPI: ${{ secrets.PYPI_TOKEN }}
-        run: poetry publish
+      # - name: Release
+      #   env:
+      #     POETRY_PYPI_TOKEN_PYPI: ${{ secrets.PYPI_TOKEN }}
+      #   run: poetry publish
 
       # - name: Publish to PyPI
       #   uses: pypa/gh-action-pypi-publish@release/v1
