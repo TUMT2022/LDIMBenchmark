@@ -15,7 +15,6 @@ from ldimbenchmark.benchmark_evaluation import evaluate_leakages
 from tabulate import tabulate
 from ldimbenchmark.benchmark_complexity import run_benchmark_complexity
 import matplotlib.pyplot as plt
-from multiprocessing import cpu_count
 import enlighten
 from ldimbenchmark.evaluation_metrics import (
     precision,
@@ -478,7 +477,7 @@ class LDIMBenchmark:
             )
         results = []
         if parallel:
-            worker_num = cpu_count() - 1
+            worker_num = os.cpu_count() - 1
             if parallel_max_workers > 0:
                 worker_num = parallel_max_workers
             try:
@@ -491,9 +490,7 @@ class LDIMBenchmark:
                     pbar = manager.counter(
                         total=num_experiments, desc="Experiments", unit="experiments"
                     )
-                    print(num_experiments - len(self.experiments))
                     pbar.update(incr=num_experiments - len(self.experiments))
-
                     # process results from tasks in order of task completion
                     for future in as_completed(futures):
                         future.result()
@@ -564,7 +561,7 @@ class LDIMBenchmark:
         results = []
         parallel = True
         if parallel == True:
-            with ProcessPoolExecutor(max_workers=cpu_count() - 1) as executor:
+            with ProcessPoolExecutor() as executor:
                 # submit all tasks and get future objects
                 futures = [
                     executor.submit(load_result, folder) for folder in result_folders
@@ -601,7 +598,7 @@ class LDIMBenchmark:
                 )
                 parallel = True
                 if parallel:
-                    with ProcessPoolExecutor(max_workers=cpu_count() - 1) as executor:
+                    with ProcessPoolExecutor() as executor:
                         # submit all tasks and get future objects
                         futures = []
                         for leak_pair in result["matched_leaks_list"]:

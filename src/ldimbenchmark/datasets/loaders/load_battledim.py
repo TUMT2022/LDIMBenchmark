@@ -2,11 +2,11 @@
 Module containing the loader for the Battledim dataset.
 """
 
+from concurrent.futures import ProcessPoolExecutor, as_completed
+import enlighten
 import requests
 from os import path
 import os
-from tqdm import tqdm
-from multiprocessing import Pool, cpu_count
 import wntr
 import os
 from os import path
@@ -36,6 +36,7 @@ def download_file(args):
             file_handle.write(res.content)
     else:
         logging.error("Failed to download file: " + url)
+    # sleep(5)
 
 
 class BattledimDatasetLoader(_LoadDatasetBase):
@@ -66,11 +67,18 @@ class BattledimDatasetLoader(_LoadDatasetBase):
             zip(URLs.keys(), [path.join(downloadPath, file) for file in URLs.values()])
         )
 
-        with Pool(processes=cpu_count() - 1) as p:
-            max_ = len(args)
-            with tqdm(total=max_) as pbar:
-                for result in p.imap_unordered(download_file, args):
-                    pbar.update()
+        manager = enlighten.get_manager()
+        pbar = manager.counter(
+            total=len(args), desc="Download Battledim Files", unit="Files"
+        )
+        pbar.update(incr=0)
+        with ProcessPoolExecutor() as executor:
+            futures = [executor.submit(download_file, arg) for arg in args]
+            for future in as_completed(futures):
+                future.result()
+                pbar.update()
+        pbar.close()
+        manager.stop()
 
     @staticmethod
     def prepare_dataset(unpreparedDatasetPath=None, preparedDatasetPath=None):

@@ -1,4 +1,4 @@
-from multiprocessing import Pool, cpu_count
+from concurrent.futures import ThreadPoolExecutor
 import pickle
 import numpy as np
 import pandas as pd
@@ -125,7 +125,8 @@ def loadDatasetsDirectly(
                 index_col="Timestamp",
                 chunksize=100000,
             )
-            frames = Pool(processes=cpu_count() - 1).imap(parse_frame_dates, d)
+            with ThreadPoolExecutor(processes=os.cpu_count() - 1) as executor:
+                frames = list(executor.map(parse_frame_dates, d))
 
             sensor_readings = pd.concat(frames)
 
