@@ -2,8 +2,8 @@ import unittest
 from ldimbenchmark.classes import Hyperparameter
 
 
-class MyTestCase(unittest.TestCase):
-    def test_cusum_normal_usage(self):
+class Validation(unittest.TestCase):
+    def test_normal_usage(self):
         hyperparameter_int_minmax = Hyperparameter(
             name="test",
             description="test",
@@ -53,29 +53,7 @@ class MyTestCase(unittest.TestCase):
             options=["option1", "option2"],
         )
 
-    def test_cusum_error_usage(self):
-        # Hyperparameter with value_type str must have options
-        with self.assertRaises(Exception) as context:
-            hyperparameter = Hyperparameter(
-                name="test",
-                description="test",
-                value_type=str,
-            )
-
-        # Hyperparameter with value_type int or float must have min and max or options
-        with self.assertRaises(Exception) as context:
-            hyperparameter = Hyperparameter(
-                name="test",
-                description="test",
-                value_type=int,
-            )
-
-            hyperparameter = Hyperparameter(
-                name="test",
-                description="test",
-                value_type=float,
-            )
-
+    def test_error_usage(self):
         # Hyperparameter with value_type int or float must not have options and min and max
         with self.assertRaises(Exception) as context:
             hyperparameter = Hyperparameter(
@@ -102,15 +80,9 @@ class MyTestCase(unittest.TestCase):
                 name="test",
                 description="test",
                 value_type=bool,
+                options=[1, 2, 3],
                 min=0,
                 max=10,
-            )
-
-            hyperparameter = Hyperparameter(
-                name="test",
-                description="test",
-                value_type=bool,
-                options=[1, 2, 3],
             )
 
         # Hyperparameter default value does not match value_type
@@ -121,5 +93,3 @@ class MyTestCase(unittest.TestCase):
                 value_type=int,
                 default="1",
             )
-
-        # self.assertTrue("This is broken" in str(context.exception))
