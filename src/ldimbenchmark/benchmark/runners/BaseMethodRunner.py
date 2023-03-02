@@ -164,8 +164,14 @@ class MethodRunner(ABC):
 
     def tryWriteEvaluationLeaks(self):
         if hasattr(self.dataset.evaluation, "leaks"):
+            # TODO: Probably can be removed?
+            if self.dataset_part == "training":
+                leaks = self.dataset.train.leaks
+            else:
+                leaks = self.dataset.evaluation.leaks
+
             pd.DataFrame(
-                self.dataset.evaluation.leaks,
+                leaks,
                 columns=list(BenchmarkLeakageResult.__annotations__.keys()),
             ).to_csv(
                 os.path.join(self.resultsFolder, "should_have_detected_leaks.csv"),
