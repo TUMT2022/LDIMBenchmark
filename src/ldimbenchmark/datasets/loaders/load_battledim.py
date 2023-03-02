@@ -141,11 +141,11 @@ class BattledimDatasetLoader(_LoadDatasetBase):
 name: battledim
 dataset:
   evaluation:
-      start: 2019-01-01 00:00
-      end: 2019-12-31 23:55
+      start: 2019-01-01 00:00:00
+      end: 2019-12-31 23:59:59
   training:
-      start: 2018-01-01 00:00
-      end: 2019-12-31 23:55
+      start: 2018-01-01 00:00:00
+      end: 2018-12-31 23:59:59
 inp_file: L-TOWN.inp
         """
         # Convert info to yaml dictionary
