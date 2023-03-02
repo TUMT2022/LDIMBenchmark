@@ -56,8 +56,8 @@ jobs:
           echo "::set-output name=version::$(poetry run semantic-release print-version --current)"
         env:
           POETRY_PYPI_TOKEN_PYPI: ${{ secrets.PYPI_TOKEN }}
-        outputs:
-          matrix: ${{ steps.semantic-release.outputs.version }}
+        # outputs:
+        #   matrix: ${{ steps.semantic-release.outputs.version }}
 
       # Trigger pypi cache once so the docker build does not fail.
       - run: pip install ldimbenchmark==${{ steps.semantic-release.outputs.version }} || true
