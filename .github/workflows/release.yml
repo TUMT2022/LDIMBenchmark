@@ -48,23 +48,32 @@ jobs:
         if: steps.cache-deps.outputs.cache-hit != 'true'
 
       - name: Semantic Release
+        id: semantic-release
         run: |
           git config user.name github-actions
           git config user.email github-actions@github.com
           poetry run semantic-release publish
+          echo "::set-output name=version::$(poetry run semantic-release print-version --current)"
         env:
           POETRY_PYPI_TOKEN_PYPI: ${{ secrets.PYPI_TOKEN }}
+        outputs:
+          matrix: ${{ steps.semantic-release.outputs.version }}
 
-      # - name: Build
-      #   run: poetry build
+      # Trigger pypi cache once so the docker build does not fail.
+      - run: pip install ldimbenchmark==${{ steps.semantic-release.outputs.version }} || true
 
-      # - name: Release
-      #   env:
-      #     POETRY_PYPI_TOKEN_PYPI: ${{ secrets.PYPI_TOKEN }}
-      #   run: poetry publish
+      - name: Extract metadata (tags, labels) for Docker
+        id: meta
+        uses: docker/metadata-action@98669ae865ea3cffbcbaa878cf57c20bbf1c6c38
+        with:
+          images: ghcr.io/ldimbenchmark/ldimbenchmark
 
-      # - name: Publish to PyPI
-      #   uses: pypa/gh-action-pypi-publish@release/v1
-      #   with:
-      #     user: __token__
-      #     password: ${{ secrets.PYPI_TOKEN }}
+      - name: Build and push Docker image
+        uses: docker/build-push-action@ad44023a93711e3deb337508980b4b5e9bcdc5dc
+        with:
+          context: .
+          push: true
+          tags: ghcr.io/ldimbenchmark/ldimbenchmark:${{ steps.semantic-release.outputs.version }} , ghcr.io/ldimbenchmark/ldimbenchmark:latest
+          labels: ${{ steps.meta.outputs.labels }}
+          build-args: |
+            VERSION=${{ steps.semantic-release.outputs.version }}
