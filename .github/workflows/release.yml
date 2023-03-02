@@ -64,7 +64,7 @@ jobs:
       - run: pip install ldimbenchmark==${{ steps.semantic-release.outputs.version }} || true
 
       - name: Log in to the Container registry
-        if: steps.semantic-release.outputs.version != null
+        if: "!contains(steps.semantic-release.outputs.version, 'No release')"
         uses: docker/login-action@f054a8b539a109f9f41c372932f1ae047eff08c9
         with:
           registry: ghcr.io
@@ -72,14 +72,14 @@ jobs:
           password: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Extract metadata (tags, labels) for Docker
-        if: steps.semantic-release.outputs.version != null
+        if: "!contains(steps.semantic-release.outputs.version, 'No release')"
         id: meta
         uses: docker/metadata-action@v4.3.0
         with:
           images: ghcr.io/ldimbenchmark/ldimbenchmark
 
       - name: Build and push Docker image
-        if: steps.semantic-release.outputs.version != null
+        if: "!contains(steps.semantic-release.outputs.version, 'No release')"
         uses: docker/build-push-action@v4.0.0
         with:
           context: .
@@ -90,7 +90,7 @@ jobs:
             VERSION=${{ steps.semantic-release.outputs.version }}
 
       - name: Trigger new methods Release
-        if: steps.semantic-release.outputs.version != null
+        if: "!contains(steps.semantic-release.outputs.version, 'No release')"
         uses: actions/github-script@v6
         with:
           github-token: ${{ secrets.GHA_WORKFLOW_TRIGGER }}
@@ -105,3 +105,6 @@ jobs:
               },
             })
             console.log(result)
+if semantic-release print-version | grep -q 'string'; then
+  echo "matched"
+fi
