@@ -1,6 +1,9 @@
 name: ldimbenchmark Release
 
-on: workflow_dispatch
+on: 
+  workflow_dispatch:
+  push:
+    branches: [main]
 
 env:
   poetry_version: 1.2.2
@@ -57,6 +60,7 @@ jobs:
           echo "{version}={$(poetry run semantic-release print-version --current)}" >> $GITHUB_OUTPUT
         env:
           PYPI_TOKEN: ${{ secrets.PYPI_TOKEN }}
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         # outputs:
         #   matrix: ${{ steps.semantic-release.outputs.version }}
 
