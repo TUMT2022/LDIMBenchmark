@@ -1485,7 +1485,9 @@
 <span class="normal"><a href="#__codelineno-0-156">156</a></span>
 <span class="normal"><a href="#__codelineno-0-157">157</a></span>
 <span class="normal"><a href="#__codelineno-0-158">158</a></span>
-<span class="normal"><a href="#__codelineno-0-159">159</a></span></pre></div></td><td class="code"><div><pre><span></span><code><a id="__codelineno-0-13" name="__codelineno-0-13"></a><span class="k">def</span> <span class="nf">evaluate_leakages</span><span class="p">(</span><span class="n">expected_leaks</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">,</span> <span class="n">detected_leaks</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">):</span>
+<span class="normal"><a href="#__codelineno-0-159">159</a></span>
+<span class="normal"><a href="#__codelineno-0-160">160</a></span>
+<span class="normal"><a href="#__codelineno-0-161">161</a></span></pre></div></td><td class="code"><div><pre><span></span><code><a id="__codelineno-0-13" name="__codelineno-0-13"></a><span class="k">def</span> <span class="nf">evaluate_leakages</span><span class="p">(</span><span class="n">expected_leaks</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">,</span> <span class="n">detected_leaks</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">):</span>
 <a id="__codelineno-0-14" name="__codelineno-0-14"></a><span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <a id="__codelineno-0-15" name="__codelineno-0-15"></a><span class="sd">    Evaluates the detected leaks and returns the results.</span>
 <a id="__codelineno-0-16" name="__codelineno-0-16"></a><span class="sd">    &quot;&quot;&quot;</span>
@@ -1627,11 +1629,13 @@
 <a id="__codelineno-0-152" name="__codelineno-0-152"></a>            <span class="s2">&quot;false_positives&quot;</span><span class="p">:</span> <span class="n">non_existing_leak_detected</span><span class="p">,</span>
 <a id="__codelineno-0-153" name="__codelineno-0-153"></a>            <span class="s2">&quot;true_negatives&quot;</span><span class="p">:</span> <span class="kc">None</span><span class="p">,</span>  <span class="c1"># Not applicable, we dont have information about non-leaks</span>
 <a id="__codelineno-0-154" name="__codelineno-0-154"></a>            <span class="s2">&quot;false_negatives&quot;</span><span class="p">:</span> <span class="n">existing_leak_not_detected</span><span class="p">,</span>
-<a id="__codelineno-0-155" name="__codelineno-0-155"></a>            <span class="s2">&quot;time_to_detection&quot;</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">time_to_detection</span><span class="p">),</span>
-<a id="__codelineno-0-156" name="__codelineno-0-156"></a>            <span class="s2">&quot;wrong_pipe&quot;</span><span class="p">:</span> <span class="n">wrong_pipe_detected</span><span class="p">,</span>
-<a id="__codelineno-0-157" name="__codelineno-0-157"></a>        <span class="p">},</span>
-<a id="__codelineno-0-158" name="__codelineno-0-158"></a>        <span class="n">matched_list</span><span class="p">,</span>
-<a id="__codelineno-0-159" name="__codelineno-0-159"></a>    <span class="p">)</span>
+<a id="__codelineno-0-155" name="__codelineno-0-155"></a>            <span class="s2">&quot;time_to_detection&quot;</span><span class="p">:</span> <span class="kc">None</span>
+<a id="__codelineno-0-156" name="__codelineno-0-156"></a>            <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">time_to_detection</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span>
+<a id="__codelineno-0-157" name="__codelineno-0-157"></a>            <span class="k">else</span> <span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">time_to_detection</span><span class="p">),</span>
+<a id="__codelineno-0-158" name="__codelineno-0-158"></a>            <span class="s2">&quot;wrong_pipe&quot;</span><span class="p">:</span> <span class="n">wrong_pipe_detected</span><span class="p">,</span>
+<a id="__codelineno-0-159" name="__codelineno-0-159"></a>        <span class="p">},</span>
+<a id="__codelineno-0-160" name="__codelineno-0-160"></a>        <span class="n">matched_list</span><span class="p">,</span>
+<a id="__codelineno-0-161" name="__codelineno-0-161"></a>    <span class="p">)</span>
 </code></pre></div></td></tr></table></div>
       </details>
   </div>
