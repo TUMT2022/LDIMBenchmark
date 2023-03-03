@@ -2370,7 +2370,7 @@ It converts and represents the Low Level Interface for the LDIMBenchmark.</p>
 
 
 <h2 id="ldimbenchmark.datasets.classes.getTimeSliceOfDataset" class="doc doc-heading">
-<code class="highlight language-python"><span class="n">getTimeSliceOfDataset</span><span class="p">(</span><span class="n">dataset</span><span class="p">,</span> <span class="n">start</span><span class="p">,</span> <span class="n">end</span><span class="p">)</span></code>
+<code class="highlight language-python"><span class="n">getTimeSliceOfDataset</span><span class="p">(</span><span class="n">dataset</span><span class="p">,</span> <span class="n">start</span><span class="p">,</span> <span class="n">end</span><span class="p">,</span> <span class="n">logging_dataset_name</span><span class="p">,</span> <span class="n">logging_sensor_type</span><span class="p">)</span></code>
 
 </h2>
 
@@ -2397,23 +2397,33 @@ It converts and represents the Low Level Interface for the LDIMBenchmark.</p>
 <span class="normal"><a href="#__codelineno-0-387">387</a></span>
 <span class="normal"><a href="#__codelineno-0-388">388</a></span>
 <span class="normal"><a href="#__codelineno-0-389">389</a></span>
-<span class="normal"><a href="#__codelineno-0-390">390</a></span></pre></div></td><td class="code"><div><pre><span></span><code><a id="__codelineno-0-374" name="__codelineno-0-374"></a><span class="k">def</span> <span class="nf">getTimeSliceOfDataset</span><span class="p">(</span>
-<a id="__codelineno-0-375" name="__codelineno-0-375"></a>    <span class="n">dataset</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">DataFrame</span><span class="p">],</span> <span class="n">start</span><span class="p">:</span> <span class="n">datetime</span><span class="p">,</span> <span class="n">end</span><span class="p">:</span> <span class="n">datetime</span>
-<a id="__codelineno-0-376" name="__codelineno-0-376"></a><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">DataFrame</span><span class="p">:</span>
-<a id="__codelineno-0-377" name="__codelineno-0-377"></a><span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
-<a id="__codelineno-0-378" name="__codelineno-0-378"></a><span class="sd">    Get a time slice of a dataframe.</span>
-<a id="__codelineno-0-379" name="__codelineno-0-379"></a><span class="sd">    &quot;&quot;&quot;</span>
-<a id="__codelineno-0-380" name="__codelineno-0-380"></a>
-<a id="__codelineno-0-381" name="__codelineno-0-381"></a>    <span class="n">new_dataset_slice</span> <span class="o">=</span> <span class="p">{}</span>
-<a id="__codelineno-0-382" name="__codelineno-0-382"></a>    <span class="k">for</span> <span class="n">key</span> <span class="ow">in</span> <span class="n">dataset</span><span class="p">:</span>
-<a id="__codelineno-0-383" name="__codelineno-0-383"></a>        <span class="n">logging</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="n">key</span><span class="p">)</span>
-<a id="__codelineno-0-384" name="__codelineno-0-384"></a>        <span class="n">new_dataset_slice</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="n">dataset</span><span class="p">[</span><span class="n">key</span><span class="p">]</span><span class="o">.</span><span class="n">sort_index</span><span class="p">()</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">start</span><span class="p">:</span><span class="n">end</span><span class="p">]</span>
-<a id="__codelineno-0-385" name="__codelineno-0-385"></a>
-<a id="__codelineno-0-386" name="__codelineno-0-386"></a>    <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">new_dataset_slice</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
-<a id="__codelineno-0-387" name="__codelineno-0-387"></a>        <span class="n">logging</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span>
-<a id="__codelineno-0-388" name="__codelineno-0-388"></a>            <span class="sa">f</span><span class="s2">&quot;No data from dataset selected, because start- and endtime (</span><span class="si">{</span><span class="n">start</span><span class="si">}</span><span class="s2"> / </span><span class="si">{</span><span class="n">end</span><span class="si">}</span><span class="s2">) are outside of the datapoint ranges.&quot;</span>
-<a id="__codelineno-0-389" name="__codelineno-0-389"></a>        <span class="p">)</span>
-<a id="__codelineno-0-390" name="__codelineno-0-390"></a>    <span class="k">return</span> <span class="n">new_dataset_slice</span>
+<span class="normal"><a href="#__codelineno-0-390">390</a></span>
+<span class="normal"><a href="#__codelineno-0-391">391</a></span>
+<span class="normal"><a href="#__codelineno-0-392">392</a></span>
+<span class="normal"><a href="#__codelineno-0-393">393</a></span>
+<span class="normal"><a href="#__codelineno-0-394">394</a></span>
+<span class="normal"><a href="#__codelineno-0-395">395</a></span></pre></div></td><td class="code"><div><pre><span></span><code><a id="__codelineno-0-374" name="__codelineno-0-374"></a><span class="k">def</span> <span class="nf">getTimeSliceOfDataset</span><span class="p">(</span>
+<a id="__codelineno-0-375" name="__codelineno-0-375"></a>    <span class="n">dataset</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">DataFrame</span><span class="p">],</span>
+<a id="__codelineno-0-376" name="__codelineno-0-376"></a>    <span class="n">start</span><span class="p">:</span> <span class="n">datetime</span><span class="p">,</span>
+<a id="__codelineno-0-377" name="__codelineno-0-377"></a>    <span class="n">end</span><span class="p">:</span> <span class="n">datetime</span><span class="p">,</span>
+<a id="__codelineno-0-378" name="__codelineno-0-378"></a>    <span class="n">logging_dataset_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+<a id="__codelineno-0-379" name="__codelineno-0-379"></a>    <span class="n">logging_sensor_type</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+<a id="__codelineno-0-380" name="__codelineno-0-380"></a><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">DataFrame</span><span class="p">:</span>
+<a id="__codelineno-0-381" name="__codelineno-0-381"></a><span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<a id="__codelineno-0-382" name="__codelineno-0-382"></a><span class="sd">    Get a time slice of a dataframe.</span>
+<a id="__codelineno-0-383" name="__codelineno-0-383"></a><span class="sd">    &quot;&quot;&quot;</span>
+<a id="__codelineno-0-384" name="__codelineno-0-384"></a>
+<a id="__codelineno-0-385" name="__codelineno-0-385"></a>    <span class="n">new_dataset_slice</span> <span class="o">=</span> <span class="p">{}</span>
+<a id="__codelineno-0-386" name="__codelineno-0-386"></a>    <span class="k">for</span> <span class="n">key</span> <span class="ow">in</span> <span class="n">dataset</span><span class="p">:</span>
+<a id="__codelineno-0-387" name="__codelineno-0-387"></a>        <span class="n">logging</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="n">key</span><span class="p">)</span>
+<a id="__codelineno-0-388" name="__codelineno-0-388"></a>        <span class="n">new_dataset_slice</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="n">dataset</span><span class="p">[</span><span class="n">key</span><span class="p">]</span><span class="o">.</span><span class="n">sort_index</span><span class="p">()</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">start</span><span class="p">:</span><span class="n">end</span><span class="p">]</span>
+<a id="__codelineno-0-389" name="__codelineno-0-389"></a>
+<a id="__codelineno-0-390" name="__codelineno-0-390"></a>    <span class="c1"># If there is no data in the slice, but there is data in the dataset, then the start- and endtime are outside of the datapoint ranges.</span>
+<a id="__codelineno-0-391" name="__codelineno-0-391"></a>    <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">new_dataset_slice</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span> <span class="ow">and</span> <span class="nb">len</span><span class="p">(</span><span class="n">dataset</span><span class="o">.</span><span class="n">keys</span><span class="p">())</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">:</span>
+<a id="__codelineno-0-392" name="__codelineno-0-392"></a>        <span class="n">logging</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span>
+<a id="__codelineno-0-393" name="__codelineno-0-393"></a>            <span class="sa">f</span><span class="s2">&quot;No data from dataset &#39;</span><span class="si">{</span><span class="n">logging_dataset_name</span><span class="si">}</span><span class="s2">&#39; with sensor type &#39;</span><span class="si">{</span><span class="n">logging_sensor_type</span><span class="si">}</span><span class="s2">&#39; selected, because start- and endtime (</span><span class="si">{</span><span class="n">start</span><span class="si">}</span><span class="s2"> / </span><span class="si">{</span><span class="n">end</span><span class="si">}</span><span class="s2">) are outside of the datapoint ranges.&quot;</span>
+<a id="__codelineno-0-394" name="__codelineno-0-394"></a>        <span class="p">)</span>
+<a id="__codelineno-0-395" name="__codelineno-0-395"></a>    <span class="k">return</span> <span class="n">new_dataset_slice</span>
 </code></pre></div></td></tr></table></div>
       </details>
   </div>
