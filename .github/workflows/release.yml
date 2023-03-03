@@ -61,15 +61,16 @@ jobs:
         env:
           PYPI_TOKEN: ${{ secrets.PYPI_TOKEN }}
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        # outputs:
-        #   matrix: ${{ steps.semantic-release.outputs.version }}
-
+      
       - run: echo ${{ steps.semantic-release.outputs.version }}
       # Trigger pypi cache once so the docker build does not fail.
-      - run: pip install ldimbenchmark==${{ steps.semantic-release.outputs.version }} || true
 
+      
+      - run: pip install ldimbenchmark==${{ steps.semantic-release.outputs.version }} || true
+        if: steps.semantic-release.outputs.version != null
+  
       - name: Log in to the Container registry
-        if: "!contains(steps.semantic-release.outputs.version, 'No release')"
+        if: steps.semantic-release.outputs.version != null
         uses: docker/login-action@f054a8b539a109f9f41c372932f1ae047eff08c9
         with:
           registry: ghcr.io
@@ -77,14 +78,14 @@ jobs:
           password: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Extract metadata (tags, labels) for Docker
-        if: "!contains(steps.semantic-release.outputs.version, 'No release')"
+        if: steps.semantic-release.outputs.version != null
         id: meta
         uses: docker/metadata-action@v4.3.0
         with:
           images: ghcr.io/ldimbenchmark/ldimbenchmark
 
       - name: Build and push Docker image
-        if: "!contains(steps.semantic-release.outputs.version, 'No release')"
+        if: steps.semantic-release.outputs.version != null
         uses: docker/build-push-action@v4.0.0
         with:
           context: .
@@ -95,7 +96,7 @@ jobs:
             VERSION=${{ steps.semantic-release.outputs.version }}
 
       - name: Trigger new methods Release
-        if: "!contains(steps.semantic-release.outputs.version, 'No release')"
+        if: steps.semantic-release.outputs.version != null
         uses: actions/github-script@v6
         with:
           github-token: ${{ secrets.GHA_WORKFLOW_TRIGGER }}
