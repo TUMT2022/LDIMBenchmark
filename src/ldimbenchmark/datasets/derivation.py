@@ -1,3 +1,5 @@
+from concurrent.futures import ProcessPoolExecutor, as_completed
+import itertools
 import os
 
 from pandas import DataFrame
@@ -11,6 +13,58 @@ from typing import Literal, Union, List
 
 from collections.abc import Sequence
 from numpy.random import Generator, PCG64
+
+
+def get_random_norm(
+    noise_level: float, size: int, seed: int = 27565124760782368551060429849508057759
+):
+    """
+    Generate a random normal distribution with a given noise level
+    """
+    random_gen = Generator(PCG64(seed))
+    lower, upper = -noise_level, noise_level
+    mu, sigma = 0, noise_level / 3
+    # truncnorm_gen =
+    # truncnorm_gen.random_state =
+    X = stats.truncnorm(
+        (lower - mu) / sigma,
+        (upper - mu) / sigma,
+        loc=mu,
+        scale=sigma,
+    )
+    return X.rvs(
+        size,
+        random_state=random_gen,
+    )
+
+
+def _apply_derivation_to_DataFrame(
+    derivation: Literal["precision", "sensitivity", "downsample"],
+    value: float,
+    dataframe: DataFrame,
+    key: str,
+) -> DataFrame:
+    if derivation == "precision":
+        noise = get_random_norm(value, dataframe.index.shape)
+        dataframe = dataframe.mul(1 + noise, axis=0)
+    elif derivation == "sensitivity":
+        if value["shift"] == "top":
+            dataframe = np.ceil(dataframe / value["value"]) * value["value"]
+        else:
+            dataframe = np.floor(dataframe / value["value"]) * value["value"]
+
+    elif derivation == "downsample":
+        dataframe = dataframe.reset_index()
+        dataframe = dataframe.groupby(
+            (dataframe["Timestamp"] - dataframe["Timestamp"][0]).dt.total_seconds()
+            // (value),
+            group_keys=True,
+        ).first()
+        dataframe = dataframe.set_index("Timestamp")
+    else:
+        raise ValueError(f"Derivation {derivation} not implemented")
+
+    return (key, dataframe)
 
 
 class DatasetDerivator:
@@ -36,9 +90,6 @@ class DatasetDerivator:
         self.out_path = out_path
         self.force = force
 
-        # TODO: should we always use the same seed?
-        seed = 27565124760782368551060429849508057759
-        self.random_gen = Generator(PCG64(seed))
         self.all_derived_datasets = []
 
     def get_dervived_datasets(self, with_original: bool = False):
@@ -46,15 +97,12 @@ class DatasetDerivator:
             return self.datasets + self.all_derived_datasets
         return self.all_derived_datasets
 
-    # TODO: Add more derivations, like junction elevation
-
-    # TODO: Caching
-    # TODO: cross product of derivations
     # TODO: Parallelization
 
     def derive_model(
         self,
-        apply_to: Literal["junctions", "patterns"],
+        # TODO: Add Pattern derivation
+        apply_to: Literal["junctions"],  # , "patterns"],
         change_property: Literal["elevation"],
         derivation: str,
         values: list,
@@ -86,12 +134,12 @@ class DatasetDerivator:
                         self.out_path, this_dataset.id + "/"
                     )
 
-                    if not os.path.exists(derivedDatasetPath):
+                    if not os.path.exists(derivedDatasetPath) or self.force:
                         loadedDataset = this_dataset.loadData()
 
                         # Derive
                         junctions = loadedDataset.model.junction_name_list
-                        noise = self.__get_random_norm(value, len(junctions))
+                        noise = get_random_norm(value, len(junctions))
                         for index, junction in enumerate(junctions):
                             loadedDataset.model.get_node(junction).elevation += noise[
                                 index
@@ -180,11 +228,32 @@ class DatasetDerivator:
                     loadedDataset = this_dataset.loadData()
 
                     datasets = getattr(loadedDataset, apply_to)
-                    for key in datasets.keys():
-                        transformed_data = self._apply_derivation_to_DataFrame(
-                            derivation, value, datasets[key]
-                        )
-                        datasets[key] = transformed_data
+                    # TODO: Parallelization
+
+                    keys = datasets.keys()
+                    transformations = zip(
+                        itertools.repeat(derivation, len(keys)),
+                        itertools.repeat(value, len(keys)),
+                        [datasets[key] for key in keys],
+                        keys,
+                    )
+                    # logging.debug(filepaths)
+                    with ProcessPoolExecutor(max_workers=os.cpu_count()) as executor:
+                        # submit all tasks and get future objects
+                        futures = [
+                            executor.submit(
+                                _apply_derivation_to_DataFrame,
+                                derivation,
+                                value,
+                                dataset_key,
+                                key,
+                            )
+                            for derivation, value, dataset_key, key in transformations
+                        ]
+                        # process results from tasks in order of task completion
+                        for future in as_completed(futures):
+                            key, result = future.result()
+                            datasets[key] = result
 
                     setattr(loadedDataset, apply_to, datasets)
 
@@ -196,78 +265,3 @@ class DatasetDerivator:
                 self.all_derived_datasets.append(dataset)
 
         return newDatasets
-
-    def _generateNormalDistributedNoise(self, dataset, noiseLevel):
-        """
-        generate noise in a gaussian way between the low and high level of noiseLevel
-        sigma is choosen so that 99.7% of the data is within the noiseLevel bounds
-
-        :param noiseLevel: noise level in percent
-
-        """
-        lower, upper = -noiseLevel, noiseLevel
-        mu, sigma = 0, noiseLevel / 3
-        X = stats.truncnorm(
-            (lower - mu) / sigma, (upper - mu) / sigma, loc=mu, scale=sigma
-        )
-        noise = X.rvs(dataset.index.shape)
-        return dataset, noise
-
-    def _generateUniformDistributedNoise(self, dataset, noiseLevel):
-        """
-        generate noise in a uniform way between the low and high level of noiseLevel
-
-        :param noiseLevel: noise level in percent
-
-        """
-        noise = np.random.uniform(-noiseLevel, noiseLevel, dataset.index.shape)
-
-        dataset = dataset.mul(1 + noise, axis=0)
-        return dataset, noise
-
-    def __get_random_norm(self, noise_level: float, size: int):
-        """
-        Generate a random normal distribution with a given noise level
-        """
-        lower, upper = -noise_level, noise_level
-        mu, sigma = 0, noise_level / 3
-        # truncnorm_gen =
-        # truncnorm_gen.random_state =
-        X = stats.truncnorm(
-            (lower - mu) / sigma,
-            (upper - mu) / sigma,
-            loc=mu,
-            scale=sigma,
-        )
-        return X.rvs(
-            size,
-            random_state=self.random_gen,
-        )
-
-    def _apply_derivation_to_DataFrame(
-        self,
-        derivation: Literal["precision", "sensitivity", "downsample"],
-        value: float,
-        dataframe: DataFrame,
-    ) -> DataFrame:
-        if derivation == "precision":
-            noise = self.__get_random_norm(value, dataframe.index.shape)
-            dataframe = dataframe.mul(1 + noise, axis=0)
-        elif derivation == "sensitivity":
-            if value["shift"] == "top":
-                dataframe = np.ceil(dataframe / value["value"]) * value["value"]
-            else:
-                dataframe = np.floor(dataframe / value["value"]) * value["value"]
-
-        elif derivation == "downsample":
-            dataframe = dataframe.reset_index()
-            dataframe = dataframe.groupby(
-                (dataframe["Timestamp"] - dataframe["Timestamp"][0]).dt.total_seconds()
-                // (value),
-                group_keys=True,
-            ).first()
-            dataframe = dataframe.set_index("Timestamp")
-        else:
-            raise ValueError(f"Derivation {derivation} not implemented")
-
-        return dataframe
