@@ -25,6 +25,7 @@ from ldimbenchmark.evaluation_metrics import (
     f1Score,
 )
 from concurrent.futures.process import ProcessPoolExecutor
+from sqlalchemy import create_engine
 
 
 def execute_experiment(experiment: MethodRunner):
@@ -162,13 +163,14 @@ def load_result(folder: str) -> Dict:
         evaluation_dataset_leakages, detected_leaks
     )
     evaluation_results["method"] = run_info["method"]
+    evaluation_results["method_version"] = run_info.get("method_version", None)
     evaluation_results["dataset"] = run_info["dataset"]
     evaluation_results["dataset_part"] = run_info.get("dataset_part", None)
     evaluation_results["dataset_id"] = run_info["dataset_id"]
     evaluation_results["dataset_derivations"] = run_info["dataset_options"]
     evaluation_results["hyperparameters"] = run_info["hyperparameters"]
     evaluation_results["matched_leaks_list"] = matched_list
-    evaluation_results["_folder"] = folder
+    evaluation_results["_folder"] = os.path.basename(os.path.dirname(folder))
     evaluation_results["executed_at"] = run_info.get("executed_at", None)
 
     return evaluation_results
@@ -509,7 +511,7 @@ class LDIMBenchmark:
         self,
         current_only=True,
         resultFilter: Callable = lambda r: r,
-        write_results=False,
+        write_results: Union[None, Literal["csv", "db"]] = None,
         generate_plots=False,
         evaluations: List[Callable] = [
             precision,
@@ -557,7 +559,12 @@ class LDIMBenchmark:
                 f"You are generating Plots for {len(result_folders)} results! This will take ages, consider only generating them for the benchmark run you are interested in."
             )
 
-        logging.info(f"Loading {len(result_folders)} results...")
+        manager = enlighten.get_manager()
+        pbar1 = manager.counter(
+            total=len(result_folders),
+            desc="Loading Results",
+            unit="results",
+        )
         results = []
         parallel = True
         if parallel == True:
@@ -570,9 +577,11 @@ class LDIMBenchmark:
                 for future in as_completed(futures):
                     result = future.result()
                     results.append(result)
+                    pbar1.update()
         else:
             for experiment_result in result_folders:
                 results.append(load_result(experiment_result))
+        pbar1.close()
 
         if generate_plots:
             logging.info("Generating plots...")
@@ -584,7 +593,6 @@ class LDIMBenchmark:
                     loaded = dataset
 
                 loaded_datasets[dataset.id] = loaded.loadData()
-            manager = enlighten.get_manager()
             pbar = manager.counter(total=len(results), desc="Results:", unit="results")
 
             for result in results:
@@ -630,7 +638,8 @@ class LDIMBenchmark:
                         pbar2.update()
                 pbar2.close()
                 pbar.update()
-            manager.close()
+
+        manager.stop()
         results = pd.DataFrame(results)
 
         for function in evaluations:
@@ -638,11 +647,42 @@ class LDIMBenchmark:
 
         results = resultFilter(results)
         # https://towardsdatascience.com/performance-metrics-confusion-matrix-precision-recall-and-f1-score-a8fe076a2262
-        results = results.set_index(["method", "dataset_id"])
-        results = results.sort_values(by=["F1"])
+        results = results.set_index(["_folder"])
+        results = results.drop(columns=["matched_leaks_list"])
 
         os.makedirs(self.evaluation_results_dir, exist_ok=True)
-        results = results.drop(columns=["_folder", "matched_leaks_list"])
+
+        if write_results == "csv":
+            print("Writing results to disk")
+            results.to_csv(os.path.join(self.evaluation_results_dir, "results.csv"))
+
+            results.style.format(escape="latex").set_table_styles(
+                [
+                    # {'selector': 'toprule', 'props': ':hline;'},
+                    {"selector": "midrule", "props": ":hline;"},
+                    # {'selector': 'bottomrule', 'props': ':hline;'},
+                ],
+                overwrite=False,
+            ).relabel_index(columns, axis="columns").to_latex(
+                os.path.join(self.evaluation_results_dir, "results.tex"),
+                position_float="centering",
+                clines="all;data",
+                column_format="ll|" + "r" * len(columns),
+                position="H",
+                label="table:benchmark_results",
+                caption="Overview of the benchmark results.",
+            )
+        elif write_results == "db":
+            print("Writing results to database")
+            engine = create_engine(
+                f"sqlite:///{os.path.join(self.evaluation_results_dir, 'results.db')}"
+            )
+            results.to_sql("results", engine, if_exists="replace")
+
+        results = results.set_index(["method", "method_version", "dataset_id"])
+        results = results.sort_values(by=["F1"])
+        # Display in console
+        # results = results.drop(columns=["_folder", "matched_leaks_list"])
         # TODO: Automatically add selected metrics
         columns = [
             "TP",
@@ -667,27 +707,6 @@ class LDIMBenchmark:
         results.columns = columns
 
         print(tabulate(results, headers="keys"))
-
-        if write_results:
-            print("Writing results to disk")
-            results.to_csv(os.path.join(self.evaluation_results_dir, "results.csv"))
-
-            results.style.format(escape="latex").set_table_styles(
-                [
-                    # {'selector': 'toprule', 'props': ':hline;'},
-                    {"selector": "midrule", "props": ":hline;"},
-                    # {'selector': 'bottomrule', 'props': ':hline;'},
-                ],
-                overwrite=False,
-            ).relabel_index(columns, axis="columns").to_latex(
-                os.path.join(self.evaluation_results_dir, "results.tex"),
-                position_float="centering",
-                clines="all;data",
-                column_format="ll|" + "r" * len(columns),
-                position="H",
-                label="table:benchmark_results",
-                caption="Overview of the benchmark results.",
-            )
         return results
 
 
