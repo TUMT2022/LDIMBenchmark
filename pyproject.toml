@@ -65,7 +65,7 @@ build_command = "poetry build"
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]
-norecursedirs="test_data .ldim_benchmark_cache"
+norecursedirs="test_data .ldim_benchmark_cache benchmark-results dist"
 markers = ["noci: tests that should not run in ci."]
 
 [tool.tox]
@@ -89,7 +89,7 @@ deps =
     pytest-benchmark==4.0.0
 commands =
     black --check --verbose src/ldimbenchmark
-    pytest . -m "not noci"
+    pytest -m "not noci"
 """
 
 [tool.pyright]
