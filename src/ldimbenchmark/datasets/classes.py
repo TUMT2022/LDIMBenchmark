@@ -372,7 +372,11 @@ class Dataset:
 
 
 def getTimeSliceOfDataset(
-    dataset: Dict[str, DataFrame], start: datetime, end: datetime
+    dataset: Dict[str, DataFrame],
+    start: datetime,
+    end: datetime,
+    logging_dataset_name: str,
+    logging_sensor_type: str,
 ) -> DataFrame:
     """
     Get a time slice of a dataframe.
@@ -383,9 +387,10 @@ def getTimeSliceOfDataset(
         logging.debug(key)
         new_dataset_slice[key] = dataset[key].sort_index().loc[start:end]
 
-    if len(new_dataset_slice) == 0:
+    # If there is no data in the slice, but there is data in the dataset, then the start- and endtime are outside of the datapoint ranges.
+    if len(new_dataset_slice) == 0 and len(dataset.keys()) != 0:
         logging.warning(
-            f"No data from dataset selected, because start- and endtime ({start} / {end}) are outside of the datapoint ranges."
+            f"No data from dataset '{logging_dataset_name}' with sensor type '{logging_sensor_type}' selected, because start- and endtime ({start} / {end}) are outside of the datapoint ranges."
         )
     return new_dataset_slice
 
@@ -409,11 +414,17 @@ def extractSubDataset(
     return _LoadedDatasetPartNew(
         {
             "pressures": getTimeSliceOfDataset(
-                full_data.pressures, start_time, end_time
+                full_data.pressures, start_time, end_time, config["name"], "pressures"
             ),
-            "demands": getTimeSliceOfDataset(full_data.demands, start_time, end_time),
-            "flows": getTimeSliceOfDataset(full_data.flows, start_time, end_time),
-            "levels": getTimeSliceOfDataset(full_data.levels, start_time, end_time),
+            "demands": getTimeSliceOfDataset(
+                full_data.demands, start_time, end_time, config["name"], "demands"
+            ),
+            "flows": getTimeSliceOfDataset(
+                full_data.flows, start_time, end_time, config["name"], "flows"
+            ),
+            "levels": getTimeSliceOfDataset(
+                full_data.levels, start_time, end_time, config["name"], "levels"
+            ),
             "leaks": leaks,
         }
     )
