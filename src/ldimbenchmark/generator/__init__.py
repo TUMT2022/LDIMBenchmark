@@ -1,24 +1,17 @@
+from concurrent.futures import ProcessPoolExecutor, as_completed
 from ldimbenchmark.constants import LDIM_BENCHMARK_CACHE_DIR
 from ldimbenchmark.generator.dataset_generator import (
     DatasetGenerator,
-    DatasetGeneratorConfig,
 )
 from ldimbenchmark.generator.poulakis_network import generatePoulakisNetwork
 import wntr
 import matplotlib.pyplot as plt
 import os
 import yaml
-from math import sqrt
-from multiprocessing import Pool, cpu_count
-from tqdm import tqdm
 import numpy as np
-import math
-from datetime import datetime
-from itertools import repeat
+
 
 import logging
-from argparse import ArgumentParser
-from functools import partial
 
 
 # TODO: Move to main __init__.py
@@ -230,13 +223,19 @@ def generateDatasetsForJunctions(
             ],
         )
 
-        with Pool(processes=cpu_count() - 1) as p:
-            jobs = [
-                p.apply_async(func=generateDatasetForJunctionNumber, args=arguments)
-                for arguments in arguments_list
-            ]
-            for job in tqdm(jobs):
-                job.get()  # wait for job to complete
+        try:
+            with ProcessPoolExecutor(max_workers=os.cpu_count()) as executor:
+                # submit all tasks and get future objects
+                futures = [
+                    executor.submit(generateDatasetForJunctionNumber, junction, num)
+                    for junction, num in arguments_list
+                ]
+                # process results from tasks in order of task completion
+                for future in as_completed(futures):
+                    future.result()
+        except KeyboardInterrupt:
+            executor._processes.clear()
+            os.kill(os.getpid(), 9)
 
 
 def generateDatasetsForTimespan(
@@ -249,13 +248,20 @@ def generateDatasetsForTimespan(
             days, [os.path.join(out_dir, f"synthetic-days-{day}") for day in days]
         )
 
-        with Pool(processes=cpu_count() - 1) as p:
-            jobs = [
-                p.apply_async(func=generateDatasetForTimeSpanDays, args=arguments)
-                for arguments in arguments_list
-            ]
-            for job in tqdm(jobs):
-                job.get()  # wait for job to complete
+        try:
+            with ProcessPoolExecutor(max_workers=os.cpu_count()) as executor:
+                # submit all tasks and get future objects
+                futures = [
+                    executor.submit(generateDatasetForTimeSpanDays, day, num)
+                    for day, num in arguments_list
+                ]
+                # process results from tasks in order of task completion
+                for future in as_completed(futures):
+                    future.result()
+        except KeyboardInterrupt:
+            executor._processes.clear()
+            os.kill(os.getpid(), 9)
+
 
 
 # if args.variations == "junctions":

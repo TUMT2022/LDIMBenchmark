@@ -10,7 +10,6 @@ ldimbenchmark = "ldimbenchmark.cli:cli"
 
 [tool.poetry.dependencies]
 python = ">=3.8,<4"
-tqdm = "^4.64.1"
 wntr = "^0.5.0"
 pyyaml = "^6.0"
 scikit-learn = "^1.1.3"

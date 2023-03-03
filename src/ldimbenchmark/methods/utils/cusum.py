@@ -34,6 +34,7 @@ def cusum(df, direction="p", delta=4, C_thr=3, est_length="3 days"):
     for i, col in enumerate(df.columns):
         traj_ = df[col].copy()
         # BUG: This sets the first timeseries index to first non zero value
+        # TODO Test
         traj_ = traj_.replace(0, np.nan).dropna()
         if len(traj_) == 0:
             ar_mean[i] = 0

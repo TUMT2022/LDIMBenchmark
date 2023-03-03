@@ -247,7 +247,7 @@ class DUALMethod(LDIMMethodBase):
         # else:
         temp_dir = tempfile.TemporaryDirectory()
         sim = wntr.sim.EpanetSimulator(self.wn)
-        # TODO: With multiprocessing this line produces a deadlock
+        # TODO: When parallel processing this line might produces a deadlock
         result = sim.run_sim(file_prefix=os.path.join(temp_dir.name, "all"))
         temp_dir.cleanup()
         # if not os.path.exists(path):

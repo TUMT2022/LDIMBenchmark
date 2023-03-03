@@ -1,9 +1,12 @@
+from concurrent.futures import ProcessPoolExecutor, ThreadPoolExecutor, as_completed
 import importlib
 import os
 import time
 from datetime import datetime
 from glob import glob
 import logging
+
+import enlighten
 from ldimbenchmark.constants import LDIM_BENCHMARK_CACHE_DIR
 from ldimbenchmark.datasets import Dataset
 from ldimbenchmark.generator import (
@@ -16,14 +19,12 @@ import pandas as pd
 import wntr
 import yaml
 import big_o
-from multiprocessing import Pool, cpu_count
-from tqdm import tqdm
 import matplotlib as mpl
 from typing import List
 
 
 def loadDataset_local(dataset_path):
-    dataset = Dataset(dataset_path).loadDataset().loadBenchmarkData()
+    dataset = Dataset(dataset_path).loadData().loadBenchmarkData()
     number = int(os.path.basename(os.path.normpath(dataset_path)).split("-")[-1])
     return (
         number,
@@ -57,23 +58,33 @@ def run_benchmark_complexity(
 
     dataset_dirs = glob(datasets_dir + "/*/")
 
+    manager = enlighten.get_manager()
+    bar_loading_data = manager.counter(
+        total=len(dataset_dirs), desc="Loading data", unit="datasets"
+    )
+    bar_loading_data.update(incr=0)
+
     logging.info(" > Loading Data")
     datasets = {}
-    with Pool(processes=cpu_count() - 1) as p:
-        max_ = len(dataset_dirs)
-        with tqdm(total=max_) as pbar:
-            for datasetid, training, evaluation in p.imap_unordered(
-                loadDataset_local, dataset_dirs
-            ):
-                datasets[datasetid] = {}
-                datasets[datasetid]["training"] = training
-                datasets[datasetid]["evaluation"] = evaluation
-                pbar.update()
-    # for dataset in dataset_dirs:
-    #     (datasetid, training, evaluation) = loadDataset_local(dataset)
-    #     datasets[datasetid] = {}
-    #     datasets[datasetid]["training"] = training
-    #     datasets[datasetid]["evaluation"] = evaluation
+    try:
+        with ThreadPoolExecutor(max_workers=os.cpu_count()) as executor:
+            # submit all tasks and get future objects
+            futures = [
+                executor.submit(loadDataset_local, dataset_dir)
+                for dataset_dir in dataset_dirs
+            ]
+            # process results from tasks in order of task completion
+            for future in as_completed(futures):
+                dataset_id, training, evaluation = future.result()
+                datasets[dataset_id] = {}
+                datasets[dataset_id]["training"] = training
+                datasets[dataset_id]["evaluation"] = evaluation
+                bar_loading_data.update()
+    except KeyboardInterrupt:
+        manager.stop()
+        executor._processes.clear()
+        os.kill(os.getpid(), 9)
+    bar_loading_data.close()
 
     results = {}
     result_measures = []
@@ -87,7 +98,10 @@ def run_benchmark_complexity(
     #                 )
     #             )
 
-    logging.info(" > Starting Complexity analyis")
+    bar_running_analysis = manager.counter(
+        total=len(methods), desc="Running Analysis", unit="methods"
+    )
+    logging.info(" > Starting Complexity analysis")
     for method in methods:
         logging.info(f" - {method.name}")
 
@@ -97,7 +111,7 @@ def run_benchmark_complexity(
             )
 
         def runAlgorithmWithNetwork(n):
-            method.train(datasets[n]["training"])
+            method.prepare(datasets[n]["training"])
             method.detect_offline(datasets[n]["evaluation"])
 
         # Run Big-O
@@ -118,7 +132,14 @@ def run_benchmark_complexity(
         pd.DataFrame(list(others.items())[1:8]).to_csv(
             os.path.join(out_folder, "big_o.csv"), header=False, index=False
         )
+        bar_running_analysis.update()
+        # Cooldown for 10 seconds
+        time.sleep(10)
 
+    bar_running_analysis.close()
+    manager.stop()
+
+    logging.info(f"Exporting results to {out_folder}")
     results = pd.DataFrame(
         {
             "Leakage Detection Method": results.keys(),
