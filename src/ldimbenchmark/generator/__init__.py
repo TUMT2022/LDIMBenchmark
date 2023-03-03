@@ -263,7 +263,6 @@ def generateDatasetsForTimespan(
             os.kill(os.getpid(), 9)
 
 
-
 # if args.variations == "junctions":
 #     generateDatasetsForJunctions(4, 59)
 
