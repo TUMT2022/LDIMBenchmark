@@ -64,6 +64,7 @@ jobs:
         # outputs:
         #   matrix: ${{ steps.semantic-release.outputs.version }}
 
+      - run: echo ${{ steps.semantic-release.outputs.version }}
       # Trigger pypi cache once so the docker build does not fail.
       - run: pip install ldimbenchmark==${{ steps.semantic-release.outputs.version }} || true
 
