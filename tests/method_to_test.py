@@ -34,7 +34,7 @@ class YourCustomLDIMMethod(LDIMMethodBase):
             ),
         )
 
-    def train(self, data: BenchmarkData):
+    def prepare(self, data: BenchmarkData = None) -> None:
         pass
 
     def detect_offline(self, data: BenchmarkData) -> List[BenchmarkLeakageResult]:

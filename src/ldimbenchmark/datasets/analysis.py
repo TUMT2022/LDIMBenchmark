@@ -177,6 +177,7 @@ class DatasetAnalyzer:
             fig.savefig(
                 os.path.join(dataset_analysis_out_dir, f"network_{dataset.id}.png")
             )
+            plt.close(fig)
 
         datasets_table = pd.concat(datasets_table)
         overview = pd.concat(network_model_details)

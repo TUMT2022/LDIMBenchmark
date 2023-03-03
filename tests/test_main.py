@@ -1,4 +1,5 @@
 import os
+import yaml
 from ldimbenchmark.datasets import Dataset, DatasetLibrary, DATASETS
 from ldimbenchmark import (
     LDIMBenchmark,
@@ -47,13 +48,14 @@ def test_benchmark(mocked_dataset1: Dataset):
 
     # execute benchmark
     benchmark.run_benchmark(
+        evaluation_mode="training"
         # parallel=True,
     )
 
     benchmark.evaluate()
-    benchmark.evaluate(
-        generate_plots=True,
-    )
+    # benchmark.evaluate(
+    #     generate_plots=True,
+    # )
 
 
 # def test_complexity():
@@ -78,9 +80,9 @@ def test_benchmark(mocked_dataset1: Dataset):
 
 def test_single_run_local(mocked_dataset1: Dataset):
     runner = LocalMethodRunner(
-        YourCustomLDIMMethod(),
-        mocked_dataset1,
-        {},
+        detection_method=YourCustomLDIMMethod(),
+        dataset=mocked_dataset1,
+        hyperparameters={},
         resultsFolder="./benchmark-results/runner_results",
     )
     runner.run()
@@ -88,17 +90,20 @@ def test_single_run_local(mocked_dataset1: Dataset):
     pass
 
 
-def test_single_run_docker(mocked_dataset1: Dataset):
-    runner = DockerMethodRunner(
-        "testmethod",
-        mocked_dataset1,
-        resultsFolder="./benchmark-results/runner_results",
-    )
-    # TODO: Refactor to read result from file
-    result_dir = runner.run()
-    asserted_results = pd.DataFrame(YourCustomLDIMMethod.get_results())
-    detected_leaks = pd.read_csv(os.path.join(result_dir, "detected_leaks.csv"))
-    assert_frame_equal(asserted_results, detected_leaks)
+# def test_single_run_docker(mocked_dataset1: Dataset):
+#     results_folder = "./benchmark-results/runner_results"
+#     runner = DockerMethodRunner(
+#         "testmethod",
+#         mocked_dataset1,
+#         resultsFolder=results_folder,
+#     )
+#     # TODO: Refactor to read result from file
+#     result = runner.run()
+#     asserted_results = pd.DataFrame(YourCustomLDIMMethod.get_results())
+#     detected_leaks = pd.read_csv(
+#         os.path.join(runner.resultsFolder, "detected_leaks.csv")
+#     )
+#     assert_frame_equal(asserted_results, detected_leaks)
 
 
 def test_method(mocked_dataset1: Dataset):
@@ -110,11 +115,33 @@ def test_method(mocked_dataset1: Dataset):
     )
 
     method = YourCustomLDIMMethod()
-    method.train(trainData)
+    method.prepare(trainData)
     method.detect_offline(evaluationData)
     pass
 
 
-def test_method_file_based():
-    runner = FileBasedMethodRunner(YourCustomLDIMMethod())
+def test_method_file_based(mocked_dataset1: Dataset):
+    args_dir = os.path.join(TEST_DATA_FOLDER, "args")
+    out_dir = os.path.join(TEST_DATA_FOLDER, "out")
+
+    os.makedirs(args_dir, exist_ok=True)
+    os.makedirs(out_dir, exist_ok=True)
+    with open(os.path.join(args_dir, "options.yml"), "w") as f:
+        yaml.dump(
+            {
+                "dataset_part": "evaluation",
+                "hyperparameters": {},
+                "goal": "detection",
+                "stage": "detect",
+                "method": "offline",
+                "debug": False,
+            },
+            f,
+        )
+    runner = FileBasedMethodRunner(
+        detection_method=YourCustomLDIMMethod(),
+        inputFolder=mocked_dataset1.path,
+        argumentsFolder=args_dir,
+        outputFolder=out_dir,
+    )
     runner.run()

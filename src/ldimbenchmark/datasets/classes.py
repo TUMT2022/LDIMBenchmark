@@ -1,4 +1,4 @@
-from concurrent.futures import ThreadPoolExecutor
+from concurrent.futures import ThreadPoolExecutor, as_completed
 import pickle
 import numpy as np
 import pandas as pd
@@ -351,10 +351,17 @@ class Dataset:
                 for sensor in getattr(self, sensor_type).keys()
             ]
             # logging.debug(filepaths)
-            with Pool(processes=cpu_count() - 1) as p:
-                p.starmap(
-                    write_to_csv, zip(getattr(self, sensor_type).values(), filepaths)
-                )
+            with ThreadPoolExecutor(max_workers=os.cpu_count() - 1) as executor:
+                # submit all tasks and get future objects
+                futures = [
+                    executor.submit(write_to_csv, sensor, path)
+                    for sensor, path in zip(
+                        getattr(self, sensor_type).values(), filepaths
+                    )
+                ]
+                # process results from tasks in order of task completion
+                for future in as_completed(futures):
+                    future.result()
 
         self.leaks.to_csv(os.path.join(folder, "leaks.csv"))
 

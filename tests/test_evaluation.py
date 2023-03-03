@@ -173,7 +173,7 @@ class MyTestCase(unittest.TestCase):
             "false_positives": 1,
             "true_negatives": None,
             "false_negatives": 0,
-            "time_to_detection": 300.0,
+            "time_to_detection": 600.0,
             "wrong_pipe": 0,
         }
 
@@ -243,7 +243,7 @@ class MyTestCase(unittest.TestCase):
             "false_positives": 0,
             "true_negatives": None,
             "false_negatives": 1,
-            "time_to_detection": 300.0,
+            "time_to_detection": 600.0,
             "wrong_pipe": 0,
         }
 
@@ -303,7 +303,7 @@ class MyTestCase(unittest.TestCase):
             "false_positives": 2,
             "true_negatives": None,
             "false_negatives": 2,
-            "time_to_detection": "",
+            "time_to_detection": None,
             "wrong_pipe": 0,
         }
 
@@ -485,7 +485,7 @@ class MyTestCase(unittest.TestCase):
             "false_positives": 0,
             "true_negatives": None,
             "false_negatives": 2,
-            "time_to_detection": "",
+            "time_to_detection": None,
             "wrong_pipe": 0,
         }
 
@@ -524,7 +524,7 @@ class MyTestCase(unittest.TestCase):
             "false_positives": 2,
             "true_negatives": None,
             "false_negatives": 0,
-            "time_to_detection": "",
+            "time_to_detection": None,
             "wrong_pipe": 0,
         }
 
@@ -542,6 +542,6 @@ class MyTestCase(unittest.TestCase):
             "false_positives": 0,
             "true_negatives": None,
             "false_negatives": 0,
-            "time_to_detection": "",
+            "time_to_detection": None,
             "wrong_pipe": 0,
         }

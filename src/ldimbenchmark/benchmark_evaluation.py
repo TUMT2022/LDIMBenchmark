@@ -152,7 +152,9 @@ def evaluate_leakages(expected_leaks: pd.DataFrame, detected_leaks: pd.DataFrame
             "false_positives": non_existing_leak_detected,
             "true_negatives": None,  # Not applicable, we dont have information about non-leaks
             "false_negatives": existing_leak_not_detected,
-            "time_to_detection": np.sum(time_to_detection),
+            "time_to_detection": None
+            if len(time_to_detection) == 0
+            else np.sum(time_to_detection),
             "wrong_pipe": wrong_pipe_detected,
         },
         matched_list,
