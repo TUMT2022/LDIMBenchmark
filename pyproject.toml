@@ -25,6 +25,7 @@ numpy = "^1.23.5"
 paramiko = "^3.0.0"
 enlighten = "^1.11.2"
 python-semantic-release = "^7.33.2"
+sqlalchemy = "^2.0.4"
 
 [tool.poetry.group.dev.dependencies]
 tox = "^3.27.1"
