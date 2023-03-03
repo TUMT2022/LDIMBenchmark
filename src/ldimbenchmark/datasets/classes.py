@@ -125,7 +125,7 @@ def loadDatasetsDirectly(
                 index_col="Timestamp",
                 chunksize=100000,
             )
-            with ThreadPoolExecutor(processes=os.cpu_count() - 1) as executor:
+            with ThreadPoolExecutor(max_workers=os.cpu_count() - 1) as executor:
                 frames = list(executor.map(parse_frame_dates, d))
 
             sensor_readings = pd.concat(frames)
