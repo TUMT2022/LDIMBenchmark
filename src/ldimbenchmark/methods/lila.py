@@ -113,6 +113,7 @@ class LILA(LDIMMethodBase):
                 "J-02": "PUMP_1",
                 "Inflow [l/s]": "PUMP_1",
                 "31664": "PUMP_1",
+                "wNode_1": "PUMP_1",
             }
         )
         scada_data.flows = flows
@@ -188,7 +189,12 @@ class LILA(LDIMMethodBase):
         # TODO: Make algorithm independent of pump name
         # flows["PUMP_1"] = flows.sum(axis=1)
         flows = flows.rename(
-            columns={"P-01": "PUMP_1", "J-02": "PUMP_1", "Inflow [l/s]": "PUMP_1"}
+            columns={
+                "P-01": "PUMP_1",
+                "J-02": "PUMP_1",
+                "Inflow [l/s]": "PUMP_1",
+                "wNode_1": "PUMP_1",
+            }
         )
 
         scada_data.flows = flows
