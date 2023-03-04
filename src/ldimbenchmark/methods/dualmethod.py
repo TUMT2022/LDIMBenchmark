@@ -1,3 +1,4 @@
+import logging
 from ldimbenchmark import (
     BenchmarkData,
     BenchmarkLeakageResult,
@@ -39,6 +40,12 @@ class DUALMethod(LDIMMethodBase):
                     structure="necessary",
                 ),
                 hyperparameters=[
+                    Hyperparameter(
+                        name="resample_frequency",
+                        description="Time frequency for resampling the data. e.g. '1T' for 1 minute, '1H' for 1 hour, '1D' for 1 day.",
+                        value_type=str,
+                        default="5T",
+                    ),
                     Hyperparameter(
                         name="est_length",
                         description="Length of the estimation period in hours",
@@ -117,7 +124,8 @@ class DUALMethod(LDIMMethodBase):
         self, evaluation_data: BenchmarkData
     ) -> List[BenchmarkLeakageResult]:
         simple_evaluation_data = simplifyBenchmarkData(
-            evaluation_data, resample_frequency="5T"
+            evaluation_data,
+            resample_frequency=self.hyperparameters["resample_frequency"],
         )
 
         # Custom Deepcopy
@@ -151,9 +159,15 @@ class DUALMethod(LDIMMethodBase):
         ###
         pressure_sensors_with_data = simple_evaluation_data.pressures.keys()
 
+        dualmodel_nodes = []
         for sensor in pressure_sensors_with_data:
-            node = self.wn.get_node(sensor)
-
+            # TODO: If sensor is not a node, skip it for now, but maybe we should add a node by splitting the pipe
+            try:
+                node = self.wn.get_node(sensor)
+            except KeyError as e:
+                logging.warning(f"Sensor {sensor} is not a node, skipping it for now")
+                continue
+            dualmodel_nodes.append("dualmodel_" + sensor)
             elevation = node.elevation
             coordinates = node.coordinates
             pattern_name = f"pressurepattern_{sensor}"
@@ -237,12 +251,12 @@ class DUALMethod(LDIMMethodBase):
         ############################################################
         tot_outflow = {}
 
-        # path = os.path.join(
+        # simulation_path = os.path.join(
         #     self.additional_output_path, "tot_outflow_simulations", "test.pickle"
         # )
-        # os.makedirs(os.path.dirname(path), exist_ok=True)
-        # if os.path.exists(path):
-        #     with open(path, "rb") as f:
+        # os.makedirs(os.path.dirname(simulation_path), exist_ok=True)
+        # if os.path.exists(simulation_path):
+        #     with open(simulation_path, "rb") as f:
         #         result = pickle.load(f)
         # else:
         temp_dir = tempfile.TemporaryDirectory()
@@ -250,15 +264,12 @@ class DUALMethod(LDIMMethodBase):
         # TODO: When parallel processing this line might produces a deadlock
         result = sim.run_sim(file_prefix=os.path.join(temp_dir.name, "all"))
         temp_dir.cleanup()
-        # if not os.path.exists(path):
-        #     with open(path, "wb") as f:
+        # if not os.path.exists(simulation_path):
+        #     with open(simulation_path, "wb") as f:
         #         pickle.dump(result, f)
 
         # Get the flow rate to the previously created extra reservoirs
         # in m³/s
-        dualmodel_nodes = [
-            "dualmodel_" + sensor for sensor in pressure_sensors_with_data
-        ]
         leakflow = result.link["flowrate"][dualmodel_nodes].abs()
         # leakflow.index = simple_evaluation_data.pressures.index
         squareflow = leakflow  # **2
@@ -298,9 +309,10 @@ class DUALMethod(LDIMMethodBase):
         )
 
         if self.debug:
-            plot = col_max.plot()
-            fig = plot.get_figure()
-            fig.savefig(self.additional_output_path + "max.png")
+            col_max.to_csv(os.path.join(self.additional_output_path, "col_max.csv"))
+            # plot = col_max.plot()
+            # fig = plot.get_figure()
+            # fig.savefig(self.additional_output_path + "max.png")
 
         results = []
         for leak_pipe, leak_start in zip(leaks.index, leaks):

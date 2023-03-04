@@ -53,6 +53,12 @@ class LILA(LDIMMethodBase):
                         value_type=str,
                     ),
                     Hyperparameter(
+                        name="resample_frequency",
+                        description="Time frequency for resampling the data. e.g. '1T' for 1 minute, '1H' for 1 hour, '1D' for 1 day.",
+                        value_type=str,
+                        default="5T",
+                    ),
+                    Hyperparameter(
                         name="est_length",
                         description="Length of the estimation period in hours",
                         default=72,  # 3 days
@@ -160,7 +166,8 @@ class LILA(LDIMMethodBase):
     def prepare(self, training_data: BenchmarkData = None) -> None:
         if training_data != None:
             simple_training_data = simplifyBenchmarkData(
-                training_data, resample_frequency="5T"
+                training_data,
+                resample_frequency=self.hyperparameters["resample_frequency"],
             )
 
             start_time = pd.to_datetime(self.hyperparameters["leakfree_time_start"])
@@ -173,11 +180,12 @@ class LILA(LDIMMethodBase):
         scada_data = SCADA_data()
 
         simple_evaluation_data = simplifyBenchmarkData(
-            evaluation_data, resample_frequency="5T"
+            evaluation_data,
+            resample_frequency=self.hyperparameters["resample_frequency"],
         )
 
         if self.trained == False:
-            # TODO: Implement reoccuring training on trailing timeframe?
+            # TODO: Implement reoccurring training on trailing timeframe?
             start_time = pd.to_datetime(self.hyperparameters["leakfree_time_start"])
             end_time = pd.to_datetime(self.hyperparameters["leakfree_time_stop"])
             self.train(simple_evaluation_data, start_time, end_time)

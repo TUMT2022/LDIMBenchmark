@@ -34,6 +34,12 @@ class MNF(LDIMMethodBase):
                 data_needed=["flow"],
                 hyperparameters=[
                     Hyperparameter(
+                        name="resample_frequency",
+                        description="Time frequency for resampling the data. e.g. '1T' for 1 minute, '1H' for 1 hour, '1D' for 1 day.",
+                        value_type=str,
+                        default="5T",
+                    ),
+                    Hyperparameter(
                         name="window",
                         description="Window size for the sliding window in days",
                         value_type=int,
@@ -67,7 +73,10 @@ class MNF(LDIMMethodBase):
         window = pd.Timedelta(days=self.hyperparameters["window"])
         gamma: float = self.hyperparameters["gamma"]
 
-        simple_evaluation_data = simplifyBenchmarkData(evaluation_data)
+        simple_evaluation_data = simplifyBenchmarkData(
+            evaluation_data,
+            resample_frequency=self.hyperparameters["resample_frequency"],
+        )
 
         if (
             simple_evaluation_data.flows.index[-1]
