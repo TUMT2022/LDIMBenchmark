@@ -335,7 +335,7 @@ class LDIMBenchmark:
         )
         param_matrix = pd.DataFrame(index=index).reset_index()
 
-        return [param_matrix.iloc[n].to_dict() for n in range(param_matrix.shape[0])]
+        return param_matrix.to_dict(orient="records")
 
     def add_local_methods(self, methods):
         """
@@ -405,6 +405,8 @@ class LDIMBenchmark:
         if len(self.methods_docker) > 0 and len(self.methods_local) > 0:
             raise ValueError("Cannot run local and docker methods at the same time")
 
+        logging.info("Starting Benchmark")
+        logging.info("Preparing Hyperparameters")
         hyperparameters_map = self._get_hyperparameters_for_methods_and_datasets(
             hyperparameters=self.hyperparameters,
             method_ids=[
@@ -414,17 +416,20 @@ class LDIMBenchmark:
             dataset_base_ids=[dataset.id for dataset in self.datasets],
         )
 
-        # Generate Experiments
+        # TODO: Move to parallel step execution step in run_benchmark, but still validate at least once
         for dataset in self.datasets:
             for method in self.methods_docker:
                 method_name = method.split(":")[0].split("/")[-1]
-                hyperparameter_list = [hyperparameters_map[method_name][dataset.id]]
+                self.hyperparameter_list = [
+                    hyperparameters_map[method_name][dataset.id]
+                ]
                 if self.multi_parameters:
-                    hyperparameter_list = LDIMBenchmark._get_hyperparameters_matrix_from_hyperparameters_with_list(
+                    self.hyperparameter_list = LDIMBenchmark._get_hyperparameters_matrix_from_hyperparameters_with_list(
                         hyperparameters_map[method_name][dataset.id]
                     )
 
-                for hyperparameters in hyperparameter_list:
+                logging.info(f"Generating {len(self.hyperparameter_list)} Experiments")
+                for hyperparameters in self.hyperparameter_list:
                     self.experiments.append(
                         DockerMethodRunner(
                             method,
@@ -437,13 +442,16 @@ class LDIMBenchmark:
                     )
 
             for method in self.methods_local:
-                hyperparameter_list = [hyperparameters_map[method.name][dataset.id]]
+                self.hyperparameter_list = [
+                    hyperparameters_map[method.name][dataset.id]
+                ]
                 if self.multi_parameters:
-                    hyperparameter_list = LDIMBenchmark._get_hyperparameters_matrix_from_hyperparameters_with_list(
+                    self.hyperparameter_list = LDIMBenchmark._get_hyperparameters_matrix_from_hyperparameters_with_list(
                         hyperparameters_map[method.name][dataset.id]
                     )
 
-                for hyperparameters in hyperparameter_list:
+                logging.info(f"Generating {len(self.hyperparameter_list)} Experiments")
+                for hyperparameters in self.hyperparameter_list:
                     self.experiments.append(
                         LocalMethodRunner(
                             detection_method=method,
@@ -478,6 +486,13 @@ class LDIMBenchmark:
                 justify=enlighten.Justify.CENTER,
             )
         results = []
+        bar_experiments = manager.counter(
+            total=num_experiments,
+            desc="Experiments",
+            unit="experiments",
+            count=num_experiments - len(self.experiments),
+        )
+        # This line makes sure we can call update with an effect
         if parallel:
             worker_num = os.cpu_count() - 1
             if parallel_max_workers > 0:
@@ -489,22 +504,20 @@ class LDIMBenchmark:
                         executor.submit(execute_experiment, runner)
                         for runner in self.experiments
                     ]
-                    pbar = manager.counter(
-                        total=num_experiments, desc="Experiments", unit="experiments"
-                    )
-                    pbar.update(incr=num_experiments - len(self.experiments))
                     # process results from tasks in order of task completion
                     for future in as_completed(futures):
                         future.result()
-                        pbar.update()
-                    pbar.close()
+                        logging.info("update bar")
+                        bar_experiments.update()
             except KeyboardInterrupt:
-                manager.stop()
+                executor.shutdown(wait=False)
                 executor._processes.clear()
                 os.kill(os.getpid(), 9)
+                manager.stop()
         else:
             for experiment in self.experiments:
                 results.append(experiment.run())
+                bar_experiments.update()
         manager.stop()
 
     def evaluate(
