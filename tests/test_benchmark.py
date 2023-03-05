@@ -154,6 +154,30 @@ def test_hyperparameters_base_configurations():
         },
     }
 
+    # Method and Database should match more specific
+    hyperparameters = {
+        "method1": {
+            "dataset1-23409823490": {
+                "param1": 2,
+                "param2": "test-specific",
+            },
+            "dataset1": {
+                "param1": 1,
+                "param2": "test",
+            },
+        }
+    }
+    matching_parameters = LDIMBenchmark._get_hyperparameters_for_methods_and_datasets(
+        dataset_base_ids=["dataset1-23409823490"],
+        method_ids=["method1"],
+        hyperparameters=hyperparameters,
+    )
+    assert matching_parameters == {
+        "method1": {
+            "dataset1-23409823490": hyperparameters["method1"]["dataset1-23409823490"],
+        },
+    }
+
 
 def test_get_hyperparameter_matrix():
     multi_hyperparameters = {

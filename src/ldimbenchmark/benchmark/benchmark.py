@@ -342,7 +342,7 @@ class LDIMBenchmark:
                     hyperparameters_map[method_id][
                         dataset_base_id
                     ] = {}  # hyperparameters_without_datasets
-                    for key in hyperparameters_method_map[method_id].keys():
+                    for key in sorted(hyperparameters_method_map[method_id].keys()):
                         if dataset_base_id.startswith(key):
                             hyperparameters_map[method_id][
                                 dataset_base_id
@@ -556,7 +556,7 @@ class LDIMBenchmark:
                         bar_experiments.update()
             except KeyboardInterrupt:
                 executor.shutdown(wait=False)
-                executor._processes.clear()
+                # executor._processes.clear()
                 os.kill(os.getpid(), 9)
                 manager.stop()
         else:
@@ -584,7 +584,6 @@ class LDIMBenchmark:
 
         :param current_only: Switch for either evaluating only the current benchmark or incorporate previous runs.
         :param write_results: Write the evaluation results to the results directory.
-        :param generate_plots: Generate visual plots during the evaluation, for each leak timeframe.
         :param evaluations: The Evaluation Metrics to be run.
         """
 
@@ -619,11 +618,6 @@ class LDIMBenchmark:
                 ]
 
                 result_folders = list(result_folders_frame[0].values)
-
-        if len(result_folders) > 1 and generate_plots:
-            logging.warning(
-                f"You are generating Plots for {len(result_folders)} results! This will take ages, consider only generating them for the benchmark run you are interested in."
-            )
 
         manager = enlighten.get_manager()
         pbar1 = manager.counter(
