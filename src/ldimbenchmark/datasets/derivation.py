@@ -1,6 +1,8 @@
 from concurrent.futures import ProcessPoolExecutor, as_completed
 import itertools
+import logging
 import os
+import enlighten
 
 from pandas import DataFrame
 
@@ -104,7 +106,7 @@ class DatasetDerivator:
         # TODO: Add Pattern derivation
         apply_to: Literal["junctions"],  # , "patterns"],
         change_property: Literal["elevation"],
-        derivation: str,
+        derivation: Literal["accuracy"],
         values: list,
     ):
         """
@@ -152,6 +154,8 @@ class DatasetDerivator:
                     dataset = Dataset(derivedDatasetPath)
                     newDatasets.append(dataset)
                     self.all_derived_datasets.append(dataset)
+            else:
+                raise Exception(f"No derivation name '{derivation}'")
 
         return newDatasets
 
@@ -223,12 +227,13 @@ class DatasetDerivator:
                 )
                 this_dataset._update_id()
                 derivedDatasetPath = os.path.join(self.out_path, this_dataset.id + "/")
-
+                logging.info(
+                    f"Generating Derivation for {this_dataset.id} with derivations {str(this_dataset.info['derivations']['data'])}"
+                )
                 if not os.path.exists(derivedDatasetPath) or self.force:
                     loadedDataset = this_dataset.loadData()
 
                     datasets = getattr(loadedDataset, apply_to)
-                    # TODO: Parallelization
 
                     keys = datasets.keys()
                     transformations = zip(
@@ -237,6 +242,14 @@ class DatasetDerivator:
                         [datasets[key] for key in keys],
                         keys,
                     )
+                    manager = enlighten.get_manager()
+                    bar_derivations = manager.counter(
+                        total=len(keys),
+                        desc="Derivate Sensors",
+                        unit="sensors",
+                    )
+                    bar_derivations.refresh()
+
                     # logging.debug(filepaths)
                     with ProcessPoolExecutor(max_workers=os.cpu_count()) as executor:
                         # submit all tasks and get future objects
@@ -254,9 +267,10 @@ class DatasetDerivator:
                         for future in as_completed(futures):
                             key, result = future.result()
                             datasets[key] = result
-
+                            bar_derivations.update()
+                    manager.stop()
                     setattr(loadedDataset, apply_to, datasets)
-
+                    logging.info("Writing derivated dataset...")
                     os.makedirs(os.path.dirname(derivedDatasetPath), exist_ok=True)
                     loadedDataset.exportTo(derivedDatasetPath)
 
