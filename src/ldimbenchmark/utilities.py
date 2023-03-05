@@ -1,3 +1,4 @@
+import logging
 from typing import Dict, List
 from pandas import DataFrame
 from ldimbenchmark.classes import BenchmarkData
@@ -53,7 +54,12 @@ def resampleAndConcatSensors(
 
     concatenated_sensors = []
     for sensor_name, sensor_data in sensors.items():
-        concatenated_sensors.append(sensor_data.resample(resample_frequency).mean())
+        new_data = sensor_data.resample(resample_frequency).mean()
+        if len(new_data) > len(sensor_data):
+            logging.warning(
+                "Upsampling data, this might result in one off errors later on. Consider settings 'resample_frequency' to a bigger timeframe."
+            )
+        concatenated_sensors.append(new_data)
 
     if len(concatenated_sensors) == 0:
         return pd.DataFrame()
