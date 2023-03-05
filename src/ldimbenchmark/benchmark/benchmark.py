@@ -552,7 +552,6 @@ class LDIMBenchmark:
                     # process results from tasks in order of task completion
                     for future in as_completed(futures):
                         future.result()
-                        logging.info("update bar")
                         bar_experiments.update()
             except KeyboardInterrupt:
                 executor.shutdown(wait=False)
