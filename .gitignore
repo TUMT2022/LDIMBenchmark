@@ -13,6 +13,7 @@ docs/user-guides/datasets-analysis
 # LDIMBench
 .ldim_benchmark_cache
 benchmark-results
+sensitivity-analysis
 test
 test_data
 grid-search
