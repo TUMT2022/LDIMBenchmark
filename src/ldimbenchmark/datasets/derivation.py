@@ -84,13 +84,13 @@ class DatasetDerivator:
         self,
         datasets: Union[Dataset, List[Dataset]],
         out_path: str,
-        force: bool = False,
+        ignore_cache: bool = False,
     ):
         if not isinstance(datasets, Sequence):
             datasets = [datasets]
         self.datasets: List[Dataset] = datasets
         self.out_path = out_path
-        self.force = force
+        self.ignore_cache = ignore_cache
 
         self.all_derived_datasets = []
 
@@ -136,7 +136,7 @@ class DatasetDerivator:
                         self.out_path, this_dataset.id + "/"
                     )
 
-                    if not os.path.exists(derivedDatasetPath) or self.force:
+                    if not os.path.exists(derivedDatasetPath) or self.ignore_cache:
                         loadedDataset = this_dataset.loadData()
 
                         # Derive
@@ -230,7 +230,7 @@ class DatasetDerivator:
                 logging.info(
                     f"Generating Derivation for {this_dataset.id} with derivations {str(this_dataset.info['derivations']['data'])}"
                 )
-                if not os.path.exists(derivedDatasetPath) or self.force:
+                if not os.path.exists(derivedDatasetPath) or self.ignore_cache:
                     loadedDataset = this_dataset.loadData()
 
                     datasets = getattr(loadedDataset, apply_to)
@@ -245,7 +245,7 @@ class DatasetDerivator:
                     manager = enlighten.get_manager()
                     bar_derivations = manager.counter(
                         total=len(keys),
-                        desc="Derivate Sensors",
+                        desc=f"Derivating {apply_to}",
                         unit="sensors",
                     )
                     bar_derivations.refresh()
@@ -270,9 +270,11 @@ class DatasetDerivator:
                             bar_derivations.update()
                     manager.stop()
                     setattr(loadedDataset, apply_to, datasets)
-                    logging.info("Writing derivated dataset...")
+                    logging.info("Writing derivated dataset")
                     os.makedirs(os.path.dirname(derivedDatasetPath), exist_ok=True)
                     loadedDataset.exportTo(derivedDatasetPath)
+                    logging.info("Populating cache")
+                    loadedDataset.loadData()
 
                 dataset = Dataset(derivedDatasetPath)
                 newDatasets.append(dataset)

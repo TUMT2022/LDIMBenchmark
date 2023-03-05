@@ -65,7 +65,10 @@ class MNF(LDIMMethodBase):
     def prepare(self, train_data: BenchmarkData = None):
         # self.train_Data = train_data
         if train_data != None:
-            self.simple_train_data = simplifyBenchmarkData(train_data)
+            self.simple_train_data = simplifyBenchmarkData(
+                train_data,
+                resample_frequency=self.hyperparameters["resample_frequency"],
+            )
         else:
             self.simple_train_data = None
 
