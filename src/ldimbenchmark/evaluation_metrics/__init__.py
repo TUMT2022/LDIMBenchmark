@@ -2,6 +2,7 @@ from typing import Dict
 
 
 def precision(results: Dict):
+    # Positive-Predictive-Value (Precision)
     results["precision"] = results["true_positives"] / (
         results["true_positives"] + results["false_positives"]
     )
