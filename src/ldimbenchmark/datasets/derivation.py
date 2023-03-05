@@ -150,6 +150,8 @@ class DatasetDerivator:
                         # Save
                         os.makedirs(os.path.dirname(derivedDatasetPath), exist_ok=True)
                         loadedDataset.exportTo(derivedDatasetPath)
+                        logging.info("Populating cache")
+                        loadedDataset.loadData()
 
                     dataset = Dataset(derivedDatasetPath)
                     newDatasets.append(dataset)
