@@ -47,7 +47,10 @@ def plot_leak(
     additional_data_dir,
     out_dir,
 ):
-    fig, ax = plt.subplots()
+    fig = plt.figure()
+    gs = fig.add_gridspec(2, hspace=0)
+    ax_dataset, ax_method = gs.subplots(sharex=True, sharey=False)
+    # fig, ax = plt.subplots()
     name = ""
     expected_leak, detected_leak = leak_pair
 
@@ -60,7 +63,17 @@ def plot_leak(
             expected_leak["leak_time_end"] - expected_leak["leak_time_start"]
         ) / 6
 
-        p = ax.axvspan(
+        ax_dataset.axvspan(
+            expected_leak["leak_time_start"],
+            expected_leak["leak_time_end"]
+            if expected_leak["leak_time_end"] != None
+            else expected_leak["leak_time_start"],
+            color="red",
+            alpha=0.1,
+            lw=0,
+            zorder=1,
+        )
+        ax_method.axvspan(
             expected_leak["leak_time_start"],
             expected_leak["leak_time_end"]
             if expected_leak["leak_time_end"] != None
@@ -72,7 +85,8 @@ def plot_leak(
         )
     # Plot detected leak:
     if detected_leak is not None:
-        ax.axvline(detected_leak["leak_time_start"], color="green", zorder=4)
+        ax_dataset.axvline(detected_leak["leak_time_start"], color="green", zorder=4)
+        ax_method.axvline(detected_leak["leak_time_start"], color="green", zorder=4)
 
     #
     if expected_leak is None and detected_leak is not None:
@@ -102,25 +116,22 @@ def plot_leak(
         )
 
         sensor_readings = sensor_readings[mask]
-        sensor_readings.plot(ax=ax, alpha=0.2, linestyle="solid", zorder=3)
-
-    # For some reason the vspan vanishes if we do it earlier or later, so we do it here
-    if expected_leak is not None:
-        p = ax.axvspan(
-            expected_leak["leak_time_start"],
-            expected_leak["leak_time_end"]
-            if expected_leak["leak_time_end"] != None
-            else expected_leak["leak_time_start"],
-            color="red",
-            alpha=0.1,
-            lw=0,
-            zorder=1,
+        # Do not use df.plot(): https://github.com/pandas-dev/pandas/issues/51795
+        ax_dataset.plot(
+            sensor_readings.index,
+            sensor_readings[sensor_id],
+            alpha=0.2,
+            linestyle="solid",
+            zorder=3,
+            label=sensor_id,
         )
-        # Plot debug data:
+        # sensor_readings.plot(ax=ax, alpha=0.2, linestyle="solid", zorder=3)
+
+    # Plot debug data:
     debug_folder = os.path.join(additional_data_dir, "debug/")
     # TODO: Adjust Mask for each debug data
     if os.path.exists(debug_folder):
-        files = glob(debug_folder + "*")
+        files = glob(debug_folder + "*.csv")
         for file in files:
             try:
                 debug_data = pd.read_csv(file, parse_dates=True, index_col=0)
@@ -137,19 +148,30 @@ def plot_leak(
                     boundaries,
                 )
                 debug_data = debug_data[mask]
-                debug_data.plot(ax=ax, alpha=1, linestyle="dashed", zorder=3)
+                for column in debug_data.columns:
+                    ax_method.plot(
+                        debug_data.index,
+                        debug_data[column],
+                        alpha=1,
+                        linestyle="dashed",
+                        zorder=3,
+                        label=column,
+                    )
+                # Do not use df.plot(): https://github.com/pandas-dev/pandas/issues/51795
+                # debug_data.plot(ax=ax_method, alpha=1, linestyle="dashed", zorder=3)
             except Exception as e:
-                print(e)
+                logging.exception(e)
                 pass
 
-    box = ax.get_position()
-    ax.set_position([box.x0, box.y0, box.width * 0.8, box.height])
-
+    # box = ax.get_position()
+    # ax.set_position([box.x0, box.y0, box.width * 0.8, box.height])
+    ax_method.set_title("Debug Data from Method", y=1.0, pad=-14)
+    ax_dataset.set_title("Pressure Data From Dataset", y=1.0, pad=-14)
     # TODO: Plot Leak Outflow, if available
 
     # Put a legend to the right of the current axis
-    ax.legend(loc="center left", bbox_to_anchor=(1, 0.5))
-    ax.set_title(name)
+    # ax.legend(loc="center left", bbox_to_anchor=(1, 0.5))
+    fig.suptitle(name)
     fig.savefig(os.path.join(out_dir, name + ".png"))
     plt.close(fig)
 
@@ -751,7 +773,7 @@ class LDIMBenchmark:
                             "pressures",
                         ),
                         leak_pair=leak_pair,
-                        additional_data_dir=result["_folder"],
+                        additional_data_dir=result_folder,
                         out_dir=graph_dir,
                     )
                     futures.append(future)
@@ -772,6 +794,9 @@ class LDIMBenchmark:
                 pbar2.update()
         pbar2.close()
         manager.stop()
+
+        # TODO: Statistics about the leaks
+        # Which leaks are detected? short/long, which leaks are not detected?
 
 
 # TODO: Generate overlaying graphs of leak size and detection times (and additional output)
