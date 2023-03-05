@@ -78,7 +78,9 @@ def evaluate_leakages(expected_leaks: pd.DataFrame, detected_leaks: pd.DataFrame
             # print(timespan_to_other_leaks)
             # If all detected leaks ar before the expected Leak there is None to match it to.
             if all(np.isnat(i.to_numpy()) for i in timespan_to_other_leaks):
-                matched_list.append((expected_leaks.loc[source_array_index], None))
+                matched_list.append(
+                    (expected_leaks.loc[source_array_index].to_dict(), None)
+                )
                 continue
 
             min_x = timespan_to_other_leaks.idxmin(skipna=True)
@@ -86,7 +88,6 @@ def evaluate_leakages(expected_leaks: pd.DataFrame, detected_leaks: pd.DataFrame
             ref = ref[ref["index"] == min_x]
             index_new = ref.index
 
-            # TODO: If leak is outside the known leak interval don't match it too!
             if dist_mat.iloc[min_x, :].idxmin(skipna=True) == source_array_index and (
                 # Leak also has to be within the expected leak time
                 expected_leaks.loc[source_array_index].leak_time_end
@@ -96,13 +97,20 @@ def evaluate_leakages(expected_leaks: pd.DataFrame, detected_leaks: pd.DataFrame
                 list_of_all.loc[index_new, "used"] = 1
                 # list_of_all.iloc[index_new]["used"] = 1
                 matched_list.append(
-                    (expected_leaks.loc[source_array_index], detected_leaks.loc[min_x])
+                    (
+                        expected_leaks.loc[source_array_index].to_dict(),
+                        detected_leaks.loc[min_x].to_dict(),
+                    )
                 )
             else:
-                matched_list.append((expected_leaks.loc[source_array_index], None))
+                matched_list.append(
+                    (expected_leaks.loc[source_array_index].to_dict(), None)
+                )
             # print(ref)
         else:
-            matched_list.append((None, detected_leaks.loc[source_array_index]))
+            matched_list.append(
+                (None, detected_leaks.loc[source_array_index].to_dict())
+            )
 
         # print(list_of_all)
         # for detected_leak, expected_leak in matched_list:
@@ -127,17 +135,17 @@ def evaluate_leakages(expected_leaks: pd.DataFrame, detected_leaks: pd.DataFrame
             continue
         # print(detected_leak.pipe_id, expected_leak.pipe_id)
         if (
-            detected_leak.leak_time_start >= expected_leak.leak_time_start
-            and detected_leak.leak_time_end <= expected_leak.leak_time_end
+            detected_leak["leak_time_start"] >= expected_leak["leak_time_start"]
+            and detected_leak["leak_time_end"] <= expected_leak["leak_time_end"]
         ):
             right_leak_detected += 1
             # Calculate TimeSpan Between Detections
             time_to_detection.append(
                 (
-                    detected_leak.leak_time_start - expected_leak.leak_time_start
+                    detected_leak["leak_time_start"] - expected_leak["leak_time_start"]
                 ).total_seconds()
             )
-            if expected_leak.leak_pipe_id == detected_leak.leak_pipe_id:
+            if expected_leak["leak_pipe_id"] == detected_leak["leak_pipe_id"]:
                 pass
             else:
                 wrong_pipe_detected += 1

@@ -52,40 +52,70 @@ def plot_leak(
     expected_leak, detected_leak = leak_pair
 
     reference_leak = None
-    boundarys = None
+    boundaries = None
     if expected_leak is not None:
-        name = str(expected_leak.leak_time_start)
+        name = str(expected_leak["leak_time_start"])
         reference_leak = expected_leak
-        boundarys = (expected_leak.leak_time_end - expected_leak.leak_time_start) / 6
+        boundaries = (
+            expected_leak["leak_time_end"] - expected_leak["leak_time_start"]
+        ) / 6
 
+        p = ax.axvspan(
+            expected_leak["leak_time_start"],
+            expected_leak["leak_time_end"]
+            if expected_leak["leak_time_end"] != None
+            else expected_leak["leak_time_start"],
+            color="red",
+            alpha=0.1,
+            lw=0,
+            zorder=1,
+        )
+    # Plot detected leak:
     if detected_leak is not None:
-        ax.axvline(detected_leak.leak_time_start, color="green")
+        ax.axvline(detected_leak["leak_time_start"], color="green", zorder=4)
 
+    #
     if expected_leak is None and detected_leak is not None:
-        name = str(detected_leak.leak_time_start) + "_fp"
+        name = str(detected_leak["leak_time_start"]) + "_fp"
         reference_leak = detected_leak
 
+    # Plot expected leak:
+    if detected_leak is None and expected_leak is not None:
+        name = str(expected_leak["leak_time_start"]) + "_fn"
+
     for sensor_id, sensor_readings in data_to_plot.items():
-        if boundarys == None:
+        if boundaries == None:
             # Just use first sensor_readings for all...
-            boundarys = (sensor_readings.index[-1] - sensor_readings.index[0]) / (
+            boundaries = (sensor_readings.index[-1] - sensor_readings.index[0]) / (
                 sensor_readings.shape[0] / 6
             )
             minimum_boundary = timedelta64(1, "D")
-            if boundarys < minimum_boundary:
-                boundarys = minimum_boundary
+            if boundaries < minimum_boundary:
+                boundaries = minimum_boundary
         mask = get_mask(
             sensor_readings,
-            reference_leak.leak_time_start,
-            reference_leak.leak_time_end
-            if reference_leak.leak_time_end != None
-            else reference_leak.leak_time_start,
-            boundarys,
+            reference_leak["leak_time_start"],
+            reference_leak["leak_time_end"]
+            if reference_leak["leak_time_end"] != None
+            else reference_leak["leak_time_start"],
+            boundaries,
         )
 
         sensor_readings = sensor_readings[mask]
-        sensor_readings.plot(ax=ax, alpha=0.2, linestyle="solid")
+        sensor_readings.plot(ax=ax, alpha=0.2, linestyle="solid", zorder=3)
 
+    # For some reason the vspan vanishes if we do it earlier or later, so we do it here
+    if expected_leak is not None:
+        p = ax.axvspan(
+            expected_leak["leak_time_start"],
+            expected_leak["leak_time_end"]
+            if expected_leak["leak_time_end"] != None
+            else expected_leak["leak_time_start"],
+            color="red",
+            alpha=0.1,
+            lw=0,
+            zorder=1,
+        )
         # Plot debug data:
     debug_folder = os.path.join(additional_data_dir, "debug/")
     # TODO: Adjust Mask for each debug data
@@ -94,46 +124,32 @@ def plot_leak(
         for file in files:
             try:
                 debug_data = pd.read_csv(file, parse_dates=True, index_col=0)
-                if boundarys == None:
+                if boundaries == None:
                     alternative_boundarys = (
                         sensor_readings.index[-1] - sensor_readings.index[0]
                     ) / (sensor_readings.shape[0] / 6)
                 mask = get_mask(
                     debug_data,
-                    reference_leak.leak_time_start,
-                    reference_leak.leak_time_end
-                    if reference_leak.leak_time_end != None
-                    else reference_leak.leak_time_start,
-                    boundarys,
+                    reference_leak["leak_time_start"],
+                    reference_leak["leak_time_end"]
+                    if reference_leak["leak_time_end"] != None
+                    else reference_leak["leak_time_start"],
+                    boundaries,
                 )
                 debug_data = debug_data[mask]
-                debug_data.plot(ax=ax, alpha=1, linestyle="dashed")
+                debug_data.plot(ax=ax, alpha=1, linestyle="dashed", zorder=3)
             except Exception as e:
                 print(e)
                 pass
 
-    # For some reason the vspan vanishes if we do it earlier so we do it last
-    if expected_leak is not None:
-        ax.axvspan(
-            expected_leak.leak_time_start,
-            expected_leak.leak_time_end
-            if expected_leak.leak_time_end != None
-            else expected_leak.leak_time_start,
-            color="red",
-            alpha=0.1,
-            lw=0,
-        )
-
     box = ax.get_position()
     ax.set_position([box.x0, box.y0, box.width * 0.8, box.height])
-
-    if detected_leak is None and expected_leak is not None:
-        name = str(expected_leak.leak_time_start) + "_fn"
 
     # TODO: Plot Leak Outflow, if available
 
     # Put a legend to the right of the current axis
     ax.legend(loc="center left", bbox_to_anchor=(1, 0.5))
+    ax.set_title(name)
     fig.savefig(os.path.join(out_dir, name + ".png"))
     plt.close(fig)
 
@@ -492,6 +508,7 @@ class LDIMBenchmark:
             unit="experiments",
             count=num_experiments - len(self.experiments),
         )
+        bar_experiments.refresh()
         # This line makes sure we can call update with an effect
         if parallel:
             worker_num = os.cpu_count() - 1
@@ -525,7 +542,6 @@ class LDIMBenchmark:
         current_only=True,
         resultFilter: Callable = lambda r: r,
         write_results: Union[None, Literal["csv", "db"]] = None,
-        generate_plots=False,
         evaluations: List[Callable] = [
             precision,
             recall,
@@ -558,15 +574,24 @@ class LDIMBenchmark:
         # TODO: Evaluate results
         # TODO: parallelize
         result_folders = glob(os.path.join(self.runner_results_dir, "*"))
+        result_folders_frame = pd.DataFrame(result_folders)
+        result_folders_frame["id"] = result_folders_frame[0].apply(
+            lambda x: os.path.basename(x)
+        )
 
         if current_only:
-            result_folders = list(
-                filter(
-                    lambda x: os.path.basename(x)
-                    in [exp.id for exp in self.initial_experiments],
-                    result_folders,
+            if not hasattr(self, "initial_experiments"):
+                logging.warning(
+                    "Ignoring current_only switch, since no initial experiments were set. This is probably because 'run_benchmark' was not executed before."
                 )
-            )
+            else:
+                experiment_ids = [exp.id for exp in self.initial_experiments]
+                result_folders_frame = result_folders_frame[
+                    result_folders_frame["id"].isin(experiment_ids)
+                ]
+
+                result_folders = list(result_folders_frame[0].values)
+
         if len(result_folders) > 1 and generate_plots:
             logging.warning(
                 f"You are generating Plots for {len(result_folders)} results! This will take ages, consider only generating them for the benchmark run you are interested in."
@@ -596,63 +621,6 @@ class LDIMBenchmark:
                 results.append(load_result(experiment_result))
         pbar1.close()
 
-        if generate_plots:
-            logging.info("Generating plots...")
-            loaded_datasets = {}
-            for dataset in self.datasets:
-                if type(dataset) is str:
-                    loaded = Dataset(dataset)
-                else:
-                    loaded = dataset
-
-                loaded_datasets[dataset.id] = loaded.loadData()
-            pbar = manager.counter(total=len(results), desc="Results:", unit="results")
-
-            for result in results:
-                graph_dir = os.path.join(self.evaluation_results_dir, "per_run")
-                os.makedirs(graph_dir, exist_ok=True)
-
-                pbar2 = manager.counter(
-                    total=len(result["matched_leaks_list"]),
-                    desc="Graphs:",
-                    unit="graphs",
-                )
-                parallel = True
-                if parallel:
-                    with ProcessPoolExecutor() as executor:
-                        # submit all tasks and get future objects
-                        futures = []
-                        for leak_pair in result["matched_leaks_list"]:
-                            future = executor.submit(
-                                plot_leak,
-                                getattr(
-                                    loaded_datasets[result["dataset_id"]],
-                                    "pressures",
-                                ),
-                                leak_pair=leak_pair,
-                                additional_data_dir=result["_folder"],
-                                out_dir=graph_dir,
-                            )
-                            futures.append(future)
-
-                        # process results from tasks in order of task completion
-                        for future in as_completed(futures):
-                            future.result()
-                            pbar2.update()
-
-                else:
-                    for leak_pair in result["matched_leaks_list"]:
-                        plot_leak(
-                            getattr(loaded_datasets[result["dataset_id"]], "pressures"),
-                            leak_pair=leak_pair,
-                            additional_data_dir=experiment_result,
-                            out_dir=graph_dir,
-                        )
-                        pbar2.update()
-                pbar2.close()
-                pbar.update()
-
-        manager.stop()
         results = pd.DataFrame(results)
 
         for function in evaluations:
@@ -661,11 +629,11 @@ class LDIMBenchmark:
         results = resultFilter(results)
         # https://towardsdatascience.com/performance-metrics-confusion-matrix-precision-recall-and-f1-score-a8fe076a2262
         results = results.set_index(["_folder"])
-        results = results.drop(columns=["matched_leaks_list"])
 
         os.makedirs(self.evaluation_results_dir, exist_ok=True)
 
         if write_results == "csv":
+            results = results.drop(columns=["matched_leaks_list"])
             print("Writing results to disk")
             results.to_csv(os.path.join(self.evaluation_results_dir, "results.csv"))
 
@@ -687,9 +655,30 @@ class LDIMBenchmark:
             )
         elif write_results == "db":
             print("Writing results to database")
-            engine = create_engine(
-                f"sqlite:///{os.path.join(self.evaluation_results_dir, 'results.db')}"
-            )
+            result_db = os.path.join(self.evaluation_results_dir, "results.db")
+            if os.path.exists(result_db):
+                os.remove(result_db)
+            engine = create_engine(f"sqlite:///{result_db}")
+            try:
+                for index, values in results.iterrows():
+                    leak_pairs = pd.DataFrame(values["matched_leaks_list"])
+                    leak_pairs = pd.concat(
+                        [
+                            pd.json_normalize(leak_pairs[0]).add_prefix("expected."),
+                            (pd.json_normalize(leak_pairs[1]).add_prefix("detected.")),
+                        ],
+                        axis=1,
+                    )
+                    leak_pairs = leak_pairs.drop(
+                        columns=["expected.type", "detected.type"],
+                        errors="ignore",
+                    )
+                    leak_pairs["result_id"] = index
+                    leak_pairs.to_sql("leak_pairs", engine, if_exists="append")
+            except Exception as e:
+                print(e)
+                print(f"Could not write leak pairs to database. For {index}")
+            results = results.drop(columns=["matched_leaks_list"])
             results.to_sql("results", engine, if_exists="replace")
 
         results = results.set_index(["method", "method_version", "dataset_id"])
@@ -721,6 +710,68 @@ class LDIMBenchmark:
 
         print(tabulate(results, headers="keys"))
         return results
+
+    def evaluate_run(
+        self,
+        run_id: str,
+    ):
+        result_folder = os.path.join(self.runner_results_dir, run_id)
+        result = load_result(result_folder)
+
+        logging.info("Generating plots...")
+        manager = enlighten.get_manager()
+        loaded_datasets = {}
+        for dataset in self.datasets:
+            if type(dataset) is str:
+                loaded = Dataset(dataset)
+            else:
+                loaded = dataset
+
+            loaded_datasets[dataset.id] = loaded.loadData()
+            if not hasattr(loaded_datasets[dataset.id], "derivations"):
+                loaded_datasets[dataset.name] = loaded_datasets[dataset.id]
+        graph_dir = os.path.join(self.evaluation_results_dir, "per_run", run_id)
+        os.makedirs(graph_dir, exist_ok=True)
+
+        pbar2 = manager.counter(
+            total=len(result["matched_leaks_list"]),
+            desc="Graphs:",
+            unit="graphs",
+        )
+        parallel = True
+        if parallel:
+            with ProcessPoolExecutor() as executor:
+                # submit all tasks and get future objects
+                futures = []
+                for leak_pair in result["matched_leaks_list"]:
+                    future = executor.submit(
+                        plot_leak,
+                        getattr(
+                            loaded_datasets[result["dataset_id"]],
+                            "pressures",
+                        ),
+                        leak_pair=leak_pair,
+                        additional_data_dir=result["_folder"],
+                        out_dir=graph_dir,
+                    )
+                    futures.append(future)
+
+                # process results from tasks in order of task completion
+                for future in as_completed(futures):
+                    future.result()
+                    pbar2.update()
+
+        else:
+            for leak_pair in result["matched_leaks_list"]:
+                plot_leak(
+                    getattr(loaded_datasets[result["dataset_id"]], "pressures"),
+                    leak_pair=leak_pair,
+                    additional_data_dir=result_folder,
+                    out_dir=graph_dir,
+                )
+                pbar2.update()
+        pbar2.close()
+        manager.stop()
 
 
 # TODO: Generate overlaying graphs of leak size and detection times (and additional output)
