@@ -78,6 +78,41 @@ def test_hyperparameters_base_configurations():
         },
     }
 
+    # Method and Database Specific
+    hyperparameters = {
+        "method1": {
+            "dataset1": {
+                "param1": 1,
+                "param2": "test",
+            }
+        },
+        "method2": {
+            "dataset1": {
+                "param1": 1,
+                "param2": "test",
+            },
+            "dataset-name": {
+                "param3": 1,
+                "param4": "test",
+            },
+        },
+    }
+    matching_parameters = LDIMBenchmark._get_hyperparameters_for_methods_and_datasets(
+        dataset_base_ids=["dataset1", "dataset-name"],
+        method_ids=["method1", "method2"],
+        hyperparameters=hyperparameters,
+    )
+    assert matching_parameters == {
+        "method1": {
+            "dataset1": hyperparameters["method1"]["dataset1"],
+            "dataset-name": {},
+        },
+        "method2": {
+            "dataset1": hyperparameters["method2"]["dataset1"],
+            "dataset-name": hyperparameters["method2"]["dataset-name"],
+        },
+    }
+
     # Method and Database (derivates) Specific
     hyperparameters = {
         "method1": {
@@ -95,6 +130,26 @@ def test_hyperparameters_base_configurations():
     assert matching_parameters == {
         "method1": {
             "dataset1": hyperparameters["method1"]["dataset1"],
+            "dataset1-23409823490": hyperparameters["method1"]["dataset1"],
+        },
+    }
+
+    # Method and Database (only derivates) Specific
+    hyperparameters = {
+        "method1": {
+            "dataset1": {
+                "param1": 1,
+                "param2": "test",
+            }
+        }
+    }
+    matching_parameters = LDIMBenchmark._get_hyperparameters_for_methods_and_datasets(
+        dataset_base_ids=["dataset1-23409823490"],
+        method_ids=["method1"],
+        hyperparameters=hyperparameters,
+    )
+    assert matching_parameters == {
+        "method1": {
             "dataset1-23409823490": hyperparameters["method1"]["dataset1"],
         },
     }

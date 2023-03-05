@@ -319,9 +319,15 @@ class LDIMBenchmark:
         hyperparameters_map = {}
         for method_id in method_ids:
             hyperparameters_map[method_id] = {}
+            # Check if any base dataset_Ids match
             if bool(
-                set(dataset_base_ids)
-                & set(hyperparameters_method_map[method_id].keys())
+                set(map(lambda x: x.split("-")[0], dataset_base_ids))
+                & set(
+                    map(
+                        lambda x: x.split("-")[0],
+                        hyperparameters_method_map[method_id].keys(),
+                    )
+                )
             ):
                 # hyperparameters_without_datasets = hyperparameters_method_map[
                 #     method_id
@@ -706,7 +712,9 @@ class LDIMBenchmark:
         results = results.set_index(["method", "method_version", "dataset_id"])
         results = results.sort_values(by=["F1"])
         # Display in console
-        # results = results.drop(columns=["_folder", "matched_leaks_list"])
+        results = results.drop(
+            columns=["_folder", "matched_leaks_list"], errors="ignore"
+        )
         # TODO: Automatically add selected metrics
         columns = [
             "TP",
