@@ -168,8 +168,8 @@ class Dataset:
         """
         :param path: Path to the dataset folder
         """
-
         self.path = path
+        self.__pickle_path = os.path.join(self.path, "dataset.pickle")
         path_to_dataset_info = os.path.join(self.path, "dataset_info.yaml")
         # Read dataset_info.yaml
         if os.path.isfile(path_to_dataset_info):
@@ -289,13 +289,12 @@ class Dataset:
     def loadData(self):
         logging.debug(f"Loading dataset {self.id}")
         if not hasattr(self, "full_dataset_part"):
-            path_to_pickle = os.path.join(self.path, "dataset.pickle")
-            if os.path.isfile(path_to_pickle):
-                with open(path_to_pickle, "rb") as f:
+            if os.path.isfile(self.__pickle_path):
+                with open(self.__pickle_path, "rb") as f:
                     self.full_dataset_part = pickle.load(f)
             else:
                 self.full_dataset_part = loadDatasetsDirectly(self.path, self.info)
-                with open(path_to_pickle, "wb") as f:
+                with open(self.__pickle_path, "wb") as f:
                     pickle.dump(self.full_dataset_part, f)
         logging.debug(f"Stopped loading dataset {self.id}")
         return self
@@ -344,6 +343,7 @@ class Dataset:
 
         write_inpfile(self.model, os.path.join(folder, self.info["inp_file"]))
 
+        # TODO: Probably better parallelize
         for sensor_type in ["pressures", "demands", "flows", "levels"]:
             os.makedirs(os.path.join(folder, sensor_type), exist_ok=True)
             filepaths = [
@@ -361,6 +361,7 @@ class Dataset:
                 ]
                 # process results from tasks in order of task completion
                 for future in as_completed(futures):
+                    # logging.info("wrote sensor")
                     future.result()
 
         self.leaks.to_csv(os.path.join(folder, "leaks.csv"))
@@ -369,6 +370,8 @@ class Dataset:
             yaml.dump(
                 self.info, f, sort_keys=False, default_flow_style=None, Dumper=TSDumper
             )
+        if os.path.exists(self.__pickle_path):
+            os.remove(self.__pickle_path)
 
 
 def getTimeSliceOfDataset(

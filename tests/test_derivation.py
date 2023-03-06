@@ -31,7 +31,7 @@ def test_derivator_model(snapshot, mocked_dataset1: Dataset):
 def test_derivator_data_precision_demands(snapshot, mocked_dataset1: Dataset):
     """Testing Derivation for data: demands (and no others)"""
     derivator = DatasetDerivator(
-        [mocked_dataset1], TEST_DATA_FOLDER_DATASETS, force=True
+        [mocked_dataset1], TEST_DATA_FOLDER_DATASETS, ignore_cache=True
     )
     derivedDatasets = derivator.derive_data("demands", "precision", [0.1])
     snapshot.assert_match(derivedDatasets[0].loadData().demands["J-02"].to_csv())
@@ -52,7 +52,7 @@ def test_derivator_data_precision_demands(snapshot, mocked_dataset1: Dataset):
 def test_derivator_data_precision_pressures(snapshot, mocked_dataset1: Dataset):
     """Testing Derivation for data: pressures (and no others)"""
     derivator = DatasetDerivator(
-        [mocked_dataset1], TEST_DATA_FOLDER_DATASETS, force=True
+        [mocked_dataset1], TEST_DATA_FOLDER_DATASETS, ignore_cache=True
     )
     derivedDatasets = derivator.derive_data("pressures", "precision", [0.1])
     snapshot.assert_match(derivedDatasets[0].loadData().pressures["J-02"].to_csv())
@@ -73,7 +73,7 @@ def test_derivator_data_precision_pressures(snapshot, mocked_dataset1: Dataset):
 def test_derivator_data_precision_flows(snapshot, mocked_dataset1: Dataset):
     """Testing Derivation for data: flows (and no others)"""
     derivator = DatasetDerivator(
-        [mocked_dataset1], TEST_DATA_FOLDER_DATASETS, force=True
+        [mocked_dataset1], TEST_DATA_FOLDER_DATASETS, ignore_cache=True
     )
     derivedDatasets = derivator.derive_data("flows", "precision", [0.1])
     snapshot.assert_match(derivedDatasets[0].loadData().flows["J-02"].to_csv())
@@ -94,7 +94,7 @@ def test_derivator_data_precision_flows(snapshot, mocked_dataset1: Dataset):
 def test_derivator_data_precision_levels(snapshot, mocked_dataset1: Dataset):
     """Testing Derivation for data: levels (and no others)"""
     derivator = DatasetDerivator(
-        [mocked_dataset1], TEST_DATA_FOLDER_DATASETS, force=True
+        [mocked_dataset1], TEST_DATA_FOLDER_DATASETS, ignore_cache=True
     )
     derivedDatasets = derivator.derive_data("levels", "precision", [0.1])
     snapshot.assert_match(derivedDatasets[0].loadData().levels["J-02"].to_csv())
@@ -121,7 +121,7 @@ def test_derivator_data_sensitivity_big_top_levels(
     # )
 
     derivator = DatasetDerivator(
-        [mocked_dataset_time], TEST_DATA_FOLDER_DATASETS, force=True
+        [mocked_dataset_time], TEST_DATA_FOLDER_DATASETS, ignore_cache=True
     )
     derivedDatasets = derivator.derive_data(
         "levels", "sensitivity", [{"value": 2, "shift": "top"}]
@@ -150,7 +150,7 @@ def test_derivator_data_sensitivity_big_bottom_levels(
     # )
 
     derivator = DatasetDerivator(
-        [mocked_dataset_time], TEST_DATA_FOLDER_DATASETS, force=True
+        [mocked_dataset_time], TEST_DATA_FOLDER_DATASETS, ignore_cache=True
     )
     derivedDatasets = derivator.derive_data(
         "levels", "sensitivity", [{"value": 2, "shift": "bottom"}]
@@ -179,7 +179,7 @@ def test_derivator_data_sensitivity_small_top_levels(
     # )
 
     derivator = DatasetDerivator(
-        [mocked_dataset2], TEST_DATA_FOLDER_DATASETS, force=True
+        [mocked_dataset2], TEST_DATA_FOLDER_DATASETS, ignore_cache=True
     )
     derivedDatasets = derivator.derive_data(
         "levels", "sensitivity", [{"value": 0.1, "shift": "top"}]
@@ -208,7 +208,7 @@ def test_derivator_data_sensitivity_small_bottom_levels(
     # )
 
     derivator = DatasetDerivator(
-        [mocked_dataset2], TEST_DATA_FOLDER_DATASETS, force=True
+        [mocked_dataset2], TEST_DATA_FOLDER_DATASETS, ignore_cache=True
     )
     derivedDatasets = derivator.derive_data(
         "levels", "sensitivity", [{"value": 0.1, "shift": "bottom"}]
@@ -231,10 +231,15 @@ def test_derivator_data_sensitivity_small_bottom_levels(
 def test_derivator_data_sampling(snapshot, mocked_dataset_time: Dataset):
     """Testing Derivation for data: levels (and no others)"""
     derivator = DatasetDerivator(
-        [mocked_dataset_time], TEST_DATA_FOLDER_DATASETS, force=True
+        [mocked_dataset_time], TEST_DATA_FOLDER_DATASETS, ignore_cache=True
     )
     derivedDatasets = derivator.derive_data("levels", "downsample", [540])
-    snapshot.assert_match(derivedDatasets[0].loadData().levels["J-02"].to_csv())
+    snapshot.assert_match(
+        Dataset(os.path.join(TEST_DATA_FOLDER_DATASETS, derivedDatasets[0].id))
+        .loadData()
+        .levels["J-02"]
+        .to_csv()
+    )
     assert_frame_equal(
         mocked_dataset_time.loadData().flows["J-02"],
         derivedDatasets[0].loadData().flows["J-02"],

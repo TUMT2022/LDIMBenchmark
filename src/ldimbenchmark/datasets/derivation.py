@@ -57,11 +57,14 @@ def _apply_derivation_to_DataFrame(
 
     elif derivation == "downsample":
         dataframe = dataframe.reset_index()
+        # Keep kast index value to guarantee that resampling the derivated datasets has the same number of results as the original
+        last = dataframe.iloc[-1]
         dataframe = dataframe.groupby(
             (dataframe["Timestamp"] - dataframe["Timestamp"][0]).dt.total_seconds()
             // (value),
             group_keys=True,
         ).first()
+        dataframe.iloc[-1] = last
         dataframe = dataframe.set_index("Timestamp")
     else:
         raise ValueError(f"Derivation {derivation} not implemented")
