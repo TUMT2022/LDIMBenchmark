@@ -42,14 +42,16 @@ def get_mask(dataset: pd.DataFrame, start, end, extra_timespan):
 
 
 def plot_leak(
-    data_to_plot: Dict[str, pd.DataFrame],
+    dataset: Dataset,
     leak_pair,
     additional_data_dir,
     out_dir,
 ):
     fig = plt.figure()
-    gs = fig.add_gridspec(2, hspace=0)
-    ax_dataset, ax_method = gs.subplots(sharex=True, sharey=False)
+    gs = fig.add_gridspec(3, hspace=0)
+    ax_dataset_flows, ax_dataset_pressures, ax_method = gs.subplots(
+        sharex=True, sharey=False
+    )
     # fig, ax = plt.subplots()
     name = ""
     expected_leak, detected_leak = leak_pair
@@ -63,10 +65,20 @@ def plot_leak(
             expected_leak["leak_time_end"] - expected_leak["leak_time_start"]
         ) / 6
 
-        ax_dataset.axvspan(
+        ax_dataset_flows.axvspan(
             expected_leak["leak_time_start"],
             expected_leak["leak_time_end"]
-            if expected_leak["leak_time_end"] != None
+            if not pd.isna(expected_leak["leak_time_end"])
+            else expected_leak["leak_time_start"],
+            color="red",
+            alpha=0.1,
+            lw=0,
+            zorder=1,
+        )
+        ax_dataset_pressures.axvspan(
+            expected_leak["leak_time_start"],
+            expected_leak["leak_time_end"]
+            if not pd.isna(expected_leak["leak_time_end"])
             else expected_leak["leak_time_start"],
             color="red",
             alpha=0.1,
@@ -76,7 +88,7 @@ def plot_leak(
         ax_method.axvspan(
             expected_leak["leak_time_start"],
             expected_leak["leak_time_end"]
-            if expected_leak["leak_time_end"] != None
+            if not pd.isna(expected_leak["leak_time_end"])
             else expected_leak["leak_time_start"],
             color="red",
             alpha=0.1,
@@ -85,7 +97,12 @@ def plot_leak(
         )
     # Plot detected leak:
     if detected_leak is not None:
-        ax_dataset.axvline(detected_leak["leak_time_start"], color="green", zorder=4)
+        ax_dataset_flows.axvline(
+            detected_leak["leak_time_start"], color="green", zorder=4
+        )
+        ax_dataset_pressures.axvline(
+            detected_leak["leak_time_start"], color="green", zorder=4
+        )
         ax_method.axvline(detected_leak["leak_time_start"], color="green", zorder=4)
 
     #
@@ -97,7 +114,7 @@ def plot_leak(
     if detected_leak is None and expected_leak is not None:
         name = str(expected_leak["leak_time_start"]) + "_fn"
 
-    for sensor_id, sensor_readings in data_to_plot.items():
+    for sensor_id, sensor_readings in getattr(dataset, "pressures").items():
         if boundaries == None:
             # Just use first sensor_readings for all...
             boundaries = (sensor_readings.index[-1] - sensor_readings.index[0]) / (
@@ -110,14 +127,14 @@ def plot_leak(
             sensor_readings,
             reference_leak["leak_time_start"],
             reference_leak["leak_time_end"]
-            if reference_leak["leak_time_end"] != None
+            if not pd.isna(reference_leak["leak_time_end"])
             else reference_leak["leak_time_start"],
             boundaries,
         )
 
         sensor_readings = sensor_readings[mask]
         # Do not use df.plot(): https://github.com/pandas-dev/pandas/issues/51795
-        ax_dataset.plot(
+        ax_dataset_pressures.plot(
             sensor_readings.index,
             sensor_readings[sensor_id],
             alpha=0.2,
@@ -126,6 +143,34 @@ def plot_leak(
             label=sensor_id,
         )
         # sensor_readings.plot(ax=ax, alpha=0.2, linestyle="solid", zorder=3)
+    for sensor_id, sensor_readings in getattr(dataset, "flows").items():
+        if boundaries == None:
+            # Just use first sensor_readings for all...
+            boundaries = (sensor_readings.index[-1] - sensor_readings.index[0]) / (
+                sensor_readings.shape[0] / 6
+            )
+            minimum_boundary = timedelta64(1, "D")
+            if boundaries < minimum_boundary:
+                boundaries = minimum_boundary
+        mask = get_mask(
+            sensor_readings,
+            reference_leak["leak_time_start"],
+            reference_leak["leak_time_end"]
+            if not pd.isna(reference_leak["leak_time_end"])
+            else reference_leak["leak_time_start"],
+            boundaries,
+        )
+
+        sensor_readings = sensor_readings[mask]
+        # Do not use df.plot(): https://github.com/pandas-dev/pandas/issues/51795
+        ax_dataset_flows.plot(
+            sensor_readings.index,
+            sensor_readings[sensor_id],
+            alpha=0.2,
+            linestyle="solid",
+            zorder=3,
+            label=sensor_id,
+        )
 
     # Plot debug data:
     debug_folder = os.path.join(additional_data_dir, "debug/")
@@ -143,7 +188,7 @@ def plot_leak(
                     debug_data,
                     reference_leak["leak_time_start"],
                     reference_leak["leak_time_end"]
-                    if reference_leak["leak_time_end"] != None
+                    if not pd.isna(reference_leak["leak_time_end"])
                     else reference_leak["leak_time_start"],
                     boundaries,
                 )
@@ -166,7 +211,8 @@ def plot_leak(
     # box = ax.get_position()
     # ax.set_position([box.x0, box.y0, box.width * 0.8, box.height])
     ax_method.set_title("Debug Data from Method", y=1.0, pad=-14)
-    ax_dataset.set_title("Pressure Data From Dataset", y=1.0, pad=-14)
+    ax_dataset_pressures.set_title("Pressure Data From Dataset", y=1.0, pad=-14)
+    ax_dataset_flows.set_title("Flows Data From Dataset", y=1.0, pad=-14)
     # TODO: Plot Leak Outflow, if available
 
     # Put a legend to the right of the current axis
@@ -769,10 +815,7 @@ class LDIMBenchmark:
                 for leak_pair in result["matched_leaks_list"]:
                     future = executor.submit(
                         plot_leak,
-                        getattr(
-                            loaded_datasets[result["dataset_id"]],
-                            "pressures",
-                        ),
+                        loaded_datasets[result["dataset_id"]],
                         leak_pair=leak_pair,
                         additional_data_dir=result_folder,
                         out_dir=graph_dir,
