@@ -57,14 +57,11 @@ def _apply_derivation_to_DataFrame(
 
     elif derivation == "downsample":
         dataframe = dataframe.reset_index()
-        # Keep kast index value to guarantee that resampling the derivated datasets has the same number of results as the original
-        last = dataframe.iloc[-1]
         dataframe = dataframe.groupby(
             (dataframe["Timestamp"] - dataframe["Timestamp"][0]).dt.total_seconds()
             // (value),
             group_keys=True,
         ).first()
-        dataframe.iloc[-1] = last
         dataframe = dataframe.set_index("Timestamp")
     else:
         raise ValueError(f"Derivation {derivation} not implemented")
@@ -121,8 +118,8 @@ class DatasetDerivator:
 
         newDatasets = []
         for dataset in self.datasets:
-            if derivation == "accuracy":
-                for value in values:
+            for value in values:
+                if derivation == "accuracy":
                     this_dataset = Dataset(dataset.path)
                     this_dataset.info["derivations"] = {}
                     this_dataset.info["derivations"]["model"] = []
@@ -139,6 +136,10 @@ class DatasetDerivator:
                         self.out_path, this_dataset.id + "/"
                     )
 
+                    logging.info(
+                        f"Generating Model Derivation for {this_dataset.id} with derivations {str(this_dataset.info['derivations']['model'])}"
+                    )
+
                     if not os.path.exists(derivedDatasetPath) or self.ignore_cache:
                         loadedDataset = this_dataset.loadData()
 
@@ -153,14 +154,14 @@ class DatasetDerivator:
                         # Save
                         os.makedirs(os.path.dirname(derivedDatasetPath), exist_ok=True)
                         loadedDataset.exportTo(derivedDatasetPath)
-                        logging.info("Populating cache")
-                        loadedDataset.loadData()
 
                     dataset = Dataset(derivedDatasetPath)
+                    logging.info("Populating cache")
+                    dataset.loadData()
                     newDatasets.append(dataset)
                     self.all_derived_datasets.append(dataset)
-            else:
-                raise Exception(f"No derivation name '{derivation}'")
+                else:
+                    raise Exception(f"No derivation named '{derivation}'")
 
         return newDatasets
 
@@ -233,7 +234,7 @@ class DatasetDerivator:
                 this_dataset._update_id()
                 derivedDatasetPath = os.path.join(self.out_path, this_dataset.id + "/")
                 logging.info(
-                    f"Generating Derivation for {this_dataset.id} with derivations {str(this_dataset.info['derivations']['data'])}"
+                    f"Generating Data Derivation for {this_dataset.id} with derivations {str(this_dataset.info['derivations']['data'])}"
                 )
                 if not os.path.exists(derivedDatasetPath) or self.ignore_cache:
                     loadedDataset = this_dataset.loadData()
@@ -278,10 +279,10 @@ class DatasetDerivator:
                     logging.info("Writing derivated dataset")
                     os.makedirs(os.path.dirname(derivedDatasetPath), exist_ok=True)
                     loadedDataset.exportTo(derivedDatasetPath)
-                    logging.info("Populating cache")
-                    loadedDataset.loadData()
 
                 dataset = Dataset(derivedDatasetPath)
+                logging.info("Populating cache")
+                dataset.loadData()
                 newDatasets.append(dataset)
                 self.all_derived_datasets.append(dataset)
 

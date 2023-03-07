@@ -1,5 +1,6 @@
 import logging
 from typing import Dict, List
+import numpy as np
 from pandas import DataFrame
 from ldimbenchmark.classes import BenchmarkData
 from wntr.network import WaterNetworkModel
@@ -48,9 +49,14 @@ class SimpleBenchmarkData:
 
 
 def resampleAndConcatSensors(
-    sensors: Dict[str, DataFrame], resample_frequency="1T"
+    sensors: Dict[str, DataFrame], should_have_value_count: int, resample_frequency="1T"
 ) -> DataFrame:
-    """Resample all sensors to the same time interval and concatenate them into one single DataFrame"""
+    """
+    Resample all sensors to the same time interval and concatenate them into one single DataFrame
+
+    value_count: The number of values that should be in the resulting DataFrame, if the number of values in sensors is less than value_count,
+    the DataFrame will be padded with NaNs
+    """
 
     concatenated_sensors = []
     for sensor_name, sensor_data in sensors.items():
@@ -59,6 +65,24 @@ def resampleAndConcatSensors(
             logging.warning(
                 "Upsampling data, this might result in one off errors later on. Consider settings 'resample_frequency' to a bigger timeframe."
             )
+
+        # Making sure the DataFrame has the amount of values it should have
+        missing_values_count = should_have_value_count - len(new_data)
+        if missing_values_count > 0:
+            missing_timedelta = pd.Timedelta(resample_frequency) * missing_values_count
+
+            missing_dates = pd.DataFrame(
+                index=pd.date_range(
+                    new_data.iloc[-1].name,
+                    new_data.iloc[-1].name + missing_timedelta,
+                    freq=resample_frequency,
+                )
+            )
+            missing_dates[0] = np.NaN
+            missing_dates.columns = new_data.columns
+            missing_dates
+            new_data = new_data.combine_first(missing_dates)
+
         concatenated_sensors.append(new_data)
 
     if len(concatenated_sensors) == 0:
@@ -75,11 +99,18 @@ def simplifyBenchmarkData(
 ) -> SimpleBenchmarkData:
     """Convert multiple timeseries to one timeseries"""
 
+    max_values = 0
+    for datasets in [data.pressures, data.demands, data.flows, data.levels]:
+        for key in datasets.keys():
+            max_values = max(max_values, len(datasets[key]))
+
     return SimpleBenchmarkData(
-        pressures=resampleAndConcatSensors(data.pressures, resample_frequency),
-        demands=resampleAndConcatSensors(data.demands, resample_frequency),
-        flows=resampleAndConcatSensors(data.flows, resample_frequency),
-        levels=resampleAndConcatSensors(data.levels, resample_frequency),
+        pressures=resampleAndConcatSensors(
+            data.pressures, max_values, resample_frequency
+        ),
+        demands=resampleAndConcatSensors(data.demands, max_values, resample_frequency),
+        flows=resampleAndConcatSensors(data.flows, max_values, resample_frequency),
+        levels=resampleAndConcatSensors(data.levels, max_values, resample_frequency),
         model=data.model,
         dmas=data.dmas,
     )
