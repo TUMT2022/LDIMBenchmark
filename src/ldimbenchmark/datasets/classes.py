@@ -286,6 +286,11 @@ class Dataset:
             raise Exception("Call `loadData()` before accessing leak data.")
         self.full_dataset_part.leaks = leaks
 
+    def ensure_cached(self):
+        if not os.path.isfile(self.__pickle_path):
+            logging.info(f"Ensuring {self.id} is cached")
+            self.loadData()
+
     def loadData(self):
         logging.debug(f"Loading dataset {self.id}")
         if not hasattr(self, "full_dataset_part"):

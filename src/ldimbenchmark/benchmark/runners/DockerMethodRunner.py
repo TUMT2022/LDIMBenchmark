@@ -51,6 +51,7 @@ class DockerMethodRunner(MethodRunner):
             resultsFolder=resultsFolder,
             debug=debug,
         )
+        self.dataset.ensure_cached()
 
         self.image = image
         self.docker_base_url = docker_base_url
