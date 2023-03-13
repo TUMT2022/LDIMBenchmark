@@ -17,3 +17,5 @@ sensitivity-analysis
 test
 test_data
 grid-search
+grid-search_battledim
+out

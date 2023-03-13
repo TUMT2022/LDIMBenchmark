@@ -1,9 +1,13 @@
 [tool.poetry]
 name = "ldimbenchmark"
-version = "0.1.36"
+version = "0.0.0"
 description = ""
 authors = ["DanielHabenicht <daniel-habenicht@outlook.de>"]
 readme = "README.md"
+exclude = [
+    "tests",
+    "experiments"
+]
 
 [tool.poetry.scripts]
 ldimbenchmark = "ldimbenchmark.cli:cli"
@@ -25,6 +29,8 @@ paramiko = "^3.0.0"
 enlighten = "^1.11.2"
 python-semantic-release = "^7.33.2"
 sqlalchemy = "<2"
+sympy = "^1.11.1"
+more-itertools = "^9.1.0"
 
 [tool.poetry.group.dev.dependencies]
 tox = "^3.27.1"
