@@ -1,4 +1,5 @@
 import asyncio
+from threading import Thread
 import time
 import hashlib
 import io
@@ -17,6 +18,22 @@ import yaml
 from ldimbenchmark.benchmark.runners.BaseMethodRunner import MethodRunner
 from ldimbenchmark.classes import BenchmarkLeakageResult, LDIMMethodBase
 from ldimbenchmark.datasets.classes import Dataset
+
+
+def record_docker_statistics(
+    event: asyncio.Event,
+    container: docker.models.containers.Container,
+    resultsFolder: str,
+):
+    allStats = []
+    while True:
+        stats = container.stats(stream=False)
+        allStats.append(stats)
+        time.sleep(1)
+        if event.is_set():
+            if os.path.exists(resultsFolder):
+                pd.DataFrame(allStats).to_csv(os.path.join(resultsFolder, "stats.csv"))
+            break
 
 
 class DockerMethodRunner(MethodRunner):
@@ -108,7 +125,7 @@ class DockerMethodRunner(MethodRunner):
                         "mode": "ro",
                     }
                 },
-                mem_limit="12g",
+                mem_limit="20g",
                 cpu_count=7,
                 detach=True,
             )
@@ -148,12 +165,19 @@ class DockerMethodRunner(MethodRunner):
             finally:
                 stream_tar_args.close()
 
-            # TODO: get stats  container.stats(stream=True)
+            killEvent = asyncio.Event()
+            thread = Thread(
+                target=record_docker_statistics,
+                args=(killEvent, container, self.resultsFolder),
+            )
+            thread.start()
             for log_line in container.logs(stream=True):
                 logging.info(f"[{self.id}] {log_line.strip()}")
 
             status = container.wait()
             if status["StatusCode"] != 0:
+                killEvent.set()
+                thread.join()
                 logging.error(
                     f"Runner {self.id} errored with status code {status['StatusCode']}!"
                 )
@@ -167,6 +191,10 @@ class DockerMethodRunner(MethodRunner):
                 if not self.debug:
                     container.remove()
                 return None
+
+            os.makedirs(self.resultsFolder, exist_ok=True)
+            killEvent.set()
+            thread.join()
 
             # Extract Outputs
             temp_folder_output = tempfile.TemporaryDirectory()
