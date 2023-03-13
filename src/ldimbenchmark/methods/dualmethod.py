@@ -21,7 +21,7 @@ import numpy as np
 import pandas as pd
 from typing import List, Dict
 import copy
-
+from wntr.morph.link import split_pipe
 from ldimbenchmark.utilities import simplifyBenchmarkData
 
 
@@ -166,7 +166,17 @@ class DUALMethod(LDIMMethodBase):
                 node = self.wn.get_node(sensor)
             except KeyError as e:
                 logging.warning(f"Sensor {sensor} is not a node, skipping it for now")
-                continue
+                # Adding a Junction Node with the name of the sensor to enable making the dual model modifications (which only work on nodes)
+                link = self.wn.get_link(sensor)
+                link.link_name = sensor + "_split_pipe_0"
+                self.wn = split_pipe(
+                    wn=self.wn,
+                    pipe_name_to_split=link,
+                    new_pipe_name=sensor + "_split_pipe_1",
+                    new_junction_name=sensor,
+                )
+                node = self.wn.get_node(sensor)
+
             dualmodel_nodes.append("dualmodel_" + sensor)
             elevation = node.elevation
             coordinates = node.coordinates
