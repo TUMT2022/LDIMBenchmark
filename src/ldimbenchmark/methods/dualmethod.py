@@ -165,7 +165,9 @@ class DUALMethod(LDIMMethodBase):
             try:
                 node = self.wn.get_node(sensor)
             except KeyError as e:
-                logging.warning(f"Sensor {sensor} is not a node, skipping it for now")
+                logging.warning(
+                    f"Sensor {sensor} is a pipe, splitting it in order to apply the dual model"
+                )
                 # Adding a Junction Node with the name of the sensor to enable making the dual model modifications (which only work on nodes)
                 link = self.wn.get_link(sensor)
                 link.link_name = sensor + "_split_pipe_0"
