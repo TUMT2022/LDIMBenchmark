@@ -40,11 +40,7 @@ param_grid = {
     #     "gamma": 0.15,
     #     "window": 5,
     # },
-    # "dualmethod": {
-    #     "est_length": 552,
-    #     "C_threshold": 5,
-    #     "delta": 0.4,
-    # },
+    "dualmethod": {"C_threshold": 6.0, "delta": 0.4, "est_length": 888.0},
 }
 
 
@@ -66,6 +62,7 @@ benchmark = LDIMBenchmark(
 #         # "ghcr.io/ldimbenchmark/dualmethod:0.1.20",
 #     ]
 # )
+# Works fpr containers before 0.1.41
 benchmark.add_local_methods([DUALMethod()])
 
 # execute benchmark
@@ -75,7 +72,7 @@ benchmark.run_benchmark(
 
 benchmark.evaluate(
     current_only=True,
-    resultFilter=lambda results: results[results["F1"].notna()],
+    # resultFilter=lambda results: results[results["F1"].notna()],
     write_results=True,
     # generate_plots=True,
 )
