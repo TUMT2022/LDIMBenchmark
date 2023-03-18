@@ -33,6 +33,8 @@ param_grid = {
     #     "est_length": 24,
     #     "C_threshold": 1.25,
     #     "delta": 7,
+    #     "dma_specific": True,
+    #     "default_flow_sensor": "31664",
     # },
     # "mnf": {
     #     # "gamma": np.arange(0, 0.5, 0.05).tolist(),
