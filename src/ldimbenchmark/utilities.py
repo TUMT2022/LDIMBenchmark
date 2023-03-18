@@ -114,3 +114,15 @@ def simplifyBenchmarkData(
         model=data.model,
         dmas=data.dmas,
     )
+
+
+def getDmaSpecificData(data: SimpleBenchmarkData, sensors: List[str]):
+    return SimpleBenchmarkData(
+        pressures=data.pressures.loc[:, data.pressures.columns.isin(sensors)],
+        demands=data.demands.loc[:, data.demands.columns.isin(sensors)],
+        flows=data.flows.loc[:, data.flows.columns.isin(sensors)],
+        levels=data.levels.loc[:, data.levels.columns.isin(sensors)],
+        # TODO: This should probably be better handled:
+        model=data.model,
+        dmas=data.dmas,
+    )
