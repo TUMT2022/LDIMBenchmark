@@ -29,6 +29,7 @@ class LocalMethodRunner(MethodRunner):
         goal: Literal[
             "assessment", "detection", "identification", "localization", "control"
         ] = "detection",
+        # TODO probably this can be removed:
         stage: Literal["train", "detect"] = "detect",
         method: Literal["offline", "online"] = "offline",
         debug=False,
@@ -133,10 +134,12 @@ class LocalMethodRunner(MethodRunner):
         start = time.time()
         logging.info(f"Running {self.id} with params {self.hyperparameters}")
 
-        logging.info(f"LocalMethodRunner - Loading Dataset {self.dataset.id}")
+        logging.info(
+            f"LocalMethodRunner - Loading Dataset {self.dataset.id}, params: {getattr(self.dataset.info, 'derivations', None)}"
+        )
         self.dataset.loadData()
         self.dataset.loadBenchmarkData()
-        logging.info("Loading Datasets - FINISH")
+        logging.debug("Loading Datasets - FINISH")
 
         # TODO: test compatibility (stages)
         self.detection_method.init_with_benchmark_params(

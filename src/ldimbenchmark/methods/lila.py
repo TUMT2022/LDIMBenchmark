@@ -1,3 +1,4 @@
+import logging
 from ldimbenchmark.classes import LDIMMethodBase, MethodMetadata, Hyperparameter
 from ldimbenchmark import (
     BenchmarkData,
@@ -15,7 +16,11 @@ import numpy as np
 import pandas as pd
 import os
 
-from ldimbenchmark.utilities import SimpleBenchmarkData, simplifyBenchmarkData
+from ldimbenchmark.utilities import (
+    SimpleBenchmarkData,
+    getDmaSpecificData,
+    simplifyBenchmarkData,
+)
 
 
 class Ref_node:
@@ -35,10 +40,18 @@ class SCADA_data:
 
 
 class LILA(LDIMMethodBase):
+    """
+    LILA - Leakage Identification and Localization Algorithm
+
+    Version History:
+      0.1.0: Initial version from the authors, with performance tweaks
+      0.2.0: Refactored and added DMA specific analysis
+    """
+
     def __init__(self):
         super().__init__(
             name="lila",
-            version="0.1.0",
+            version="0.2.0",
             metadata=MethodMetadata(
                 data_needed=["pressures", "flows"],
                 hyperparameters=[
@@ -90,57 +103,60 @@ class LILA(LDIMMethodBase):
                         max=10.0,
                         min=0.0,
                     ),
+                    Hyperparameter(
+                        name="dma_specific",
+                        description="Whether the method should be executed on each dma or on the whole dataset at once",
+                        default=False,
+                        value_type=bool,
+                    ),
+                    Hyperparameter(
+                        name="default_flow_sensor",
+                        description="Flow Sensor used for dma unspecific analysis or if no flow sensor is available for a dma.",
+                        required=True,
+                        value_type=str,
+                    ),
                 ],
             ),
         )
         self.trained = False
 
     # TODO: Add DMA specific implementation (and hyperparameters)
-
-    def train(self, simple_train_data: SimpleBenchmarkData, start_time, end_time):
-        # TODO: Implement start/end time
+    # {
+    #                 "P-01": "PUMP_1",
+    #                 "J-02": "PUMP_1",
+    #                 "Inflow [l/s]": "PUMP_1",
+    #                 "31664": "PUMP_1",
+    #                 "wNode_1": "PUMP_1",
+    #             }
+    def _train(
+        self,
+        simple_train_data: SimpleBenchmarkData,
+        start_time,
+        end_time,
+        dma: str,
+    ):
         self.trained = True
-        # TODO: implement sensor level data loading
-        # Load Data
-        scada_data = SCADA_data()
 
-        scada_data.pressures = simple_train_data.pressures
         nodes = simple_train_data.pressures.keys()
-
-        flows = simple_train_data.flows
-        # TODO: Remove this to be generalized:
-        # Try it with all flows combined?
-
-        # TODO: Make algorithm independent of pump name
-        # flows["PUMP_1"] = flows.sum(axis=1)
-        flows = flows.rename(
-            columns={
-                "P-01": "PUMP_1",
-                "J-02": "PUMP_1",
-                "Inflow [l/s]": "PUMP_1",
-                "31664": "PUMP_1",
-                "wNode_1": "PUMP_1",
-            }
-        )
-        scada_data.flows = flows
 
         N = len(nodes)
 
-        self.K0 = np.zeros((N, N))
-        self.K1 = np.zeros((N, N))
-        self.Kd = np.zeros((N, N))
+        if not hasattr(self, "K0"):
+            self.K0 = {}
+            self.K1 = {}
+            self.Kd = {}
+        self.K0[dma] = np.zeros((N, N))
+        self.K1[dma] = np.zeros((N, N))
+        self.Kd[dma] = np.zeros((N, N))
 
         for i, node in enumerate(nodes):
-            ref_node = Ref_node(node)
-            models = []
-
             X_tr = np.concatenate(
                 [
-                    scada_data.pressures[node]
+                    simple_train_data.pressures[node]
                     .loc[start_time:end_time]
                     .to_numpy()
                     .reshape(-1, 1),
-                    scada_data.flows["PUMP_1"]
+                    simple_train_data.flows["PUMP_1"]
                     .loc[start_time:end_time]
                     .to_numpy()
                     .reshape(-1, 1),
@@ -150,62 +166,20 @@ class LILA(LDIMMethodBase):
 
             for j, node_cor in enumerate(nodes):
                 y_tr = (
-                    scada_data.pressures[node_cor]
+                    simple_train_data.pressures[node_cor]
                     .loc[start_time:end_time]
                     .to_numpy()
                     .reshape(-1, 1)
                 )
                 model = LinearRegression()
-                models.append(model.fit(X_tr, y_tr))
-                self.K0[i, j] = model.intercept_[0]
-                self.K1[i, j] = model.coef_[0][0]
-                self.Kd[i, j] = model.coef_[0][1]
+                model.fit(X_tr, y_tr)
 
-            ref_node.set_models(models)
+                self.K0[dma][i, j] = model.intercept_[0]
+                self.K1[dma][i, j] = model.coef_[0][0]
+                self.Kd[dma][i, j] = model.coef_[0][1]
 
-    def prepare(self, training_data: BenchmarkData = None) -> None:
-        if training_data != None:
-            simple_training_data = simplifyBenchmarkData(
-                training_data,
-                resample_frequency=self.hyperparameters["resample_frequency"],
-            )
-
-            start_time = pd.to_datetime(self.hyperparameters["leakfree_time_start"])
-            end_time = pd.to_datetime(self.hyperparameters["leakfree_time_stop"])
-            self.train(simple_training_data, start_time, end_time)
-
-    def detect_offline(
-        self, evaluation_data: BenchmarkData
-    ) -> List[BenchmarkLeakageResult]:
-        scada_data = SCADA_data()
-
-        simple_evaluation_data = simplifyBenchmarkData(
-            evaluation_data,
-            resample_frequency=self.hyperparameters["resample_frequency"],
-        )
-
-        if self.trained == False:
-            # TODO: Implement reoccurring training on trailing timeframe?
-            start_time = pd.to_datetime(self.hyperparameters["leakfree_time_start"])
-            end_time = pd.to_datetime(self.hyperparameters["leakfree_time_stop"])
-            self.train(simple_evaluation_data, start_time, end_time)
-
-        scada_data.pressures = simple_evaluation_data.pressures
-        nodes = simple_evaluation_data.pressures.keys()
-
-        flows = simple_evaluation_data.flows
-        # TODO: Make algorithm independent of pump name
-        # flows["PUMP_1"] = flows.sum(axis=1)
-        flows = flows.rename(
-            columns={
-                "P-01": "PUMP_1",
-                "J-02": "PUMP_1",
-                "Inflow [l/s]": "PUMP_1",
-                "wNode_1": "PUMP_1",
-            }
-        )
-
-        scada_data.flows = flows
+    def _detect(self, data: SimpleBenchmarkData, dma_key: str):
+        nodes = data.pressures.keys()
 
         # Leak Analysis Function
         # nodes - List of Nodes which should be.
@@ -214,20 +188,20 @@ class LILA(LDIMMethodBase):
         # def leak_analysis(nodes, scada_data, cor_time_frame):
         N = len(nodes)
         # T = Timestamps
-        T = scada_data.pressures.shape[0]
-        P = scada_data.pressures[nodes].values
-        V = scada_data.flows["PUMP_1"].values
+        T = data.pressures.shape[0]
+        P = data.pressures[nodes].values
+        V = data.flows["PUMP_1"].values
 
-        np.fill_diagonal(self.K0, 0)
-        np.fill_diagonal(self.K1, 1)
-        np.fill_diagonal(self.Kd, 0)
+        np.fill_diagonal(self.K0[dma_key], 0)
+        np.fill_diagonal(self.K1[dma_key], 1)
+        np.fill_diagonal(self.Kd[dma_key], 0)
 
         # If there is an error look up the problem at:
         # https://github.com/numpy/numpy/issues/23244
         e = (
-            np.multiply.outer(self.K0, np.ones(T))
-            + np.multiply.outer(self.Kd, V)
-            + np.multiply.outer(self.K1, np.ones(T))
+            np.multiply.outer(self.K0[dma_key], np.ones(T))
+            + np.multiply.outer(self.Kd[dma_key], V)
+            + np.multiply.outer(self.K1[dma_key], np.ones(T))
             * np.multiply.outer(P, np.ones(N)).transpose(1, 2, 0)
             - np.multiply.outer(P, np.ones(N)).transpose(2, 1, 0)
         )
@@ -265,7 +239,7 @@ class LILA(LDIMMethodBase):
             res, np.expand_dims(max_affected_sensors_index, axis=0), norm_values, axis=0
         )
 
-        MRE = pd.DataFrame(res.T, index=scada_data.pressures.index, columns=nodes)
+        MRE = pd.DataFrame(res.T, index=data.pressures.index, columns=nodes)
         leaks, cusum_data = cusum(
             MRE,
             C_thr=self.hyperparameters["C_threshold"],
@@ -286,17 +260,86 @@ class LILA(LDIMMethodBase):
             cusum_data.to_csv(os.path.join(self.additional_output_path, "cusum.csv"))
 
         # Overall MRE is not good for detection, so we just keep these Nodes as Sensors to Consider in the next Step
+        return leaks
+
+    def prepare(self, training_data: BenchmarkData = None) -> None:
+        if training_data != None:
+            simple_training_data = simplifyBenchmarkData(
+                training_data,
+                resample_frequency=self.hyperparameters["resample_frequency"],
+            )
+
+            start_time = pd.to_datetime(self.hyperparameters["leakfree_time_start"])
+            end_time = pd.to_datetime(self.hyperparameters["leakfree_time_stop"])
+            if self.hyperparameters["dma_specific"]:
+                for dma in training_data.dmas.keys():
+                    dma_specific_training_data = getDmaSpecificData(
+                        simple_training_data, training_data.dmas[dma]
+                    )
+                    dma_specific_training_data.flows[
+                        "PUMP_1"
+                    ] = dma_specific_training_data.flows.sum(axis=1)
+
+                    self._train(
+                        dma_specific_training_data, start_time, end_time, dma=dma
+                    )
+
+            else:
+                self._train(simple_training_data, start_time, end_time, dma="main")
+
+    def detect_offline(
+        self, evaluation_data: BenchmarkData
+    ) -> List[BenchmarkLeakageResult]:
+        simple_evaluation_data = simplifyBenchmarkData(
+            evaluation_data,
+            resample_frequency=self.hyperparameters["resample_frequency"],
+        )
+
+        dma_specific_data = {}
+        if self.hyperparameters["dma_specific"]:
+            for dma in evaluation_data.dmas.keys():
+                dma_specific_data[dma] = getDmaSpecificData(
+                    simple_evaluation_data, evaluation_data.dmas[dma]
+                )
+
+                if len(dma_specific_data[dma].flows.columns) == 0:
+                    dma_specific_data[dma].flows[
+                        "PUMP_1"
+                    ] = simple_evaluation_data.flows[
+                        self.hyperparameters["default_flow_sensor"]
+                    ]
+                else:
+                    dma_specific_data[dma].flows["PUMP_1"] = dma_specific_data[
+                        dma
+                    ].flows.sum(axis=1)
+        else:
+            simple_evaluation_data.flows["PUMP_1"] = simple_evaluation_data.flows[
+                self.hyperparameters["default_flow_sensor"]
+            ]
+            dma_specific_data["main"] = simple_evaluation_data
+
+        if self.trained == False:
+            # TODO: Implement reoccurring training on trailing timeframe?
+            start_time = pd.to_datetime(self.hyperparameters["leakfree_time_start"])
+            end_time = pd.to_datetime(self.hyperparameters["leakfree_time_stop"])
+            for dma_key in dma_specific_data.keys():
+                self._train(
+                    dma_specific_data[dma_key], start_time, end_time, dma=dma_key
+                )
 
         results = []
-        for leak_pipe, leak_start in zip(leaks.index, leaks):
-            results.append(
-                BenchmarkLeakageResult(
-                    leak_pipe_id=leak_pipe,
-                    leak_time_start=leak_start,
-                    leak_time_end=leak_start,
-                    leak_time_peak=leak_start,
+        for dma_key in dma_specific_data.keys():
+            leaks = self._detect(dma_specific_data[dma_key], dma_key)
+
+            for leak_pipe, leak_start in zip(leaks.index, leaks):
+                results.append(
+                    BenchmarkLeakageResult(
+                        leak_pipe_id=leak_pipe,
+                        leak_time_start=leak_start,
+                        leak_time_end=leak_start,
+                        leak_time_peak=leak_start,
+                    )
                 )
-            )
         return results
 
     def detect_online(self, evaluation_data) -> BenchmarkLeakageResult:
@@ -307,7 +350,7 @@ class LILA(LDIMMethodBase):
 
         flows = evaluation_data.flows
         # TODO: Make algorithm independent of pump name
-        flows = flows.rename(columns={"P-01": "PUMP_1"})
+        # flows = flows.rename(columns={"P-01": "PUMP_1"})
         scada_data.flows = flows
 
         # Leak Analyiss Fuction

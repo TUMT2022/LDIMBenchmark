@@ -26,6 +26,9 @@ from ldimbenchmark.evaluation_metrics import (
 )
 from concurrent.futures.process import ProcessPoolExecutor
 from sqlalchemy import create_engine
+import matplotlib.pyplot as plt
+import matplotlib.dates as mdates
+from matplotlib import patches
 
 
 def execute_experiment(experiment: MethodRunner):
@@ -787,7 +790,7 @@ class LDIMBenchmark:
         result_folder = os.path.join(self.runner_results_dir, run_id)
         result = load_result(result_folder)
 
-        logging.info("Generating plots...")
+        logging.info("Generating plots per leak ...")
         manager = enlighten.get_manager()
         loaded_datasets = {}
         for dataset in self.datasets:
@@ -838,6 +841,64 @@ class LDIMBenchmark:
                 pbar2.update()
         pbar2.close()
         manager.stop()
+
+        # Generate Leak Overview
+        fig, ax = plt.subplots(figsize=(10, 10))
+        ax.set_axisbelow(True)
+        ax.grid(visible=True, axis="x")
+        fig.gca().xaxis.set_major_formatter(mdates.DateFormatter("%Y-%m-%d"))
+        fig.gca().xaxis.set_major_locator(mdates.DayLocator(interval=14))
+
+        for index, (expected_leak, detected_leak) in enumerate(
+            result["matched_leaks_list"]
+        ):
+            num = len(result["matched_leaks_list"]) - index
+            if expected_leak is not None:
+                length = mdates.date2num(
+                    expected_leak["leak_time_end"]
+                ) - mdates.date2num(expected_leak["leak_time_start"])
+                if length <= 0:
+                    length = 1
+                ax.barh(
+                    [num],
+                    # [2],
+                    [length],
+                    left=[mdates.date2num(expected_leak["leak_time_start"])],
+                    # height=[100000],
+                    label="expected",
+                    color="yellow",
+                )
+
+            # print(detected_leak)
+            if detected_leak is not None:
+                length = mdates.date2num(
+                    detected_leak["leak_time_end"]
+                ) - mdates.date2num(detected_leak["leak_time_start"])
+                if length <= 0:
+                    length = 1
+                ax.barh(
+                    [num],
+                    [length],
+                    left=[mdates.date2num(detected_leak["leak_time_start"])],
+                    # height=[100000],
+                    label="detected",
+                    color="green",
+                )
+        ax.set_yticks(range(1, len(result["matched_leaks_list"]) + 1))
+        # ax.xaxis_date()
+        ax.set_title("Leak overview")
+        ax.set_ylabel("Leaks")
+        ax.set_xlabel("Time")
+        yellow_patch = patches.Patch(color="yellow", label="Expected Leaks")
+        green_patch = patches.Patch(color="green", label="Detected Leaks")
+        plt.legend(handles=[yellow_patch, green_patch])
+        plt.gcf().autofmt_xdate()
+        fig.savefig(os.path.join(graph_dir, "leaks_overview.png"))
+        plt.close(fig)
+
+        statistics_table = []
+
+        pd.DataFrame(statistics_table)
 
         # TODO: Statistics about the leaks
         # Which leaks are detected? short/long, which leaks are not detected?

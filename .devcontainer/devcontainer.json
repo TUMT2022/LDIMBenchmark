@@ -18,21 +18,21 @@
   // "forwardPorts": [],
 
   // Use 'postCreateCommand' to run commands after the container is created.
-  // "postCreateCommand": "pip3 install --user -r requirements.txt",
+  // "postCreateCommand": "poetry install",
   "postAttachCommand": "git config --global --add safe.directory /workspaces & poetry config virtualenvs.in-project true",
   // Configure tool-specific properties.
   "customizations": {
     "vscode": {
       "extensions": [
-		"ms-python.python",
-		"GitHub.copilot",
-		"GitHub.copilot-labs",
-		"mechatroner.rainbow-csv",
-		"esbenp.prettier-vscode",
-		"bierner.markdown-mermaid",
-		"streetsidesoftware.code-spell-checker",
-		"RandomFractalsInc.vscode-data-preview"
-	]
+        "ms-python.python",
+        "GitHub.copilot",
+        "GitHub.copilot-labs",
+        "mechatroner.rainbow-csv",
+        "esbenp.prettier-vscode",
+        "bierner.markdown-mermaid",
+        "streetsidesoftware.code-spell-checker",
+        "RandomFractalsInc.vscode-data-preview"
+      ]
     }
   },
   "runArgs": ["--mount", "type=volume,target=/workspaces/LDIMBench/.venv/"],
