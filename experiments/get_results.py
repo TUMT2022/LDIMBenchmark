@@ -13,7 +13,7 @@ from ldimbenchmark.datasets.classes import Dataset
 results_db_path = os.path.join("grid-search", "evaluation_results", "results.db")
 engine = create_engine(f"sqlite:///{results_db_path}")
 results = pd.read_sql("results", engine, index_col="_folder")
-
+results
 
 #############
 ## Battledim
@@ -145,6 +145,7 @@ benchmark = LDIMBenchmark(
     results_dir="./grid-search",
 )
 
+benchmark.evaluate_run("dualmethod_0.1.0_battledim-789426bdd3a2afb33b904b293765c5fd_evaluation_a24648898fe78db373db626e00ba8970")
 
 ## For runs with best Parameters from Training Dataset
 # %%
