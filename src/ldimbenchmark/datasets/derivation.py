@@ -140,7 +140,9 @@ class DatasetDerivator:
                         f"Generating Model Derivation for {this_dataset.id} with derivations {str(this_dataset.info['derivations']['model'])}"
                     )
 
+                    newly_generated = False
                     if not os.path.exists(derivedDatasetPath) or self.ignore_cache:
+                        newly_generated = True
                         loadedDataset = this_dataset.loadData()
 
                         # Derive
@@ -156,8 +158,9 @@ class DatasetDerivator:
                         loadedDataset.exportTo(derivedDatasetPath)
 
                     dataset = Dataset(derivedDatasetPath)
-                    logging.info("Populating cache")
-                    dataset.loadData()
+                    if newly_generated:
+                        logging.info("Populating cache")
+                        dataset.loadData()
                     newDatasets.append(dataset)
                     self.all_derived_datasets.append(dataset)
                 else:
@@ -199,6 +202,7 @@ class DatasetDerivator:
         newDatasets = []
         for dataset in self.datasets:
             for options in options_list:
+                abort = False
                 # Prepare data for derivation
                 this_dataset = Dataset(dataset.path)
                 this_dataset.info["derivations"] = {}
@@ -236,7 +240,9 @@ class DatasetDerivator:
                 logging.info(
                     f"Generating Data Derivation for {this_dataset.id} with derivations {str(this_dataset.info['derivations']['data'])}"
                 )
+                newly_generated = False
                 if not os.path.exists(derivedDatasetPath) or self.ignore_cache:
+                    newly_generated = True
                     loadedDataset = this_dataset.loadData()
 
                     datasets = getattr(loadedDataset, apply_to)
@@ -273,17 +279,27 @@ class DatasetDerivator:
                         for future in as_completed(futures):
                             key, result = future.result()
                             datasets[key] = result
+                            if len(result) <= 3:
+                                logging.warn(
+                                    "Derivated data would only have three datapoints. That's not a proper dataset anymore. Aborting."
+                                )
+                                abort = True
+
                             bar_derivations.update()
                     manager.stop()
-                    setattr(loadedDataset, apply_to, datasets)
-                    logging.info("Writing derivated dataset")
-                    os.makedirs(os.path.dirname(derivedDatasetPath), exist_ok=True)
-                    loadedDataset.exportTo(derivedDatasetPath)
+                    if not abort:
+                        setattr(loadedDataset, apply_to, datasets)
 
-                dataset = Dataset(derivedDatasetPath)
-                logging.info("Populating cache")
-                dataset.loadData()
-                newDatasets.append(dataset)
-                self.all_derived_datasets.append(dataset)
+                        logging.info("Writing derivated dataset")
+                        os.makedirs(os.path.dirname(derivedDatasetPath), exist_ok=True)
+                        loadedDataset.exportTo(derivedDatasetPath)
+
+                if not abort:
+                    dataset = Dataset(derivedDatasetPath)
+                    if newly_generated:
+                        logging.info("Populating cache")
+                        dataset.loadData()
+                    newDatasets.append(dataset)
+                    self.all_derived_datasets.append(dataset)
 
         return newDatasets
