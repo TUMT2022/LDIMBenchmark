@@ -130,15 +130,17 @@ class DatasetAnalyzer:
         else:
             dataset_list = datasets
 
-        datasets_table = {}
+        datasets_table = []
+        datasets_table_common = {}
 
         network_model_details = {}
         network_model_details_medium = {}
         network_model_details_fine = {}
 
         for dataset in dataset_list:
-            datasets_table[dataset.id] = pd.json_normalize(dataset.info)
-
+            info_table = pd.json_normalize(dataset.info)
+            info_table.index = [dataset.id]
+            datasets_table.append(info_table)
             network_model_details[dataset.id] = pd.json_normalize(
                 dataset.model.describe()
             )
@@ -154,37 +156,57 @@ class DatasetAnalyzer:
 
             dataset.loadData()
             # Plot each time series
-            for data_name in ["demands", "pressures", "flows", "levels"]:
-                data_group = getattr(dataset, data_name)
-                for sensor_name, sensor_data in data_group.items():
-                    if sensor_data.shape[1] > 0:
-                        DatasetAnalyzer._plot_time_series(
-                            sensor_data,
-                            f"{dataset.id}: {data_name}",
-                            dataset_analysis_out_dir,
-                        )
+            # for data_name in ["demands", "pressures", "flows", "levels"]:
+            #     data_group = getattr(dataset, data_name)
+            #     for sensor_name, sensor_data in data_group.items():
+            #         if sensor_data.shape[1] > 0:
+            #             DatasetAnalyzer._plot_time_series(
+            #                 sensor_data,
+            #                 f"{dataset.id}: {data_name}",
+            #                 dataset_analysis_out_dir,
+            #             )
+
+            common_table = {}
+            leaks_analysis = dataset.leaks
+            leaks_analysis["duration"] = (
+                dataset.leaks["leak_time_end"] - dataset.leaks["leak_time_start"]
+            )
+            mean_duration = leaks_analysis["duration"].mean()
+            leaks_analysis["smaller"] = leaks_analysis["duration"] < mean_duration
+            leaks_analysis["longer"] = leaks_analysis["duration"] >= mean_duration
+            common_table["leaks_number"] = len(dataset.leaks)
+            common_table["leaks_duration_mean"] = mean_duration
+            common_table["leaks_shorter_then_mean"] = leaks_analysis["smaller"].sum()
+            common_table["leaks_longer_then_mean"] = leaks_analysis["longer"].sum()
+            common_table["leaks_no_duration"] = leaks_analysis["duration"].isna().sum()
+
+            datasets_table_common[dataset.id] = common_table
 
             # Plot Network
-            fig, ax = plt.subplots(1, 1, figsize=(60, 40))
-            ax = wntr.graphics.plot_network(
-                dataset.model,
-                ax=ax,
-                node_size=10,
-                title=f"{dataset} Network",
-                node_labels=True,
-                link_labels=True,
-            )
-            fig.savefig(
-                os.path.join(dataset_analysis_out_dir, f"network_{dataset.id}.png")
-            )
-            plt.close(fig)
+            # fig, ax = plt.subplots(1, 1, figsize=(60, 40))
+            # ax = wntr.graphics.plot_network(
+            #     dataset.model,
+            #     ax=ax,
+            #     node_size=10,
+            #     title=f"{dataset} Network",
+            #     node_labels=True,
+            #     link_labels=True,
+            # )
+            # fig.savefig(
+            #     os.path.join(dataset_analysis_out_dir, f"network_{dataset.id}.png")
+            # )
+            # plt.close(fig)
+
+        datasets_table_common = pd.DataFrame.from_dict(
+            datasets_table_common, orient="index"
+        )
 
         datasets_table = pd.concat(datasets_table)
+        datasets_table = pd.concat([datasets_table, datasets_table_common], axis=1)
         overview = pd.concat(network_model_details)
         overview_medium = pd.concat(network_model_details_medium)
         overview_fine = pd.concat(network_model_details_fine)
 
-        datasets_table = datasets_table.reset_index(level=1, drop=True)
         overview = overview.reset_index(level=1, drop=True)
         overview_medium = overview_medium.reset_index(level=1, drop=True)
         overview_fine = overview_fine.reset_index(level=1, drop=True)
@@ -195,6 +217,16 @@ class DatasetAnalyzer:
         overview_fine.to_csv(
             os.path.join(dataset_analysis_out_dir, "network_model_details_fine.csv")
         )
+
+        datasets_table["time_duration_evaluation"] = (
+            datasets_table["dataset.evaluation.end"]
+            - datasets_table["dataset.evaluation.start"]
+        )
+        datasets_table["time_duration_training"] = (
+            datasets_table["dataset.training.end"]
+            - datasets_table["dataset.training.start"]
+        )
+        datasets_table.to_csv(os.path.join(self.analysis_out_dir, "datasets_table.csv"))
 
         overview_table = pd.concat(
             [
@@ -255,6 +287,8 @@ class DatasetAnalyzer:
             label="table:networks_overview",
             caption="Overview of the water networks.",
         )
+
+        # Data
 
         # TODO: add total flow analysis
         # TODO: Add dataset granularity of the sensors (5min, 30min)
