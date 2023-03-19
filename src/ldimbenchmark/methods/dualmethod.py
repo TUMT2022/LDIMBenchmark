@@ -254,6 +254,9 @@ class DUALMethod(LDIMMethodBase):
         self.wn.options.time.rule_timestep = int(
             pd.to_timedelta(frequency).total_seconds()
         )
+        logging.info(
+            f"Simulating {int(duration.total_seconds() / pd.to_timedelta(frequency).total_seconds())} steps in WNTR"
+        )
 
         # TODO: second step is not needed for detection
         # We can simulate once and use the virtual reservoirs directly for the detection of leaks
