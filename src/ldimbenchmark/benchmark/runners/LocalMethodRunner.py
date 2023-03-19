@@ -135,7 +135,7 @@ class LocalMethodRunner(MethodRunner):
         logging.info(f"Running {self.id} with params {self.hyperparameters}")
 
         logging.info(
-            f"LocalMethodRunner - Loading Dataset {self.dataset.id}, params: {getattr(self.dataset.info, 'derivations', None)}"
+            f"LocalMethodRunner - Loading Dataset {self.dataset.id}, derivations: {getattr(self.dataset.info, 'derivations', None)}"
         )
         self.dataset.loadData()
         self.dataset.loadBenchmarkData()

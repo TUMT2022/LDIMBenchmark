@@ -176,18 +176,52 @@ class Dataset:
             # file exists
             with open(path_to_dataset_info) as f:
                 self.info: DatasetInfo = yaml.safe_load(f)
-                self.info["dataset"]["training"]["start"] = pd.to_datetime(
+                training_start = pd.to_datetime(
                     self.info["dataset"]["training"]["start"], utc=True
                 )
-                self.info["dataset"]["training"]["end"] = pd.to_datetime(
+                training_end = pd.to_datetime(
                     self.info["dataset"]["training"]["end"], utc=True
                 )
-                self.info["dataset"]["evaluation"]["start"] = pd.to_datetime(
+                evaluation_start = pd.to_datetime(
                     self.info["dataset"]["evaluation"]["start"], utc=True
                 )
-                self.info["dataset"]["evaluation"]["end"] = pd.to_datetime(
+                evaluation_end = pd.to_datetime(
                     self.info["dataset"]["evaluation"]["end"], utc=True
                 )
+                if training_start >= training_end:
+                    raise Exception(
+                        "Training start time is after or the same as training end time! (dataset_info.yaml)"
+                    )
+                if evaluation_start >= evaluation_end:
+                    raise Exception(
+                        "Evaluation start time is after or the same as evaluation end time! (dataset_info.yaml)"
+                    )
+                if training_start > evaluation_start:
+                    raise Exception(
+                        "Training start time is after evaluation start time! (dataset_info.yaml)"
+                    )
+                if training_end > evaluation_end:
+                    raise Exception(
+                        "Training end time is after evaluation end time! (dataset_info.yaml)"
+                    )
+                if evaluation_start < training_end:
+                    raise Exception(
+                        "Evaluation start time is before training end time! (dataset_info.yaml)"
+                    )
+                if evaluation_end < training_end:
+                    raise Exception(
+                        "Evaluation end time is before training end time! (dataset_info.yaml)"
+                    )
+                if training_start == training_end:
+                    raise Exception(
+                        "Training start time is equal to training end time! (dataset_info.yaml)"
+                    )
+
+                self.info["dataset"]["training"]["start"] = training_start
+                self.info["dataset"]["training"]["end"] = training_end
+                self.info["dataset"]["evaluation"]["start"] = evaluation_start
+                self.info["dataset"]["evaluation"]["end"] = evaluation_end
+
         else:
             raise Exception(
                 f"No dataset_info.yaml file found! (not at: '{path_to_dataset_info}')"
