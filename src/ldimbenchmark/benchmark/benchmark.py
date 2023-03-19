@@ -29,6 +29,9 @@ from sqlalchemy import create_engine
 import matplotlib.pyplot as plt
 import matplotlib.dates as mdates
 from matplotlib import patches
+import ast
+import seaborn as sns
+from matplotlib.ticker import FormatStrFormatter
 
 
 def execute_experiment(experiment: MethodRunner):
@@ -261,6 +264,57 @@ def load_result(folder: str) -> Dict:
     evaluation_results["executed_at"] = run_info.get("executed_at", None)
 
     return evaluation_results
+
+
+def create_plots(
+    results: pd.DataFrame,
+    method: str,
+    dataset: str,
+    hyperparameters: List[str],
+    performance_metric: str,
+    out_folder,
+):
+    plot_out_folder = os.path.join(out_folder)  # , method, dataset)
+    os.makedirs(plot_out_folder, exist_ok=True)
+    plot_data = results[(results["method"] == method) & (results["dataset"] == dataset)]
+    hyperparameters = list(map(lambda x: "hyperparameters." + x, hyperparameters))
+
+    hyperparameter_combination = list(itertools.combinations(hyperparameters, 2))
+
+    cmap = sns.cm.rocket_r
+    fig, axs = plt.subplots(
+        ncols=len(hyperparameters) - 1,
+        nrows=len(hyperparameters) - 1,
+        figsize=(len(hyperparameters) * 4, len(hyperparameters) * 4),
+        squeeze=False,
+    )
+    for row, param_1 in enumerate(hyperparameters):
+        for col, param_2 in enumerate(hyperparameters):
+            if (param_2, param_1) in hyperparameter_combination:
+                real_row = row - 1
+                pvt = pd.pivot_table(
+                    plot_data,
+                    values=performance_metric,
+                    index=param_1,
+                    columns=param_2,  # , "hyperparameters.delta"]
+                )
+                if len(pvt) != 0:
+                    sns.heatmap(pvt, ax=axs[real_row, col], cmap=cmap)
+                axs[real_row, col].set_ylabel(param_1)
+                axs[real_row, col].set_xlabel(param_2)
+                # axs[real_row, col].yaxis.set_major_formatter(FormatStrFormatter("%.2f"))
+                axs[real_row, col].xaxis.set_major_formatter(FormatStrFormatter("%.2f"))
+
+            else:
+                if len(hyperparameters) > 2 and (
+                    row + (len(hyperparameters) - col) < (len(hyperparameters) - 1)
+                ):
+                    axs[row, col - 1].set_axis_off()
+    fig.suptitle(f"Heatmaps for {method}-{dataset}", fontsize=16)
+    fig.tight_layout()
+    fig.subplots_adjust(top=0.88)
+    fig.savefig(os.path.join(plot_out_folder, f"heatmap_{method}_{dataset}.png"))
+    plt.close(fig)
 
 
 # TODO: Draw plots with leaks and detected leaks
@@ -744,12 +798,37 @@ class LDIMBenchmark:
                         errors="ignore",
                     )
                     leak_pairs["result_id"] = index
-                    leak_pairs.to_sql("leak_pairs", engine, if_exists="append")
+                    leak_pairs.to_sql("leak_pairs", engine, if_exists="replace")
             except Exception as e:
                 print(e)
                 print(f"Could not write leak pairs to database. For {index}")
             results = results.drop(columns=["matched_leaks_list"])
             results.to_sql("results", engine, if_exists="replace")
+
+        results.hyperparameters = results.hyperparameters.astype("str")
+        df_hyperparameters = pd.json_normalize(
+            results.hyperparameters.apply(ast.literal_eval)
+        ).add_prefix("hyperparameters.")
+        df_hyperparameters.index = results.index
+        df_hyperparameters
+        # results = results.drop(columns=["hyperparameters"])
+        flat_results = pd.concat([results, df_hyperparameters], axis=1)
+
+        performance_indicator = "F1"
+
+        for method in list(
+            map(lambda x: x.name, self.methods_docker + self.methods_local)
+        ):
+            for dataset_name in map(lambda x: x.name, self.datasets):
+                logging.info(f"Generating Heatmap for {method} {dataset_name}")
+                create_plots(
+                    flat_results,
+                    method,
+                    dataset_name,
+                    self.hyperparameters[method].keys(),
+                    performance_indicator,
+                    self.evaluation_results_dir,
+                )
 
         results = results.set_index(["method", "method_version", "dataset_id"])
         results = results.sort_values(by=["F1"])
