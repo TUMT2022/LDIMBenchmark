@@ -186,7 +186,7 @@ def mocked_dataset_time():
                         ),
                         evaluation=DatasetInfoDatasetObject(
                             start="2018-01-01 00:10:00",
-                            end="2018-01-01 00:19:00",
+                            end="2018-01-01 00:39:00",
                         ),
                     ),
                 )
@@ -198,10 +198,10 @@ def mocked_dataset_time():
         for sensor in mocked_dataset_nodes:
             pd.DataFrame(
                 {
-                    sensor: range(20),
+                    sensor: range(40),
                 },
                 index=pd.date_range(
-                    start="2018-01-01 00:00:00", end="2018-01-01 00:19:00", freq="T"
+                    start="2018-01-01 00:00:00", end="2018-01-01 00:39:00", freq="T"
                 ),
             ).to_csv(
                 os.path.join(dataset_path, dataset, f"{sensor}.csv"),
