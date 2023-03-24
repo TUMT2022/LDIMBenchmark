@@ -94,7 +94,7 @@ deps =
     pytest-xdist==3.2.0
     pytest-benchmark==4.0.0
 commands =
-    black --check --verbose src/ldimbenchmark
+    black --check src/ldimbenchmark
     pytest -m "not noci"
 """
 
