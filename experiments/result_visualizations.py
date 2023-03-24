@@ -19,23 +19,22 @@ import numpy as np
 import ast
 import seaborn as sns
 
-results_db_path = os.path.join(
-    "grid-search_battledim", "evaluation_results", "results.db"
-)
+results_db_path = os.path.join("grid-search", "evaluation_results", "results.db")
 engine = create_engine(f"sqlite:///{results_db_path}")
 results = pd.read_sql("results", engine, index_col="_folder")
 
-results.hyperparameters = results.hyperparameters.astype("str")
-df_hyperparameters = pd.json_normalize(
-    results.hyperparameters.apply(ast.literal_eval)
-).add_prefix("hyperparameters.")
-df_hyperparameters.index = results.index
-df_hyperparameters
-# results = results.drop(columns=["hyperparameters"])
-results = pd.concat([results, df_hyperparameters], axis=1)
+# results.hyperparameters = results.hyperparameters.astype("str")
+# df_hyperparameters = pd.json_normalize(
+#     results.hyperparameters.apply(ast.literal_eval)
+# ).add_prefix("hyperparameters.")
+# df_hyperparameters.index = results.index
+# df_hyperparameters
+# # results = results.drop(columns=["hyperparameters"])
+# results = pd.concat([results, df_hyperparameters], axis=1)
+
 results
 
-
+# %%
 performance_indicator = "F1"
 
 
@@ -67,8 +66,8 @@ def create_plots(
         cmap = sns.cm.rocket_r
         sns.heatmap(pvt, ax=ax, cmap=cmap)
         ax.set_title(f"Heatmap of {method}-{dataset}")
-        ax.set_xlabel(param_1)
-        ax.set_ylabel(param_2)
+        ax.set_ylabel(param_1)
+        ax.set_xlabel(param_2)
         fig.savefig(os.path.join(plot_out_folder, f"heatmap.png"))
         # plt.close(fig)
 
@@ -89,17 +88,31 @@ def create_plots(
 #     base_out_folder,
 # )
 
+# create_plots(
+#     "lila",
+#     "battledim",
+#     ["est_length", "C_threshold", "delta"],
+#     performance_indicator,
+#     base_out_folder,
+# )
+# create_plots(
+#     "mnf",
+#     "battledim",
+#     ["window", "gamma"],
+#     performance_indicator,
+#     base_out_folder,
+# )
 create_plots(
-    "lila",
-    "battledim",
-    ["est_length", "C_threshold", "delta"],
+    "mnf",
+    "gjovik",
+    ["window", "gamma"],
     performance_indicator,
     base_out_folder,
 )
 create_plots(
-    "mnf",
-    "battledim",
-    ["window", "gamma"],
+    "lila",
+    "gjovik",
+    ["est_length", "C_threshold", "delta"],
     performance_indicator,
     base_out_folder,
 )
@@ -125,6 +138,7 @@ for param in df_hyperparameters:
     ax.set_xlabel(f"Value of Hyperparameter ({param})")
     ax.set_ylabel(f"Performance metric ({performance_indicator})")
     plt.show()
+
 
 # %%
 # Scatter

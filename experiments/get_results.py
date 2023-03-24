@@ -139,13 +139,17 @@ table_mnf
 benchmark = LDIMBenchmark(
     hyperparameters={},
     datasets=[
-        Dataset("test_data/datasets/battledim"),
+        # Dataset("test_data/datasets/battledim"),
         Dataset("test_data/datasets/gjovik"),
     ],
     results_dir="./grid-search",
 )
 
-benchmark.evaluate_run("dualmethod_0.1.0_battledim-789426bdd3a2afb33b904b293765c5fd_evaluation_a24648898fe78db373db626e00ba8970")
+# benchmark.evaluate_run("dualmethod_0.1.0_battledim-789426bdd3a2afb33b904b293765c5fd_evaluation_a24648898fe78db373db626e00ba8970")
+
+# Gjovik
+# benchmark.evaluate_run("lila_0.2.0_gjovik-1aa41b32a8acd6d4a14058de02957c64_evaluation_6967a9c238a413245469c8016118ec71")
+benchmark.evaluate_run("mnf_1.3_gjovik-1aa41b32a8acd6d4a14058de02957c64_evaluation_54dab5af2b95fb3bb8581beeaa7ec6bf", pd.Timedelta(days=4))
 
 ## For runs with best Parameters from Training Dataset
 # %%

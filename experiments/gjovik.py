@@ -28,22 +28,22 @@ logging.getLogger().setLevel(numeric_level)
 if __name__ == "__main__":
     param_grid = {
         "lila": {
-            #     # "est_length": np.arange(24, 24 * 2, 24).tolist(),
-            #     # "C_threshold": np.arange(0.5, 1.5, 0.25).tolist(),
-            #     # "delta": np.arange(6, 8, 0.5).tolist(),
             #     "est_length": 24,
             #     "C_threshold": 1.25,
             #     "delta": 7,
-            "dma_specific": True,
-            #     "default_flow_sensor": "31664",
+            # "dma_specific": True,
+            "default_flow_sensor": "sum",
         },
         # "mnf": {
-        #     # "gamma": np.arange(0, 0.5, 0.05).tolist(),
-        #     # "window": [1, 5, 10],
         #     "gamma": 0.15,
         #     "window": 5,
         # },
-        # "dualmethod": {"C_threshold": 6.0, "delta": 0.4, "est_length": 888.0},
+        "dualmethod": {
+            "resample_frequency": "60T",
+            "C_threshold": 6.0,
+            "delta": 0.4,
+            "est_length": 888.0,
+        },
     }
 
     # datasets = DatasetLibrary("test_data/datasets").download(DATASETS.BATTLEDIM)
@@ -64,9 +64,8 @@ if __name__ == "__main__":
     #     ]
     # )
     # Works fpr containers before 0.1.41
-    # benchmark.add_local_methods([DUALMethod()])
-    benchmark.add_local_methods([LILA()])
-    # benchmark.add_local_methods([DUALMethod()])
+    # benchmark.add_local_methods([LILA()])
+    benchmark.add_local_methods([DUALMethod()])
 
     # execute benchmark
     benchmark.run_benchmark(
