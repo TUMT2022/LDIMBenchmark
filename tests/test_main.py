@@ -33,7 +33,8 @@ def test_benchmark(mocked_dataset1: Dataset):
                     "gamma": 0.1,
                 },
             },
-        }
+        },
+        "lila": {"default_flow_sensor": "J-02"},
     }
 
     benchmark = LDIMBenchmark(
