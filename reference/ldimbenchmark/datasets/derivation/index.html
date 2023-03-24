@@ -1631,7 +1631,9 @@ It changes the values of the dataset (in contrast to DatasetTransformer, which c
 <span class="normal"><a href="#__codelineno-0-302">302</a></span>
 <span class="normal"><a href="#__codelineno-0-303">303</a></span>
 <span class="normal"><a href="#__codelineno-0-304">304</a></span>
-<span class="normal"><a href="#__codelineno-0-305">305</a></span></pre></div></td><td class="code"><div><pre><span></span><code><a id="__codelineno-0-72" name="__codelineno-0-72"></a><span class="k">class</span> <span class="nc">DatasetDerivator</span><span class="p">:</span>
+<span class="normal"><a href="#__codelineno-0-305">305</a></span>
+<span class="normal"><a href="#__codelineno-0-306">306</a></span>
+<span class="normal"><a href="#__codelineno-0-307">307</a></span></pre></div></td><td class="code"><div><pre><span></span><code><a id="__codelineno-0-72" name="__codelineno-0-72"></a><span class="k">class</span> <span class="nc">DatasetDerivator</span><span class="p">:</span>
 <a id="__codelineno-0-73" name="__codelineno-0-73"></a><span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <a id="__codelineno-0-74" name="__codelineno-0-74"></a><span class="sd">    Chaos Monkey for your Dataset.</span>
 <a id="__codelineno-0-75" name="__codelineno-0-75"></a><span class="sd">    It changes the values of the dataset (in contrast to DatasetTransformer, which changes only structure of the dataset)</span>
@@ -1825,46 +1827,48 @@ It changes the values of the dataset (in contrast to DatasetTransformer, which c
 <a id="__codelineno-0-263" name="__codelineno-0-263"></a>                    <span class="n">bar_derivations</span><span class="o">.</span><span class="n">refresh</span><span class="p">()</span>
 <a id="__codelineno-0-264" name="__codelineno-0-264"></a>
 <a id="__codelineno-0-265" name="__codelineno-0-265"></a>                    <span class="c1"># logging.debug(filepaths)</span>
-<a id="__codelineno-0-266" name="__codelineno-0-266"></a>                    <span class="k">with</span> <span class="n">ProcessPoolExecutor</span><span class="p">(</span><span class="n">max_workers</span><span class="o">=</span><span class="n">os</span><span class="o">.</span><span class="n">cpu_count</span><span class="p">())</span> <span class="k">as</span> <span class="n">executor</span><span class="p">:</span>
-<a id="__codelineno-0-267" name="__codelineno-0-267"></a>                        <span class="c1"># submit all tasks and get future objects</span>
-<a id="__codelineno-0-268" name="__codelineno-0-268"></a>                        <span class="n">futures</span> <span class="o">=</span> <span class="p">[</span>
-<a id="__codelineno-0-269" name="__codelineno-0-269"></a>                            <span class="n">executor</span><span class="o">.</span><span class="n">submit</span><span class="p">(</span>
-<a id="__codelineno-0-270" name="__codelineno-0-270"></a>                                <span class="n">_apply_derivation_to_DataFrame</span><span class="p">,</span>
-<a id="__codelineno-0-271" name="__codelineno-0-271"></a>                                <span class="n">derivation</span><span class="p">,</span>
-<a id="__codelineno-0-272" name="__codelineno-0-272"></a>                                <span class="n">value</span><span class="p">,</span>
-<a id="__codelineno-0-273" name="__codelineno-0-273"></a>                                <span class="n">dataset_key</span><span class="p">,</span>
-<a id="__codelineno-0-274" name="__codelineno-0-274"></a>                                <span class="n">key</span><span class="p">,</span>
-<a id="__codelineno-0-275" name="__codelineno-0-275"></a>                            <span class="p">)</span>
-<a id="__codelineno-0-276" name="__codelineno-0-276"></a>                            <span class="k">for</span> <span class="n">derivation</span><span class="p">,</span> <span class="n">value</span><span class="p">,</span> <span class="n">dataset_key</span><span class="p">,</span> <span class="n">key</span> <span class="ow">in</span> <span class="n">transformations</span>
-<a id="__codelineno-0-277" name="__codelineno-0-277"></a>                        <span class="p">]</span>
-<a id="__codelineno-0-278" name="__codelineno-0-278"></a>                        <span class="c1"># process results from tasks in order of task completion</span>
-<a id="__codelineno-0-279" name="__codelineno-0-279"></a>                        <span class="k">for</span> <span class="n">future</span> <span class="ow">in</span> <span class="n">as_completed</span><span class="p">(</span><span class="n">futures</span><span class="p">):</span>
-<a id="__codelineno-0-280" name="__codelineno-0-280"></a>                            <span class="n">key</span><span class="p">,</span> <span class="n">result</span> <span class="o">=</span> <span class="n">future</span><span class="o">.</span><span class="n">result</span><span class="p">()</span>
-<a id="__codelineno-0-281" name="__codelineno-0-281"></a>                            <span class="n">datasets</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="n">result</span>
-<a id="__codelineno-0-282" name="__codelineno-0-282"></a>                            <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">result</span><span class="p">)</span> <span class="o">&lt;=</span> <span class="mi">3</span><span class="p">:</span>
-<a id="__codelineno-0-283" name="__codelineno-0-283"></a>                                <span class="n">logging</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span>
-<a id="__codelineno-0-284" name="__codelineno-0-284"></a>                                    <span class="s2">&quot;Derivated data would only have three datapoints. That&#39;s not a proper dataset anymore. Aborting.&quot;</span>
-<a id="__codelineno-0-285" name="__codelineno-0-285"></a>                                <span class="p">)</span>
-<a id="__codelineno-0-286" name="__codelineno-0-286"></a>                                <span class="n">abort</span> <span class="o">=</span> <span class="kc">True</span>
-<a id="__codelineno-0-287" name="__codelineno-0-287"></a>
-<a id="__codelineno-0-288" name="__codelineno-0-288"></a>                            <span class="n">bar_derivations</span><span class="o">.</span><span class="n">update</span><span class="p">()</span>
-<a id="__codelineno-0-289" name="__codelineno-0-289"></a>                    <span class="n">manager</span><span class="o">.</span><span class="n">stop</span><span class="p">()</span>
-<a id="__codelineno-0-290" name="__codelineno-0-290"></a>                    <span class="k">if</span> <span class="ow">not</span> <span class="n">abort</span><span class="p">:</span>
-<a id="__codelineno-0-291" name="__codelineno-0-291"></a>                        <span class="nb">setattr</span><span class="p">(</span><span class="n">loadedDataset</span><span class="p">,</span> <span class="n">apply_to</span><span class="p">,</span> <span class="n">datasets</span><span class="p">)</span>
-<a id="__codelineno-0-292" name="__codelineno-0-292"></a>
-<a id="__codelineno-0-293" name="__codelineno-0-293"></a>                        <span class="n">logging</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;Writing derivated dataset&quot;</span><span class="p">)</span>
-<a id="__codelineno-0-294" name="__codelineno-0-294"></a>                        <span class="n">os</span><span class="o">.</span><span class="n">makedirs</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">dirname</span><span class="p">(</span><span class="n">derivedDatasetPath</span><span class="p">),</span> <span class="n">exist_ok</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
-<a id="__codelineno-0-295" name="__codelineno-0-295"></a>                        <span class="n">loadedDataset</span><span class="o">.</span><span class="n">exportTo</span><span class="p">(</span><span class="n">derivedDatasetPath</span><span class="p">)</span>
-<a id="__codelineno-0-296" name="__codelineno-0-296"></a>
-<a id="__codelineno-0-297" name="__codelineno-0-297"></a>                <span class="k">if</span> <span class="ow">not</span> <span class="n">abort</span><span class="p">:</span>
-<a id="__codelineno-0-298" name="__codelineno-0-298"></a>                    <span class="n">dataset</span> <span class="o">=</span> <span class="n">Dataset</span><span class="p">(</span><span class="n">derivedDatasetPath</span><span class="p">)</span>
-<a id="__codelineno-0-299" name="__codelineno-0-299"></a>                    <span class="k">if</span> <span class="n">newly_generated</span><span class="p">:</span>
-<a id="__codelineno-0-300" name="__codelineno-0-300"></a>                        <span class="n">logging</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;Populating cache&quot;</span><span class="p">)</span>
-<a id="__codelineno-0-301" name="__codelineno-0-301"></a>                        <span class="n">dataset</span><span class="o">.</span><span class="n">loadData</span><span class="p">()</span>
-<a id="__codelineno-0-302" name="__codelineno-0-302"></a>                    <span class="n">newDatasets</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">dataset</span><span class="p">)</span>
-<a id="__codelineno-0-303" name="__codelineno-0-303"></a>                    <span class="bp">self</span><span class="o">.</span><span class="n">all_derived_datasets</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">dataset</span><span class="p">)</span>
-<a id="__codelineno-0-304" name="__codelineno-0-304"></a>
-<a id="__codelineno-0-305" name="__codelineno-0-305"></a>        <span class="k">return</span> <span class="n">newDatasets</span>
+<a id="__codelineno-0-266" name="__codelineno-0-266"></a>                    <span class="k">with</span> <span class="n">ProcessPoolExecutor</span><span class="p">(</span>
+<a id="__codelineno-0-267" name="__codelineno-0-267"></a>                        <span class="n">max_workers</span><span class="o">=</span><span class="n">os</span><span class="o">.</span><span class="n">cpu_count</span><span class="p">()</span> <span class="o">-</span> <span class="mi">1</span>
+<a id="__codelineno-0-268" name="__codelineno-0-268"></a>                    <span class="p">)</span> <span class="k">as</span> <span class="n">executor</span><span class="p">:</span>
+<a id="__codelineno-0-269" name="__codelineno-0-269"></a>                        <span class="c1"># submit all tasks and get future objects</span>
+<a id="__codelineno-0-270" name="__codelineno-0-270"></a>                        <span class="n">futures</span> <span class="o">=</span> <span class="p">[</span>
+<a id="__codelineno-0-271" name="__codelineno-0-271"></a>                            <span class="n">executor</span><span class="o">.</span><span class="n">submit</span><span class="p">(</span>
+<a id="__codelineno-0-272" name="__codelineno-0-272"></a>                                <span class="n">_apply_derivation_to_DataFrame</span><span class="p">,</span>
+<a id="__codelineno-0-273" name="__codelineno-0-273"></a>                                <span class="n">derivation</span><span class="p">,</span>
+<a id="__codelineno-0-274" name="__codelineno-0-274"></a>                                <span class="n">value</span><span class="p">,</span>
+<a id="__codelineno-0-275" name="__codelineno-0-275"></a>                                <span class="n">dataset_key</span><span class="p">,</span>
+<a id="__codelineno-0-276" name="__codelineno-0-276"></a>                                <span class="n">key</span><span class="p">,</span>
+<a id="__codelineno-0-277" name="__codelineno-0-277"></a>                            <span class="p">)</span>
+<a id="__codelineno-0-278" name="__codelineno-0-278"></a>                            <span class="k">for</span> <span class="n">derivation</span><span class="p">,</span> <span class="n">value</span><span class="p">,</span> <span class="n">dataset_key</span><span class="p">,</span> <span class="n">key</span> <span class="ow">in</span> <span class="n">transformations</span>
+<a id="__codelineno-0-279" name="__codelineno-0-279"></a>                        <span class="p">]</span>
+<a id="__codelineno-0-280" name="__codelineno-0-280"></a>                        <span class="c1"># process results from tasks in order of task completion</span>
+<a id="__codelineno-0-281" name="__codelineno-0-281"></a>                        <span class="k">for</span> <span class="n">future</span> <span class="ow">in</span> <span class="n">as_completed</span><span class="p">(</span><span class="n">futures</span><span class="p">):</span>
+<a id="__codelineno-0-282" name="__codelineno-0-282"></a>                            <span class="n">key</span><span class="p">,</span> <span class="n">result</span> <span class="o">=</span> <span class="n">future</span><span class="o">.</span><span class="n">result</span><span class="p">()</span>
+<a id="__codelineno-0-283" name="__codelineno-0-283"></a>                            <span class="n">datasets</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="n">result</span>
+<a id="__codelineno-0-284" name="__codelineno-0-284"></a>                            <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">result</span><span class="p">)</span> <span class="o">&lt;=</span> <span class="mi">3</span><span class="p">:</span>
+<a id="__codelineno-0-285" name="__codelineno-0-285"></a>                                <span class="n">logging</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span>
+<a id="__codelineno-0-286" name="__codelineno-0-286"></a>                                    <span class="s2">&quot;Derivated data would only have three datapoints. That&#39;s not a proper dataset anymore. Aborting.&quot;</span>
+<a id="__codelineno-0-287" name="__codelineno-0-287"></a>                                <span class="p">)</span>
+<a id="__codelineno-0-288" name="__codelineno-0-288"></a>                                <span class="n">abort</span> <span class="o">=</span> <span class="kc">True</span>
+<a id="__codelineno-0-289" name="__codelineno-0-289"></a>
+<a id="__codelineno-0-290" name="__codelineno-0-290"></a>                            <span class="n">bar_derivations</span><span class="o">.</span><span class="n">update</span><span class="p">()</span>
+<a id="__codelineno-0-291" name="__codelineno-0-291"></a>                    <span class="n">manager</span><span class="o">.</span><span class="n">stop</span><span class="p">()</span>
+<a id="__codelineno-0-292" name="__codelineno-0-292"></a>                    <span class="k">if</span> <span class="ow">not</span> <span class="n">abort</span><span class="p">:</span>
+<a id="__codelineno-0-293" name="__codelineno-0-293"></a>                        <span class="nb">setattr</span><span class="p">(</span><span class="n">loadedDataset</span><span class="p">,</span> <span class="n">apply_to</span><span class="p">,</span> <span class="n">datasets</span><span class="p">)</span>
+<a id="__codelineno-0-294" name="__codelineno-0-294"></a>
+<a id="__codelineno-0-295" name="__codelineno-0-295"></a>                        <span class="n">logging</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;Writing derivated dataset&quot;</span><span class="p">)</span>
+<a id="__codelineno-0-296" name="__codelineno-0-296"></a>                        <span class="n">os</span><span class="o">.</span><span class="n">makedirs</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">dirname</span><span class="p">(</span><span class="n">derivedDatasetPath</span><span class="p">),</span> <span class="n">exist_ok</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<a id="__codelineno-0-297" name="__codelineno-0-297"></a>                        <span class="n">loadedDataset</span><span class="o">.</span><span class="n">exportTo</span><span class="p">(</span><span class="n">derivedDatasetPath</span><span class="p">)</span>
+<a id="__codelineno-0-298" name="__codelineno-0-298"></a>
+<a id="__codelineno-0-299" name="__codelineno-0-299"></a>                <span class="k">if</span> <span class="ow">not</span> <span class="n">abort</span><span class="p">:</span>
+<a id="__codelineno-0-300" name="__codelineno-0-300"></a>                    <span class="n">dataset</span> <span class="o">=</span> <span class="n">Dataset</span><span class="p">(</span><span class="n">derivedDatasetPath</span><span class="p">)</span>
+<a id="__codelineno-0-301" name="__codelineno-0-301"></a>                    <span class="k">if</span> <span class="n">newly_generated</span><span class="p">:</span>
+<a id="__codelineno-0-302" name="__codelineno-0-302"></a>                        <span class="n">logging</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;Populating cache&quot;</span><span class="p">)</span>
+<a id="__codelineno-0-303" name="__codelineno-0-303"></a>                        <span class="n">dataset</span><span class="o">.</span><span class="n">loadData</span><span class="p">()</span>
+<a id="__codelineno-0-304" name="__codelineno-0-304"></a>                    <span class="n">newDatasets</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">dataset</span><span class="p">)</span>
+<a id="__codelineno-0-305" name="__codelineno-0-305"></a>                    <span class="bp">self</span><span class="o">.</span><span class="n">all_derived_datasets</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">dataset</span><span class="p">)</span>
+<a id="__codelineno-0-306" name="__codelineno-0-306"></a>
+<a id="__codelineno-0-307" name="__codelineno-0-307"></a>        <span class="k">return</span> <span class="n">newDatasets</span>
 </code></pre></div></td></tr></table></div>
         </details>
 
@@ -2044,7 +2048,9 @@ It changes the values of the dataset (in contrast to DatasetTransformer, which c
 <span class="normal"><a href="#__codelineno-0-302">302</a></span>
 <span class="normal"><a href="#__codelineno-0-303">303</a></span>
 <span class="normal"><a href="#__codelineno-0-304">304</a></span>
-<span class="normal"><a href="#__codelineno-0-305">305</a></span></pre></div></td><td class="code"><div><pre><span></span><code><a id="__codelineno-0-171" name="__codelineno-0-171"></a><span class="k">def</span> <span class="nf">derive_data</span><span class="p">(</span>
+<span class="normal"><a href="#__codelineno-0-305">305</a></span>
+<span class="normal"><a href="#__codelineno-0-306">306</a></span>
+<span class="normal"><a href="#__codelineno-0-307">307</a></span></pre></div></td><td class="code"><div><pre><span></span><code><a id="__codelineno-0-171" name="__codelineno-0-171"></a><span class="k">def</span> <span class="nf">derive_data</span><span class="p">(</span>
 <a id="__codelineno-0-172" name="__codelineno-0-172"></a>    <span class="bp">self</span><span class="p">,</span>
 <a id="__codelineno-0-173" name="__codelineno-0-173"></a>    <span class="n">apply_to</span><span class="p">:</span> <span class="n">Literal</span><span class="p">[</span><span class="s2">&quot;demands&quot;</span><span class="p">,</span> <span class="s2">&quot;levels&quot;</span><span class="p">,</span> <span class="s2">&quot;pressures&quot;</span><span class="p">,</span> <span class="s2">&quot;flows&quot;</span><span class="p">],</span>
 <a id="__codelineno-0-174" name="__codelineno-0-174"></a>    <span class="c1"># TODO: Add Chaos Monkey, introducing missing values, skewed values (way out of bound),</span>
@@ -2139,46 +2145,48 @@ It changes the values of the dataset (in contrast to DatasetTransformer, which c
 <a id="__codelineno-0-263" name="__codelineno-0-263"></a>                <span class="n">bar_derivations</span><span class="o">.</span><span class="n">refresh</span><span class="p">()</span>
 <a id="__codelineno-0-264" name="__codelineno-0-264"></a>
 <a id="__codelineno-0-265" name="__codelineno-0-265"></a>                <span class="c1"># logging.debug(filepaths)</span>
-<a id="__codelineno-0-266" name="__codelineno-0-266"></a>                <span class="k">with</span> <span class="n">ProcessPoolExecutor</span><span class="p">(</span><span class="n">max_workers</span><span class="o">=</span><span class="n">os</span><span class="o">.</span><span class="n">cpu_count</span><span class="p">())</span> <span class="k">as</span> <span class="n">executor</span><span class="p">:</span>
-<a id="__codelineno-0-267" name="__codelineno-0-267"></a>                    <span class="c1"># submit all tasks and get future objects</span>
-<a id="__codelineno-0-268" name="__codelineno-0-268"></a>                    <span class="n">futures</span> <span class="o">=</span> <span class="p">[</span>
-<a id="__codelineno-0-269" name="__codelineno-0-269"></a>                        <span class="n">executor</span><span class="o">.</span><span class="n">submit</span><span class="p">(</span>
-<a id="__codelineno-0-270" name="__codelineno-0-270"></a>                            <span class="n">_apply_derivation_to_DataFrame</span><span class="p">,</span>
-<a id="__codelineno-0-271" name="__codelineno-0-271"></a>                            <span class="n">derivation</span><span class="p">,</span>
-<a id="__codelineno-0-272" name="__codelineno-0-272"></a>                            <span class="n">value</span><span class="p">,</span>
-<a id="__codelineno-0-273" name="__codelineno-0-273"></a>                            <span class="n">dataset_key</span><span class="p">,</span>
-<a id="__codelineno-0-274" name="__codelineno-0-274"></a>                            <span class="n">key</span><span class="p">,</span>
-<a id="__codelineno-0-275" name="__codelineno-0-275"></a>                        <span class="p">)</span>
-<a id="__codelineno-0-276" name="__codelineno-0-276"></a>                        <span class="k">for</span> <span class="n">derivation</span><span class="p">,</span> <span class="n">value</span><span class="p">,</span> <span class="n">dataset_key</span><span class="p">,</span> <span class="n">key</span> <span class="ow">in</span> <span class="n">transformations</span>
-<a id="__codelineno-0-277" name="__codelineno-0-277"></a>                    <span class="p">]</span>
-<a id="__codelineno-0-278" name="__codelineno-0-278"></a>                    <span class="c1"># process results from tasks in order of task completion</span>
-<a id="__codelineno-0-279" name="__codelineno-0-279"></a>                    <span class="k">for</span> <span class="n">future</span> <span class="ow">in</span> <span class="n">as_completed</span><span class="p">(</span><span class="n">futures</span><span class="p">):</span>
-<a id="__codelineno-0-280" name="__codelineno-0-280"></a>                        <span class="n">key</span><span class="p">,</span> <span class="n">result</span> <span class="o">=</span> <span class="n">future</span><span class="o">.</span><span class="n">result</span><span class="p">()</span>
-<a id="__codelineno-0-281" name="__codelineno-0-281"></a>                        <span class="n">datasets</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="n">result</span>
-<a id="__codelineno-0-282" name="__codelineno-0-282"></a>                        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">result</span><span class="p">)</span> <span class="o">&lt;=</span> <span class="mi">3</span><span class="p">:</span>
-<a id="__codelineno-0-283" name="__codelineno-0-283"></a>                            <span class="n">logging</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span>
-<a id="__codelineno-0-284" name="__codelineno-0-284"></a>                                <span class="s2">&quot;Derivated data would only have three datapoints. That&#39;s not a proper dataset anymore. Aborting.&quot;</span>
-<a id="__codelineno-0-285" name="__codelineno-0-285"></a>                            <span class="p">)</span>
-<a id="__codelineno-0-286" name="__codelineno-0-286"></a>                            <span class="n">abort</span> <span class="o">=</span> <span class="kc">True</span>
-<a id="__codelineno-0-287" name="__codelineno-0-287"></a>
-<a id="__codelineno-0-288" name="__codelineno-0-288"></a>                        <span class="n">bar_derivations</span><span class="o">.</span><span class="n">update</span><span class="p">()</span>
-<a id="__codelineno-0-289" name="__codelineno-0-289"></a>                <span class="n">manager</span><span class="o">.</span><span class="n">stop</span><span class="p">()</span>
-<a id="__codelineno-0-290" name="__codelineno-0-290"></a>                <span class="k">if</span> <span class="ow">not</span> <span class="n">abort</span><span class="p">:</span>
-<a id="__codelineno-0-291" name="__codelineno-0-291"></a>                    <span class="nb">setattr</span><span class="p">(</span><span class="n">loadedDataset</span><span class="p">,</span> <span class="n">apply_to</span><span class="p">,</span> <span class="n">datasets</span><span class="p">)</span>
-<a id="__codelineno-0-292" name="__codelineno-0-292"></a>
-<a id="__codelineno-0-293" name="__codelineno-0-293"></a>                    <span class="n">logging</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;Writing derivated dataset&quot;</span><span class="p">)</span>
-<a id="__codelineno-0-294" name="__codelineno-0-294"></a>                    <span class="n">os</span><span class="o">.</span><span class="n">makedirs</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">dirname</span><span class="p">(</span><span class="n">derivedDatasetPath</span><span class="p">),</span> <span class="n">exist_ok</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
-<a id="__codelineno-0-295" name="__codelineno-0-295"></a>                    <span class="n">loadedDataset</span><span class="o">.</span><span class="n">exportTo</span><span class="p">(</span><span class="n">derivedDatasetPath</span><span class="p">)</span>
-<a id="__codelineno-0-296" name="__codelineno-0-296"></a>
-<a id="__codelineno-0-297" name="__codelineno-0-297"></a>            <span class="k">if</span> <span class="ow">not</span> <span class="n">abort</span><span class="p">:</span>
-<a id="__codelineno-0-298" name="__codelineno-0-298"></a>                <span class="n">dataset</span> <span class="o">=</span> <span class="n">Dataset</span><span class="p">(</span><span class="n">derivedDatasetPath</span><span class="p">)</span>
-<a id="__codelineno-0-299" name="__codelineno-0-299"></a>                <span class="k">if</span> <span class="n">newly_generated</span><span class="p">:</span>
-<a id="__codelineno-0-300" name="__codelineno-0-300"></a>                    <span class="n">logging</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;Populating cache&quot;</span><span class="p">)</span>
-<a id="__codelineno-0-301" name="__codelineno-0-301"></a>                    <span class="n">dataset</span><span class="o">.</span><span class="n">loadData</span><span class="p">()</span>
-<a id="__codelineno-0-302" name="__codelineno-0-302"></a>                <span class="n">newDatasets</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">dataset</span><span class="p">)</span>
-<a id="__codelineno-0-303" name="__codelineno-0-303"></a>                <span class="bp">self</span><span class="o">.</span><span class="n">all_derived_datasets</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">dataset</span><span class="p">)</span>
-<a id="__codelineno-0-304" name="__codelineno-0-304"></a>
-<a id="__codelineno-0-305" name="__codelineno-0-305"></a>    <span class="k">return</span> <span class="n">newDatasets</span>
+<a id="__codelineno-0-266" name="__codelineno-0-266"></a>                <span class="k">with</span> <span class="n">ProcessPoolExecutor</span><span class="p">(</span>
+<a id="__codelineno-0-267" name="__codelineno-0-267"></a>                    <span class="n">max_workers</span><span class="o">=</span><span class="n">os</span><span class="o">.</span><span class="n">cpu_count</span><span class="p">()</span> <span class="o">-</span> <span class="mi">1</span>
+<a id="__codelineno-0-268" name="__codelineno-0-268"></a>                <span class="p">)</span> <span class="k">as</span> <span class="n">executor</span><span class="p">:</span>
+<a id="__codelineno-0-269" name="__codelineno-0-269"></a>                    <span class="c1"># submit all tasks and get future objects</span>
+<a id="__codelineno-0-270" name="__codelineno-0-270"></a>                    <span class="n">futures</span> <span class="o">=</span> <span class="p">[</span>
+<a id="__codelineno-0-271" name="__codelineno-0-271"></a>                        <span class="n">executor</span><span class="o">.</span><span class="n">submit</span><span class="p">(</span>
+<a id="__codelineno-0-272" name="__codelineno-0-272"></a>                            <span class="n">_apply_derivation_to_DataFrame</span><span class="p">,</span>
+<a id="__codelineno-0-273" name="__codelineno-0-273"></a>                            <span class="n">derivation</span><span class="p">,</span>
+<a id="__codelineno-0-274" name="__codelineno-0-274"></a>                            <span class="n">value</span><span class="p">,</span>
+<a id="__codelineno-0-275" name="__codelineno-0-275"></a>                            <span class="n">dataset_key</span><span class="p">,</span>
+<a id="__codelineno-0-276" name="__codelineno-0-276"></a>                            <span class="n">key</span><span class="p">,</span>
+<a id="__codelineno-0-277" name="__codelineno-0-277"></a>                        <span class="p">)</span>
+<a id="__codelineno-0-278" name="__codelineno-0-278"></a>                        <span class="k">for</span> <span class="n">derivation</span><span class="p">,</span> <span class="n">value</span><span class="p">,</span> <span class="n">dataset_key</span><span class="p">,</span> <span class="n">key</span> <span class="ow">in</span> <span class="n">transformations</span>
+<a id="__codelineno-0-279" name="__codelineno-0-279"></a>                    <span class="p">]</span>
+<a id="__codelineno-0-280" name="__codelineno-0-280"></a>                    <span class="c1"># process results from tasks in order of task completion</span>
+<a id="__codelineno-0-281" name="__codelineno-0-281"></a>                    <span class="k">for</span> <span class="n">future</span> <span class="ow">in</span> <span class="n">as_completed</span><span class="p">(</span><span class="n">futures</span><span class="p">):</span>
+<a id="__codelineno-0-282" name="__codelineno-0-282"></a>                        <span class="n">key</span><span class="p">,</span> <span class="n">result</span> <span class="o">=</span> <span class="n">future</span><span class="o">.</span><span class="n">result</span><span class="p">()</span>
+<a id="__codelineno-0-283" name="__codelineno-0-283"></a>                        <span class="n">datasets</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="n">result</span>
+<a id="__codelineno-0-284" name="__codelineno-0-284"></a>                        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">result</span><span class="p">)</span> <span class="o">&lt;=</span> <span class="mi">3</span><span class="p">:</span>
+<a id="__codelineno-0-285" name="__codelineno-0-285"></a>                            <span class="n">logging</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span>
+<a id="__codelineno-0-286" name="__codelineno-0-286"></a>                                <span class="s2">&quot;Derivated data would only have three datapoints. That&#39;s not a proper dataset anymore. Aborting.&quot;</span>
+<a id="__codelineno-0-287" name="__codelineno-0-287"></a>                            <span class="p">)</span>
+<a id="__codelineno-0-288" name="__codelineno-0-288"></a>                            <span class="n">abort</span> <span class="o">=</span> <span class="kc">True</span>
+<a id="__codelineno-0-289" name="__codelineno-0-289"></a>
+<a id="__codelineno-0-290" name="__codelineno-0-290"></a>                        <span class="n">bar_derivations</span><span class="o">.</span><span class="n">update</span><span class="p">()</span>
+<a id="__codelineno-0-291" name="__codelineno-0-291"></a>                <span class="n">manager</span><span class="o">.</span><span class="n">stop</span><span class="p">()</span>
+<a id="__codelineno-0-292" name="__codelineno-0-292"></a>                <span class="k">if</span> <span class="ow">not</span> <span class="n">abort</span><span class="p">:</span>
+<a id="__codelineno-0-293" name="__codelineno-0-293"></a>                    <span class="nb">setattr</span><span class="p">(</span><span class="n">loadedDataset</span><span class="p">,</span> <span class="n">apply_to</span><span class="p">,</span> <span class="n">datasets</span><span class="p">)</span>
+<a id="__codelineno-0-294" name="__codelineno-0-294"></a>
+<a id="__codelineno-0-295" name="__codelineno-0-295"></a>                    <span class="n">logging</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;Writing derivated dataset&quot;</span><span class="p">)</span>
+<a id="__codelineno-0-296" name="__codelineno-0-296"></a>                    <span class="n">os</span><span class="o">.</span><span class="n">makedirs</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">dirname</span><span class="p">(</span><span class="n">derivedDatasetPath</span><span class="p">),</span> <span class="n">exist_ok</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<a id="__codelineno-0-297" name="__codelineno-0-297"></a>                    <span class="n">loadedDataset</span><span class="o">.</span><span class="n">exportTo</span><span class="p">(</span><span class="n">derivedDatasetPath</span><span class="p">)</span>
+<a id="__codelineno-0-298" name="__codelineno-0-298"></a>
+<a id="__codelineno-0-299" name="__codelineno-0-299"></a>            <span class="k">if</span> <span class="ow">not</span> <span class="n">abort</span><span class="p">:</span>
+<a id="__codelineno-0-300" name="__codelineno-0-300"></a>                <span class="n">dataset</span> <span class="o">=</span> <span class="n">Dataset</span><span class="p">(</span><span class="n">derivedDatasetPath</span><span class="p">)</span>
+<a id="__codelineno-0-301" name="__codelineno-0-301"></a>                <span class="k">if</span> <span class="n">newly_generated</span><span class="p">:</span>
+<a id="__codelineno-0-302" name="__codelineno-0-302"></a>                    <span class="n">logging</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;Populating cache&quot;</span><span class="p">)</span>
+<a id="__codelineno-0-303" name="__codelineno-0-303"></a>                    <span class="n">dataset</span><span class="o">.</span><span class="n">loadData</span><span class="p">()</span>
+<a id="__codelineno-0-304" name="__codelineno-0-304"></a>                <span class="n">newDatasets</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">dataset</span><span class="p">)</span>
+<a id="__codelineno-0-305" name="__codelineno-0-305"></a>                <span class="bp">self</span><span class="o">.</span><span class="n">all_derived_datasets</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">dataset</span><span class="p">)</span>
+<a id="__codelineno-0-306" name="__codelineno-0-306"></a>
+<a id="__codelineno-0-307" name="__codelineno-0-307"></a>    <span class="k">return</span> <span class="n">newDatasets</span>
 </code></pre></div></td></tr></table></div>
       </details>
   </div>
