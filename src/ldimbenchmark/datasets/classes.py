@@ -25,7 +25,7 @@ import copy
 import yaml
 from yaml import CDumper
 from yaml.representer import SafeRepresenter
-import datetime
+from ldimbenchmark.utilities import dirhash
 
 
 # Fix for Timestamp parsing/dumping in yaml
@@ -37,7 +37,7 @@ def timestamp_representer(dumper, data):
     return SafeRepresenter.represent_datetime(dumper, data.to_pydatetime())
 
 
-TSDumper.add_representer(datetime.datetime, SafeRepresenter.represent_datetime)
+TSDumper.add_representer(datetime, SafeRepresenter.represent_datetime)
 TSDumper.add_representer(pd.Timestamp, timestamp_representer)
 
 
@@ -170,24 +170,59 @@ class Dataset:
         """
         self.path = path
         self.__pickle_path = os.path.join(self.path, "dataset.pickle")
+        self.__timestamp_path = os.path.join(self.path, ".timestamp")
         path_to_dataset_info = os.path.join(self.path, "dataset_info.yaml")
         # Read dataset_info.yaml
         if os.path.isfile(path_to_dataset_info):
             # file exists
             with open(path_to_dataset_info) as f:
                 self.info: DatasetInfo = yaml.safe_load(f)
-                self.info["dataset"]["training"]["start"] = pd.to_datetime(
+                training_start = pd.to_datetime(
                     self.info["dataset"]["training"]["start"], utc=True
                 )
-                self.info["dataset"]["training"]["end"] = pd.to_datetime(
+                training_end = pd.to_datetime(
                     self.info["dataset"]["training"]["end"], utc=True
                 )
-                self.info["dataset"]["evaluation"]["start"] = pd.to_datetime(
+                evaluation_start = pd.to_datetime(
                     self.info["dataset"]["evaluation"]["start"], utc=True
                 )
-                self.info["dataset"]["evaluation"]["end"] = pd.to_datetime(
+                evaluation_end = pd.to_datetime(
                     self.info["dataset"]["evaluation"]["end"], utc=True
                 )
+                if training_start >= training_end:
+                    raise Exception(
+                        "Training start time is after or the same as training end time! (dataset_info.yaml)"
+                    )
+                if evaluation_start >= evaluation_end:
+                    raise Exception(
+                        "Evaluation start time is after or the same as evaluation end time! (dataset_info.yaml)"
+                    )
+                if training_start > evaluation_start:
+                    raise Exception(
+                        "Training start time is after evaluation start time! (dataset_info.yaml)"
+                    )
+                if training_end > evaluation_end:
+                    raise Exception(
+                        "Training end time is after evaluation end time! (dataset_info.yaml)"
+                    )
+                if evaluation_start < training_end:
+                    raise Exception(
+                        "Evaluation start time is before training end time! (dataset_info.yaml)"
+                    )
+                if evaluation_end < training_end:
+                    raise Exception(
+                        "Evaluation end time is before training end time! (dataset_info.yaml)"
+                    )
+                if training_start == training_end:
+                    raise Exception(
+                        "Training start time is equal to training end time! (dataset_info.yaml)"
+                    )
+
+                self.info["dataset"]["training"]["start"] = training_start
+                self.info["dataset"]["training"]["end"] = training_end
+                self.info["dataset"]["evaluation"]["start"] = evaluation_start
+                self.info["dataset"]["evaluation"]["end"] = evaluation_end
+
         else:
             raise Exception(
                 f"No dataset_info.yaml file found! (not at: '{path_to_dataset_info}')"
@@ -210,16 +245,32 @@ class Dataset:
         """
         Sets the id (hash) according to the information in "dataset_info.yaml"
         """
+        # Check the has of the whole dataset from time to time by writing the last timestamp
+        # to a file and retrieving it before running the expensive hash function
 
-        # if "derivations" in self.info:
-        derivations_hash = (
-            "-"
-            + hashlib.md5(
-                json.dumps(self.info, sort_keys=True, default=str).encode("utf-8")
-            ).hexdigest()
-        )
-        # else:
-        #     derivations_hash = ""
+        md5hash = None
+        try:
+            with open(self.__timestamp_path, "r") as f:
+                timestamp_file = f.readlines()
+                last_timestamp = pd.to_datetime(timestamp_file[0], utc=True)
+                md5hash = timestamp_file[1]
+        except (FileNotFoundError, IndexError):
+            last_timestamp = None
+
+        if last_timestamp is None or last_timestamp < pd.to_datetime(
+            datetime.now(), utc=True
+        ) - pd.Timedelta("24 hour"):
+            logging.info("Checking dataset consistency...")
+            new_hash = dirhash(self.path, "md5", ignore_hidden=True)
+            if md5hash != None and md5hash != new_hash:
+                logging.info(
+                    "Dataset hash changed! Check the consistency of the dataset!"
+                )
+            md5hash = new_hash
+            with open(self.__timestamp_path, "w") as f:
+                f.write(str(pd.to_datetime(datetime.now(), utc=True)) + "\n" + md5hash)
+
+        derivations_hash = "-" + md5hash
         self.id = self.info["name"] + derivations_hash
 
     ######

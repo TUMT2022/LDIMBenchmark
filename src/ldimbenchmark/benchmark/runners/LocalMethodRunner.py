@@ -90,6 +90,14 @@ class LocalMethodRunner(MethodRunner):
             self.resultsFolder = os.path.join(resultsFolder, self.id)
         else:
             self.resultsFolder = resultsFolder
+
+        # If Overwriting results Folder also overwrite additional_output_folder
+        if self.debug == True:
+            self.additional_output_path = os.path.join(self.resultsFolder, "debug", "")
+            os.makedirs(self.additional_output_path, exist_ok=True)
+        else:
+            self.additional_output_path = None
+
         # Do some courtesy checks for LocalMethod Executions
         for key in self.hyperparameters.keys():
             if key.startswith("_"):
@@ -135,7 +143,7 @@ class LocalMethodRunner(MethodRunner):
         logging.info(f"Running {self.id} with params {self.hyperparameters}")
 
         logging.info(
-            f"LocalMethodRunner - Loading Dataset {self.dataset.id}, params: {getattr(self.dataset.info, 'derivations', None)}"
+            f"LocalMethodRunner - Loading Dataset {self.dataset.id}, derivations: {getattr(self.dataset.info, 'derivations', None)}"
         )
         self.dataset.loadData()
         self.dataset.loadBenchmarkData()

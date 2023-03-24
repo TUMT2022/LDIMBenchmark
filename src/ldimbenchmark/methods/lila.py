@@ -276,15 +276,33 @@ class LILA(LDIMMethodBase):
                     dma_specific_training_data = getDmaSpecificData(
                         simple_training_data, training_data.dmas[dma]
                     )
-                    dma_specific_training_data.flows[
-                        "PUMP_1"
-                    ] = dma_specific_training_data.flows.sum(axis=1)
+                    if len(dma_specific_training_data[dma].flows.columns) == 0:
+                        dma_specific_training_data[dma].flows[
+                            "PUMP_1"
+                        ] = simple_training_data.flows[
+                            self.hyperparameters["default_flow_sensor"]
+                        ]
+                    else:
+                        dma_specific_training_data[dma].flows[
+                            "PUMP_1"
+                        ] = dma_specific_training_data[dma].flows.sum(axis=1)
+                    # dma_specific_training_data.flows[
+                    #     "PUMP_1"
+                    # ] = dma_specific_training_data.flows.sum(axis=1)
 
                     self._train(
                         dma_specific_training_data, start_time, end_time, dma=dma
                     )
 
             else:
+                if self.hyperparameters["default_flow_sensor"] == "sum":
+                    simple_training_data.flows[
+                        "PUMP_1"
+                    ] = simple_training_data.flows.sum(axis=1)
+                else:
+                    simple_training_data.flows["PUMP_1"] = simple_training_data.flows[
+                        self.hyperparameters["default_flow_sensor"]
+                    ]
                 self._train(simple_training_data, start_time, end_time, dma="main")
 
     def detect_offline(
@@ -313,9 +331,14 @@ class LILA(LDIMMethodBase):
                         dma
                     ].flows.sum(axis=1)
         else:
-            simple_evaluation_data.flows["PUMP_1"] = simple_evaluation_data.flows[
-                self.hyperparameters["default_flow_sensor"]
-            ]
+            if self.hyperparameters["default_flow_sensor"] == "sum":
+                simple_evaluation_data.flows[
+                    "PUMP_1"
+                ] = simple_evaluation_data.flows.sum(axis=1)
+            else:
+                simple_evaluation_data.flows["PUMP_1"] = simple_evaluation_data.flows[
+                    self.hyperparameters["default_flow_sensor"]
+                ]
             dma_specific_data["main"] = simple_evaluation_data
 
         if self.trained == False:

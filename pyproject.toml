@@ -31,6 +31,7 @@ python-semantic-release = "^7.33.2"
 sqlalchemy = "<2"
 sympy = "^1.11.1"
 more-itertools = "^9.1.0"
+seaborn = "^0.12.2"
 
 [tool.poetry.group.dev.dependencies]
 tox = "^3.27.1"
@@ -94,7 +95,7 @@ deps =
     pytest-xdist==3.2.0
     pytest-benchmark==4.0.0
 commands =
-    black --check --verbose src/ldimbenchmark
+    black --check src/ldimbenchmark
     pytest -m "not noci"
 """
 

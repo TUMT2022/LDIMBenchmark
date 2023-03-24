@@ -263,7 +263,9 @@ class DatasetDerivator:
                     bar_derivations.refresh()
 
                     # logging.debug(filepaths)
-                    with ProcessPoolExecutor(max_workers=os.cpu_count()) as executor:
+                    with ProcessPoolExecutor(
+                        max_workers=os.cpu_count() - 1
+                    ) as executor:
                         # submit all tasks and get future objects
                         futures = [
                             executor.submit(
