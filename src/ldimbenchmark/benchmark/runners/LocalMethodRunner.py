@@ -76,6 +76,7 @@ class LocalMethodRunner(MethodRunner):
             dataset=dataset,
             dataset_part=dataset_part,
             hyperparameters=hyperparameters,
+            method_runner_type="local",
             goal=goal,
             stage=stage,
             method=method,

@@ -22,6 +22,7 @@ class MethodRunner(ABC):
         dataset_part: Union["training", "evaluation"],
         dataset: Dataset,
         hyperparameters: dict,
+        method_runner_type: str,
         goal: Literal[
             "assessment", "detection", "identification", "localization", "control"
         ] = "detection",
@@ -94,6 +95,7 @@ class MethodRunner(ABC):
         self.method = method
         self.debug = debug
         self.resultsFolder = resultsFolder
+        self.method_runner_type = method_runner_type
 
         if not self.resultsFolder and self.debug:
             raise Exception("Debug mode requires a results folder.")
@@ -153,6 +155,7 @@ class MethodRunner(ABC):
                         "executed_at": pd.Timestamp("today").strftime(
                             "%Y-%m-%d %H:%M:%S"
                         ),
+                        "method_runner_type": self.method_runner_type,
                     }
                 ],
             ).to_csv(

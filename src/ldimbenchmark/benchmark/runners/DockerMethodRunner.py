@@ -62,6 +62,7 @@ class DockerMethodRunner(MethodRunner):
             dataset=dataset,
             dataset_part=dataset_part,
             hyperparameters=hyperparameters,
+            method_runner_type="docker",
             goal=goal,
             stage=stage,
             method=method,

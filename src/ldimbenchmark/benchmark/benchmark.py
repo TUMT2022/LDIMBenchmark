@@ -650,7 +650,6 @@ class LDIMBenchmark:
                 fill="-",
                 justify=enlighten.Justify.CENTER,
             )
-        results = []
         bar_experiments = manager.counter(
             total=num_experiments,
             desc="Experiments",
@@ -681,7 +680,7 @@ class LDIMBenchmark:
                 manager.stop()
         else:
             for experiment in self.experiments:
-                results.append(experiment.run())
+                experiment.run()
                 bar_experiments.update()
         manager.stop()
 

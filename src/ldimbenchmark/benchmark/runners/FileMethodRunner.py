@@ -16,6 +16,7 @@ class FileBasedMethodRunner(LocalMethodRunner):
         inputFolder: str = "/input",
         argumentsFolder: str = "/args",
         outputFolder: str = "/output",
+        in_docker: bool = False,
     ):
         with open(os.path.join(argumentsFolder, "options.yml")) as f:
             parameters = yaml.safe_load(f)
@@ -25,6 +26,7 @@ class FileBasedMethodRunner(LocalMethodRunner):
             dataset=inputFolder,
             dataset_part=parameters["dataset_part"],
             hyperparameters=parameters["hyperparameters"],
+            method_runner_type="docker" if in_docker else "file",
             goal=parameters["goal"],
             stage=parameters["stage"],
             method=parameters["method"],
