@@ -13,7 +13,7 @@ import os
 from glob import glob
 import json
 from typing import Literal, TypedDict, Dict
-from ldimbenchmark.constants import LDIM_BENCHMARK_CACHE_DIR
+from ldimbenchmark.constants import CPU_COUNT, LDIM_BENCHMARK_CACHE_DIR
 import shutil
 import hashlib
 from pandas import DataFrame
@@ -125,7 +125,7 @@ def loadDatasetsDirectly(
                 index_col="Timestamp",
                 chunksize=100000,
             )
-            with ThreadPoolExecutor(max_workers=os.cpu_count() - 1) as executor:
+            with ThreadPoolExecutor(max_workers=CPU_COUNT) as executor:
                 frames = list(executor.map(parse_frame_dates, d))
 
             sensor_readings = pd.concat(frames)
@@ -407,7 +407,7 @@ class Dataset:
                 for sensor in getattr(self, sensor_type).keys()
             ]
             # logging.debug(filepaths)
-            with ThreadPoolExecutor(max_workers=os.cpu_count() - 1) as executor:
+            with ThreadPoolExecutor(max_workers=CPU_COUNT) as executor:
                 # submit all tasks and get future objects
                 futures = [
                     executor.submit(write_to_csv, sensor, path)

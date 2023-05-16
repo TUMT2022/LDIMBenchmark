@@ -89,15 +89,6 @@ def run_benchmark_complexity(
     results = {}
     result_measures = []
 
-    # self.experiments.append(
-    #                 LocalMethodRunner(
-    #                     method,
-    #                     dataset,
-    #                     self.hyperparameters,
-    #                     resultsFolder=self.runner_results_dir,
-    #                 )
-    #             )
-
     bar_running_analysis = manager.counter(
         total=len(methods), desc="Running Analysis", unit="methods"
     )

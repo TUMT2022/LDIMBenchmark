@@ -5,6 +5,7 @@ import os
 import enlighten
 
 from pandas import DataFrame
+from ldimbenchmark.constants import CPU_COUNT
 
 from ldimbenchmark.datasets import Dataset
 
@@ -257,15 +258,13 @@ class DatasetDerivator:
                     manager = enlighten.get_manager()
                     bar_derivations = manager.counter(
                         total=len(keys),
-                        desc=f"Derivating {apply_to}",
+                        desc=f"Deriving {apply_to}",
                         unit="sensors",
                     )
                     bar_derivations.refresh()
 
                     # logging.debug(filepaths)
-                    with ProcessPoolExecutor(
-                        max_workers=os.cpu_count() - 1
-                    ) as executor:
+                    with ProcessPoolExecutor(max_workers=CPU_COUNT) as executor:
                         # submit all tasks and get future objects
                         futures = [
                             executor.submit(
@@ -283,7 +282,7 @@ class DatasetDerivator:
                             datasets[key] = result
                             if len(result) <= 3:
                                 logging.warn(
-                                    "Derivated data would only have three datapoints. That's not a proper dataset anymore. Aborting."
+                                    "Derived data would only have three data points. That's not a proper dataset anymore. Aborting."
                                 )
                                 abort = True
 
@@ -292,7 +291,7 @@ class DatasetDerivator:
                     if not abort:
                         setattr(loadedDataset, apply_to, datasets)
 
-                        logging.info("Writing derivated dataset")
+                        logging.info(f"Saving derived dataset {loadedDataset.id}")
                         os.makedirs(os.path.dirname(derivedDatasetPath), exist_ok=True)
                         loadedDataset.exportTo(derivedDatasetPath)
 
