@@ -300,9 +300,19 @@ class LILA(LDIMMethodBase):
                         "PUMP_1"
                     ] = simple_training_data.flows.sum(axis=1)
                 else:
-                    simple_training_data.flows["PUMP_1"] = simple_training_data.flows[
+                    if (
                         self.hyperparameters["default_flow_sensor"]
-                    ]
+                        in simple_training_data.flows.columns
+                    ):
+                        simple_training_data.flows[
+                            "PUMP_1"
+                        ] = simple_training_data.flows[
+                            self.hyperparameters["default_flow_sensor"]
+                        ]
+                    else:
+                        raise Exception(
+                            "No 'default_flow_sensor' hyperparameter given or the column does not exist."
+                        )
                 self._train(simple_training_data, start_time, end_time, dma="main")
 
     def detect_offline(

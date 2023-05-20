@@ -35,6 +35,7 @@ def loadDataset_local(dataset_path):
 
 def run_benchmark_complexity(
     methods: List[LDIMMethodBase],
+    hyperparameters,
     cache_dir=os.path.join(LDIM_BENCHMARK_CACHE_DIR, "datagen"),
     out_folder="out/complexity",
     style=None,
@@ -98,7 +99,15 @@ def run_benchmark_complexity(
 
         if additionalOutput:
             method.init_with_benchmark_params(
-                os.path.join(out_folder, "additional_output_path"), {}
+                additional_output_path=os.path.join(
+                    out_folder, "additional_output_path"
+                ),
+                hyperparameters=hyperparameters[method.name],
+            )
+        else:
+            method.init_with_benchmark_params(
+                additional_output_path=None,
+                hyperparameters=hyperparameters[method.name],
             )
 
         def runAlgorithmWithNetwork(n):

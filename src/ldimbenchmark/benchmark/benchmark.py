@@ -10,7 +10,7 @@ import numpy as np
 from typing import Dict, Literal, TypedDict, Union, List, Callable
 import os
 import logging
-from ldimbenchmark.constants import LDIM_BENCHMARK_CACHE_DIR
+from ldimbenchmark.constants import CPU_COUNT, LDIM_BENCHMARK_CACHE_DIR
 from glob import glob
 from ldimbenchmark.benchmark_evaluation import evaluate_leakages
 from tabulate import tabulate
@@ -473,10 +473,15 @@ class LDIMBenchmark:
                             #     **hyperparameters_method_map[method_id][key],
                             # }
             else:
-                for dataset_base_id in dataset_base_ids:
-                    hyperparameters_map[method_id][
-                        dataset_base_id
-                    ] = hyperparameters_method_map[method_id]
+                if len(dataset_base_ids) == 0:
+                    hyperparameters_map[method_id] = hyperparameters_method_map[
+                        method_id
+                    ]
+                else:
+                    for dataset_base_id in dataset_base_ids:
+                        hyperparameters_map[method_id][
+                            dataset_base_id
+                        ] = hyperparameters_method_map[method_id]
 
         # if method_id in hyperparameters:
         #     if dataset_base_id in hyperparameters[method_id]:
@@ -531,6 +536,11 @@ class LDIMBenchmark:
     ):
         complexity_results_path = os.path.join(self.complexity_results_dir, style)
         os.makedirs(complexity_results_path, exist_ok=True)
+        hyperparameters_map = self._get_hyperparameters_for_methods_and_datasets(
+            hyperparameters=self.hyperparameters,
+            method_ids=[lmethod.name for lmethod in methods],
+            dataset_base_ids=[],
+        )
         if style == "time":
             return run_benchmark_complexity(
                 methods,
@@ -538,6 +548,7 @@ class LDIMBenchmark:
                 out_folder=complexity_results_path,
                 style="time",
                 additionalOutput=self.debug,
+                hyperparameters=hyperparameters_map,
             )
         if style == "junctions":
             return run_benchmark_complexity(
@@ -546,6 +557,7 @@ class LDIMBenchmark:
                 out_folder=complexity_results_path,
                 style="junctions",
                 additionalOutput=self.debug,
+                hyperparameters=hyperparameters_map,
             )
 
     def run_benchmark(
@@ -659,7 +671,7 @@ class LDIMBenchmark:
         bar_experiments.refresh()
         # This line makes sure we can call update with an effect
         if parallel:
-            worker_num = os.cpu_count() - 1
+            worker_num = CPU_COUNT
             if parallel_max_workers > 0:
                 worker_num = parallel_max_workers
             try:
@@ -962,7 +974,7 @@ class LDIMBenchmark:
         )
         parallel = False
         if parallel:
-            with ProcessPoolExecutor(max_workers=os.cpu_count() - 1) as executor:
+            with ProcessPoolExecutor(max_workers=CPU_COUNT) as executor:
                 # submit all tasks and get future objects
                 futures = []
                 for leak_pair in result["matched_leaks_list"]:
