@@ -35,6 +35,7 @@ class LocalMethodRunner(MethodRunner):
         debug=False,
         resultsFolder=None,
         createFolder: bool = True,
+        method_runner_type_overwrite=None,
     ):
         """Initialize the LocalMethodRunner.
 
@@ -76,7 +77,9 @@ class LocalMethodRunner(MethodRunner):
             dataset=dataset,
             dataset_part=dataset_part,
             hyperparameters=hyperparameters,
-            method_runner_type="local",
+            method_runner_type=method_runner_type_overwrite
+            if method_runner_type_overwrite
+            else "local",
             goal=goal,
             stage=stage,
             method=method,

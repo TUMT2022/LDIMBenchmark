@@ -26,7 +26,7 @@ class FileBasedMethodRunner(LocalMethodRunner):
             dataset=inputFolder,
             dataset_part=parameters["dataset_part"],
             hyperparameters=parameters["hyperparameters"],
-            method_runner_type="docker" if in_docker else "file",
+            method_runner_type_overwrite="docker" if in_docker else "file",
             goal=parameters["goal"],
             stage=parameters["stage"],
             method=parameters["method"],
