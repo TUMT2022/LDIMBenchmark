@@ -170,7 +170,8 @@ class Dataset:
         """
         self.path = path
         self.__pickle_path = os.path.join(self.path, "dataset.pickle")
-        self.__timestamp_path = os.path.join(self.path, ".timestamp")
+        self.__validation_file_name = ".validation"
+        self.__validation_path = os.path.join(self.path, self.__validation_file_name)
         path_to_dataset_info = os.path.join(self.path, "dataset_info.yaml")
         # Read dataset_info.yaml
         if os.path.isfile(path_to_dataset_info):
@@ -241,20 +242,35 @@ class Dataset:
             logging.warning("No dmas.json file found. Skipping loading of DMAs.")
             self.dmas = None
 
-    def _update_id(self):
+    def _update_id(self, force=False):
         """
         Sets the id (hash) according to the information in "dataset_info.yaml"
         """
+
+        derivations_hash = (
+            "-"
+            + hashlib.md5(
+                json.dumps(self.info, sort_keys=True, default=str).encode("utf-8")
+            ).hexdigest()
+        )
+        self.id = self.info["name"] + derivations_hash
+
+    def _generate_dataset_hash(self, folder: str):
+        new_hash = dirhash(folder, "md5", ignore_hidden=True)
+        with open(os.path.join(folder, self.__validation_file_name), "w") as f:
+            f.write(str(pd.to_datetime(datetime.now(), utc=True)) + "\n" + new_hash)
+
+    def is_valid(self) -> bool:
         # Check the has of the whole dataset from time to time by writing the last timestamp
         # to a file and retrieving it before running the expensive hash function
-
         md5hash = None
         try:
-            with open(self.__timestamp_path, "r") as f:
+            with open(self.__validation_path, "r") as f:
                 timestamp_file = f.readlines()
                 last_timestamp = pd.to_datetime(timestamp_file[0], utc=True)
                 md5hash = timestamp_file[1]
         except (FileNotFoundError, IndexError):
+            logging.warn("Dataset had no hashes for validation.")
             last_timestamp = None
 
         if last_timestamp is None or last_timestamp < pd.to_datetime(
@@ -266,12 +282,11 @@ class Dataset:
                 logging.info(
                     "Dataset hash changed! Check the consistency of the dataset!"
                 )
+                return False
             md5hash = new_hash
-            with open(self.__timestamp_path, "w") as f:
+            with open(self.__validation_path, "w") as f:
                 f.write(str(pd.to_datetime(datetime.now(), utc=True)) + "\n" + md5hash)
-
-        derivations_hash = "-" + md5hash
-        self.id = self.info["name"] + derivations_hash
+        return True
 
     ######
     # Getters and Setters with direct lazy loading because they
@@ -428,6 +443,7 @@ class Dataset:
             )
         if os.path.exists(self.__pickle_path):
             os.remove(self.__pickle_path)
+        self._generate_dataset_hash(folder)
 
 
 def getTimeSliceOfDataset(
