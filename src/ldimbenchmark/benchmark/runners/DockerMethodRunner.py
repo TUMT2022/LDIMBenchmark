@@ -79,7 +79,7 @@ class DockerMethodRunner(MethodRunner):
         else:
             self.resultsFolder = os.path.join(resultsFolder, self.id)
 
-    def run(self):
+    def run(self, cpu_count=1, mem_limit="4g"):
         logging.info(f"Running {self.id} with params {self.hyperparameters}")
         folder_parameters = tempfile.TemporaryDirectory()
         path_options = os.path.join(folder_parameters.name, "options.yml")
@@ -126,8 +126,8 @@ class DockerMethodRunner(MethodRunner):
                         "mode": "ro",
                     }
                 },
-                mem_limit="20g",
-                cpu_count=7,
+                mem_limit=mem_limit,
+                cpu_count=cpu_count,
                 detach=True,
             )
 
