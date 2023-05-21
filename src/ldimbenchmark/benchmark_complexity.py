@@ -103,7 +103,7 @@ def run_benchmark_complexity(
         method_name = get_method_name_from_docker_image(method)
         logging.info(f" - {method_name}")
         complexity_benchmark_result_folder = os.path.join(
-            out_folder, "runs", method_name, "1"
+            out_folder, "runs", method_name
         )
         client = docker.from_env()
 
@@ -120,49 +120,63 @@ def run_benchmark_complexity(
         n_samples = np.linspace(min_n, max_n, n_measures).astype("int64")
 
         for i, n in enumerate(n_samples):
+            summed_results = {"time": [], "ram": []}
             for r in range(n_repeats):
                 complexity_benchmark_result_folder_run = os.path.join(
                     complexity_benchmark_result_folder, str(r)
                 )
-            runner = DockerMethodRunner(
-                method,
-                datasets[n],
-                "evaluation",
-                hyperparameters[method_name],
-                resultsFolder=complexity_benchmark_result_folder,
-                debug=additionalOutput,
-            )
-            runner.run()
+                runner = DockerMethodRunner(
+                    method,
+                    datasets[n],
+                    "evaluation",
+                    hyperparameters[method_name],
+                    resultsFolder=complexity_benchmark_result_folder_run,
+                    debug=additionalOutput,
+                )
+                runner.run()
 
-        bar_running_analysis.close()
-        manager.stop()
+                parallel = True
+                result_folders = glob(
+                    os.path.join(complexity_benchmark_result_folder_run, "*")
+                )
+                run_results = []
+                if parallel == True:
+                    with ProcessPoolExecutor() as executor:
+                        # submit all tasks and get future objects
+                        futures = [
+                            executor.submit(
+                                load_result, folder, try_load_docker_stats=True
+                            )
+                            for folder in result_folders
+                        ]
+                        # process results from tasks in order of task completion
+                        for future in as_completed(futures):
+                            result = future.result()
+                            run_results.append(result)
+                else:
+                    for experiment_result in result_folders:
+                        run_results.append(load_result(experiment_result, True))
 
-        parallel = True
-        result_folders = glob(os.path.join(complexity_benchmark_result_folder, "*"))
-        run_results = []
-        if parallel == True:
-            with ProcessPoolExecutor() as executor:
-                # submit all tasks and get future objects
-                futures = [
-                    executor.submit(load_result, folder, try_load_docker_stats=True)
-                    for folder in result_folders
-                ]
-                # process results from tasks in order of task completion
-                for future in as_completed(futures):
-                    result = future.result()
-                    run_results.append(result)
-        else:
-            for experiment_result in result_folders:
-                run_results.append(load_result(experiment_result, True))
+                run_results = pd.DataFrame(run_results)
+                run_results["number"] = (
+                    run_results["dataset"].str.split("-").str[2].astype(int)
+                )
+                sorted_results = run_results.sort_values(by=["number"])
 
-        run_results = pd.DataFrame(run_results)
-        run_results["number"] = run_results["dataset"].str.split("-").str[2].astype(int)
-        sorted_results = run_results.sort_values(by=["number"])
+                summed_results["time"] = np.append(
+                    summed_results["time"], sorted_results["method_time"]
+                )
+                summed_results["ram"] = np.append(
+                    summed_results["ram"], sorted_results["memory_max"]
+                )
+
         best_cpu, rest = big_o.infer_big_o_class(
-            sorted_results["number"], sorted_results["method_time"]
+            sorted_results["number"],
+            np.sum(summed_results["time"].reshape((len(n_samples), n_repeats)), axis=1),
         )
         best_ram, rest = big_o.infer_big_o_class(
-            sorted_results["number"], sorted_results["memory_avg"]
+            sorted_results["number"],
+            np.sum(summed_results["ram"].reshape((len(n_samples), n_repeats)), axis=1),
         )
 
         results["time"][method] = best_cpu
@@ -181,9 +195,12 @@ def run_benchmark_complexity(
         #     os.path.join(out_folder, "big_o.csv"), header=False, index=False
         # )
         bar_running_analysis.update()
+
         # Cooldown for 10 seconds
         time.sleep(10)
 
+    bar_running_analysis.close()
+    manager.stop()
     logging.info(f"Exporting results to {out_folder}")
     results = pd.DataFrame(
         {
