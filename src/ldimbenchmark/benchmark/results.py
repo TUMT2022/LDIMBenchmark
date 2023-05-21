@@ -61,6 +61,6 @@ def load_result(folder: str, try_load_docker_stats=False) -> Dict:
         flat_stats = pd.json_normalize(stats.to_dict(orient="records"))
 
         evaluation_results["memory_avg"] = flat_stats["memory_stats.usage"].mean()
-        evaluation_results["memory_max"] = flat_stats["memory_stats.max_usage"].max()
+        evaluation_results["memory_max"] = flat_stats["memory_stats.usage"].max()
 
     return evaluation_results
