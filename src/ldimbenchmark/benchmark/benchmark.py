@@ -2,6 +2,7 @@ from concurrent.futures import ThreadPoolExecutor, as_completed
 import itertools
 
 from numpy import timedelta64
+from ldimbenchmark.benchmark.results import load_result
 from ldimbenchmark.benchmark.runners import DockerMethodRunner, LocalMethodRunner
 from ldimbenchmark.benchmark.runners.BaseMethodRunner import MethodRunner
 from ldimbenchmark.datasets import Dataset
@@ -12,7 +13,6 @@ import os
 import logging
 from ldimbenchmark.constants import CPU_COUNT, LDIM_BENCHMARK_CACHE_DIR
 from glob import glob
-from ldimbenchmark.benchmark_evaluation import evaluate_leakages
 from tabulate import tabulate
 from ldimbenchmark.benchmark_complexity import run_benchmark_complexity
 import matplotlib.pyplot as plt
@@ -33,6 +33,8 @@ from matplotlib import patches
 import ast
 import seaborn as sns
 from matplotlib.ticker import FormatStrFormatter
+
+from ldimbenchmark.utilities import get_method_name_from_docker_image
 
 
 def execute_experiment(experiment: MethodRunner):
@@ -244,44 +246,6 @@ def plot_leak(
     fig.suptitle(name)
     fig.savefig(os.path.join(out_dir, name + ".png"))
     plt.close(fig)
-
-
-def load_result(folder: str) -> Dict:
-    folder = os.path.join(folder, "")
-    detected_leaks_file = os.path.join(folder, "detected_leaks.csv")
-    if not os.path.exists(detected_leaks_file):
-        return {}
-
-    detected_leaks = pd.read_csv(
-        detected_leaks_file,
-        parse_dates=True,
-        date_parser=lambda x: pd.to_datetime(x, utc=True),
-    )
-
-    evaluation_dataset_leakages = pd.read_csv(
-        os.path.join(folder, "should_have_detected_leaks.csv"),
-        parse_dates=True,
-        date_parser=lambda x: pd.to_datetime(x, utc=True),
-    )
-
-    run_info = pd.read_csv(os.path.join(folder, "run_info.csv")).iloc[0]
-
-    # TODO: Ignore Detections outside of the evaluation period
-    (evaluation_results, matched_list) = evaluate_leakages(
-        evaluation_dataset_leakages, detected_leaks
-    )
-    evaluation_results["method"] = run_info["method"]
-    evaluation_results["method_version"] = run_info.get("method_version", None)
-    evaluation_results["dataset"] = run_info["dataset"]
-    evaluation_results["dataset_part"] = run_info.get("dataset_part", None)
-    evaluation_results["dataset_id"] = run_info["dataset_id"]
-    evaluation_results["dataset_derivations"] = run_info["dataset_options"]
-    evaluation_results["hyperparameters"] = run_info["hyperparameters"]
-    evaluation_results["matched_leaks_list"] = matched_list
-    evaluation_results["_folder"] = os.path.basename(os.path.dirname(folder))
-    evaluation_results["executed_at"] = run_info.get("executed_at", None)
-
-    return evaluation_results
 
 
 def create_plots(
@@ -538,7 +502,9 @@ class LDIMBenchmark:
         os.makedirs(complexity_results_path, exist_ok=True)
         hyperparameters_map = self._get_hyperparameters_for_methods_and_datasets(
             hyperparameters=self.hyperparameters,
-            method_ids=[lmethod.name for lmethod in methods],
+            method_ids=[
+                get_method_name_from_docker_image(lmethod) for lmethod in methods
+            ],
             dataset_base_ids=[],
         )
         if style == "time":
@@ -587,7 +553,8 @@ class LDIMBenchmark:
         hyperparameters_map = self._get_hyperparameters_for_methods_and_datasets(
             hyperparameters=self.hyperparameters,
             method_ids=[
-                dmethod.split(":")[0].split("/")[-1] for dmethod in self.methods_docker
+                get_method_name_from_docker_image(dmethod)
+                for dmethod in self.methods_docker
             ]
             + [lmethod.name for lmethod in self.methods_local],
             dataset_base_ids=[dataset.id for dataset in self.datasets],

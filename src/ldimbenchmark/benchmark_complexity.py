@@ -5,8 +5,11 @@ import time
 from datetime import datetime
 from glob import glob
 import logging
+import docker
 
 import enlighten
+from ldimbenchmark.benchmark.results import load_result
+from ldimbenchmark.benchmark.runners import DockerMethodRunner
 from ldimbenchmark.constants import LDIM_BENCHMARK_CACHE_DIR
 from ldimbenchmark.datasets import Dataset
 from ldimbenchmark.generator import (
@@ -22,19 +25,23 @@ import big_o
 import matplotlib as mpl
 from typing import List
 
+from ldimbenchmark.utilities import get_method_name_from_docker_image
+
 
 def loadDataset_local(dataset_path):
-    dataset = Dataset(dataset_path).loadData().loadBenchmarkData()
+    dataset = Dataset(dataset_path)  # .loadData().loadBenchmarkData()
+    # dataset.is_valid()
     number = int(os.path.basename(os.path.normpath(dataset_path)).split("-")[-1])
     return (
         number,
-        dataset.getTrainingBenchmarkData(),
-        dataset.getEvaluationBenchmarkData(),
+        dataset
+        # dataset.getTrainingBenchmarkData(),
+        # dataset.getEvaluationBenchmarkData(),
     )
 
 
 def run_benchmark_complexity(
-    methods: List[LDIMMethodBase],
+    methods: List[str],
     hyperparameters,
     cache_dir=os.path.join(LDIM_BENCHMARK_CACHE_DIR, "datagen"),
     out_folder="out/complexity",
@@ -65,7 +72,7 @@ def run_benchmark_complexity(
     )
     bar_loading_data.update(incr=0)
 
-    logging.info(" > Loading Data")
+    # logging.info(" > Loading Data")
     datasets = {}
     try:
         with ThreadPoolExecutor(max_workers=os.cpu_count()) as executor:
@@ -76,10 +83,8 @@ def run_benchmark_complexity(
             ]
             # process results from tasks in order of task completion
             for future in as_completed(futures):
-                dataset_id, training, evaluation = future.result()
-                datasets[dataset_id] = {}
-                datasets[dataset_id]["training"] = training
-                datasets[dataset_id]["evaluation"] = evaluation
+                dataset_id, dataset = future.result()
+                datasets[dataset_id] = dataset
                 bar_loading_data.update()
     except KeyboardInterrupt:
         manager.stop()
@@ -87,7 +92,7 @@ def run_benchmark_complexity(
         os.kill(os.getpid(), 9)
     bar_loading_data.close()
 
-    results = {}
+    results = {"time": {}, "ram": {}}
     result_measures = []
 
     bar_running_analysis = manager.counter(
@@ -95,55 +100,96 @@ def run_benchmark_complexity(
     )
     logging.info(" > Starting Complexity analysis")
     for method in methods:
-        logging.info(f" - {method.name}")
+        method_name = get_method_name_from_docker_image(method)
+        logging.info(f" - {method_name}")
+        complexity_benchmark_result_folder = os.path.join(
+            out_folder, "runs", method_name, "1"
+        )
+        client = docker.from_env()
 
-        if additionalOutput:
-            method.init_with_benchmark_params(
-                additional_output_path=os.path.join(
-                    out_folder, "additional_output_path"
-                ),
-                hyperparameters=hyperparameters[method.name],
+        try:
+            image = client.images.get(method)
+        except docker.errors.ImageNotFound:
+            logging.info("Image does not exist. Pulling it...")
+            client.images.pull(method)
+
+        min_n = 4
+        max_n = len(dataset_dirs)
+        n_measures = 10
+        n_repeats = 3
+        n_samples = np.linspace(min_n, max_n, n_measures).astype("int64")
+
+        for i, n in enumerate(n_samples):
+            for r in range(n_repeats):
+                complexity_benchmark_result_folder_run = os.path.join(
+                    complexity_benchmark_result_folder, str(r)
+                )
+            runner = DockerMethodRunner(
+                method,
+                datasets[n],
+                "evaluation",
+                hyperparameters[method_name],
+                resultsFolder=complexity_benchmark_result_folder,
+                debug=additionalOutput,
             )
+            runner.run()
+
+        bar_running_analysis.close()
+        manager.stop()
+
+        parallel = True
+        result_folders = glob(os.path.join(complexity_benchmark_result_folder, "*"))
+        run_results = []
+        if parallel == True:
+            with ProcessPoolExecutor() as executor:
+                # submit all tasks and get future objects
+                futures = [
+                    executor.submit(load_result, folder, try_load_docker_stats=True)
+                    for folder in result_folders
+                ]
+                # process results from tasks in order of task completion
+                for future in as_completed(futures):
+                    result = future.result()
+                    run_results.append(result)
         else:
-            method.init_with_benchmark_params(
-                additional_output_path=None,
-                hyperparameters=hyperparameters[method.name],
-            )
+            for experiment_result in result_folders:
+                run_results.append(load_result(experiment_result, True))
 
-        def runAlgorithmWithNetwork(n):
-            method.prepare(datasets[n]["training"])
-            method.detect_offline(datasets[n]["evaluation"])
-
-        # Run Big-O
-        best, others = big_o.big_o(
-            runAlgorithmWithNetwork,
-            big_o.datagen.n_,
-            min_n=4,
-            max_n=len(dataset_dirs),
-            n_measures=10,
-            n_repeats=3,
-            return_raw_data=True,
+        run_results = pd.DataFrame(run_results)
+        run_results["number"] = run_results["dataset"].str.split("-").str[2].astype(int)
+        sorted_results = run_results.sort_values(by=["number"])
+        best_cpu, rest = big_o.infer_big_o_class(
+            sorted_results["number"], sorted_results["method_time"]
         )
-        results[method.name] = best
-
-        measures = pd.DataFrame({"times": others["times"]}, index=others["measures"])
-        result_measures.append(measures.rename(columns={"times": method.name}))
-        measures.to_csv(os.path.join(out_folder, "measures_raw.csv"))
-        pd.DataFrame(list(others.items())[1:8]).to_csv(
-            os.path.join(out_folder, "big_o.csv"), header=False, index=False
+        best_ram, rest = big_o.infer_big_o_class(
+            sorted_results["number"], sorted_results["memory_avg"]
         )
+
+        results["time"][method] = best_cpu
+        results["ram"][method] = best_ram
+
+        measures = pd.DataFrame(
+            {
+                f"time_{method_name}": sorted_results["method_time"].to_list(),
+                f"ram_{method_name}": sorted_results["memory_max"].to_list(),
+            },
+            index=sorted_results["number"].to_list(),
+        )
+        result_measures.append(measures)
+        # measures.to_csv(os.path.join(out_folder, "measures_raw.csv"))
+        # pd.DataFrame(list(others.items())[1:8]).to_csv(
+        #     os.path.join(out_folder, "big_o.csv"), header=False, index=False
+        # )
         bar_running_analysis.update()
         # Cooldown for 10 seconds
         time.sleep(10)
 
-    bar_running_analysis.close()
-    manager.stop()
-
     logging.info(f"Exporting results to {out_folder}")
     results = pd.DataFrame(
         {
-            "Leakage Detection Method": results.keys(),
-            "Time Complexity": results.values(),
+            "Leakage Detection Method": results["time"].keys(),
+            "Time Complexity": results["time"].values(),
+            "RAM Complexity": results["ram"].values(),
         }
     )
     results.to_csv(os.path.join(out_folder, "results.csv"), index=False)

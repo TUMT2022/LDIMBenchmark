@@ -252,3 +252,7 @@ def _reduce_hash(hashlist, hashfunc):
     for hashvalue in sorted(hashlist):
         hasher.update(hashvalue.encode("utf-8"))
     return hasher.hexdigest()
+
+
+def get_method_name_from_docker_image(docker_image: str) -> str:
+    return docker_image.split(":")[0].split("/")[-1]
