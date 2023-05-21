@@ -587,6 +587,20 @@
               
   
   
+  
+    <li class="md-nav__item">
+      <a href="../../results/" class="md-nav__link">
+        results
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
     
   
   
@@ -594,7 +608,7 @@
     <li class="md-nav__item md-nav__item--active md-nav__item--nested">
       
       
-        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_6_1_1_2" type="checkbox" id="__nav_6_1_1_2" checked>
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_6_1_1_3" type="checkbox" id="__nav_6_1_1_3" checked>
       
       
       
@@ -604,14 +618,14 @@
         <div class="md-nav__link md-nav__link--index ">
           <a href="../">runners</a>
           
-            <label for="__nav_6_1_1_2">
+            <label for="__nav_6_1_1_3">
               <span class="md-nav__icon md-icon"></span>
             </label>
           
         </div>
       
       <nav class="md-nav" aria-label="runners" data-md-level="4">
-        <label class="md-nav__title" for="__nav_6_1_1_2">
+        <label class="md-nav__title" for="__nav_6_1_1_3">
           <span class="md-nav__icon md-icon"></span>
           runners
         </label>
@@ -1689,8 +1703,8 @@
 <a id="__codelineno-0-182" name="__codelineno-0-182"></a>                <span class="n">logging</span><span class="o">.</span><span class="n">error</span><span class="p">(</span>
 <a id="__codelineno-0-183" name="__codelineno-0-183"></a>                    <span class="sa">f</span><span class="s2">&quot;Runner </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">id</span><span class="si">}</span><span class="s2"> errored with status code </span><span class="si">{</span><span class="n">status</span><span class="p">[</span><span class="s1">&#39;StatusCode&#39;</span><span class="p">]</span><span class="si">}</span><span class="s2">!&quot;</span>
 <a id="__codelineno-0-184" name="__codelineno-0-184"></a>                <span class="p">)</span>
-<a id="__codelineno-0-185" name="__codelineno-0-185"></a>                <span class="c1"># for line in e.container.logs().decode().split(&quot;\n&quot;):</span>
-<a id="__codelineno-0-186" name="__codelineno-0-186"></a>                <span class="c1">#     logging.error(f&quot;Container[{self.image}]: &quot; + line)</span>
+<a id="__codelineno-0-185" name="__codelineno-0-185"></a>                <span class="k">for</span> <span class="n">line</span> <span class="ow">in</span> <span class="n">container</span><span class="o">.</span><span class="n">logs</span><span class="p">()</span><span class="o">.</span><span class="n">decode</span><span class="p">()</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">):</span>
+<a id="__codelineno-0-186" name="__codelineno-0-186"></a>                    <span class="n">logging</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Container[</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">image</span><span class="si">}</span><span class="s2">]: &quot;</span> <span class="o">+</span> <span class="n">line</span><span class="p">)</span>
 <a id="__codelineno-0-187" name="__codelineno-0-187"></a>                <span class="k">if</span> <span class="n">status</span><span class="p">[</span><span class="s2">&quot;StatusCode&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="mi">137</span><span class="p">:</span>
 <a id="__codelineno-0-188" name="__codelineno-0-188"></a>                    <span class="n">logging</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="s2">&quot;Process in container was killed.&quot;</span><span class="p">)</span>
 <a id="__codelineno-0-189" name="__codelineno-0-189"></a>                    <span class="n">logging</span><span class="o">.</span><span class="n">error</span><span class="p">(</span>
