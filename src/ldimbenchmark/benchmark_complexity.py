@@ -47,6 +47,9 @@ def run_benchmark_complexity(
     out_folder="out/complexity",
     style=None,
     additionalOutput=False,
+    n_repeats=3,
+    n_measures=10,
+    n_max=91,
 ):
     """
     Run the benchmark for the given methods and datasets.
@@ -59,12 +62,15 @@ def run_benchmark_complexity(
     logging.info(" > Generating Datasets")
     if style == "time":
         datasets_dir = os.path.join(cache_dir, "synthetic-days")
-        generateDatasetsForTimespan(1, 91, datasets_dir)
+        generateDatasetsForTimespan(1, n_max, datasets_dir)
     if style == "junctions":
         datasets_dir = os.path.join(cache_dir, "synthetic-junctions")
-        generateDatasetsForJunctions(4, 59, datasets_dir)
+        generateDatasetsForJunctions(4, n_max, datasets_dir)
 
     dataset_dirs = glob(datasets_dir + "/*/")
+    min_n = 4
+    max_n = len(dataset_dirs)
+    n_samples = np.linspace(min_n, max_n, n_measures).astype("int64")
 
     manager = enlighten.get_manager()
     bar_loading_data = manager.counter(
@@ -112,12 +118,6 @@ def run_benchmark_complexity(
         except docker.errors.ImageNotFound:
             logging.info("Image does not exist. Pulling it...")
             client.images.pull(method)
-
-        min_n = 4
-        max_n = len(dataset_dirs)
-        n_measures = 10
-        n_repeats = 3
-        n_samples = np.linspace(min_n, max_n, n_measures).astype("int64")
 
         for i, n in enumerate(n_samples):
             summed_results = {"time": [], "ram": []}

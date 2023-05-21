@@ -497,6 +497,9 @@ class LDIMBenchmark:
         self,
         methods,
         style: Literal["time", "junctions"],
+        n_repeats=3,
+        n_measures=10,
+        n_max=91,
     ):
         complexity_results_path = os.path.join(self.complexity_results_dir, style)
         os.makedirs(complexity_results_path, exist_ok=True)
@@ -507,24 +510,17 @@ class LDIMBenchmark:
             ],
             dataset_base_ids=[],
         )
-        if style == "time":
-            return run_benchmark_complexity(
-                methods,
-                cache_dir=os.path.join(self.cache_dir, "datagen"),
-                out_folder=complexity_results_path,
-                style="time",
-                additionalOutput=self.debug,
-                hyperparameters=hyperparameters_map,
-            )
-        if style == "junctions":
-            return run_benchmark_complexity(
-                methods,
-                cache_dir=os.path.join(self.cache_dir, "datagen"),
-                out_folder=complexity_results_path,
-                style="junctions",
-                additionalOutput=self.debug,
-                hyperparameters=hyperparameters_map,
-            )
+        return run_benchmark_complexity(
+            methods,
+            cache_dir=os.path.join(self.cache_dir, "datagen"),
+            out_folder=complexity_results_path,
+            style=style,
+            additionalOutput=self.debug,
+            hyperparameters=hyperparameters_map,
+            n_repeats=n_repeats,
+            n_measures=n_measures,
+            n_max=n_max,
+        )
 
     def run_benchmark(
         self,
