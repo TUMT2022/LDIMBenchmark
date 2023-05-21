@@ -74,7 +74,7 @@ def run_benchmark_complexity(
 
     manager = enlighten.get_manager()
     bar_loading_data = manager.counter(
-        total=len(dataset_dirs), desc="Loading data", unit="datasets"
+        total=len(dataset_dirs), desc="Validating data", unit="datasets"
     )
     bar_loading_data.update(incr=0)
 
@@ -119,9 +119,9 @@ def run_benchmark_complexity(
             logging.info("Image does not exist. Pulling it...")
             client.images.pull(method)
 
-        for i, n in enumerate(n_samples):
-            summed_results = {"time": [], "ram": []}
-            for r in range(n_repeats):
+        summed_results = {"time": [], "ram": []}
+        for r in range(n_repeats):
+            for i, n in enumerate(n_samples):
                 complexity_benchmark_result_folder_run = os.path.join(
                     complexity_benchmark_result_folder, str(r)
                 )
@@ -133,42 +133,40 @@ def run_benchmark_complexity(
                     resultsFolder=complexity_benchmark_result_folder_run,
                     debug=additionalOutput,
                 )
-                runner.run()
+                runner.run(cpu_count=1, mem_limit="20g")
 
-                parallel = True
-                result_folders = glob(
-                    os.path.join(complexity_benchmark_result_folder_run, "*")
-                )
-                run_results = []
-                if parallel == True:
-                    with ProcessPoolExecutor() as executor:
-                        # submit all tasks and get future objects
-                        futures = [
-                            executor.submit(
-                                load_result, folder, try_load_docker_stats=True
-                            )
-                            for folder in result_folders
-                        ]
-                        # process results from tasks in order of task completion
-                        for future in as_completed(futures):
-                            result = future.result()
-                            run_results.append(result)
-                else:
-                    for experiment_result in result_folders:
-                        run_results.append(load_result(experiment_result, True))
+            parallel = True
+            result_folders = glob(
+                os.path.join(complexity_benchmark_result_folder_run, "*")
+            )
+            run_results = []
+            if parallel == True:
+                with ProcessPoolExecutor() as executor:
+                    # submit all tasks and get future objects
+                    futures = [
+                        executor.submit(load_result, folder, try_load_docker_stats=True)
+                        for folder in result_folders
+                    ]
+                    # process results from tasks in order of task completion
+                    for future in as_completed(futures):
+                        result = future.result()
+                        run_results.append(result)
+            else:
+                for experiment_result in result_folders:
+                    run_results.append(load_result(experiment_result, True))
 
-                run_results = pd.DataFrame(run_results)
-                run_results["number"] = (
-                    run_results["dataset"].str.split("-").str[2].astype(int)
-                )
-                sorted_results = run_results.sort_values(by=["number"])
+            run_results = pd.DataFrame(run_results)
+            run_results["number"] = (
+                run_results["dataset"].str.split("-").str[2].astype(int)
+            )
+            sorted_results = run_results.sort_values(by=["number"])
 
-                summed_results["time"] = np.append(
-                    summed_results["time"], sorted_results["method_time"]
-                )
-                summed_results["ram"] = np.append(
-                    summed_results["ram"], sorted_results["memory_max"]
-                )
+            summed_results["time"] = np.append(
+                summed_results["time"], sorted_results["method_time"]
+            )
+            summed_results["ram"] = np.append(
+                summed_results["ram"], sorted_results["memory_max"]
+            )
 
         best_cpu, rest = big_o.infer_big_o_class(
             sorted_results["number"],
