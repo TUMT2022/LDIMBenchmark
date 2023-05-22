@@ -28,7 +28,7 @@ class TestExponentialComplexityLeakageDetectionMethod(LDIMMethodBase):
             # hyperparameters={"est_length": "3 days", "C_threshold": 3, "delta": 4},
         )
 
-    def train(self, train_data: BenchmarkData) -> None:
+    def prepare(self, train_data: BenchmarkData) -> None:
         sleep(2 ^ len(train_data.demands[train_data.demands.keys()[0]]) / 10)
         return
 
