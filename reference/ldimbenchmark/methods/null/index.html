@@ -1445,7 +1445,9 @@
 <span class="normal"><a href="#__codelineno-0-35">35</a></span>
 <span class="normal"><a href="#__codelineno-0-36">36</a></span>
 <span class="normal"><a href="#__codelineno-0-37">37</a></span>
-<span class="normal"><a href="#__codelineno-0-38">38</a></span></pre></div></td><td class="code"><div><pre><span></span><code><a id="__codelineno-0-6" name="__codelineno-0-6"></a><span class="k">class</span> <span class="nc">NullLeakageDetectionMethod</span><span class="p">(</span><span class="n">LDIMMethodBase</span><span class="p">):</span>
+<span class="normal"><a href="#__codelineno-0-38">38</a></span>
+<span class="normal"><a href="#__codelineno-0-39">39</a></span>
+<span class="normal"><a href="#__codelineno-0-40">40</a></span></pre></div></td><td class="code"><div><pre><span></span><code><a id="__codelineno-0-6" name="__codelineno-0-6"></a><span class="k">class</span> <span class="nc">NullLeakageDetectionMethod</span><span class="p">(</span><span class="n">LDIMMethodBase</span><span class="p">):</span>
 <a id="__codelineno-0-7" name="__codelineno-0-7"></a><span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <a id="__codelineno-0-8" name="__codelineno-0-8"></a><span class="sd">    Null Algorithm</span>
 <a id="__codelineno-0-9" name="__codelineno-0-9"></a><span class="sd">    &quot;&quot;&quot;</span>
@@ -1466,18 +1468,20 @@
 <a id="__codelineno-0-24" name="__codelineno-0-24"></a>                <span class="n">hyperparameters</span><span class="o">=</span><span class="p">[],</span>
 <a id="__codelineno-0-25" name="__codelineno-0-25"></a>            <span class="p">)</span>
 <a id="__codelineno-0-26" name="__codelineno-0-26"></a>            <span class="c1"># hyperparameters={&quot;est_length&quot;: &quot;3 days&quot;, &quot;C_threshold&quot;: 3, &quot;delta&quot;: 4},</span>
-<a id="__codelineno-0-27" name="__codelineno-0-27"></a>        <span class="p">)</span>
+<a id="__codelineno-0-27" name="__codelineno-0-27"></a>        <span class="p">)</span><span class="c1">#</span>
 <a id="__codelineno-0-28" name="__codelineno-0-28"></a>
-<a id="__codelineno-0-29" name="__codelineno-0-29"></a>    <span class="k">def</span> <span class="nf">train</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">train_data</span><span class="p">:</span> <span class="n">BenchmarkData</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-<a id="__codelineno-0-30" name="__codelineno-0-30"></a>        <span class="k">return</span>
-<a id="__codelineno-0-31" name="__codelineno-0-31"></a>
-<a id="__codelineno-0-32" name="__codelineno-0-32"></a>    <span class="k">def</span> <span class="nf">detect_offline</span><span class="p">(</span>
-<a id="__codelineno-0-33" name="__codelineno-0-33"></a>        <span class="bp">self</span><span class="p">,</span> <span class="n">evaluation_data</span><span class="p">:</span> <span class="n">BenchmarkData</span>
-<a id="__codelineno-0-34" name="__codelineno-0-34"></a>    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="n">BenchmarkLeakageResult</span><span class="p">]:</span>
-<a id="__codelineno-0-35" name="__codelineno-0-35"></a>        <span class="k">return</span> <span class="p">[]</span>
-<a id="__codelineno-0-36" name="__codelineno-0-36"></a>
-<a id="__codelineno-0-37" name="__codelineno-0-37"></a>    <span class="k">def</span> <span class="nf">detect_online</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">evaluation_data</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Union</span><span class="p">[</span><span class="n">BenchmarkLeakageResult</span><span class="p">,</span> <span class="kc">None</span><span class="p">]:</span>
-<a id="__codelineno-0-38" name="__codelineno-0-38"></a>        <span class="k">return</span> <span class="kc">None</span>
+<a id="__codelineno-0-29" name="__codelineno-0-29"></a>
+<a id="__codelineno-0-30" name="__codelineno-0-30"></a>
+<a id="__codelineno-0-31" name="__codelineno-0-31"></a>    <span class="k">def</span> <span class="nf">prepare</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">train_data</span><span class="p">:</span> <span class="n">BenchmarkData</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<a id="__codelineno-0-32" name="__codelineno-0-32"></a>        <span class="k">return</span>
+<a id="__codelineno-0-33" name="__codelineno-0-33"></a>
+<a id="__codelineno-0-34" name="__codelineno-0-34"></a>    <span class="k">def</span> <span class="nf">detect_offline</span><span class="p">(</span>
+<a id="__codelineno-0-35" name="__codelineno-0-35"></a>        <span class="bp">self</span><span class="p">,</span> <span class="n">evaluation_data</span><span class="p">:</span> <span class="n">BenchmarkData</span>
+<a id="__codelineno-0-36" name="__codelineno-0-36"></a>    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="n">BenchmarkLeakageResult</span><span class="p">]:</span>
+<a id="__codelineno-0-37" name="__codelineno-0-37"></a>        <span class="k">return</span> <span class="p">[]</span>
+<a id="__codelineno-0-38" name="__codelineno-0-38"></a>
+<a id="__codelineno-0-39" name="__codelineno-0-39"></a>    <span class="k">def</span> <span class="nf">detect_online</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">evaluation_data</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Union</span><span class="p">[</span><span class="n">BenchmarkLeakageResult</span><span class="p">,</span> <span class="kc">None</span><span class="p">]:</span>
+<a id="__codelineno-0-40" name="__codelineno-0-40"></a>        <span class="k">return</span> <span class="kc">None</span>
 </code></pre></div></td></tr></table></div>
         </details>
 
