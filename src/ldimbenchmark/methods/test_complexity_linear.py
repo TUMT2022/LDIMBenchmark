@@ -29,13 +29,13 @@ class TestLinearComplexityLeakageDetectionMethod(LDIMMethodBase):
         )
 
     def prepare(self, train_data: BenchmarkData) -> None:
-        sleep(len(train_data.demands[train_data.demands.keys()[0]]))
+        sleep(len(train_data.demands[list(train_data.demands.keys())[0]]))
         return
 
     def detect_offline(
         self, evaluation_data: BenchmarkData
     ) -> List[BenchmarkLeakageResult]:
-        sleep(len(evaluation_data.demands[evaluation_data.demands.keys()[0]]))
+        sleep(len(evaluation_data.demands[list(evaluation_data.demands.keys())[0]]))
         return []
 
     def detect_online(self, evaluation_data) -> Union[BenchmarkLeakageResult, None]:
