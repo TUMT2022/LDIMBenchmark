@@ -113,7 +113,7 @@ def loadDatasetsDirectly(
         data_dir_in_dataset_dir = os.path.join(dataset_path, data_dir)
         if not os.path.exists(data_dir_in_dataset_dir):
             raise FileNotFoundError(
-                f"Could not find the {data_dir} directory in the dataset directory"
+                f"Could not find the {data_dir} directory in the dataset directory ({dataset_path})"
             )
         datasets[data_dir] = {}
         for sensor_readings_file in glob(
