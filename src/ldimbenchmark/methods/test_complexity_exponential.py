@@ -5,7 +5,7 @@ from ldimbenchmark.classes import MethodMetadata, MethodMetadataDataNeeded
 from typing import List, Union
 
 
-class TestComplexityLogNLeakagedDetectionMethod(LDIMMethodBase):
+class TestExponentialComplexityLeakageDetectionMethod(LDIMMethodBase):
     """
     Test Complexity: Exponential
     """

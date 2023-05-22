@@ -3,7 +3,7 @@ from ldimbenchmark.classes import MethodMetadata, MethodMetadataDataNeeded
 from typing import List, Union
 
 
-class TestComplexityNLeakagedDetectionMethod(LDIMMethodBase):
+class TestConstantComplexityLeakageDetectionMethod(LDIMMethodBase):
     """
     Test Complexity: Constant
     """

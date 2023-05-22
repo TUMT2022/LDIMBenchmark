@@ -3,7 +3,7 @@ from ldimbenchmark.classes import MethodMetadata, MethodMetadataDataNeeded
 from typing import List, Union
 
 
-class NullLeakagedDetectionMethod(LDIMMethodBase):
+class NullLeakageDetectionMethod(LDIMMethodBase):
     """
     Null Algorithm
     """
