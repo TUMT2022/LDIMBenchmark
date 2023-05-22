@@ -29,14 +29,17 @@ class TestPolynomialComplexityLeakageDetectionMethod(LDIMMethodBase):
         )
 
     def prepare(self, train_data: BenchmarkData) -> None:
-        sleep(len(train_data.demands[list(train_data.demands.keys())[0]]) ** 2)
+        sleep(
+            (len(train_data.demands[list(train_data.demands.keys())[0]]) ** 2) / 10000
+        )
         return
 
     def detect_offline(
         self, evaluation_data: BenchmarkData
     ) -> List[BenchmarkLeakageResult]:
         sleep(
-            len(evaluation_data.demands[list(evaluation_data.demands.keys())[0]]) ** 2
+            (len(evaluation_data.demands[list(evaluation_data.demands.keys())[0]]) ** 2)
+            / 10000
         )
         return []
 
