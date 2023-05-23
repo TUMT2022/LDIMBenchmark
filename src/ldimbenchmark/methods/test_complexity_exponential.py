@@ -29,23 +29,23 @@ class TestExponentialComplexityLeakageDetectionMethod(LDIMMethodBase):
         )
 
     def prepare(self, train_data: BenchmarkData) -> None:
-        sleep(
-            2 ** (len(train_data.demands[list(train_data.demands.keys())[0]]) / 280)
-            / 100
+        number = 2 ** (
+            len(train_data.demands[list(train_data.demands.keys())[0]]) / 280
         )
+        # 16 Byte * 65536 = 1 MB
+        memory = [None] * number * 65536 * 2
+        sleep(number / 100)
         return
 
     def detect_offline(
         self, evaluation_data: BenchmarkData
     ) -> List[BenchmarkLeakageResult]:
-        sleep(
-            2
-            ** (
-                len(evaluation_data.demands[list(evaluation_data.demands.keys())[0]])
-                / 280
-            )
-            / 100
+        number = 2 ** (
+            len(train_data.demands[list(train_data.demands.keys())[0]]) / 280
         )
+        # 16 Byte * 65536 = 1 MB
+        memory = [None] * number * 65536 * 2
+        sleep(number / 100)
         return []
 
     def detect_online(self, evaluation_data) -> Union[BenchmarkLeakageResult, None]:
