@@ -29,7 +29,7 @@ class TestLinearComplexityLeakageDetectionMethod(LDIMMethodBase):
         )
 
     def prepare(self, train_data: BenchmarkData) -> None:
-        number = len(train_data.demands[list(train_data.demands.keys())[0]]) / 280
+        number = int(len(train_data.demands[list(train_data.demands.keys())[0]]) / 280)
         # 16 Byte * 65536 = 1 MB
         memory = [None] * number * 65536 * 2
         sleep(number / 100)
@@ -38,7 +38,7 @@ class TestLinearComplexityLeakageDetectionMethod(LDIMMethodBase):
     def detect_offline(
         self, evaluation_data: BenchmarkData
     ) -> List[BenchmarkLeakageResult]:
-        number = len(evaluation_data.demands[list(evaluation_data.demands.keys())[0]]) / 280
+        number = int(len(evaluation_data.demands[list(evaluation_data.demands.keys())[0]]) / 280)
         # 16 Byte * 65536 = 1 MB
         memory = [None] * number * 65536 * 2
         sleep(number / 100)

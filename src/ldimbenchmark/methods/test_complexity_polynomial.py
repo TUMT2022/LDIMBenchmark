@@ -30,8 +30,8 @@ class TestPolynomialComplexityLeakageDetectionMethod(LDIMMethodBase):
 
     def prepare(self, train_data: BenchmarkData) -> None:
         number = (
-            len(train_data.demands[list(train_data.demands.keys())[0]]) / 280
-        ) ** 2
+            int(len(train_data.demands[list(train_data.demands.keys())[0]]) / 280) ** 2
+        )
         # 16 Byte * 65536 = 1 MB
         memory = [None] * number * 65536 * 2
         sleep(number / 100)
@@ -41,8 +41,12 @@ class TestPolynomialComplexityLeakageDetectionMethod(LDIMMethodBase):
         self, evaluation_data: BenchmarkData
     ) -> List[BenchmarkLeakageResult]:
         number = (
-            len(evaluation_data.demands[list(evaluation_data.demands.keys())[0]]) / 280
-        ) ** 2
+            int(
+                len(evaluation_data.demands[list(evaluation_data.demands.keys())[0]])
+                / 280
+            )
+            ** 2
+        )
         # 16 Byte * 65536 = 1 MB
         memory = [None] * number * 65536 * 2
         sleep(number / 100)
