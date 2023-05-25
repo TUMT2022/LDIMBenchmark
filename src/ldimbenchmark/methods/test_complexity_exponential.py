@@ -41,7 +41,11 @@ class TestExponentialComplexityLeakageDetectionMethod(LDIMMethodBase):
         self, evaluation_data: BenchmarkData
     ) -> List[BenchmarkLeakageResult]:
         number = int(
-            2 ** (len(train_data.demands[list(train_data.demands.keys())[0]]) / 280)
+            2
+            ** (
+                len(evaluation_data.demands[list(evaluation_data.demands.keys())[0]])
+                / 280
+            )
         )
         # 16 Byte * 65536 = 1 MB
         memory = [None] * number * 65536 * 2
