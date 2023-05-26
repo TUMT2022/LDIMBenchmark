@@ -1,6 +1,6 @@
 name: ldimbenchmark Release
 
-on: 
+on:
   workflow_dispatch:
   push:
     branches: [main]
@@ -61,14 +61,18 @@ jobs:
         env:
           PYPI_TOKEN: ${{ secrets.PYPI_TOKEN }}
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      
+
       - run: echo ${{ steps.semantic-release.outputs.version }}
       # Trigger pypi cache once so the docker build does not fail.
 
-      
-      - run: pip install ldimbenchmark==${{ steps.semantic-release.outputs.version }} || true
+      - name: Wait for package availability in pip
+        run: |
+          while true; do
+          sleep 5
+          pip install ldimbenchmark==${{ steps.semantic-release.outputs.version }} && break
+          done
         if: steps.semantic-release.outputs.version != null
-  
+
       - name: Log in to the Container registry
         if: steps.semantic-release.outputs.version != null
         uses: docker/login-action@f054a8b539a109f9f41c372932f1ae047eff08c9
@@ -111,4 +115,3 @@ jobs:
               },
             })
             console.log(result)
-  
