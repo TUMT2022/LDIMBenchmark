@@ -10,23 +10,19 @@ methods = [
     "ghcr.io/ldimbenchmark/mnf:0.2.2",
 ]
 
+
 benchmark = LDIMBenchmark(
-    {"lila": {"default_flow_sensor": "sum"}}, [], results_dir="./benchmark-results"
+    {"lila": {"default_flow_sensor": "sum"}},
+    [],
+    results_dir="./benchmark-results",
 )
 benchmark.add_local_methods(methods)
 
-results = benchmark.run_complexity_analysis(
-    methods=methods,
-    style="time",
+benchmark.run_complexity_analysis(
+    methods=methods, style="time", n_max=181, n_measures=10, n_repeats=1
 )
-
-
-results
-
-
-# benchmark.run_complexity_analysis(
-#     methods=methods,
-#     style="junctions",
-# )
+benchmark.run_complexity_analysis(
+    methods=methods, style="junctions", n_max=181, n_measures=10, n_repeats=1
+)
 
 # %%
