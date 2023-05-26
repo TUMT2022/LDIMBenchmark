@@ -143,23 +143,19 @@ html5lib = ["html5lib"]
 lxml = ["lxml"]
 
 [[package]]
-name = "big_O"
-version = "0.10.2"
-description = ""
+name = "big-o-latest"
+version = "0.10.3"
+description = "Empirical estimation of time complexity from execution time, more recent version"
 category = "main"
 optional = false
 python-versions = "*"
-files = []
-develop = false
+files = [
+    {file = "big_O_latest-0.10.3-py3-none-any.whl", hash = "sha256:05b46aed089e9b9750ef8ecd37cea8513ee923ad3ee20f284040d60c828f63a7"},
+    {file = "big_O_latest-0.10.3.tar.gz", hash = "sha256:0d917f444b91ed40cfbcb51500026c1ee5bd71c02861590adf8aab8c05232337"},
+]
 
 [package.dependencies]
 numpy = "*"
-
-[package.source]
-type = "git"
-url = "https://github.com/pberkes/big_O.git"
-reference = "054b755831a2d19136175ea1316810d402a900da"
-resolved_reference = "054b755831a2d19136175ea1316810d402a900da"
 
 [[package]]
 name = "black"
@@ -4038,4 +4034,4 @@ testing = ["flake8 (<5)", "func-timeout", "jaraco.functools", "jaraco.itertools"
 [metadata]
 lock-version = "2.0"
 python-versions = ">=3.8,<4"
-content-hash = "8a53450ea282846effd8d3d812867093c3bc82d1783b4e50663eab397e3688a6"
+content-hash = "abe82b7ffa056f32f8cd1a621c749dd437cfe2b418dca0d613b862e914631934"

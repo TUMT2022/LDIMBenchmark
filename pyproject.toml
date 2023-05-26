@@ -32,7 +32,7 @@ sympy = "^1.11.1"
 more-itertools = "^9.1.0"
 seaborn = "^0.12.2"
 # This is needed because of https://github.com/pberkes/big_O/issues/46
-big-o = {git = "https://github.com/pberkes/big_O.git", rev = "054b755831a2d19136175ea1316810d402a900da"}
+big-o-latest = "^0.10.3"
 
 [tool.poetry.group.dev.dependencies]
 tox = "^3.27.1"
