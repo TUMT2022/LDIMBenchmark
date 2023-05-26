@@ -26,23 +26,27 @@ def du(path):
 sizes = []
 ns = []
 
-base_path = os.path.join(".ldim_benchmark_cache", "datagen", "synthetic-days")
-for dir in sorted_alphanumeric(os.listdir(base_path)):
-    print(dir)
-    sizes.append(int(du(os.path.join(base_path, dir))))
-    ns.append(int(re.split("([0-9]+)", dir)[1]))
+folders = ["synthetic-days", "synthetic-junctions"]
 
-values = pd.DataFrame(sizes, index=ns)
+for folder in folders:
+    base_path = os.path.join(".ldim_benchmark_cache", "datagen", folder)
+    for dir in sorted_alphanumeric(os.listdir(base_path)):
+        print(dir)
+        sizes.append(int(du(os.path.join(base_path, dir))))
+        ns.append(int(re.split("([0-9]+)", dir)[1]))
+
+    values = pd.DataFrame(sizes, index=ns)
+
+    bigo_result = big_o.infer_big_o_class(
+        np.array(values.index), np.array(values[0]), verbose=True
+    )
+
+    print(bigo_result[0])
+
+    values.plot()
+    values.to_csv("sizes.csv", index_label="index")
 
 # %%
-
-bigo_result = big_o.infer_big_o_class(
-    np.array(values.index), np.array(values[0]), verbose=True
-)
-print(np.array(values.index))
-print(np.array(values[0]))
-
-print(bigo_result[0])
 
 values["const"] = 1
 values["log"] = np.log(values.index)
@@ -63,9 +67,3 @@ plot = (values[0] / values[0].max()).plot()
 # plot.set_title(f"Complexity Analysis")
 # fig = plot.get_figure()
 plot.legend()
-
-
-# %%
-
-values.plot()
-values.to_csv("sizes.csv", index_label="index")
