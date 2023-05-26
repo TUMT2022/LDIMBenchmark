@@ -1,5 +1,6 @@
 from ast import Dict
 import os
+import numpy as np
 
 import pandas as pd
 from ldimbenchmark.benchmark_evaluation import evaluate_leakages
@@ -48,19 +49,33 @@ def load_result(folder: str, try_load_docker_stats=False) -> Dict:
     )
 
     if try_load_docker_stats:
-        stats = pd.read_csv(os.path.join(folder, "stats.csv"))
+        stats_file = os.path.join(folder, "stats.csv")
+        if os.path.exists(stats_file):
+            stats = pd.read_csv(stats_file)
 
-        # Convert string columns to Dictionary columns
-        stats["pids_stats"] = stats["pids_stats"].apply(lambda x: eval(x))
-        stats["blkio_stats"] = stats["blkio_stats"].apply(lambda x: eval(x))
-        stats["cpu_stats"] = stats["cpu_stats"].apply(lambda x: eval(x))
-        stats["precpu_stats"] = stats["precpu_stats"].apply(lambda x: eval(x))
-        stats["memory_stats"] = stats["memory_stats"].apply(lambda x: eval(x))
-        # stats["networks"] = stats["networks"].apply(lambda x: eval(x))
+            # Convert string columns to Dictionary columns
+            stats["pids_stats"] = stats["pids_stats"].apply(lambda x: eval(x))
+            stats["blkio_stats"] = stats["blkio_stats"].apply(lambda x: eval(x))
+            stats["cpu_stats"] = stats["cpu_stats"].apply(lambda x: eval(x))
+            stats["precpu_stats"] = stats["precpu_stats"].apply(lambda x: eval(x))
+            stats["memory_stats"] = stats["memory_stats"].apply(lambda x: eval(x))
+            # stats["networks"] = stats["networks"].apply(lambda x: eval(x))
 
-        flat_stats = pd.json_normalize(stats.to_dict(orient="records"))
+            flat_stats = pd.json_normalize(stats.to_dict(orient="records"))
 
-        evaluation_results["memory_avg"] = flat_stats["memory_stats.usage"].mean()
-        evaluation_results["memory_max"] = flat_stats["memory_stats.usage"].max()
+            # According to https://github.com/docker/cli/blob/e57b5f78de635e6e2b688686d10b830c4747c4dc/cli/command/container/stats_helpers.go#L239
+            if ("memory_stats.stats.inactive_file" in flat_stats.columns) and (
+                flat_stats["memory_stats.stats.inactive_file"]
+                .gt(flat_stats["memory_stats.usage"])
+                .all()
+            ):
+                memory = (
+                    flat_stats["memory_stats.usage"]
+                    - flat_stats["memory_stats.stats.inactive_file"]
+                )
+            else:
+                memory = flat_stats["memory_stats.usage"]
+            evaluation_results["memory_avg"] = memory.mean()
+            evaluation_results["memory_max"] = memory.max()
 
     return evaluation_results

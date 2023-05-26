@@ -1,6 +1,7 @@
 from concurrent.futures import ProcessPoolExecutor, ThreadPoolExecutor, as_completed
 import importlib
 import os
+import shutil
 import time
 from datetime import datetime
 from glob import glob
@@ -8,6 +9,7 @@ import logging
 import docker
 
 import enlighten
+from matplotlib import pyplot as plt
 from ldimbenchmark.benchmark.results import load_result
 from ldimbenchmark.benchmark.runners import DockerMethodRunner
 from ldimbenchmark.constants import LDIM_BENCHMARK_CACHE_DIR
@@ -29,7 +31,8 @@ from ldimbenchmark.utilities import get_method_name_from_docker_image
 
 
 def loadDataset_local(dataset_path):
-    dataset = Dataset(dataset_path)  # .loadData().loadBenchmarkData()
+    dataset = Dataset(dataset_path)
+    # dataset.loadData().loadBenchmarkData()
     # dataset.is_valid()
     number = int(os.path.basename(os.path.normpath(dataset_path)).split("-")[-1])
     return (
@@ -69,8 +72,7 @@ def run_benchmark_complexity(
 
     dataset_dirs = glob(datasets_dir + "/*/")
     min_n = 4
-    max_n = len(dataset_dirs)
-    n_samples = np.linspace(min_n, max_n, n_measures).astype("int64")
+    n_samples = np.linspace(min_n, n_max - 1, n_measures).astype("int64")
 
     manager = enlighten.get_manager()
     bar_loading_data = manager.counter(
@@ -111,8 +113,9 @@ def run_benchmark_complexity(
         complexity_benchmark_result_folder = os.path.join(
             out_folder, "runs", method_name
         )
+        shutil.rmtree(complexity_benchmark_result_folder, ignore_errors=True)
         client = docker.from_env()
-
+        logging.info(" > Pulling Image")
         try:
             image = client.images.get(method)
         except docker.errors.ImageNotFound:
@@ -215,8 +218,28 @@ def run_benchmark_complexity(
     result_measures = pd.concat(result_measures, axis=1)
     result_measures.to_csv(os.path.join(out_folder, "measures.csv"))
     mpl.rcParams.update(mpl.rcParamsDefault)
+
+    # Scaled Figure
     plot = (result_measures / result_measures.max()).plot()
     plot.set_title(f"Complexity Analysis: {style}")
     fig = plot.get_figure()
     fig.savefig(os.path.join(out_folder, "measures.png"))
+    plt.close(fig)
+
+    # Raw Time Values
+    plot = result_measures[
+        [col for col in result_measures.columns if "time" in col]
+    ].plot()
+    plot.set_title(f"{style}: Time Values")
+    fig = plot.get_figure()
+    fig.savefig(os.path.join(out_folder, "time.png"))
+    plt.close(fig)
+
+    plot = result_measures[
+        [col for col in result_measures.columns if "ram" in col]
+    ].plot()
+    plot.set_title(f"{style}: RAM Values")
+    fig = plot.get_figure()
+    fig.savefig(os.path.join(out_folder, "ram.png"))
+    plt.close(fig)
     return results

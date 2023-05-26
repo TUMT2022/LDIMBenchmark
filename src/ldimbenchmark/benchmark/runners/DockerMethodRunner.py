@@ -29,7 +29,7 @@ def record_docker_statistics(
     while True:
         stats = container.stats(stream=False)
         allStats.append(stats)
-        time.sleep(1)
+        time.sleep(0.5)
         if event.is_set():
             if os.path.exists(resultsFolder):
                 pd.DataFrame(allStats).to_csv(os.path.join(resultsFolder, "stats.csv"))
