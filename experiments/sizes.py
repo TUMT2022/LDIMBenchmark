@@ -44,26 +44,6 @@ for folder in folders:
     print(bigo_result[0])
 
     values.plot()
-    values.to_csv("sizes.csv", index_label="index")
 
 # %%
-
-values["const"] = 1
-values["log"] = np.log(values.index)
-values["poly"] = values.index**4
-values["linear"] = values.index
-values["expo"] = values.index
-values["expo"] = values["expo"].astype(object)
-values["expo"] = 2 ** values["expo"]
-
-plot = (values[0] / values[0].max()).plot()
-
-(values["const"] / values["const"].max()).plot()
-(values["log"] / values["log"].max()).plot()
-(values["linear"] / values["linear"].max()).plot()
-(values["poly"] / values["poly"].max()).plot()
-(values["linear"] / values["linear"].max()).plot()
-(values["expo"] / values["expo"].max()).plot()
-# plot.set_title(f"Complexity Analysis")
-# fig = plot.get_figure()
-plot.legend()
+values

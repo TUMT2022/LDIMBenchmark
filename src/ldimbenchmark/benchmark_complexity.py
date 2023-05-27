@@ -171,23 +171,40 @@ def run_benchmark_complexity(
                 summed_results["ram"], sorted_results["memory_max"]
             )
 
+        value_matrix_time = summed_results["time"].reshape(
+            (len(n_samples), n_repeats), order="F"
+        )
+        summed = np.sum(value_matrix_time, axis=1)
+        scaled = summed / summed.max()
         best_cpu, rest = big_o.infer_big_o_class(
-            sorted_results["number"],
-            np.sum(summed_results["time"].reshape((len(n_samples), n_repeats)), axis=1),
+            sorted_results["number"], scaled, simplicity_bias=0.004
         )
+        classes = pd.DataFrame({"class": rest.keys(), "residual": rest.values()})
+        classes.to_csv(os.path.join(out_folder, f"complexities_time_{method_name}.csv"))
+
+        value_matrix_ram = summed_results["ram"].reshape(
+            (len(n_samples), n_repeats), order="F"
+        )
+        summed = np.sum(value_matrix_ram, axis=1)
+        scaled = summed / summed.max()
         best_ram, rest = big_o.infer_big_o_class(
-            sorted_results["number"],
-            np.sum(summed_results["ram"].reshape((len(n_samples), n_repeats)), axis=1),
+            sorted_results["number"], scaled, simplicity_bias=0.00004
         )
+        classes = pd.DataFrame({"class": rest.keys(), "residual": rest.values()})
+        classes.to_csv(os.path.join(out_folder, f"complexities_ram_{method_name}.csv"))
 
         results["time"][method] = best_cpu
         results["ram"][method] = best_ram
 
+        dataseries = {
+            f"time_overall_{method_name}": np.average(value_matrix_time, axis=1),
+            f"ram_overall_{method_name}": np.average(value_matrix_ram, axis=1),
+        }
+        for n in range(n_repeats):
+            dataseries[f"time_run_{n}_{method_name}"] = value_matrix_time.T[n].tolist()
+            dataseries[f"ram_run_{n}_{method_name}"] = value_matrix_ram.T[n].tolist()
         measures = pd.DataFrame(
-            {
-                f"time_{method_name}": sorted_results["method_time"].to_list(),
-                f"ram_{method_name}": sorted_results["memory_max"].to_list(),
-            },
+            dataseries,
             index=sorted_results["number"].to_list(),
         )
         result_measures.append(measures)
@@ -220,24 +237,66 @@ def run_benchmark_complexity(
     mpl.rcParams.update(mpl.rcParamsDefault)
 
     # Scaled Figure
-    plot = (result_measures / result_measures.max()).plot()
-    plot.set_title(f"Complexity Analysis: {style}")
+    overall_measures = result_measures[
+        [col for col in result_measures.columns if "overall" in col]
+    ]
+    plot = (overall_measures / overall_measures.max()).plot()
+    plot.set_title(f"Complexity Analysis (scaled): {style}")
+
+    ### Add complexities in background
+
+    x = np.arange(0, n_max, 1)
+
+    values = pd.DataFrame(
+        {
+            "const": 1,
+            "log": np.log(x),
+            "linear": x,
+            "poly": x**4,
+        },
+        index=x,
+    )
+
+    values["expo"] = x
+    values["expo"] = values["expo"].astype(object)
+    values["expo"] = 2 ** values["expo"]
+
+    plot = (values["const"] / values["const"].max()).plot(alpha=0.2, color="black")
+    (values["log"] / values["log"].max()).plot(alpha=0.2, color="black")
+    (values["linear"] / values["linear"].max()).plot(alpha=0.2, color="black")
+    (values["poly"] / values["poly"].max()).plot(alpha=0.2, color="black")
+    (values["expo"] / values["expo"].max()).plot(alpha=0.2, color="black")
+
     fig = plot.get_figure()
     fig.savefig(os.path.join(out_folder, "measures.png"))
     plt.close(fig)
 
     # Raw Time Values
     plot = result_measures[
-        [col for col in result_measures.columns if "time" in col]
-    ].plot()
+        [
+            col
+            for col in result_measures.columns
+            if ("time" in col and not "overall" in col)
+        ]
+    ].plot(alpha=0.2, color="black")
+    overall_measures[[col for col in overall_measures.columns if "time" in col]].plot(
+        ax=plot
+    )
     plot.set_title(f"{style}: Time Values")
     fig = plot.get_figure()
     fig.savefig(os.path.join(out_folder, "time.png"))
     plt.close(fig)
 
     plot = result_measures[
-        [col for col in result_measures.columns if "ram" in col]
-    ].plot()
+        [
+            col
+            for col in result_measures.columns
+            if ("ram" in col and not "overall" in col)
+        ]
+    ].plot(alpha=0.2, color="black")
+    overall_measures[[col for col in overall_measures.columns if "ram" in col]].plot(
+        ax=plot
+    )
     plot.set_title(f"{style}: RAM Values")
     fig = plot.get_figure()
     fig.savefig(os.path.join(out_folder, "ram.png"))
