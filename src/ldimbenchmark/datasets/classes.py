@@ -239,7 +239,9 @@ class Dataset:
             with open(dma_path, "r") as f:
                 self.dmas = json.load(f)
         else:
-            logging.warning("No dmas.json file found. Skipping loading of DMAs.")
+            logging.warning(
+                f"No dmas.json file found. Skipping loading of DMAs. ({self.name})"
+            )
             self.dmas = None
 
     def _update_id(self, force=False):
@@ -361,9 +363,13 @@ class Dataset:
         logging.debug(f"Loading dataset {self.id}")
         if not hasattr(self, "full_dataset_part"):
             if os.path.isfile(self.__pickle_path):
-                with open(self.__pickle_path, "rb") as f:
-                    self.full_dataset_part = pickle.load(f)
-            else:
+                try:
+                    with open(self.__pickle_path, "rb") as f:
+                        self.full_dataset_part = pickle.load(f)
+                except Exception as e:
+                    logging.error(f"Could not load pickle {self.id}! Regenerating...")
+
+            if not hasattr(self, "full_dataset_part"):
                 self.full_dataset_part = loadDatasetsDirectly(self.path, self.info)
                 with open(self.__pickle_path, "wb") as f:
                     pickle.dump(self.full_dataset_part, f)
