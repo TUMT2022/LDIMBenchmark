@@ -162,6 +162,16 @@ def run_benchmark_complexity(
             run_results["number"] = (
                 run_results["dataset"].str.split("-").str[2].astype(int)
             )
+            for i, n in enumerate(n_samples):
+                if not (run_results["number"] == n).any():
+                    # If there is no result for this number of samples, we add a an empty result
+                    run_results = run_results.append(
+                        {
+                            "number": n,
+                        },
+                        ignore_index=True,
+                    )
+
             sorted_results = run_results.sort_values(by=["number"])
 
             summed_results["time"] = np.append(
@@ -176,6 +186,7 @@ def run_benchmark_complexity(
         )
         summed = np.sum(value_matrix_time, axis=1)
         scaled = summed / summed.max()
+        scaled = np.nan_to_num(scaled, nan=1)
         best_cpu, rest = big_o.infer_big_o_class(
             sorted_results["number"], scaled, simplicity_bias=0.004
         )
@@ -187,6 +198,7 @@ def run_benchmark_complexity(
         )
         summed = np.sum(value_matrix_ram, axis=1)
         scaled = summed / summed.max()
+        scaled = np.nan_to_num(scaled, nan=1)
         best_ram, rest = big_o.infer_big_o_class(
             sorted_results["number"], scaled, simplicity_bias=0.00004
         )
