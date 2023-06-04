@@ -124,6 +124,7 @@ def run_benchmark_complexity(
 
         summed_results = {"time": [], "ram": []}
         for r in range(n_repeats):
+            failing = False
             for i, n in enumerate(n_samples):
                 complexity_benchmark_result_folder_run = os.path.join(
                     complexity_benchmark_result_folder, str(r)
@@ -136,7 +137,15 @@ def run_benchmark_complexity(
                     resultsFolder=complexity_benchmark_result_folder_run,
                     debug=additionalOutput,
                 )
-                runner.run(cpu_count=1, mem_limit="20g")
+                result = runner.run(cpu_count=1, mem_limit="20g")
+                if result is None:
+                    if failing:
+                        # if we failed twice in a row, we assume that the method is not working
+                        logging.error(
+                            f"Failed to run {method_name} on dataset {n} repeatedly. Skipping further attempts!"
+                        )
+                        break
+                    failing = True
 
             parallel = True
             result_folders = glob(
