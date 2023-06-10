@@ -89,3 +89,6 @@ Locations:
 - Benchmark Dataset (File Level Base): (Specified as path to `.ldim_benchmark_cache/xxx` or copied to used place)
 
 Wie cached man die Benchmark Daten über Threads hinweg? (Global Dictionary?)
+
+The inp file pattern duration must be the length of the dataset timespan or dividable by the simulation timespan.
+Otherwise the simulation might be off.
