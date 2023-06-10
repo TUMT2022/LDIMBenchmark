@@ -128,6 +128,7 @@ https://squidfunk.github.io/mkdocs-material/
 https://click.palletsprojects.com/en/8.1.x/
 
 ```
+poetry shell
 mkdocs serve
 ```
 
