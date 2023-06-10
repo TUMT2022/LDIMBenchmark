@@ -43,6 +43,8 @@ class LILA(LDIMMethodBase):
     """
     LILA - Leakage Identification and Localization Algorithm
 
+    Link: https://github.com/SWN-group-at-TU-Berlin/LILA/tree/main
+
     Version History:
       0.1.0: Initial version from the authors, with performance tweaks
       0.2.0: Refactored and added DMA specific analysis

@@ -26,6 +26,13 @@ from ldimbenchmark.utilities import simplifyBenchmarkData
 
 
 class DUALMethod(LDIMMethodBase):
+    """
+    DUALMethod -
+
+    Version History:
+      0.1.0: Initial version from the authors
+    """
+
     def __init__(self):
         super().__init__(
             name="dualmethod",

@@ -22,8 +22,11 @@ from ldimbenchmark.utilities import simplifyBenchmarkData
 
 class MNF(LDIMMethodBase):
     """
-    Minimum Night Flow Method from
-    https://github.com/KIOS-Research/LeakDB/tree/master/CCWI-WDSA2018/Detection%20Algorithms/MNF
+    MNF - Minimum Night Flow
+
+    Method from KIOS Research Team
+
+    Link: https://github.com/KIOS-Research/LeakDB/tree/master/CCWI-WDSA2018/Detection%20Algorithms/MNF
     """
 
     def __init__(self):
