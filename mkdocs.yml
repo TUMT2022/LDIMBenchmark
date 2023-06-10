@@ -20,6 +20,7 @@ nav:
   - File Level API: design/file-level-interface.md
   - Programming Interface: design/programming-interface.md
 - Guides:
+  - Benchmark: user-guides/benchmark.md
   - Own Dataset: user-guides/run-on-your-dataset.ipynb
   - user-guides/run-your-method.ipynb
   - user-guides/run-complexity-analysis.ipynb
