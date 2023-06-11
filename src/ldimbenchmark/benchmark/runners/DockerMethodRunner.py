@@ -54,6 +54,8 @@ class DockerMethodRunner(MethodRunner):
         stage: Literal["train", "detect"] = "detect",
         method: Literal["offline", "online"] = "offline",
         debug=False,
+        cpu_count=1,
+        mem_limit=None
         capture_docker_stats=False,
         resultsFolder=None,
         docker_base_url="unix://var/run/docker.sock",
@@ -74,13 +76,18 @@ class DockerMethodRunner(MethodRunner):
 
         self.image = image
         self.docker_base_url = docker_base_url
+        self.capture_docker_stats = capture_docker_stats
+        self.cpu_count = cpu_count
+        self.mem_limit = "4g"
+        if mem_limit is not None:
+            self.mem_limit = mem_limit
         # Overwrite resultsFolder
         if resultsFolder == None:
             self.resultsFolder = None
         else:
             self.resultsFolder = os.path.join(resultsFolder, self.id)
 
-    def run(self, cpu_count=1, mem_limit="4g"):
+    def run(self):
         super().run()
         logging.info(f"Running {self.id} with params {self.hyperparameters}")
         folder_parameters = tempfile.TemporaryDirectory()
@@ -131,8 +138,8 @@ class DockerMethodRunner(MethodRunner):
                 environment={
                     "LOG_LEVEL": "DEBUG" if self.debug else "WARNING",
                 },
-                mem_limit=mem_limit,
-                cpu_count=cpu_count,
+                mem_limit=self.mem_limit,
+                cpu_count=self.cpu_count,
                 detach=True,
             )
 

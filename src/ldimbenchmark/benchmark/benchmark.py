@@ -528,6 +528,7 @@ class LDIMBenchmark:
         use_cached=True,
         parallel=False,
         parallel_max_workers=0,
+        memory_limit=None,
     ):
         """
         Runs the benchmark.
@@ -578,6 +579,8 @@ class LDIMBenchmark:
                             hyperparameters,
                             resultsFolder=self.runner_results_dir,
                             debug=self.debug,
+                            cpu_count=1,
+                            mem_limit=memory_limit,
                         )
                     )
 
