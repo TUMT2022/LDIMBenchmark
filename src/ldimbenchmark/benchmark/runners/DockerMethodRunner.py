@@ -55,7 +55,7 @@ class DockerMethodRunner(MethodRunner):
         method: Literal["offline", "online"] = "offline",
         debug=False,
         cpu_count=1,
-        mem_limit=None
+        mem_limit=None,
         capture_docker_stats=False,
         resultsFolder=None,
         docker_base_url="unix://var/run/docker.sock",
