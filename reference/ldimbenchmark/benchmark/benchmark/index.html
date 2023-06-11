@@ -2189,7 +2189,16 @@
 <span class="normal"><a href="#__codelineno-0-970">970</a></span>
 <span class="normal"><a href="#__codelineno-0-971">971</a></span>
 <span class="normal"><a href="#__codelineno-0-972">972</a></span>
-<span class="normal"><a href="#__codelineno-0-973">973</a></span></pre></div></td><td class="code"><div><pre><span></span><code><a id="__codelineno-0-303" name="__codelineno-0-303"></a><span class="k">class</span> <span class="nc">LDIMBenchmark</span><span class="p">:</span>
+<span class="normal"><a href="#__codelineno-0-973">973</a></span>
+<span class="normal"><a href="#__codelineno-0-974">974</a></span>
+<span class="normal"><a href="#__codelineno-0-975">975</a></span>
+<span class="normal"><a href="#__codelineno-0-976">976</a></span>
+<span class="normal"><a href="#__codelineno-0-977">977</a></span>
+<span class="normal"><a href="#__codelineno-0-978">978</a></span>
+<span class="normal"><a href="#__codelineno-0-979">979</a></span>
+<span class="normal"><a href="#__codelineno-0-980">980</a></span>
+<span class="normal"><a href="#__codelineno-0-981">981</a></span>
+<span class="normal"><a href="#__codelineno-0-982">982</a></span></pre></div></td><td class="code"><div><pre><span></span><code><a id="__codelineno-0-303" name="__codelineno-0-303"></a><span class="k">class</span> <span class="nc">LDIMBenchmark</span><span class="p">:</span>
 <a id="__codelineno-0-304" name="__codelineno-0-304"></a>    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
 <a id="__codelineno-0-305" name="__codelineno-0-305"></a>        <span class="bp">self</span><span class="p">,</span>
 <a id="__codelineno-0-306" name="__codelineno-0-306"></a>        <span class="n">hyperparameters</span><span class="p">,</span>
@@ -2718,148 +2727,157 @@
 <a id="__codelineno-0-829" name="__codelineno-0-829"></a>        <span class="n">results</span> <span class="o">=</span> <span class="n">results</span><span class="o">.</span><span class="n">sort_values</span><span class="p">(</span><span class="n">by</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;F1&quot;</span><span class="p">])</span>
 <a id="__codelineno-0-830" name="__codelineno-0-830"></a>        <span class="c1"># Display in console</span>
 <a id="__codelineno-0-831" name="__codelineno-0-831"></a>        <span class="n">results</span> <span class="o">=</span> <span class="n">results</span><span class="o">.</span><span class="n">drop</span><span class="p">(</span>
-<a id="__codelineno-0-832" name="__codelineno-0-832"></a>            <span class="n">columns</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;_folder&quot;</span><span class="p">,</span> <span class="s2">&quot;matched_leaks_list&quot;</span><span class="p">],</span> <span class="n">errors</span><span class="o">=</span><span class="s2">&quot;ignore&quot;</span>
-<a id="__codelineno-0-833" name="__codelineno-0-833"></a>        <span class="p">)</span>
-<a id="__codelineno-0-834" name="__codelineno-0-834"></a>        <span class="c1"># TODO: Automatically add selected metrics</span>
-<a id="__codelineno-0-835" name="__codelineno-0-835"></a>        <span class="n">columns</span> <span class="o">=</span> <span class="p">[</span>
-<a id="__codelineno-0-836" name="__codelineno-0-836"></a>            <span class="s2">&quot;TP&quot;</span><span class="p">,</span>
-<a id="__codelineno-0-837" name="__codelineno-0-837"></a>            <span class="s2">&quot;FP&quot;</span><span class="p">,</span>
-<a id="__codelineno-0-838" name="__codelineno-0-838"></a>            <span class="s2">&quot;TN&quot;</span><span class="p">,</span>
-<a id="__codelineno-0-839" name="__codelineno-0-839"></a>            <span class="s2">&quot;FN&quot;</span><span class="p">,</span>
-<a id="__codelineno-0-840" name="__codelineno-0-840"></a>            <span class="s2">&quot;TTD&quot;</span><span class="p">,</span>
-<a id="__codelineno-0-841" name="__codelineno-0-841"></a>            <span class="s2">&quot;wrongpipe&quot;</span><span class="p">,</span>
-<a id="__codelineno-0-842" name="__codelineno-0-842"></a>            <span class="s2">&quot;dataset&quot;</span><span class="p">,</span>
-<a id="__codelineno-0-843" name="__codelineno-0-843"></a>            <span class="s2">&quot;dataset_part&quot;</span><span class="p">,</span>
-<a id="__codelineno-0-844" name="__codelineno-0-844"></a>            <span class="s2">&quot;dataset_derivations&quot;</span><span class="p">,</span>
-<a id="__codelineno-0-845" name="__codelineno-0-845"></a>            <span class="s2">&quot;hyperparameters&quot;</span><span class="p">,</span>
-<a id="__codelineno-0-846" name="__codelineno-0-846"></a>            <span class="c1"># &quot;score&quot;,</span>
-<a id="__codelineno-0-847" name="__codelineno-0-847"></a>            <span class="s2">&quot;executed_at&quot;</span><span class="p">,</span>
-<a id="__codelineno-0-848" name="__codelineno-0-848"></a>            <span class="s2">&quot;precision&quot;</span><span class="p">,</span>
-<a id="__codelineno-0-849" name="__codelineno-0-849"></a>            <span class="s2">&quot;recall (TPR)&quot;</span><span class="p">,</span>
-<a id="__codelineno-0-850" name="__codelineno-0-850"></a>            <span class="s2">&quot;TNR&quot;</span><span class="p">,</span>
-<a id="__codelineno-0-851" name="__codelineno-0-851"></a>            <span class="s2">&quot;FPR&quot;</span><span class="p">,</span>
-<a id="__codelineno-0-852" name="__codelineno-0-852"></a>            <span class="s2">&quot;FNR&quot;</span><span class="p">,</span>
-<a id="__codelineno-0-853" name="__codelineno-0-853"></a>            <span class="s2">&quot;F1&quot;</span><span class="p">,</span>
-<a id="__codelineno-0-854" name="__codelineno-0-854"></a>        <span class="p">]</span>
-<a id="__codelineno-0-855" name="__codelineno-0-855"></a>        <span class="n">results</span><span class="o">.</span><span class="n">columns</span> <span class="o">=</span> <span class="n">columns</span>
-<a id="__codelineno-0-856" name="__codelineno-0-856"></a>        <span class="k">if</span> <span class="n">print_results</span><span class="p">:</span>
-<a id="__codelineno-0-857" name="__codelineno-0-857"></a>            <span class="nb">print</span><span class="p">(</span><span class="n">tabulate</span><span class="p">(</span><span class="n">results</span><span class="p">,</span> <span class="n">headers</span><span class="o">=</span><span class="s2">&quot;keys&quot;</span><span class="p">))</span>
-<a id="__codelineno-0-858" name="__codelineno-0-858"></a>        <span class="k">return</span> <span class="n">results</span>
-<a id="__codelineno-0-859" name="__codelineno-0-859"></a>
-<a id="__codelineno-0-860" name="__codelineno-0-860"></a>    <span class="k">def</span> <span class="nf">evaluate_run</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">run_id</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">boundary_timespan_overwrite</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
-<a id="__codelineno-0-861" name="__codelineno-0-861"></a>        <span class="n">result_folder</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">runner_results_dir</span><span class="p">,</span> <span class="n">run_id</span><span class="p">)</span>
-<a id="__codelineno-0-862" name="__codelineno-0-862"></a>        <span class="n">result</span> <span class="o">=</span> <span class="n">load_result</span><span class="p">(</span><span class="n">result_folder</span><span class="p">)</span>
-<a id="__codelineno-0-863" name="__codelineno-0-863"></a>
-<a id="__codelineno-0-864" name="__codelineno-0-864"></a>        <span class="n">manager</span> <span class="o">=</span> <span class="n">enlighten</span><span class="o">.</span><span class="n">get_manager</span><span class="p">()</span>
-<a id="__codelineno-0-865" name="__codelineno-0-865"></a>        <span class="n">loaded_datasets</span> <span class="o">=</span> <span class="p">{}</span>
-<a id="__codelineno-0-866" name="__codelineno-0-866"></a>        <span class="k">for</span> <span class="n">dataset</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">datasets</span><span class="p">:</span>
-<a id="__codelineno-0-867" name="__codelineno-0-867"></a>            <span class="k">if</span> <span class="nb">type</span><span class="p">(</span><span class="n">dataset</span><span class="p">)</span> <span class="ow">is</span> <span class="nb">str</span><span class="p">:</span>
-<a id="__codelineno-0-868" name="__codelineno-0-868"></a>                <span class="n">loaded</span> <span class="o">=</span> <span class="n">Dataset</span><span class="p">(</span><span class="n">dataset</span><span class="p">)</span>
-<a id="__codelineno-0-869" name="__codelineno-0-869"></a>            <span class="k">else</span><span class="p">:</span>
-<a id="__codelineno-0-870" name="__codelineno-0-870"></a>                <span class="n">loaded</span> <span class="o">=</span> <span class="n">dataset</span>
-<a id="__codelineno-0-871" name="__codelineno-0-871"></a>
-<a id="__codelineno-0-872" name="__codelineno-0-872"></a>            <span class="n">loaded_datasets</span><span class="p">[</span><span class="n">dataset</span><span class="o">.</span><span class="n">id</span><span class="p">]</span> <span class="o">=</span> <span class="n">loaded</span><span class="o">.</span><span class="n">loadData</span><span class="p">()</span>
-<a id="__codelineno-0-873" name="__codelineno-0-873"></a>            <span class="k">if</span> <span class="ow">not</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">loaded_datasets</span><span class="p">[</span><span class="n">dataset</span><span class="o">.</span><span class="n">id</span><span class="p">],</span> <span class="s2">&quot;derivations&quot;</span><span class="p">):</span>
-<a id="__codelineno-0-874" name="__codelineno-0-874"></a>                <span class="n">loaded_datasets</span><span class="p">[</span><span class="n">dataset</span><span class="o">.</span><span class="n">name</span><span class="p">]</span> <span class="o">=</span> <span class="n">loaded_datasets</span><span class="p">[</span><span class="n">dataset</span><span class="o">.</span><span class="n">id</span><span class="p">]</span>
-<a id="__codelineno-0-875" name="__codelineno-0-875"></a>        <span class="n">graph_dir</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">evaluation_results_dir</span><span class="p">,</span> <span class="s2">&quot;per_run&quot;</span><span class="p">,</span> <span class="n">run_id</span><span class="p">)</span>
-<a id="__codelineno-0-876" name="__codelineno-0-876"></a>        <span class="n">os</span><span class="o">.</span><span class="n">makedirs</span><span class="p">(</span><span class="n">graph_dir</span><span class="p">,</span> <span class="n">exist_ok</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
-<a id="__codelineno-0-877" name="__codelineno-0-877"></a>
-<a id="__codelineno-0-878" name="__codelineno-0-878"></a>        <span class="c1"># Generate Leak Overview</span>
-<a id="__codelineno-0-879" name="__codelineno-0-879"></a>        <span class="n">fig</span><span class="p">,</span> <span class="n">ax</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">(</span><span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">10</span><span class="p">,</span> <span class="mi">10</span><span class="p">))</span>
-<a id="__codelineno-0-880" name="__codelineno-0-880"></a>        <span class="n">ax</span><span class="o">.</span><span class="n">set_axisbelow</span><span class="p">(</span><span class="kc">True</span><span class="p">)</span>
-<a id="__codelineno-0-881" name="__codelineno-0-881"></a>        <span class="n">ax</span><span class="o">.</span><span class="n">grid</span><span class="p">(</span><span class="n">visible</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="s2">&quot;x&quot;</span><span class="p">)</span>
-<a id="__codelineno-0-882" name="__codelineno-0-882"></a>        <span class="n">fig</span><span class="o">.</span><span class="n">gca</span><span class="p">()</span><span class="o">.</span><span class="n">xaxis</span><span class="o">.</span><span class="n">set_major_formatter</span><span class="p">(</span><span class="n">mdates</span><span class="o">.</span><span class="n">DateFormatter</span><span class="p">(</span><span class="s2">&quot;%Y-%m-</span><span class="si">%d</span><span class="s2">&quot;</span><span class="p">))</span>
-<a id="__codelineno-0-883" name="__codelineno-0-883"></a>        <span class="n">fig</span><span class="o">.</span><span class="n">gca</span><span class="p">()</span><span class="o">.</span><span class="n">xaxis</span><span class="o">.</span><span class="n">set_major_locator</span><span class="p">(</span><span class="n">mdates</span><span class="o">.</span><span class="n">DayLocator</span><span class="p">(</span><span class="n">interval</span><span class="o">=</span><span class="mi">14</span><span class="p">))</span>
-<a id="__codelineno-0-884" name="__codelineno-0-884"></a>
-<a id="__codelineno-0-885" name="__codelineno-0-885"></a>        <span class="k">for</span> <span class="n">index</span><span class="p">,</span> <span class="p">(</span><span class="n">expected_leak</span><span class="p">,</span> <span class="n">detected_leak</span><span class="p">)</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span>
-<a id="__codelineno-0-886" name="__codelineno-0-886"></a>            <span class="n">result</span><span class="p">[</span><span class="s2">&quot;matched_leaks_list&quot;</span><span class="p">]</span>
-<a id="__codelineno-0-887" name="__codelineno-0-887"></a>        <span class="p">):</span>
-<a id="__codelineno-0-888" name="__codelineno-0-888"></a>            <span class="n">num</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">result</span><span class="p">[</span><span class="s2">&quot;matched_leaks_list&quot;</span><span class="p">])</span> <span class="o">-</span> <span class="n">index</span>
-<a id="__codelineno-0-889" name="__codelineno-0-889"></a>            <span class="k">if</span> <span class="n">expected_leak</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-<a id="__codelineno-0-890" name="__codelineno-0-890"></a>                <span class="n">length</span> <span class="o">=</span> <span class="n">mdates</span><span class="o">.</span><span class="n">date2num</span><span class="p">(</span>
-<a id="__codelineno-0-891" name="__codelineno-0-891"></a>                    <span class="n">expected_leak</span><span class="p">[</span><span class="s2">&quot;leak_time_end&quot;</span><span class="p">]</span>
-<a id="__codelineno-0-892" name="__codelineno-0-892"></a>                <span class="p">)</span> <span class="o">-</span> <span class="n">mdates</span><span class="o">.</span><span class="n">date2num</span><span class="p">(</span><span class="n">expected_leak</span><span class="p">[</span><span class="s2">&quot;leak_time_start&quot;</span><span class="p">])</span>
-<a id="__codelineno-0-893" name="__codelineno-0-893"></a>                <span class="k">if</span> <span class="n">length</span> <span class="o">&lt;=</span> <span class="mi">0</span><span class="p">:</span>
-<a id="__codelineno-0-894" name="__codelineno-0-894"></a>                    <span class="n">length</span> <span class="o">=</span> <span class="mi">2</span>
-<a id="__codelineno-0-895" name="__codelineno-0-895"></a>                <span class="n">ax</span><span class="o">.</span><span class="n">barh</span><span class="p">(</span>
-<a id="__codelineno-0-896" name="__codelineno-0-896"></a>                    <span class="p">[</span><span class="n">num</span><span class="p">],</span>
-<a id="__codelineno-0-897" name="__codelineno-0-897"></a>                    <span class="c1"># [2],</span>
-<a id="__codelineno-0-898" name="__codelineno-0-898"></a>                    <span class="p">[</span><span class="n">length</span><span class="p">],</span>
-<a id="__codelineno-0-899" name="__codelineno-0-899"></a>                    <span class="n">left</span><span class="o">=</span><span class="p">[</span><span class="n">mdates</span><span class="o">.</span><span class="n">date2num</span><span class="p">(</span><span class="n">expected_leak</span><span class="p">[</span><span class="s2">&quot;leak_time_start&quot;</span><span class="p">])],</span>
-<a id="__codelineno-0-900" name="__codelineno-0-900"></a>                    <span class="c1"># height=[100000],</span>
-<a id="__codelineno-0-901" name="__codelineno-0-901"></a>                    <span class="n">label</span><span class="o">=</span><span class="s2">&quot;expected&quot;</span><span class="p">,</span>
-<a id="__codelineno-0-902" name="__codelineno-0-902"></a>                    <span class="n">color</span><span class="o">=</span><span class="s2">&quot;yellow&quot;</span><span class="p">,</span>
-<a id="__codelineno-0-903" name="__codelineno-0-903"></a>                <span class="p">)</span>
-<a id="__codelineno-0-904" name="__codelineno-0-904"></a>
-<a id="__codelineno-0-905" name="__codelineno-0-905"></a>            <span class="c1"># print(detected_leak)</span>
-<a id="__codelineno-0-906" name="__codelineno-0-906"></a>            <span class="k">if</span> <span class="n">detected_leak</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-<a id="__codelineno-0-907" name="__codelineno-0-907"></a>                <span class="n">length</span> <span class="o">=</span> <span class="n">mdates</span><span class="o">.</span><span class="n">date2num</span><span class="p">(</span>
-<a id="__codelineno-0-908" name="__codelineno-0-908"></a>                    <span class="n">detected_leak</span><span class="p">[</span><span class="s2">&quot;leak_time_end&quot;</span><span class="p">]</span>
-<a id="__codelineno-0-909" name="__codelineno-0-909"></a>                <span class="p">)</span> <span class="o">-</span> <span class="n">mdates</span><span class="o">.</span><span class="n">date2num</span><span class="p">(</span><span class="n">detected_leak</span><span class="p">[</span><span class="s2">&quot;leak_time_start&quot;</span><span class="p">])</span>
-<a id="__codelineno-0-910" name="__codelineno-0-910"></a>                <span class="k">if</span> <span class="n">length</span> <span class="o">&lt;=</span> <span class="mi">0</span><span class="p">:</span>
-<a id="__codelineno-0-911" name="__codelineno-0-911"></a>                    <span class="n">length</span> <span class="o">=</span> <span class="mi">1</span>
-<a id="__codelineno-0-912" name="__codelineno-0-912"></a>                <span class="n">ax</span><span class="o">.</span><span class="n">barh</span><span class="p">(</span>
-<a id="__codelineno-0-913" name="__codelineno-0-913"></a>                    <span class="p">[</span><span class="n">num</span><span class="p">],</span>
-<a id="__codelineno-0-914" name="__codelineno-0-914"></a>                    <span class="p">[</span><span class="n">length</span><span class="p">],</span>
-<a id="__codelineno-0-915" name="__codelineno-0-915"></a>                    <span class="n">left</span><span class="o">=</span><span class="p">[</span><span class="n">mdates</span><span class="o">.</span><span class="n">date2num</span><span class="p">(</span><span class="n">detected_leak</span><span class="p">[</span><span class="s2">&quot;leak_time_start&quot;</span><span class="p">])],</span>
-<a id="__codelineno-0-916" name="__codelineno-0-916"></a>                    <span class="c1"># height=[100000],</span>
-<a id="__codelineno-0-917" name="__codelineno-0-917"></a>                    <span class="n">label</span><span class="o">=</span><span class="s2">&quot;detected&quot;</span><span class="p">,</span>
-<a id="__codelineno-0-918" name="__codelineno-0-918"></a>                    <span class="n">color</span><span class="o">=</span><span class="s2">&quot;green&quot;</span><span class="p">,</span>
-<a id="__codelineno-0-919" name="__codelineno-0-919"></a>                <span class="p">)</span>
-<a id="__codelineno-0-920" name="__codelineno-0-920"></a>        <span class="n">ax</span><span class="o">.</span><span class="n">set_yticks</span><span class="p">(</span><span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">result</span><span class="p">[</span><span class="s2">&quot;matched_leaks_list&quot;</span><span class="p">])</span> <span class="o">+</span> <span class="mi">1</span><span class="p">))</span>
-<a id="__codelineno-0-921" name="__codelineno-0-921"></a>        <span class="c1"># ax.xaxis_date()</span>
-<a id="__codelineno-0-922" name="__codelineno-0-922"></a>        <span class="n">ax</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="s2">&quot;leak time spans overview&quot;</span><span class="p">)</span>
-<a id="__codelineno-0-923" name="__codelineno-0-923"></a>        <span class="n">ax</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="s2">&quot;Leaks&quot;</span><span class="p">)</span>
-<a id="__codelineno-0-924" name="__codelineno-0-924"></a>        <span class="n">ax</span><span class="o">.</span><span class="n">set_xlabel</span><span class="p">(</span><span class="s2">&quot;Time&quot;</span><span class="p">)</span>
-<a id="__codelineno-0-925" name="__codelineno-0-925"></a>        <span class="n">yellow_patch</span> <span class="o">=</span> <span class="n">patches</span><span class="o">.</span><span class="n">Patch</span><span class="p">(</span><span class="n">color</span><span class="o">=</span><span class="s2">&quot;yellow&quot;</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s2">&quot;Expected Leaks&quot;</span><span class="p">)</span>
-<a id="__codelineno-0-926" name="__codelineno-0-926"></a>        <span class="n">green_patch</span> <span class="o">=</span> <span class="n">patches</span><span class="o">.</span><span class="n">Patch</span><span class="p">(</span><span class="n">color</span><span class="o">=</span><span class="s2">&quot;green&quot;</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s2">&quot;Detected Leaks&quot;</span><span class="p">)</span>
-<a id="__codelineno-0-927" name="__codelineno-0-927"></a>        <span class="n">plt</span><span class="o">.</span><span class="n">legend</span><span class="p">(</span><span class="n">handles</span><span class="o">=</span><span class="p">[</span><span class="n">yellow_patch</span><span class="p">,</span> <span class="n">green_patch</span><span class="p">])</span>
-<a id="__codelineno-0-928" name="__codelineno-0-928"></a>        <span class="n">plt</span><span class="o">.</span><span class="n">gcf</span><span class="p">()</span><span class="o">.</span><span class="n">autofmt_xdate</span><span class="p">()</span>
-<a id="__codelineno-0-929" name="__codelineno-0-929"></a>        <span class="n">fig</span><span class="o">.</span><span class="n">savefig</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">graph_dir</span><span class="p">,</span> <span class="s2">&quot;leaks_overview.png&quot;</span><span class="p">))</span>
-<a id="__codelineno-0-930" name="__codelineno-0-930"></a>        <span class="n">plt</span><span class="o">.</span><span class="n">close</span><span class="p">(</span><span class="n">fig</span><span class="p">)</span>
-<a id="__codelineno-0-931" name="__codelineno-0-931"></a>
-<a id="__codelineno-0-932" name="__codelineno-0-932"></a>        <span class="n">logging</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;Generating plots per leak ...&quot;</span><span class="p">)</span>
-<a id="__codelineno-0-933" name="__codelineno-0-933"></a>        <span class="n">pbar2</span> <span class="o">=</span> <span class="n">manager</span><span class="o">.</span><span class="n">counter</span><span class="p">(</span>
-<a id="__codelineno-0-934" name="__codelineno-0-934"></a>            <span class="n">total</span><span class="o">=</span><span class="nb">len</span><span class="p">(</span><span class="n">result</span><span class="p">[</span><span class="s2">&quot;matched_leaks_list&quot;</span><span class="p">]),</span>
-<a id="__codelineno-0-935" name="__codelineno-0-935"></a>            <span class="n">desc</span><span class="o">=</span><span class="s2">&quot;Graphs:&quot;</span><span class="p">,</span>
-<a id="__codelineno-0-936" name="__codelineno-0-936"></a>            <span class="n">unit</span><span class="o">=</span><span class="s2">&quot;graphs&quot;</span><span class="p">,</span>
-<a id="__codelineno-0-937" name="__codelineno-0-937"></a>        <span class="p">)</span>
-<a id="__codelineno-0-938" name="__codelineno-0-938"></a>        <span class="n">parallel</span> <span class="o">=</span> <span class="kc">False</span>
-<a id="__codelineno-0-939" name="__codelineno-0-939"></a>        <span class="k">if</span> <span class="n">parallel</span><span class="p">:</span>
-<a id="__codelineno-0-940" name="__codelineno-0-940"></a>            <span class="k">with</span> <span class="n">ProcessPoolExecutor</span><span class="p">(</span><span class="n">max_workers</span><span class="o">=</span><span class="n">CPU_COUNT</span><span class="p">)</span> <span class="k">as</span> <span class="n">executor</span><span class="p">:</span>
-<a id="__codelineno-0-941" name="__codelineno-0-941"></a>                <span class="c1"># submit all tasks and get future objects</span>
-<a id="__codelineno-0-942" name="__codelineno-0-942"></a>                <span class="n">futures</span> <span class="o">=</span> <span class="p">[]</span>
-<a id="__codelineno-0-943" name="__codelineno-0-943"></a>                <span class="k">for</span> <span class="n">leak_pair</span> <span class="ow">in</span> <span class="n">result</span><span class="p">[</span><span class="s2">&quot;matched_leaks_list&quot;</span><span class="p">]:</span>
-<a id="__codelineno-0-944" name="__codelineno-0-944"></a>                    <span class="n">future</span> <span class="o">=</span> <span class="n">executor</span><span class="o">.</span><span class="n">submit</span><span class="p">(</span>
-<a id="__codelineno-0-945" name="__codelineno-0-945"></a>                        <span class="n">plot_leak</span><span class="p">,</span>
-<a id="__codelineno-0-946" name="__codelineno-0-946"></a>                        <span class="n">loaded_datasets</span><span class="p">[</span><span class="n">result</span><span class="p">[</span><span class="s2">&quot;dataset_id&quot;</span><span class="p">]],</span>
-<a id="__codelineno-0-947" name="__codelineno-0-947"></a>                        <span class="n">leak_pair</span><span class="o">=</span><span class="n">leak_pair</span><span class="p">,</span>
-<a id="__codelineno-0-948" name="__codelineno-0-948"></a>                        <span class="n">additional_data_dir</span><span class="o">=</span><span class="n">result_folder</span><span class="p">,</span>
-<a id="__codelineno-0-949" name="__codelineno-0-949"></a>                        <span class="n">out_dir</span><span class="o">=</span><span class="n">graph_dir</span><span class="p">,</span>
-<a id="__codelineno-0-950" name="__codelineno-0-950"></a>                        <span class="n">boundary_timespan_overwrite</span><span class="o">=</span><span class="n">boundary_timespan_overwrite</span><span class="p">,</span>
-<a id="__codelineno-0-951" name="__codelineno-0-951"></a>                    <span class="p">)</span>
-<a id="__codelineno-0-952" name="__codelineno-0-952"></a>                    <span class="n">futures</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">future</span><span class="p">)</span>
-<a id="__codelineno-0-953" name="__codelineno-0-953"></a>
-<a id="__codelineno-0-954" name="__codelineno-0-954"></a>                <span class="c1"># process results from tasks in order of task completion</span>
-<a id="__codelineno-0-955" name="__codelineno-0-955"></a>                <span class="k">for</span> <span class="n">future</span> <span class="ow">in</span> <span class="n">as_completed</span><span class="p">(</span><span class="n">futures</span><span class="p">):</span>
-<a id="__codelineno-0-956" name="__codelineno-0-956"></a>                    <span class="n">future</span><span class="o">.</span><span class="n">result</span><span class="p">()</span>
-<a id="__codelineno-0-957" name="__codelineno-0-957"></a>                    <span class="n">pbar2</span><span class="o">.</span><span class="n">update</span><span class="p">()</span>
-<a id="__codelineno-0-958" name="__codelineno-0-958"></a>
-<a id="__codelineno-0-959" name="__codelineno-0-959"></a>        <span class="k">else</span><span class="p">:</span>
-<a id="__codelineno-0-960" name="__codelineno-0-960"></a>            <span class="k">for</span> <span class="n">leak_pair</span> <span class="ow">in</span> <span class="n">result</span><span class="p">[</span><span class="s2">&quot;matched_leaks_list&quot;</span><span class="p">]:</span>
-<a id="__codelineno-0-961" name="__codelineno-0-961"></a>                <span class="n">plot_leak</span><span class="p">(</span>
-<a id="__codelineno-0-962" name="__codelineno-0-962"></a>                    <span class="n">loaded_datasets</span><span class="p">[</span><span class="n">result</span><span class="p">[</span><span class="s2">&quot;dataset_id&quot;</span><span class="p">]],</span>
-<a id="__codelineno-0-963" name="__codelineno-0-963"></a>                    <span class="n">leak_pair</span><span class="o">=</span><span class="n">leak_pair</span><span class="p">,</span>
-<a id="__codelineno-0-964" name="__codelineno-0-964"></a>                    <span class="n">additional_data_dir</span><span class="o">=</span><span class="n">result_folder</span><span class="p">,</span>
-<a id="__codelineno-0-965" name="__codelineno-0-965"></a>                    <span class="n">out_dir</span><span class="o">=</span><span class="n">graph_dir</span><span class="p">,</span>
-<a id="__codelineno-0-966" name="__codelineno-0-966"></a>                <span class="p">)</span>
-<a id="__codelineno-0-967" name="__codelineno-0-967"></a>                <span class="n">pbar2</span><span class="o">.</span><span class="n">update</span><span class="p">()</span>
-<a id="__codelineno-0-968" name="__codelineno-0-968"></a>        <span class="n">pbar2</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
-<a id="__codelineno-0-969" name="__codelineno-0-969"></a>        <span class="n">manager</span><span class="o">.</span><span class="n">stop</span><span class="p">()</span>
-<a id="__codelineno-0-970" name="__codelineno-0-970"></a>
-<a id="__codelineno-0-971" name="__codelineno-0-971"></a>        <span class="n">statistics_table</span> <span class="o">=</span> <span class="p">[]</span>
-<a id="__codelineno-0-972" name="__codelineno-0-972"></a>
-<a id="__codelineno-0-973" name="__codelineno-0-973"></a>        <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="n">statistics_table</span><span class="p">)</span>
+<a id="__codelineno-0-832" name="__codelineno-0-832"></a>            <span class="n">columns</span><span class="o">=</span><span class="p">[</span>
+<a id="__codelineno-0-833" name="__codelineno-0-833"></a>                <span class="s2">&quot;_folder&quot;</span><span class="p">,</span>
+<a id="__codelineno-0-834" name="__codelineno-0-834"></a>                <span class="s2">&quot;matched_leaks_list&quot;</span><span class="p">,</span>
+<a id="__codelineno-0-835" name="__codelineno-0-835"></a>                <span class="s2">&quot;train_time&quot;</span><span class="p">,</span>
+<a id="__codelineno-0-836" name="__codelineno-0-836"></a>                <span class="s2">&quot;detect_time&quot;</span><span class="p">,</span>
+<a id="__codelineno-0-837" name="__codelineno-0-837"></a>                <span class="s2">&quot;time_initializing&quot;</span><span class="p">,</span>
+<a id="__codelineno-0-838" name="__codelineno-0-838"></a>                <span class="s2">&quot;total_time&quot;</span><span class="p">,</span>
+<a id="__codelineno-0-839" name="__codelineno-0-839"></a>                <span class="s2">&quot;method_time&quot;</span><span class="p">,</span>
+<a id="__codelineno-0-840" name="__codelineno-0-840"></a>            <span class="p">],</span>
+<a id="__codelineno-0-841" name="__codelineno-0-841"></a>            <span class="n">errors</span><span class="o">=</span><span class="s2">&quot;ignore&quot;</span><span class="p">,</span>
+<a id="__codelineno-0-842" name="__codelineno-0-842"></a>        <span class="p">)</span>
+<a id="__codelineno-0-843" name="__codelineno-0-843"></a>        <span class="c1"># TODO: Automatically add selected metrics</span>
+<a id="__codelineno-0-844" name="__codelineno-0-844"></a>        <span class="n">columns</span> <span class="o">=</span> <span class="p">[</span>
+<a id="__codelineno-0-845" name="__codelineno-0-845"></a>            <span class="s2">&quot;TP&quot;</span><span class="p">,</span>
+<a id="__codelineno-0-846" name="__codelineno-0-846"></a>            <span class="s2">&quot;FP&quot;</span><span class="p">,</span>
+<a id="__codelineno-0-847" name="__codelineno-0-847"></a>            <span class="s2">&quot;TN&quot;</span><span class="p">,</span>
+<a id="__codelineno-0-848" name="__codelineno-0-848"></a>            <span class="s2">&quot;FN&quot;</span><span class="p">,</span>
+<a id="__codelineno-0-849" name="__codelineno-0-849"></a>            <span class="s2">&quot;TTD&quot;</span><span class="p">,</span>
+<a id="__codelineno-0-850" name="__codelineno-0-850"></a>            <span class="s2">&quot;wrongpipe&quot;</span><span class="p">,</span>
+<a id="__codelineno-0-851" name="__codelineno-0-851"></a>            <span class="s2">&quot;dataset&quot;</span><span class="p">,</span>
+<a id="__codelineno-0-852" name="__codelineno-0-852"></a>            <span class="s2">&quot;dataset_part&quot;</span><span class="p">,</span>
+<a id="__codelineno-0-853" name="__codelineno-0-853"></a>            <span class="s2">&quot;dataset_derivations&quot;</span><span class="p">,</span>
+<a id="__codelineno-0-854" name="__codelineno-0-854"></a>            <span class="s2">&quot;hyperparameters&quot;</span><span class="p">,</span>
+<a id="__codelineno-0-855" name="__codelineno-0-855"></a>            <span class="c1"># &quot;score&quot;,</span>
+<a id="__codelineno-0-856" name="__codelineno-0-856"></a>            <span class="s2">&quot;executed_at&quot;</span><span class="p">,</span>
+<a id="__codelineno-0-857" name="__codelineno-0-857"></a>            <span class="s2">&quot;precision&quot;</span><span class="p">,</span>
+<a id="__codelineno-0-858" name="__codelineno-0-858"></a>            <span class="s2">&quot;recall (TPR)&quot;</span><span class="p">,</span>
+<a id="__codelineno-0-859" name="__codelineno-0-859"></a>            <span class="s2">&quot;TNR&quot;</span><span class="p">,</span>
+<a id="__codelineno-0-860" name="__codelineno-0-860"></a>            <span class="s2">&quot;FPR&quot;</span><span class="p">,</span>
+<a id="__codelineno-0-861" name="__codelineno-0-861"></a>            <span class="s2">&quot;FNR&quot;</span><span class="p">,</span>
+<a id="__codelineno-0-862" name="__codelineno-0-862"></a>            <span class="s2">&quot;F1&quot;</span><span class="p">,</span>
+<a id="__codelineno-0-863" name="__codelineno-0-863"></a>        <span class="p">]</span>
+<a id="__codelineno-0-864" name="__codelineno-0-864"></a>        <span class="n">results</span><span class="o">.</span><span class="n">columns</span> <span class="o">=</span> <span class="n">columns</span>
+<a id="__codelineno-0-865" name="__codelineno-0-865"></a>        <span class="k">if</span> <span class="n">print_results</span><span class="p">:</span>
+<a id="__codelineno-0-866" name="__codelineno-0-866"></a>            <span class="nb">print</span><span class="p">(</span><span class="n">tabulate</span><span class="p">(</span><span class="n">results</span><span class="p">,</span> <span class="n">headers</span><span class="o">=</span><span class="s2">&quot;keys&quot;</span><span class="p">))</span>
+<a id="__codelineno-0-867" name="__codelineno-0-867"></a>        <span class="k">return</span> <span class="n">results</span>
+<a id="__codelineno-0-868" name="__codelineno-0-868"></a>
+<a id="__codelineno-0-869" name="__codelineno-0-869"></a>    <span class="k">def</span> <span class="nf">evaluate_run</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">run_id</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">boundary_timespan_overwrite</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<a id="__codelineno-0-870" name="__codelineno-0-870"></a>        <span class="n">result_folder</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">runner_results_dir</span><span class="p">,</span> <span class="n">run_id</span><span class="p">)</span>
+<a id="__codelineno-0-871" name="__codelineno-0-871"></a>        <span class="n">result</span> <span class="o">=</span> <span class="n">load_result</span><span class="p">(</span><span class="n">result_folder</span><span class="p">)</span>
+<a id="__codelineno-0-872" name="__codelineno-0-872"></a>
+<a id="__codelineno-0-873" name="__codelineno-0-873"></a>        <span class="n">manager</span> <span class="o">=</span> <span class="n">enlighten</span><span class="o">.</span><span class="n">get_manager</span><span class="p">()</span>
+<a id="__codelineno-0-874" name="__codelineno-0-874"></a>        <span class="n">loaded_datasets</span> <span class="o">=</span> <span class="p">{}</span>
+<a id="__codelineno-0-875" name="__codelineno-0-875"></a>        <span class="k">for</span> <span class="n">dataset</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">datasets</span><span class="p">:</span>
+<a id="__codelineno-0-876" name="__codelineno-0-876"></a>            <span class="k">if</span> <span class="nb">type</span><span class="p">(</span><span class="n">dataset</span><span class="p">)</span> <span class="ow">is</span> <span class="nb">str</span><span class="p">:</span>
+<a id="__codelineno-0-877" name="__codelineno-0-877"></a>                <span class="n">loaded</span> <span class="o">=</span> <span class="n">Dataset</span><span class="p">(</span><span class="n">dataset</span><span class="p">)</span>
+<a id="__codelineno-0-878" name="__codelineno-0-878"></a>            <span class="k">else</span><span class="p">:</span>
+<a id="__codelineno-0-879" name="__codelineno-0-879"></a>                <span class="n">loaded</span> <span class="o">=</span> <span class="n">dataset</span>
+<a id="__codelineno-0-880" name="__codelineno-0-880"></a>
+<a id="__codelineno-0-881" name="__codelineno-0-881"></a>            <span class="n">loaded_datasets</span><span class="p">[</span><span class="n">dataset</span><span class="o">.</span><span class="n">id</span><span class="p">]</span> <span class="o">=</span> <span class="n">loaded</span><span class="o">.</span><span class="n">loadData</span><span class="p">()</span>
+<a id="__codelineno-0-882" name="__codelineno-0-882"></a>            <span class="k">if</span> <span class="ow">not</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">loaded_datasets</span><span class="p">[</span><span class="n">dataset</span><span class="o">.</span><span class="n">id</span><span class="p">],</span> <span class="s2">&quot;derivations&quot;</span><span class="p">):</span>
+<a id="__codelineno-0-883" name="__codelineno-0-883"></a>                <span class="n">loaded_datasets</span><span class="p">[</span><span class="n">dataset</span><span class="o">.</span><span class="n">name</span><span class="p">]</span> <span class="o">=</span> <span class="n">loaded_datasets</span><span class="p">[</span><span class="n">dataset</span><span class="o">.</span><span class="n">id</span><span class="p">]</span>
+<a id="__codelineno-0-884" name="__codelineno-0-884"></a>        <span class="n">graph_dir</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">evaluation_results_dir</span><span class="p">,</span> <span class="s2">&quot;per_run&quot;</span><span class="p">,</span> <span class="n">run_id</span><span class="p">)</span>
+<a id="__codelineno-0-885" name="__codelineno-0-885"></a>        <span class="n">os</span><span class="o">.</span><span class="n">makedirs</span><span class="p">(</span><span class="n">graph_dir</span><span class="p">,</span> <span class="n">exist_ok</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<a id="__codelineno-0-886" name="__codelineno-0-886"></a>
+<a id="__codelineno-0-887" name="__codelineno-0-887"></a>        <span class="c1"># Generate Leak Overview</span>
+<a id="__codelineno-0-888" name="__codelineno-0-888"></a>        <span class="n">fig</span><span class="p">,</span> <span class="n">ax</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">(</span><span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">10</span><span class="p">,</span> <span class="mi">10</span><span class="p">))</span>
+<a id="__codelineno-0-889" name="__codelineno-0-889"></a>        <span class="n">ax</span><span class="o">.</span><span class="n">set_axisbelow</span><span class="p">(</span><span class="kc">True</span><span class="p">)</span>
+<a id="__codelineno-0-890" name="__codelineno-0-890"></a>        <span class="n">ax</span><span class="o">.</span><span class="n">grid</span><span class="p">(</span><span class="n">visible</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="s2">&quot;x&quot;</span><span class="p">)</span>
+<a id="__codelineno-0-891" name="__codelineno-0-891"></a>        <span class="n">fig</span><span class="o">.</span><span class="n">gca</span><span class="p">()</span><span class="o">.</span><span class="n">xaxis</span><span class="o">.</span><span class="n">set_major_formatter</span><span class="p">(</span><span class="n">mdates</span><span class="o">.</span><span class="n">DateFormatter</span><span class="p">(</span><span class="s2">&quot;%Y-%m-</span><span class="si">%d</span><span class="s2">&quot;</span><span class="p">))</span>
+<a id="__codelineno-0-892" name="__codelineno-0-892"></a>        <span class="n">fig</span><span class="o">.</span><span class="n">gca</span><span class="p">()</span><span class="o">.</span><span class="n">xaxis</span><span class="o">.</span><span class="n">set_major_locator</span><span class="p">(</span><span class="n">mdates</span><span class="o">.</span><span class="n">DayLocator</span><span class="p">(</span><span class="n">interval</span><span class="o">=</span><span class="mi">14</span><span class="p">))</span>
+<a id="__codelineno-0-893" name="__codelineno-0-893"></a>
+<a id="__codelineno-0-894" name="__codelineno-0-894"></a>        <span class="k">for</span> <span class="n">index</span><span class="p">,</span> <span class="p">(</span><span class="n">expected_leak</span><span class="p">,</span> <span class="n">detected_leak</span><span class="p">)</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span>
+<a id="__codelineno-0-895" name="__codelineno-0-895"></a>            <span class="n">result</span><span class="p">[</span><span class="s2">&quot;matched_leaks_list&quot;</span><span class="p">]</span>
+<a id="__codelineno-0-896" name="__codelineno-0-896"></a>        <span class="p">):</span>
+<a id="__codelineno-0-897" name="__codelineno-0-897"></a>            <span class="n">num</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">result</span><span class="p">[</span><span class="s2">&quot;matched_leaks_list&quot;</span><span class="p">])</span> <span class="o">-</span> <span class="n">index</span>
+<a id="__codelineno-0-898" name="__codelineno-0-898"></a>            <span class="k">if</span> <span class="n">expected_leak</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+<a id="__codelineno-0-899" name="__codelineno-0-899"></a>                <span class="n">length</span> <span class="o">=</span> <span class="n">mdates</span><span class="o">.</span><span class="n">date2num</span><span class="p">(</span>
+<a id="__codelineno-0-900" name="__codelineno-0-900"></a>                    <span class="n">expected_leak</span><span class="p">[</span><span class="s2">&quot;leak_time_end&quot;</span><span class="p">]</span>
+<a id="__codelineno-0-901" name="__codelineno-0-901"></a>                <span class="p">)</span> <span class="o">-</span> <span class="n">mdates</span><span class="o">.</span><span class="n">date2num</span><span class="p">(</span><span class="n">expected_leak</span><span class="p">[</span><span class="s2">&quot;leak_time_start&quot;</span><span class="p">])</span>
+<a id="__codelineno-0-902" name="__codelineno-0-902"></a>                <span class="k">if</span> <span class="n">length</span> <span class="o">&lt;=</span> <span class="mi">0</span><span class="p">:</span>
+<a id="__codelineno-0-903" name="__codelineno-0-903"></a>                    <span class="n">length</span> <span class="o">=</span> <span class="mi">2</span>
+<a id="__codelineno-0-904" name="__codelineno-0-904"></a>                <span class="n">ax</span><span class="o">.</span><span class="n">barh</span><span class="p">(</span>
+<a id="__codelineno-0-905" name="__codelineno-0-905"></a>                    <span class="p">[</span><span class="n">num</span><span class="p">],</span>
+<a id="__codelineno-0-906" name="__codelineno-0-906"></a>                    <span class="c1"># [2],</span>
+<a id="__codelineno-0-907" name="__codelineno-0-907"></a>                    <span class="p">[</span><span class="n">length</span><span class="p">],</span>
+<a id="__codelineno-0-908" name="__codelineno-0-908"></a>                    <span class="n">left</span><span class="o">=</span><span class="p">[</span><span class="n">mdates</span><span class="o">.</span><span class="n">date2num</span><span class="p">(</span><span class="n">expected_leak</span><span class="p">[</span><span class="s2">&quot;leak_time_start&quot;</span><span class="p">])],</span>
+<a id="__codelineno-0-909" name="__codelineno-0-909"></a>                    <span class="c1"># height=[100000],</span>
+<a id="__codelineno-0-910" name="__codelineno-0-910"></a>                    <span class="n">label</span><span class="o">=</span><span class="s2">&quot;expected&quot;</span><span class="p">,</span>
+<a id="__codelineno-0-911" name="__codelineno-0-911"></a>                    <span class="n">color</span><span class="o">=</span><span class="s2">&quot;yellow&quot;</span><span class="p">,</span>
+<a id="__codelineno-0-912" name="__codelineno-0-912"></a>                <span class="p">)</span>
+<a id="__codelineno-0-913" name="__codelineno-0-913"></a>
+<a id="__codelineno-0-914" name="__codelineno-0-914"></a>            <span class="c1"># print(detected_leak)</span>
+<a id="__codelineno-0-915" name="__codelineno-0-915"></a>            <span class="k">if</span> <span class="n">detected_leak</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+<a id="__codelineno-0-916" name="__codelineno-0-916"></a>                <span class="n">length</span> <span class="o">=</span> <span class="n">mdates</span><span class="o">.</span><span class="n">date2num</span><span class="p">(</span>
+<a id="__codelineno-0-917" name="__codelineno-0-917"></a>                    <span class="n">detected_leak</span><span class="p">[</span><span class="s2">&quot;leak_time_end&quot;</span><span class="p">]</span>
+<a id="__codelineno-0-918" name="__codelineno-0-918"></a>                <span class="p">)</span> <span class="o">-</span> <span class="n">mdates</span><span class="o">.</span><span class="n">date2num</span><span class="p">(</span><span class="n">detected_leak</span><span class="p">[</span><span class="s2">&quot;leak_time_start&quot;</span><span class="p">])</span>
+<a id="__codelineno-0-919" name="__codelineno-0-919"></a>                <span class="k">if</span> <span class="n">length</span> <span class="o">&lt;=</span> <span class="mi">0</span><span class="p">:</span>
+<a id="__codelineno-0-920" name="__codelineno-0-920"></a>                    <span class="n">length</span> <span class="o">=</span> <span class="mi">1</span>
+<a id="__codelineno-0-921" name="__codelineno-0-921"></a>                <span class="n">ax</span><span class="o">.</span><span class="n">barh</span><span class="p">(</span>
+<a id="__codelineno-0-922" name="__codelineno-0-922"></a>                    <span class="p">[</span><span class="n">num</span><span class="p">],</span>
+<a id="__codelineno-0-923" name="__codelineno-0-923"></a>                    <span class="p">[</span><span class="n">length</span><span class="p">],</span>
+<a id="__codelineno-0-924" name="__codelineno-0-924"></a>                    <span class="n">left</span><span class="o">=</span><span class="p">[</span><span class="n">mdates</span><span class="o">.</span><span class="n">date2num</span><span class="p">(</span><span class="n">detected_leak</span><span class="p">[</span><span class="s2">&quot;leak_time_start&quot;</span><span class="p">])],</span>
+<a id="__codelineno-0-925" name="__codelineno-0-925"></a>                    <span class="c1"># height=[100000],</span>
+<a id="__codelineno-0-926" name="__codelineno-0-926"></a>                    <span class="n">label</span><span class="o">=</span><span class="s2">&quot;detected&quot;</span><span class="p">,</span>
+<a id="__codelineno-0-927" name="__codelineno-0-927"></a>                    <span class="n">color</span><span class="o">=</span><span class="s2">&quot;green&quot;</span><span class="p">,</span>
+<a id="__codelineno-0-928" name="__codelineno-0-928"></a>                <span class="p">)</span>
+<a id="__codelineno-0-929" name="__codelineno-0-929"></a>        <span class="n">ax</span><span class="o">.</span><span class="n">set_yticks</span><span class="p">(</span><span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">result</span><span class="p">[</span><span class="s2">&quot;matched_leaks_list&quot;</span><span class="p">])</span> <span class="o">+</span> <span class="mi">1</span><span class="p">))</span>
+<a id="__codelineno-0-930" name="__codelineno-0-930"></a>        <span class="c1"># ax.xaxis_date()</span>
+<a id="__codelineno-0-931" name="__codelineno-0-931"></a>        <span class="n">ax</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="s2">&quot;leak time spans overview&quot;</span><span class="p">)</span>
+<a id="__codelineno-0-932" name="__codelineno-0-932"></a>        <span class="n">ax</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="s2">&quot;Leaks&quot;</span><span class="p">)</span>
+<a id="__codelineno-0-933" name="__codelineno-0-933"></a>        <span class="n">ax</span><span class="o">.</span><span class="n">set_xlabel</span><span class="p">(</span><span class="s2">&quot;Time&quot;</span><span class="p">)</span>
+<a id="__codelineno-0-934" name="__codelineno-0-934"></a>        <span class="n">yellow_patch</span> <span class="o">=</span> <span class="n">patches</span><span class="o">.</span><span class="n">Patch</span><span class="p">(</span><span class="n">color</span><span class="o">=</span><span class="s2">&quot;yellow&quot;</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s2">&quot;Expected Leaks&quot;</span><span class="p">)</span>
+<a id="__codelineno-0-935" name="__codelineno-0-935"></a>        <span class="n">green_patch</span> <span class="o">=</span> <span class="n">patches</span><span class="o">.</span><span class="n">Patch</span><span class="p">(</span><span class="n">color</span><span class="o">=</span><span class="s2">&quot;green&quot;</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s2">&quot;Detected Leaks&quot;</span><span class="p">)</span>
+<a id="__codelineno-0-936" name="__codelineno-0-936"></a>        <span class="n">plt</span><span class="o">.</span><span class="n">legend</span><span class="p">(</span><span class="n">handles</span><span class="o">=</span><span class="p">[</span><span class="n">yellow_patch</span><span class="p">,</span> <span class="n">green_patch</span><span class="p">])</span>
+<a id="__codelineno-0-937" name="__codelineno-0-937"></a>        <span class="n">plt</span><span class="o">.</span><span class="n">gcf</span><span class="p">()</span><span class="o">.</span><span class="n">autofmt_xdate</span><span class="p">()</span>
+<a id="__codelineno-0-938" name="__codelineno-0-938"></a>        <span class="n">fig</span><span class="o">.</span><span class="n">savefig</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">graph_dir</span><span class="p">,</span> <span class="s2">&quot;leaks_overview.png&quot;</span><span class="p">))</span>
+<a id="__codelineno-0-939" name="__codelineno-0-939"></a>        <span class="n">plt</span><span class="o">.</span><span class="n">close</span><span class="p">(</span><span class="n">fig</span><span class="p">)</span>
+<a id="__codelineno-0-940" name="__codelineno-0-940"></a>
+<a id="__codelineno-0-941" name="__codelineno-0-941"></a>        <span class="n">logging</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;Generating plots per leak ...&quot;</span><span class="p">)</span>
+<a id="__codelineno-0-942" name="__codelineno-0-942"></a>        <span class="n">pbar2</span> <span class="o">=</span> <span class="n">manager</span><span class="o">.</span><span class="n">counter</span><span class="p">(</span>
+<a id="__codelineno-0-943" name="__codelineno-0-943"></a>            <span class="n">total</span><span class="o">=</span><span class="nb">len</span><span class="p">(</span><span class="n">result</span><span class="p">[</span><span class="s2">&quot;matched_leaks_list&quot;</span><span class="p">]),</span>
+<a id="__codelineno-0-944" name="__codelineno-0-944"></a>            <span class="n">desc</span><span class="o">=</span><span class="s2">&quot;Graphs:&quot;</span><span class="p">,</span>
+<a id="__codelineno-0-945" name="__codelineno-0-945"></a>            <span class="n">unit</span><span class="o">=</span><span class="s2">&quot;graphs&quot;</span><span class="p">,</span>
+<a id="__codelineno-0-946" name="__codelineno-0-946"></a>        <span class="p">)</span>
+<a id="__codelineno-0-947" name="__codelineno-0-947"></a>        <span class="n">parallel</span> <span class="o">=</span> <span class="kc">False</span>
+<a id="__codelineno-0-948" name="__codelineno-0-948"></a>        <span class="k">if</span> <span class="n">parallel</span><span class="p">:</span>
+<a id="__codelineno-0-949" name="__codelineno-0-949"></a>            <span class="k">with</span> <span class="n">ProcessPoolExecutor</span><span class="p">(</span><span class="n">max_workers</span><span class="o">=</span><span class="n">CPU_COUNT</span><span class="p">)</span> <span class="k">as</span> <span class="n">executor</span><span class="p">:</span>
+<a id="__codelineno-0-950" name="__codelineno-0-950"></a>                <span class="c1"># submit all tasks and get future objects</span>
+<a id="__codelineno-0-951" name="__codelineno-0-951"></a>                <span class="n">futures</span> <span class="o">=</span> <span class="p">[]</span>
+<a id="__codelineno-0-952" name="__codelineno-0-952"></a>                <span class="k">for</span> <span class="n">leak_pair</span> <span class="ow">in</span> <span class="n">result</span><span class="p">[</span><span class="s2">&quot;matched_leaks_list&quot;</span><span class="p">]:</span>
+<a id="__codelineno-0-953" name="__codelineno-0-953"></a>                    <span class="n">future</span> <span class="o">=</span> <span class="n">executor</span><span class="o">.</span><span class="n">submit</span><span class="p">(</span>
+<a id="__codelineno-0-954" name="__codelineno-0-954"></a>                        <span class="n">plot_leak</span><span class="p">,</span>
+<a id="__codelineno-0-955" name="__codelineno-0-955"></a>                        <span class="n">loaded_datasets</span><span class="p">[</span><span class="n">result</span><span class="p">[</span><span class="s2">&quot;dataset_id&quot;</span><span class="p">]],</span>
+<a id="__codelineno-0-956" name="__codelineno-0-956"></a>                        <span class="n">leak_pair</span><span class="o">=</span><span class="n">leak_pair</span><span class="p">,</span>
+<a id="__codelineno-0-957" name="__codelineno-0-957"></a>                        <span class="n">additional_data_dir</span><span class="o">=</span><span class="n">result_folder</span><span class="p">,</span>
+<a id="__codelineno-0-958" name="__codelineno-0-958"></a>                        <span class="n">out_dir</span><span class="o">=</span><span class="n">graph_dir</span><span class="p">,</span>
+<a id="__codelineno-0-959" name="__codelineno-0-959"></a>                        <span class="n">boundary_timespan_overwrite</span><span class="o">=</span><span class="n">boundary_timespan_overwrite</span><span class="p">,</span>
+<a id="__codelineno-0-960" name="__codelineno-0-960"></a>                    <span class="p">)</span>
+<a id="__codelineno-0-961" name="__codelineno-0-961"></a>                    <span class="n">futures</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">future</span><span class="p">)</span>
+<a id="__codelineno-0-962" name="__codelineno-0-962"></a>
+<a id="__codelineno-0-963" name="__codelineno-0-963"></a>                <span class="c1"># process results from tasks in order of task completion</span>
+<a id="__codelineno-0-964" name="__codelineno-0-964"></a>                <span class="k">for</span> <span class="n">future</span> <span class="ow">in</span> <span class="n">as_completed</span><span class="p">(</span><span class="n">futures</span><span class="p">):</span>
+<a id="__codelineno-0-965" name="__codelineno-0-965"></a>                    <span class="n">future</span><span class="o">.</span><span class="n">result</span><span class="p">()</span>
+<a id="__codelineno-0-966" name="__codelineno-0-966"></a>                    <span class="n">pbar2</span><span class="o">.</span><span class="n">update</span><span class="p">()</span>
+<a id="__codelineno-0-967" name="__codelineno-0-967"></a>
+<a id="__codelineno-0-968" name="__codelineno-0-968"></a>        <span class="k">else</span><span class="p">:</span>
+<a id="__codelineno-0-969" name="__codelineno-0-969"></a>            <span class="k">for</span> <span class="n">leak_pair</span> <span class="ow">in</span> <span class="n">result</span><span class="p">[</span><span class="s2">&quot;matched_leaks_list&quot;</span><span class="p">]:</span>
+<a id="__codelineno-0-970" name="__codelineno-0-970"></a>                <span class="n">plot_leak</span><span class="p">(</span>
+<a id="__codelineno-0-971" name="__codelineno-0-971"></a>                    <span class="n">loaded_datasets</span><span class="p">[</span><span class="n">result</span><span class="p">[</span><span class="s2">&quot;dataset_id&quot;</span><span class="p">]],</span>
+<a id="__codelineno-0-972" name="__codelineno-0-972"></a>                    <span class="n">leak_pair</span><span class="o">=</span><span class="n">leak_pair</span><span class="p">,</span>
+<a id="__codelineno-0-973" name="__codelineno-0-973"></a>                    <span class="n">additional_data_dir</span><span class="o">=</span><span class="n">result_folder</span><span class="p">,</span>
+<a id="__codelineno-0-974" name="__codelineno-0-974"></a>                    <span class="n">out_dir</span><span class="o">=</span><span class="n">graph_dir</span><span class="p">,</span>
+<a id="__codelineno-0-975" name="__codelineno-0-975"></a>                <span class="p">)</span>
+<a id="__codelineno-0-976" name="__codelineno-0-976"></a>                <span class="n">pbar2</span><span class="o">.</span><span class="n">update</span><span class="p">()</span>
+<a id="__codelineno-0-977" name="__codelineno-0-977"></a>        <span class="n">pbar2</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+<a id="__codelineno-0-978" name="__codelineno-0-978"></a>        <span class="n">manager</span><span class="o">.</span><span class="n">stop</span><span class="p">()</span>
+<a id="__codelineno-0-979" name="__codelineno-0-979"></a>
+<a id="__codelineno-0-980" name="__codelineno-0-980"></a>        <span class="n">statistics_table</span> <span class="o">=</span> <span class="p">[]</span>
+<a id="__codelineno-0-981" name="__codelineno-0-981"></a>
+<a id="__codelineno-0-982" name="__codelineno-0-982"></a>        <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="n">statistics_table</span><span class="p">)</span>
 </code></pre></div></td></tr></table></div>
         </details>
 
@@ -3329,7 +3347,16 @@ grid_search           A boolean indicating whether the hyperparameters should
 <span class="normal"><a href="#__codelineno-0-855">855</a></span>
 <span class="normal"><a href="#__codelineno-0-856">856</a></span>
 <span class="normal"><a href="#__codelineno-0-857">857</a></span>
-<span class="normal"><a href="#__codelineno-0-858">858</a></span></pre></div></td><td class="code"><div><pre><span></span><code><a id="__codelineno-0-662" name="__codelineno-0-662"></a><span class="k">def</span> <span class="nf">evaluate</span><span class="p">(</span>
+<span class="normal"><a href="#__codelineno-0-858">858</a></span>
+<span class="normal"><a href="#__codelineno-0-859">859</a></span>
+<span class="normal"><a href="#__codelineno-0-860">860</a></span>
+<span class="normal"><a href="#__codelineno-0-861">861</a></span>
+<span class="normal"><a href="#__codelineno-0-862">862</a></span>
+<span class="normal"><a href="#__codelineno-0-863">863</a></span>
+<span class="normal"><a href="#__codelineno-0-864">864</a></span>
+<span class="normal"><a href="#__codelineno-0-865">865</a></span>
+<span class="normal"><a href="#__codelineno-0-866">866</a></span>
+<span class="normal"><a href="#__codelineno-0-867">867</a></span></pre></div></td><td class="code"><div><pre><span></span><code><a id="__codelineno-0-662" name="__codelineno-0-662"></a><span class="k">def</span> <span class="nf">evaluate</span><span class="p">(</span>
 <a id="__codelineno-0-663" name="__codelineno-0-663"></a>    <span class="bp">self</span><span class="p">,</span>
 <a id="__codelineno-0-664" name="__codelineno-0-664"></a>    <span class="n">current_only</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
 <a id="__codelineno-0-665" name="__codelineno-0-665"></a>    <span class="n">resultFilter</span><span class="p">:</span> <span class="n">Callable</span> <span class="o">=</span> <span class="k">lambda</span> <span class="n">r</span><span class="p">:</span> <span class="n">r</span><span class="p">,</span>
@@ -3499,33 +3526,42 @@ grid_search           A boolean indicating whether the hyperparameters should
 <a id="__codelineno-0-829" name="__codelineno-0-829"></a>    <span class="n">results</span> <span class="o">=</span> <span class="n">results</span><span class="o">.</span><span class="n">sort_values</span><span class="p">(</span><span class="n">by</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;F1&quot;</span><span class="p">])</span>
 <a id="__codelineno-0-830" name="__codelineno-0-830"></a>    <span class="c1"># Display in console</span>
 <a id="__codelineno-0-831" name="__codelineno-0-831"></a>    <span class="n">results</span> <span class="o">=</span> <span class="n">results</span><span class="o">.</span><span class="n">drop</span><span class="p">(</span>
-<a id="__codelineno-0-832" name="__codelineno-0-832"></a>        <span class="n">columns</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;_folder&quot;</span><span class="p">,</span> <span class="s2">&quot;matched_leaks_list&quot;</span><span class="p">],</span> <span class="n">errors</span><span class="o">=</span><span class="s2">&quot;ignore&quot;</span>
-<a id="__codelineno-0-833" name="__codelineno-0-833"></a>    <span class="p">)</span>
-<a id="__codelineno-0-834" name="__codelineno-0-834"></a>    <span class="c1"># TODO: Automatically add selected metrics</span>
-<a id="__codelineno-0-835" name="__codelineno-0-835"></a>    <span class="n">columns</span> <span class="o">=</span> <span class="p">[</span>
-<a id="__codelineno-0-836" name="__codelineno-0-836"></a>        <span class="s2">&quot;TP&quot;</span><span class="p">,</span>
-<a id="__codelineno-0-837" name="__codelineno-0-837"></a>        <span class="s2">&quot;FP&quot;</span><span class="p">,</span>
-<a id="__codelineno-0-838" name="__codelineno-0-838"></a>        <span class="s2">&quot;TN&quot;</span><span class="p">,</span>
-<a id="__codelineno-0-839" name="__codelineno-0-839"></a>        <span class="s2">&quot;FN&quot;</span><span class="p">,</span>
-<a id="__codelineno-0-840" name="__codelineno-0-840"></a>        <span class="s2">&quot;TTD&quot;</span><span class="p">,</span>
-<a id="__codelineno-0-841" name="__codelineno-0-841"></a>        <span class="s2">&quot;wrongpipe&quot;</span><span class="p">,</span>
-<a id="__codelineno-0-842" name="__codelineno-0-842"></a>        <span class="s2">&quot;dataset&quot;</span><span class="p">,</span>
-<a id="__codelineno-0-843" name="__codelineno-0-843"></a>        <span class="s2">&quot;dataset_part&quot;</span><span class="p">,</span>
-<a id="__codelineno-0-844" name="__codelineno-0-844"></a>        <span class="s2">&quot;dataset_derivations&quot;</span><span class="p">,</span>
-<a id="__codelineno-0-845" name="__codelineno-0-845"></a>        <span class="s2">&quot;hyperparameters&quot;</span><span class="p">,</span>
-<a id="__codelineno-0-846" name="__codelineno-0-846"></a>        <span class="c1"># &quot;score&quot;,</span>
-<a id="__codelineno-0-847" name="__codelineno-0-847"></a>        <span class="s2">&quot;executed_at&quot;</span><span class="p">,</span>
-<a id="__codelineno-0-848" name="__codelineno-0-848"></a>        <span class="s2">&quot;precision&quot;</span><span class="p">,</span>
-<a id="__codelineno-0-849" name="__codelineno-0-849"></a>        <span class="s2">&quot;recall (TPR)&quot;</span><span class="p">,</span>
-<a id="__codelineno-0-850" name="__codelineno-0-850"></a>        <span class="s2">&quot;TNR&quot;</span><span class="p">,</span>
-<a id="__codelineno-0-851" name="__codelineno-0-851"></a>        <span class="s2">&quot;FPR&quot;</span><span class="p">,</span>
-<a id="__codelineno-0-852" name="__codelineno-0-852"></a>        <span class="s2">&quot;FNR&quot;</span><span class="p">,</span>
-<a id="__codelineno-0-853" name="__codelineno-0-853"></a>        <span class="s2">&quot;F1&quot;</span><span class="p">,</span>
-<a id="__codelineno-0-854" name="__codelineno-0-854"></a>    <span class="p">]</span>
-<a id="__codelineno-0-855" name="__codelineno-0-855"></a>    <span class="n">results</span><span class="o">.</span><span class="n">columns</span> <span class="o">=</span> <span class="n">columns</span>
-<a id="__codelineno-0-856" name="__codelineno-0-856"></a>    <span class="k">if</span> <span class="n">print_results</span><span class="p">:</span>
-<a id="__codelineno-0-857" name="__codelineno-0-857"></a>        <span class="nb">print</span><span class="p">(</span><span class="n">tabulate</span><span class="p">(</span><span class="n">results</span><span class="p">,</span> <span class="n">headers</span><span class="o">=</span><span class="s2">&quot;keys&quot;</span><span class="p">))</span>
-<a id="__codelineno-0-858" name="__codelineno-0-858"></a>    <span class="k">return</span> <span class="n">results</span>
+<a id="__codelineno-0-832" name="__codelineno-0-832"></a>        <span class="n">columns</span><span class="o">=</span><span class="p">[</span>
+<a id="__codelineno-0-833" name="__codelineno-0-833"></a>            <span class="s2">&quot;_folder&quot;</span><span class="p">,</span>
+<a id="__codelineno-0-834" name="__codelineno-0-834"></a>            <span class="s2">&quot;matched_leaks_list&quot;</span><span class="p">,</span>
+<a id="__codelineno-0-835" name="__codelineno-0-835"></a>            <span class="s2">&quot;train_time&quot;</span><span class="p">,</span>
+<a id="__codelineno-0-836" name="__codelineno-0-836"></a>            <span class="s2">&quot;detect_time&quot;</span><span class="p">,</span>
+<a id="__codelineno-0-837" name="__codelineno-0-837"></a>            <span class="s2">&quot;time_initializing&quot;</span><span class="p">,</span>
+<a id="__codelineno-0-838" name="__codelineno-0-838"></a>            <span class="s2">&quot;total_time&quot;</span><span class="p">,</span>
+<a id="__codelineno-0-839" name="__codelineno-0-839"></a>            <span class="s2">&quot;method_time&quot;</span><span class="p">,</span>
+<a id="__codelineno-0-840" name="__codelineno-0-840"></a>        <span class="p">],</span>
+<a id="__codelineno-0-841" name="__codelineno-0-841"></a>        <span class="n">errors</span><span class="o">=</span><span class="s2">&quot;ignore&quot;</span><span class="p">,</span>
+<a id="__codelineno-0-842" name="__codelineno-0-842"></a>    <span class="p">)</span>
+<a id="__codelineno-0-843" name="__codelineno-0-843"></a>    <span class="c1"># TODO: Automatically add selected metrics</span>
+<a id="__codelineno-0-844" name="__codelineno-0-844"></a>    <span class="n">columns</span> <span class="o">=</span> <span class="p">[</span>
+<a id="__codelineno-0-845" name="__codelineno-0-845"></a>        <span class="s2">&quot;TP&quot;</span><span class="p">,</span>
+<a id="__codelineno-0-846" name="__codelineno-0-846"></a>        <span class="s2">&quot;FP&quot;</span><span class="p">,</span>
+<a id="__codelineno-0-847" name="__codelineno-0-847"></a>        <span class="s2">&quot;TN&quot;</span><span class="p">,</span>
+<a id="__codelineno-0-848" name="__codelineno-0-848"></a>        <span class="s2">&quot;FN&quot;</span><span class="p">,</span>
+<a id="__codelineno-0-849" name="__codelineno-0-849"></a>        <span class="s2">&quot;TTD&quot;</span><span class="p">,</span>
+<a id="__codelineno-0-850" name="__codelineno-0-850"></a>        <span class="s2">&quot;wrongpipe&quot;</span><span class="p">,</span>
+<a id="__codelineno-0-851" name="__codelineno-0-851"></a>        <span class="s2">&quot;dataset&quot;</span><span class="p">,</span>
+<a id="__codelineno-0-852" name="__codelineno-0-852"></a>        <span class="s2">&quot;dataset_part&quot;</span><span class="p">,</span>
+<a id="__codelineno-0-853" name="__codelineno-0-853"></a>        <span class="s2">&quot;dataset_derivations&quot;</span><span class="p">,</span>
+<a id="__codelineno-0-854" name="__codelineno-0-854"></a>        <span class="s2">&quot;hyperparameters&quot;</span><span class="p">,</span>
+<a id="__codelineno-0-855" name="__codelineno-0-855"></a>        <span class="c1"># &quot;score&quot;,</span>
+<a id="__codelineno-0-856" name="__codelineno-0-856"></a>        <span class="s2">&quot;executed_at&quot;</span><span class="p">,</span>
+<a id="__codelineno-0-857" name="__codelineno-0-857"></a>        <span class="s2">&quot;precision&quot;</span><span class="p">,</span>
+<a id="__codelineno-0-858" name="__codelineno-0-858"></a>        <span class="s2">&quot;recall (TPR)&quot;</span><span class="p">,</span>
+<a id="__codelineno-0-859" name="__codelineno-0-859"></a>        <span class="s2">&quot;TNR&quot;</span><span class="p">,</span>
+<a id="__codelineno-0-860" name="__codelineno-0-860"></a>        <span class="s2">&quot;FPR&quot;</span><span class="p">,</span>
+<a id="__codelineno-0-861" name="__codelineno-0-861"></a>        <span class="s2">&quot;FNR&quot;</span><span class="p">,</span>
+<a id="__codelineno-0-862" name="__codelineno-0-862"></a>        <span class="s2">&quot;F1&quot;</span><span class="p">,</span>
+<a id="__codelineno-0-863" name="__codelineno-0-863"></a>    <span class="p">]</span>
+<a id="__codelineno-0-864" name="__codelineno-0-864"></a>    <span class="n">results</span><span class="o">.</span><span class="n">columns</span> <span class="o">=</span> <span class="n">columns</span>
+<a id="__codelineno-0-865" name="__codelineno-0-865"></a>    <span class="k">if</span> <span class="n">print_results</span><span class="p">:</span>
+<a id="__codelineno-0-866" name="__codelineno-0-866"></a>        <span class="nb">print</span><span class="p">(</span><span class="n">tabulate</span><span class="p">(</span><span class="n">results</span><span class="p">,</span> <span class="n">headers</span><span class="o">=</span><span class="s2">&quot;keys&quot;</span><span class="p">))</span>
+<a id="__codelineno-0-867" name="__codelineno-0-867"></a>    <span class="k">return</span> <span class="n">results</span>
 </code></pre></div></td></tr></table></div>
       </details>
   </div>
