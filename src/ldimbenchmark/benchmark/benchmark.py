@@ -814,9 +814,11 @@ class LDIMBenchmark:
 
             performance_indicator = "F1"
 
-            for method in list(
-                map(lambda x: x.name, self.methods_docker + self.methods_local)
-            ):
+            methods = [
+                get_method_name_from_docker_image(dmethod)
+                for dmethod in self.methods_docker
+            ] + [lmethod.name for lmethod in self.methods_local]
+            for method in methods:
                 for dataset_name in map(lambda x: x.name, self.datasets):
                     logging.info(f"Generating Heatmap for {method} {dataset_name}")
                     create_plots(
