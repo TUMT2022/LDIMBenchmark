@@ -754,7 +754,7 @@ class LDIMBenchmark:
 
         if write_results == "csv":
             results = results.drop(columns=["matched_leaks_list"])
-            print("Writing results to disk")
+            logging.info("Writing results as csv")
             results.to_csv(os.path.join(self.evaluation_results_dir, "results.csv"))
 
             results.style.format(escape="latex").set_table_styles(
@@ -774,14 +774,14 @@ class LDIMBenchmark:
                 caption="Overview of the benchmark results.",
             )
         elif write_results == "db":
-            print("Writing results to database")
+            logging.info("Writing results to database")
             result_db = os.path.join(self.evaluation_results_dir, "results.db")
             if os.path.exists(result_db):
                 os.remove(result_db)
             engine = create_engine(f"sqlite:///{result_db}")
-            try:
-                for index, values in results.iterrows():
-                    leak_pairs = pd.DataFrame(values["matched_leaks_list"])
+            for index, values in results.iterrows():
+                leak_pairs = pd.DataFrame(values["matched_leaks_list"])
+                try:
                     leak_pairs = pd.concat(
                         [
                             pd.json_normalize(leak_pairs[0]).add_prefix("expected."),
@@ -795,9 +795,9 @@ class LDIMBenchmark:
                     )
                     leak_pairs["result_id"] = index
                     leak_pairs.to_sql("leak_pairs", engine, if_exists="replace")
-            except Exception as e:
-                print(e)
-                print(f"Could not write leak pairs to database. For {index}")
+                except Exception as e:
+                    logging.warning(e)
+                    logging.warning(f"Could not write leak pairs to database. For {index}")
             results = results.drop(columns=["matched_leaks_list"])
             results.to_sql("results", engine, if_exists="replace")
 
