@@ -32,7 +32,10 @@ from ldimbenchmark.utilities import get_method_name_from_docker_image
 
 def loadDataset_local(dataset_path):
     dataset = Dataset(dataset_path)
-    # dataset.loadData().loadBenchmarkData()
+    dataset.loadData().loadBenchmarkData()
+    del dataset
+    dataset = Dataset(dataset_path)
+
     # dataset.is_valid()
     number = int(os.path.basename(os.path.normpath(dataset_path)).split("-")[-1])
     return (
@@ -83,15 +86,22 @@ def run_benchmark_complexity(
     # logging.info(" > Loading Data")
     datasets = {}
     try:
-        with ThreadPoolExecutor(max_workers=os.cpu_count()) as executor:
-            # submit all tasks and get future objects
-            futures = [
-                executor.submit(loadDataset_local, dataset_dir)
-                for dataset_dir in dataset_dirs
-            ]
-            # process results from tasks in order of task completion
-            for future in as_completed(futures):
-                dataset_id, dataset = future.result()
+        parallel = True
+        if parallel:
+            with ThreadPoolExecutor(max_workers=os.cpu_count()) as executor:
+                # submit all tasks and get future objects
+                futures = [
+                    executor.submit(loadDataset_local, dataset_dir)
+                    for dataset_dir in dataset_dirs
+                ]
+                # process results from tasks in order of task completion
+                for future in as_completed(futures):
+                    dataset_id, dataset = future.result()
+                    datasets[dataset_id] = dataset
+                    bar_loading_data.update()
+        else:
+            for dataset_dir in dataset_dirs:
+                dataset_id, dataset = loadDataset_local(dataset_dir)
                 datasets[dataset_id] = dataset
                 bar_loading_data.update()
     except KeyboardInterrupt:
