@@ -54,6 +54,7 @@ class DockerMethodRunner(MethodRunner):
         stage: Literal["train", "detect"] = "detect",
         method: Literal["offline", "online"] = "offline",
         debug=False,
+        capture_docker_stats=False,
         resultsFolder=None,
         docker_base_url="unix://var/run/docker.sock",
     ):
@@ -127,6 +128,9 @@ class DockerMethodRunner(MethodRunner):
                         "mode": "ro",
                     }
                 },
+                environment={
+                    "LOG_LEVEL": "DEBUG" if self.debug else "WARNING",
+                },
                 mem_limit=mem_limit,
                 cpu_count=cpu_count,
                 detach=True,
@@ -168,18 +172,20 @@ class DockerMethodRunner(MethodRunner):
                 stream_tar_args.close()
 
             killEvent = asyncio.Event()
-            thread = Thread(
-                target=record_docker_statistics,
-                args=(killEvent, container, self.resultsFolder),
-            )
-            thread.start()
+            if self.capture_docker_stats:
+                thread = Thread(
+                    target=record_docker_statistics,
+                    args=(killEvent, container, self.resultsFolder),
+                )
+                thread.start()
             for log_line in container.logs(stream=True):
                 logging.info(f"[{self.id}] {log_line.strip()}")
 
             status = container.wait()
             if status["StatusCode"] != 0:
                 killEvent.set()
-                thread.join()
+                if self.capture_docker_stats:
+                    thread.join()
                 logging.error(
                     f"Runner {self.id} errored with status code {status['StatusCode']}!"
                 )
@@ -196,7 +202,8 @@ class DockerMethodRunner(MethodRunner):
 
             os.makedirs(self.resultsFolder, exist_ok=True)
             killEvent.set()
-            thread.join()
+            if self.capture_docker_stats:
+                thread.join()
 
             # Extract Outputs
             temp_folder_output = tempfile.TemporaryDirectory()

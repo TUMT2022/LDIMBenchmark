@@ -136,6 +136,7 @@ def run_benchmark_complexity(
                     hyperparameters[method_name],
                     resultsFolder=complexity_benchmark_result_folder_run,
                     debug=additionalOutput,
+                    capture_docker_stats=True,
                 )
                 result = runner.run(cpu_count=1, mem_limit="20g")
                 if result is None:
