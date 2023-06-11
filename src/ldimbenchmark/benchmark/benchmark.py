@@ -829,7 +829,16 @@ class LDIMBenchmark:
         results = results.sort_values(by=["F1"])
         # Display in console
         results = results.drop(
-            columns=["_folder", "matched_leaks_list"], errors="ignore"
+            columns=[
+                "_folder",
+                "matched_leaks_list",
+                "train_time",
+                "detect_time",
+                "time_initializing",
+                "total_time",
+                "method_time",
+            ],
+            errors="ignore",
         )
         # TODO: Automatically add selected metrics
         columns = [
