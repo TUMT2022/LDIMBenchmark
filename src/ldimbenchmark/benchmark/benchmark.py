@@ -622,11 +622,12 @@ class LDIMBenchmark:
         logging.info(f"Executing {len(self.experiments)} experiments.")
         manager = enlighten.get_manager()
         if len(self.experiments) < num_experiments:
-            manager.status_bar(
+            status_bar = manager.status_bar(
                 " Using cached experiments! ",
                 position=1,
                 fill="-",
                 justify=enlighten.Justify.CENTER,
+                leave=False,
             )
         bar_experiments = manager.counter(
             total=num_experiments,
@@ -660,6 +661,8 @@ class LDIMBenchmark:
             for experiment in self.experiments:
                 experiment.run()
                 bar_experiments.update()
+        status_bar.close()
+        bar_experiments.close()
         manager.stop()
 
     def evaluate(
@@ -723,8 +726,9 @@ class LDIMBenchmark:
             desc="Loading Results",
             unit="results",
         )
+        pbar1.refresh()
         results = []
-        parallel = False
+        parallel = True
         if parallel == True:
             with ProcessPoolExecutor() as executor:
                 # submit all tasks and get future objects
@@ -739,7 +743,9 @@ class LDIMBenchmark:
         else:
             for experiment_result in result_folders:
                 results.append(load_result(experiment_result))
+                pbar1.update()
         pbar1.close()
+        manager.stop()
 
         results = pd.DataFrame(results)
 
