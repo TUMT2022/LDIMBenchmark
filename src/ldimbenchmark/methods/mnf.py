@@ -32,7 +32,7 @@ class MNF(LDIMMethodBase):
     def __init__(self):
         super().__init__(
             name="mnf",
-            version="1.2",
+            version="1.2.0",
             metadata=MethodMetadata(
                 data_needed=["flow"],
                 hyperparameters=[
