@@ -98,7 +98,6 @@ class LocalMethodRunner(MethodRunner):
         # If Overwriting results Folder also overwrite additional_output_folder
         if self.debug == True:
             self.additional_output_path = os.path.join(self.resultsFolder, "debug", "")
-            os.makedirs(self.additional_output_path, exist_ok=True)
         else:
             self.additional_output_path = None
 
@@ -143,6 +142,7 @@ class LocalMethodRunner(MethodRunner):
         self.detection_method = detection_method
 
     def run(self):
+        super().run()
         start = time.time()
         logging.info(f"Running {self.id} with params {self.hyperparameters}")
 

@@ -100,13 +100,16 @@ class MethodRunner(ABC):
         if not self.resultsFolder and self.debug:
             raise Exception("Debug mode requires a results folder.")
         elif self.debug == True:
+            # If Overwriting results Folder also overwrite additional_output_folder
             self.additional_output_path = os.path.join(self.resultsFolder, "debug", "")
-            os.makedirs(self.additional_output_path, exist_ok=True)
         else:
             self.additional_output_path = None
 
     @abstractmethod
     def run(self) -> str:
+        if self.additional_output_path:
+            os.makedirs(self.additional_output_path, exist_ok=True)
+
         pass
 
     def writeResults(
