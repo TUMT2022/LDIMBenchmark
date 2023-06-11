@@ -785,6 +785,7 @@ class LDIMBenchmark:
             if os.path.exists(result_db):
                 os.remove(result_db)
             engine = create_engine(f"sqlite:///{result_db}")
+            first_run = True
             for index, values in results.iterrows():
                 leak_pairs = pd.DataFrame(values["matched_leaks_list"])
                 try:
@@ -800,7 +801,11 @@ class LDIMBenchmark:
                         errors="ignore",
                     )
                     leak_pairs["result_id"] = index
-                    leak_pairs.to_sql("leak_pairs", engine, if_exists="replace")
+                    if first_run:
+                        leak_pairs.to_sql("leak_pairs", engine, if_exists="replace")
+                    else:
+                        leak_pairs.to_sql("leak_pairs", engine, if_exists="append")
+                    first_run = False
                 except Exception as e:
                     logging.warning(e)
                     logging.warning(f"Could not write leak pairs to database. For {index}")
