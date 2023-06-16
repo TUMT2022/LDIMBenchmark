@@ -1166,7 +1166,7 @@
         'wall_coeff': None,
       }),
     ]),
-    'name': 'test_data/datasets/test1-2f3aade7670a4ceb209cc79b2580de8d/model.inp',
+    'name': 'test_data/datasets/test1-73aef37140f1a34d42545d7a7acfd200/model.inp',
     'nodes': list([
       dict({
         'coordinates': tuple(

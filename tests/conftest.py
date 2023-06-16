@@ -1,3 +1,5 @@
+import re
+from importlib_resources import path
 import pytest
 from ldimbenchmark.datasets.classes import (
     Dataset,
@@ -40,6 +42,22 @@ def change_log_level(request):
 
 
 mocked_dataset_nodes = ["J-02", "J-03"]
+
+
+def fix_inp_file(inp_file_path: str):
+    """
+    Fixes the Created Date and path to a static format
+    """
+
+    with open(inp_file_path, "r") as f:
+        str = f.read()
+
+        # Remove Section for Dynamic Pumps
+        new_str = re.sub(r"Filename.*", "Filename: test.inp", str)
+        new_str = re.sub(r"Created.*", "Created: 2023-01-01 01:01:01", new_str)
+
+    with open(inp_file_path, "w") as f:
+        f.write(new_str)
 
 
 @pytest.fixture
@@ -99,7 +117,9 @@ def mocked_dataset1():
         index=[0],
     ).to_csv(os.path.join(dataset_path, "leaks.csv"))
 
-    write_inpfile(generatePoulakisNetwork(), os.path.join(dataset_path, "model.inp"))
+    inp_path = os.path.join(dataset_path, "model.inp")
+    write_inpfile(generatePoulakisNetwork(), inp_path)
+
     yield Dataset(dataset_path)
     temp_dir.cleanup()
 

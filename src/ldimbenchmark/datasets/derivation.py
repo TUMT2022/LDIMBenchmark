@@ -2,6 +2,8 @@ from concurrent.futures import ProcessPoolExecutor, as_completed
 import itertools
 import logging
 import os
+import shutil
+import tempfile
 import enlighten
 
 from pandas import DataFrame
@@ -159,6 +161,7 @@ class DatasetDerivator:
                         loadedDataset.exportTo(derivedDatasetPath)
 
                     dataset = Dataset(derivedDatasetPath)
+                    dataset.is_valid(True)
                     if newly_generated:
                         logging.info("Populating cache")
                         dataset.loadData()
@@ -236,13 +239,14 @@ class DatasetDerivator:
                         "value": value,
                     }
                 )
-                this_dataset._update_id()
-                derivedDatasetPath = os.path.join(self.out_path, this_dataset.id + "/")
+                temp_dir = tempfile.TemporaryDirectory()
+                temporaryDatasetPath = temp_dir.name
                 logging.info(
                     f"Generating Data Derivation for {this_dataset.id} with derivations {str(this_dataset.info['derivations']['data'])}"
                 )
                 newly_generated = False
-                if not os.path.exists(derivedDatasetPath) or self.ignore_cache:
+                # TODO: Reimplement caching by looking at all datasets in output folder and matching the derivations
+                if True or self.ignore_cache:
                     newly_generated = True
                     loadedDataset = this_dataset.loadData()
 
@@ -287,19 +291,34 @@ class DatasetDerivator:
                                 abort = True
 
                             bar_derivations.update()
-                    manager.stop()
                     if not abort:
                         setattr(loadedDataset, apply_to, datasets)
 
                         logging.info(f"Saving derived dataset {loadedDataset.id}")
-                        os.makedirs(os.path.dirname(derivedDatasetPath), exist_ok=True)
-                        loadedDataset.exportTo(derivedDatasetPath)
+                        os.makedirs(
+                            os.path.dirname(temporaryDatasetPath), exist_ok=True
+                        )
+                        loadedDataset.exportTo(temporaryDatasetPath)
 
-                if not abort:
-                    dataset = Dataset(derivedDatasetPath)
-                    if newly_generated:
+                        dataset = Dataset(temporaryDatasetPath)
                         logging.info("Populating cache")
+                        dataset.is_valid()
                         dataset.loadData()
+                        dataset_path = os.path.join(self.out_path, dataset.id + "/")
+                        shutil.copytree(
+                            temporaryDatasetPath, dataset_path, dirs_exist_ok=True
+                        )
+
+                        newDatasets.append(dataset)
+                        self.all_derived_datasets.append(dataset)
+
+                    temp_dir.cleanup()
+                    manager.stop()
+
+                else:
+                    # TODO: Update Path...
+                    dataset = Dataset(temporaryDatasetPath)
+                    # Dataset already generated
                     newDatasets.append(dataset)
                     self.all_derived_datasets.append(dataset)
 

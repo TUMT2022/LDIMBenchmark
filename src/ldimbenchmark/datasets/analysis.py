@@ -276,23 +276,23 @@ class DatasetAnalyzer:
 
             # TODO: Plot Leak Overview
 
-            mask = (
-                sensors.index >= leaks.start_times.min() - timedelta(minutes=20)
-            ) & (sensors.index <= leaks.end_times.max() + timedelta(minutes=20))
-            maskedsensors = sensors[mask]
+            # mask = (
+            #     sensors.index >= leaks.start_times.min() - timedelta(minutes=20)
+            # ) & (sensors.index <= leaks.end_times.max() + timedelta(minutes=20))
+            # maskedsensors = sensors[mask]
 
-            ax = maskedsensors.plot(figsize=(18, 6))
+            # ax = maskedsensors.plot(figsize=(18, 6))
 
-            ax.legend(
-                loc="upper center",
-                bbox_to_anchor=(0.5, 1.3),
-                ncol=3,
-                fancybox=True,
-                shadow=True,
-            )
+            # ax.legend(
+            #     loc="upper center",
+            #     bbox_to_anchor=(0.5, 1.3),
+            #     ncol=3,
+            #     fancybox=True,
+            #     shadow=True,
+            # )
 
-            for i, leak in leaks.iterrows():
-                plt.axvspan(leak.start_times, leak.end_times, color="red", alpha=0.5)
+            # for i, leak in leaks.iterrows():
+            #     plt.axvspan(leak.start_times, leak.end_times, color="red", alpha=0.5)
 
         datasets_table_common = pd.DataFrame.from_dict(
             datasets_table_common, orient="index"

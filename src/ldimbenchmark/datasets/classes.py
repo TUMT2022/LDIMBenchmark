@@ -287,12 +287,6 @@ class Dataset:
         Generates a checksum for the dataset folder. (excluding the validation file and the dataset_info.yaml file)
         This should protect against "silent" changes in the dataset.
         """
-        data_hash = self._get_data_checksum(folder)
-        self.info["checksum"] = data_hash
-        with open(self.__dataset_info_file_path, "w") as f:
-            yaml.dump(
-                self.info, f, sort_keys=False, default_flow_style=None, Dumper=TSDumper
-            )
 
     def _generate_dataset_hash(self, folder: str):
         """
@@ -303,7 +297,7 @@ class Dataset:
         with open(os.path.join(folder, self.__validation_file_name), "w") as f:
             f.write(str(pd.to_datetime(datetime.now(), utc=True)) + "\n" + new_hash)
 
-    def is_valid(self) -> bool:
+    def is_valid(self, check_consistency=False) -> bool:
         # Check the has of the whole dataset from time to time by writing the last timestamp
         # to a file and retrieving it before running the expensive hash function
         previous_info_hash = None
@@ -326,9 +320,12 @@ class Dataset:
             return False
         previous_info_hash = new_info_hash
 
-        if last_timestamp is None or last_timestamp < pd.to_datetime(
-            datetime.now(), utc=True
-        ) - pd.Timedelta("24 hour"):
+        if (
+            last_timestamp is None
+            or last_timestamp
+            < pd.to_datetime(datetime.now(), utc=True) - pd.Timedelta("24 hour")
+            or check_consistency
+        ):
             logging.info("Checking data consistency...")
 
             data_checksum = self._get_data_checksum(self.path)
@@ -498,14 +495,17 @@ class Dataset:
                     future.result()
 
         self.leaks.to_csv(os.path.join(folder, "leaks.csv"))
+        data_hash = self._get_data_checksum(folder)
+        self.info["checksum"] = data_hash
 
-        with open(self.__dataset_info_file_path, "w") as f:
+        with open(os.path.join(folder, self.__dataset_info_file_name), "w") as f:
             yaml.dump(
                 self.info, f, sort_keys=False, default_flow_style=None, Dumper=TSDumper
             )
         if os.path.exists(self.__pickle_path):
             os.remove(self.__pickle_path)
-        self._generate_dataset_hash(folder)
+        self._update_id()
+        self.is_valid()
 
 
 def getTimeSliceOfDataset(

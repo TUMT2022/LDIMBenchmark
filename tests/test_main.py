@@ -38,8 +38,8 @@ def test_benchmark(mocked_dataset1: Dataset):
     }
 
     benchmark = LDIMBenchmark(
-        hyperparameters,
-        mocked_dataset1,
+        hyperparameters=hyperparameters,
+        datasets=mocked_dataset1,
         results_dir="./benchmark-results",
         debug=True,
     )
