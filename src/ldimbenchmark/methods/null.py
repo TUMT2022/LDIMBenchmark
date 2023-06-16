@@ -24,9 +24,7 @@ class NullLeakageDetectionMethod(LDIMMethodBase):
                 hyperparameters=[],
             )
             # hyperparameters={"est_length": "3 days", "C_threshold": 3, "delta": 4},
-        )#
-    
-    
+        )  #
 
     def prepare(self, train_data: BenchmarkData) -> None:
         return
