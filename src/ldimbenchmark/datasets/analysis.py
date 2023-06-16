@@ -1,10 +1,21 @@
+from asyncio import as_completed
+from concurrent.futures import ProcessPoolExecutor
 from math import nan
+from ldimbenchmark.benchmark.benchmark import plot_leak
+from ldimbenchmark.constants import CPU_COUNT
 from ldimbenchmark.datasets.classes import Dataset
 import os
 import pandas as pd
+import numpy as np
 import wntr
 import matplotlib.pyplot as plt
 from typing import Literal, Union, List
+
+
+def delta_format(delta) -> str:
+    hours, remainder = divmod(delta.total_seconds(), 3600)
+    minutes, seconds = divmod(remainder, 60)
+    return "{:02}:{:02}:{:02}".format(int(hours), int(minutes), int(seconds))
 
 
 class DatasetAnalyzer:
@@ -100,6 +111,7 @@ class DatasetAnalyzer:
         out_dir: str,
         compare_df: List[pd.DataFrame] = None,
     ):
+        """Plots the time series data of each sensor and possible data for comparison"""
         fig, ax = plt.subplots(1, 1, figsize=(20, 10))
         ax.set_title(title)
 
@@ -116,9 +128,26 @@ class DatasetAnalyzer:
             )
             ax.legend([f"[Original] {label}" for label in df.columns])
         else:
-            df.plot(ax=ax)
+            df.plot(ax=ax, style=".-")
 
         fig.savefig(os.path.join(out_dir, f"{title}_{df.columns[0]}.png"))
+        plt.close(fig)
+
+    # Plot Overview of timeseries sensors
+    def _plot_sensor_dates(sensor_data, labels, filename):
+        colors = ["C{}".format(i) for i in range(len(labels))]
+
+        fig, axs = plt.subplots(1, 1, figsize=(90, len(labels) / 4))
+        # # create a horizontal plot
+        axs.eventplot(sensor_data, label=labels, colors=colors)
+        axs.set_yticks(range(len(sensor_data)))
+        axs.set_yticklabels(labels)
+
+        # x_ticks=np.array(sensor_data.index)
+        # x_ticks_1=pd.date_range(start=x_ticks.min(), end=x_ticks.max())
+        # axs.set_xticklabels(x_ticks_1,rotation = 45)
+        plt.show()
+        plt.savefig("out/" + filename + ".png")
         plt.close(fig)
 
     def analyze(self, datasets: Union[Dataset, List[Dataset]]):
@@ -141,11 +170,19 @@ class DatasetAnalyzer:
             info_table = pd.json_normalize(dataset.info)
             info_table.index = [dataset.id]
             datasets_table.append(info_table)
+
+            length = 0
+            for pipe_id in dataset.model.pipe_name_list:
+                pipe = dataset.model.get_link(pipe_id)
+                length += pipe.length
+
+            model_description = dataset.model.describe(1)
+            model_description["overall_length"] = length
             network_model_details[dataset.id] = pd.json_normalize(
                 dataset.model.describe()
             )
             network_model_details_medium[dataset.id] = pd.json_normalize(
-                dataset.model.describe(1)
+                model_description
             )
             network_model_details_fine[dataset.id] = pd.json_normalize(
                 dataset.model.describe(2)
@@ -155,18 +192,29 @@ class DatasetAnalyzer:
             os.makedirs(dataset_analysis_out_dir, exist_ok=True)
 
             dataset.loadData()
+            intervals = []
             # Plot each time series
-            # for data_name in ["demands", "pressures", "flows", "levels"]:
-            #     data_group = getattr(dataset, data_name)
-            #     for sensor_name, sensor_data in data_group.items():
-            #         if sensor_data.shape[1] > 0:
-            #             DatasetAnalyzer._plot_time_series(
-            #                 sensor_data,
-            #                 f"{dataset.id}: {data_name}",
-            #                 dataset_analysis_out_dir,
-            #             )
+            for data_name in ["demands", "pressures", "flows", "levels"]:
+                data_group = getattr(dataset, data_name)
+                for sensor_name, sensor_data in data_group.items():
+                    if sensor_data.shape[1] > 0:
+                        # DatasetAnalyzer._plot_time_series(
+                        #     sensor_data,
+                        #     f"{dataset.id}_{data_name}",
+                        #     dataset_analysis_out_dir,
+                        # )
+                        minTime = sensor_data.index.min()
+                        maxTime = sensor_data.index.max()
+                        timeLength = maxTime - minTime
+                        datapoint_count = len(sensor_data.index)
+                        interval_median = timeLength / datapoint_count
+                        intervals.append(interval_median)
 
             common_table = {}
+            common_table["interval_avg"] = np.average(intervals)
+            common_table["interval_med"] = np.median(intervals)
+            common_table["interval_min"] = min(intervals)
+            common_table["interval_max"] = max(intervals)
             leaks_analysis = dataset.leaks
             leaks_analysis["duration"] = (
                 dataset.leaks["leak_time_end"] - dataset.leaks["leak_time_start"]
@@ -197,6 +245,55 @@ class DatasetAnalyzer:
             # )
             # plt.close(fig)
 
+            # PLot leaks
+            # parallel = False
+            # if parallel:
+            #     with ProcessPoolExecutor(max_workers=CPU_COUNT) as executor:
+            #         # submit all tasks and get future objects
+            #         futures = []
+            #         for leak in dataset.leaks.iterrows():
+            #             future = executor.submit(
+            #                 plot_leak,
+            #                 dataset,
+            #                 leak_pair=(leak[1], None),
+            #                 out_dir=dataset_analysis_out_dir,
+            #                 compare_leaks=False,
+            #             )
+            #             futures.append(future)
+
+            #         # process results from tasks in order of task completion
+            #         for future in as_completed(futures):
+            #             future.result()
+
+            # else:
+            #     for leak in dataset.leaks.iterrows():
+            #         plot_leak(
+            #             dataset,
+            #             leak_pair=(leak[1], None),
+            #             out_dir=dataset_analysis_out_dir,
+            #             compare_leaks=False,
+            #         )
+
+            # TODO: Plot Leak Overview
+
+            mask = (
+                sensors.index >= leaks.start_times.min() - timedelta(minutes=20)
+            ) & (sensors.index <= leaks.end_times.max() + timedelta(minutes=20))
+            maskedsensors = sensors[mask]
+
+            ax = maskedsensors.plot(figsize=(18, 6))
+
+            ax.legend(
+                loc="upper center",
+                bbox_to_anchor=(0.5, 1.3),
+                ncol=3,
+                fancybox=True,
+                shadow=True,
+            )
+
+            for i, leak in leaks.iterrows():
+                plt.axvspan(leak.start_times, leak.end_times, color="red", alpha=0.5)
+
         datasets_table_common = pd.DataFrame.from_dict(
             datasets_table_common, orient="index"
         )
@@ -226,7 +323,6 @@ class DatasetAnalyzer:
             datasets_table["dataset.training.end"]
             - datasets_table["dataset.training.start"]
         )
-        datasets_table.to_csv(os.path.join(self.analysis_out_dir, "datasets_table.csv"))
 
         overview_table = pd.concat(
             [
@@ -240,37 +336,114 @@ class DatasetAnalyzer:
                         "Links.Pipes",
                         "Links.Pumps",
                         "Links.Valves",
+                        "overall_length",
                     ]
                 ],
             ],
             axis=1,
         )
-        # overview_table.index = overview_table.index.rename("LDM")
-        # overview_table.index.rename("LDM", inplace=True)
 
-        overview_table = overview_table.rename(
-            columns={
-                "Controls": "Controls",
-                "Nodes.Junctions": "Junctions",
-                "Nodes.Tanks": "Tanks",
-                "Nodes.Reservoirs": "Reservoirs",
-                "Links.Pipes": "Pipes",
-                "Links.Pumps": "Pumps",
-                "Links.Valves": "Valves",
-            }
+        overview_table = (
+            overview_table
+            # Fix index column
+            # https://stackoverflow.com/questions/46797598/how-to-remove-extra-row-after-set-index-without-losing-index-name
+            .reset_index(drop=True)
+            .set_index("name")
+            .rename_axis(None, axis=0)
+            .rename_axis("name", axis=1)
+            .rename(
+                columns={
+                    "Controls": "Controls",
+                    "Nodes.Junctions": "Junctions",
+                    "Nodes.Tanks": "Tanks",
+                    "Nodes.Reservoirs": "Reservoirs",
+                    "Links.Pipes": "Pipes",
+                    "Links.Pumps": "Pumps",
+                    "Links.Valves": "Valves",
+                    "overall_length": "Length",
+                }
+            )
         )
 
         overview_table.to_csv(
             os.path.join(self.analysis_out_dir, "network_model_details.csv")
         )
 
-        # .hide(axis="index") \
-        # .set_table_styles([
-        #     {'selector': 'toprule', 'props': ':hline;'},
-        #     {'selector': 'midrule', 'props': ':hline;'},
-        #     {'selector': 'bottomrule', 'props': ':hline;'},
-        # ], overwrite=False) \
-        overview_table.style.format(escape="latex").set_table_styles(
+        overview_table.style.format(
+            formatter={
+                "Length": "\\SI{{{:,.0f}}}{{\\meter}}",
+            },
+            escape="latex",
+        ).format_index(
+            formatter=lambda x: "\\rotatebox{45}{" + x + "}", axis="columns"
+        ).set_table_styles(
+            [
+                # {'selector': 'toprule', 'props': ':hline;'},
+                {"selector": "midrule", "props": ":hline;"},
+                # {'selector': 'bottomrule', 'props': ':hline;'},
+            ],
+            overwrite=False,
+        ).hide(
+            axis="index"
+        ).to_latex(
+            os.path.join(self.analysis_out_dir, "network_model_overview.tex"),
+            position_float="centering",
+            clines="all;data",
+            column_format="l|rrrrrrrr",
+            position="H",
+            label="table:networks_overview",
+            caption="Overview of the water networks.",
+        )
+
+        # time span between datapoints,
+
+        datasets_table.to_csv(
+            os.path.join(self.analysis_out_dir, "datasets_overview.csv")
+        )
+
+        datasets_table = (
+            datasets_table[
+                [
+                    "name",
+                    "time_duration_evaluation",
+                    "time_duration_training",
+                    "interval_min",
+                    "interval_max",
+                    "leaks_number",
+                    "leaks_duration_mean",
+                    "leaks_shorter_then_mean",
+                    "leaks_longer_then_mean",
+                ]
+            ]
+            # Fix index column
+            # https://stackoverflow.com/questions/46797598/how-to-remove-extra-row-after-set-index-without-losing-index-name
+            .reset_index(drop=True)
+            .set_index("name")
+            .rename_axis(None, axis=0)
+            .rename_axis("name", axis=1)
+            .rename(
+                columns={
+                    "time_duration_evaluation": "Evaluation Timespan",
+                    "time_duration_training": "Training Timespan",
+                    "interval_min": "min internal",
+                    "interval_max": "max interval",
+                    "leaks_number": "Leaks",
+                    "leaks_duration_mean": "Leak Duration",
+                    "leaks_shorter_then_mean": "shorter Leaks",
+                    "leaks_longer_then_mean": "longer Leaks",
+                }
+            )
+        )
+
+        datasets_table.style.format(
+            formatter={
+                "min internal": lambda v: delta_format(v),
+                "max interval": lambda v: delta_format(v),
+            },
+            escape="latex",
+        ).format_index(
+            formatter=lambda x: "\\rotatebox{45}{" + x + "}", axis="columns"
+        ).set_table_styles(
             [
                 # {'selector': 'toprule', 'props': ':hline;'},
                 {"selector": "midrule", "props": ":hline;"},
@@ -278,17 +451,15 @@ class DatasetAnalyzer:
             ],
             overwrite=False,
         ).to_latex(
-            # .relabel_index(["", "B", "C"], axis="columns") \
-            os.path.join(self.analysis_out_dir, "network_model_details.tex"),
+            os.path.join(self.analysis_out_dir, "datasets_overview.tex"),
             position_float="centering",
             clines="all;data",
-            column_format="l|rrrrrrr",
+            column_format="l|rrrrrrrr",
             position="H",
-            label="table:networks_overview",
+            label="table:datasets_overview",
             caption="Overview of the water networks.",
         )
 
         # Data
 
         # TODO: add total flow analysis
-        # TODO: Add dataset granularity of the sensors (5min, 30min)

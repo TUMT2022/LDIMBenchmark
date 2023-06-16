@@ -51,6 +51,7 @@ class BenchmarkLeakageResult(TypedDict):
     leak_area: float
     leak_diameter: float
     leak_max_flow: float
+    description: Optional[str]
 
 
 class Hyperparameter:

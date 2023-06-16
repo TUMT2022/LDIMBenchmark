@@ -12,7 +12,7 @@ import pandas as pd
 import os
 from glob import glob
 import json
-from typing import Literal, TypedDict, Dict
+from typing import Literal, Optional, TypedDict, Dict
 from ldimbenchmark.constants import CPU_COUNT, LDIM_BENCHMARK_CACHE_DIR
 import shutil
 import hashlib
@@ -73,6 +73,7 @@ class DatasetInfo(TypedDict):
     dataset: DatasetInfoDatasetProperty
     inp_file: str
     derivations: DatasetInfoDerivations
+    checksum: Optional[str]
 
 
 class _LoadedDatasetPartNew:
@@ -169,14 +170,16 @@ class Dataset:
         :param path: Path to the dataset folder
         """
         self.path = path
-        self.__pickle_path = os.path.join(self.path, "dataset.pickle")
         self.__validation_file_name = ".validation"
         self.__validation_path = os.path.join(self.path, self.__validation_file_name)
-        path_to_dataset_info = os.path.join(self.path, "dataset_info.yaml")
+        self.__dataset_info_file_name = "dataset_info.yaml"
+        self.__dataset_info_file_path = os.path.join(
+            self.path, self.__dataset_info_file_name
+        )
         # Read dataset_info.yaml
-        if os.path.isfile(path_to_dataset_info):
+        if os.path.isfile(self.__dataset_info_file_path):
             # file exists
-            with open(path_to_dataset_info) as f:
+            with open(self.__dataset_info_file_path) as f:
                 self.info: DatasetInfo = yaml.safe_load(f)
                 training_start = pd.to_datetime(
                     self.info["dataset"]["training"]["start"], utc=True
@@ -224,13 +227,21 @@ class Dataset:
                 self.info["dataset"]["evaluation"]["start"] = evaluation_start
                 self.info["dataset"]["evaluation"]["end"] = evaluation_end
 
+                if "checksum" not in self.info:
+                    logging.warn(
+                        "No checksum for data integrity found in dataset_info.yaml"
+                    )
+                    self.info["checksum"] = None
+                self.checksum = self.info["checksum"]
+
         else:
             raise Exception(
-                f"No dataset_info.yaml file found! (not at: '{path_to_dataset_info}')"
+                f"No dataset_info.yaml file found! (not at: '{self.__dataset_info_file_path}')"
             )
 
         self.name = self.info["name"]
         self._update_id()
+        self.__pickle_path = os.path.join(self.path, f"dataset-{self.id}.pickle")
 
         self.model = read_inpfile(os.path.join(self.path, self.info["inp_file"]))
         dma_path = os.path.join(self.path, "dmas.json")
@@ -257,7 +268,37 @@ class Dataset:
         )
         self.id = self.info["name"] + derivations_hash
 
+    def _get_data_checksum(self, folder: str):
+        """
+        Generates a checksum for the data in the folder. (excluding the validation file and the dataset_info.yaml file)
+        This should protect against "silent" changes in the dataset.
+        """
+        return dirhash(
+            folder,
+            "md5",
+            ignore_hidden=True,
+            excluded_files=[
+                self.__dataset_info_file_name,
+            ],
+        )
+
+    def _generate_checksum(self, folder: str):
+        """
+        Generates a checksum for the dataset folder. (excluding the validation file and the dataset_info.yaml file)
+        This should protect against "silent" changes in the dataset.
+        """
+        data_hash = self._get_data_checksum(folder)
+        self.info["checksum"] = data_hash
+        with open(self.__dataset_info_file_path, "w") as f:
+            yaml.dump(
+                self.info, f, sort_keys=False, default_flow_style=None, Dumper=TSDumper
+            )
+
     def _generate_dataset_hash(self, folder: str):
+        """
+        Creates Hash for the whole dataset folder. (excluding only the validation file)
+        This should protect against "silent" changes in the dataset and info file, while just looking something up.
+        """
         new_hash = dirhash(folder, "md5", ignore_hidden=True)
         with open(os.path.join(folder, self.__validation_file_name), "w") as f:
             f.write(str(pd.to_datetime(datetime.now(), utc=True)) + "\n" + new_hash)
@@ -265,29 +306,44 @@ class Dataset:
     def is_valid(self) -> bool:
         # Check the has of the whole dataset from time to time by writing the last timestamp
         # to a file and retrieving it before running the expensive hash function
-        md5hash = None
+        previous_info_hash = None
         try:
             with open(self.__validation_path, "r") as f:
                 timestamp_file = f.readlines()
                 last_timestamp = pd.to_datetime(timestamp_file[0], utc=True)
-                md5hash = timestamp_file[1]
+                previous_info_hash = timestamp_file[1]
         except (FileNotFoundError, IndexError):
             logging.warn("Dataset had no hashes for validation.")
             last_timestamp = None
 
+        with open(self.__dataset_info_file_path, "r") as f:
+            new_info_hash = hashlib.md5(f.read().encode("utf-8")).hexdigest()
+
+        if previous_info_hash != None and previous_info_hash != new_info_hash:
+            logging.warn(
+                "dataset_info.yaml has changed since last validation! Check for changes and either revert them or make sure you want them by deleting the .validation file!"
+            )
+            return False
+        previous_info_hash = new_info_hash
+
         if last_timestamp is None or last_timestamp < pd.to_datetime(
             datetime.now(), utc=True
         ) - pd.Timedelta("24 hour"):
-            logging.info("Checking dataset consistency...")
-            new_hash = dirhash(self.path, "md5", ignore_hidden=True)
-            if md5hash != None and md5hash != new_hash:
+            logging.info("Checking data consistency...")
+
+            data_checksum = self._get_data_checksum(self.path)
+            if self.checksum != data_checksum:
                 logging.info(
-                    "Dataset hash changed! Check the consistency of the dataset!"
+                    "Data checksum changed! Check the consistency of the dataset!"
                 )
                 return False
-            md5hash = new_hash
+
             with open(self.__validation_path, "w") as f:
-                f.write(str(pd.to_datetime(datetime.now(), utc=True)) + "\n" + md5hash)
+                f.write(
+                    str(pd.to_datetime(datetime.now(), utc=True))
+                    + "\n"
+                    + previous_info_hash
+                )
         return True
 
     ######
@@ -443,7 +499,7 @@ class Dataset:
 
         self.leaks.to_csv(os.path.join(folder, "leaks.csv"))
 
-        with open(os.path.join(folder, f"dataset_info.yaml"), "w") as f:
+        with open(self.__dataset_info_file_path, "w") as f:
             yaml.dump(
                 self.info, f, sort_keys=False, default_flow_style=None, Dumper=TSDumper
             )

@@ -50,19 +50,32 @@ def get_mask(dataset: pd.DataFrame, start, end, extra_timespan):
     )
 
 
+def get_leak_pair_type(expected_leak, detected_leak):
+    # False positive
+    if expected_leak is None and detected_leak is not None:
+        return "fp"
+    # False negative
+    if detected_leak is None and expected_leak is not None:
+        return "fn"
+    # True negative are not existent in this type of analysis.
+    # True positive
+    return ""
+
+
 def plot_leak(
     dataset: Dataset,
     leak_pair,
-    additional_data_dir,
     out_dir,
+    additional_data_dir=None,
     boundary_timespan_overwrite: pd.Timedelta = None,
+    compare_leaks: bool = True,
 ):
     fig = plt.figure(figsize=(20, 10))
     gs = fig.add_gridspec(3, hspace=0)
     ax_dataset_flows, ax_dataset_pressures, ax_method = gs.subplots(
         sharex=True, sharey=False
     )
-    # fig, ax = plt.subplots()
+
     name = ""
     expected_leak, detected_leak = leak_pair
 
@@ -110,7 +123,7 @@ def plot_leak(
                 lw=0,
                 zorder=1,
             )
-        ax_method.text(expected_leak_start, 0, "Expected Leak", rotation=90)
+        ax_method.text(expected_leak_start, 10, "Expected Leak", rotation=90)
 
     # Plot detected leak:
     if detected_leak is not None:
@@ -132,7 +145,9 @@ def plot_leak(
 
     # Plot expected leak:
     if detected_leak is None and expected_leak is not None:
-        name = expected_leak["leak_time_start"].strftime("%Y_%m_%d_%H_%M_%S") + "_fn"
+        name = expected_leak["leak_time_start"].strftime("%Y_%m_%d_%H_%M_%S") + (
+            "_fn" if compare_leaks else ""
+        )
 
     ax_dataset_pressures.set_ylabel("Pressure")
     for sensor_id, sensor_readings in getattr(dataset, "pressures").items():
@@ -194,42 +209,43 @@ def plot_leak(
         )
 
     # Plot debug data:
-    debug_folder = os.path.join(additional_data_dir, "debug/")
-    # TODO: Adjust Mask for each debug data
-    ax_method.set_ylabel("Debug")
-    ax_method.set_xlabel("Time")
-    if os.path.exists(debug_folder):
-        files = glob(debug_folder + "*.csv")
-        for file in files:
-            try:
-                debug_data = pd.read_csv(file, parse_dates=True, index_col=0)
-                if boundary == None:
-                    alternative_boundarys = (
-                        sensor_readings.index[-1] - sensor_readings.index[0]
-                    ) / (sensor_readings.shape[0] / 6)
-                if boundary_timespan_overwrite is not None:
-                    boundary = boundary_timespan_overwrite
-                mask = get_mask(
-                    debug_data,
-                    reference_time,
-                    reference_time + leak_time,
-                    boundary,
-                )
-                debug_data = debug_data[mask]
-                for column in debug_data.columns:
-                    ax_method.plot(
-                        debug_data.index,
-                        debug_data[column],
-                        alpha=1,
-                        linestyle="dashed",
-                        zorder=3,
-                        label=column,
+    if additional_data_dir is not None:
+        debug_folder = os.path.join(additional_data_dir, "debug/")
+        # TODO: Adjust Mask for each debug data
+        ax_method.set_ylabel("Debug")
+        ax_method.set_xlabel("Time")
+        if os.path.exists(debug_folder):
+            files = glob(debug_folder + "*.csv")
+            for file in files:
+                try:
+                    debug_data = pd.read_csv(file, parse_dates=True, index_col=0)
+                    if boundary == None:
+                        alternative_boundarys = (
+                            sensor_readings.index[-1] - sensor_readings.index[0]
+                        ) / (sensor_readings.shape[0] / 6)
+                    if boundary_timespan_overwrite is not None:
+                        boundary = boundary_timespan_overwrite
+                    mask = get_mask(
+                        debug_data,
+                        reference_time,
+                        reference_time + leak_time,
+                        boundary,
                     )
-                # Do not use df.plot(): https://github.com/pandas-dev/pandas/issues/51795
-                # debug_data.plot(ax=ax_method, alpha=1, linestyle="dashed", zorder=3)
-            except Exception as e:
-                logging.exception(e)
-                pass
+                    debug_data = debug_data[mask]
+                    for column in debug_data.columns:
+                        ax_method.plot(
+                            debug_data.index,
+                            debug_data[column],
+                            alpha=1,
+                            linestyle="dashed",
+                            zorder=3,
+                            label=column,
+                        )
+                    # Do not use df.plot(): https://github.com/pandas-dev/pandas/issues/51795
+                    # debug_data.plot(ax=ax_method, alpha=1, linestyle="dashed", zorder=3)
+                except Exception as e:
+                    logging.exception(e)
+                    pass
 
     # box = ax.get_position()
     # ax.set_position([box.x0, box.y0, box.width * 0.8, box.height])
@@ -661,7 +677,8 @@ class LDIMBenchmark:
             for experiment in self.experiments:
                 experiment.run()
                 bar_experiments.update()
-        status_bar.close()
+        if "status_bar" in locals():
+            status_bar.close()
         bar_experiments.close()
         manager.stop()
 
@@ -808,7 +825,9 @@ class LDIMBenchmark:
                     first_run = False
                 except Exception as e:
                     logging.warning(e)
-                    logging.warning(f"Could not write leak pairs to database. For {index}")
+                    logging.warning(
+                        f"Could not write leak pairs to database. For {index}"
+                    )
             results = results.drop(columns=["matched_leaks_list"])
             results.to_sql("results", engine, if_exists="replace")
 
@@ -841,10 +860,11 @@ class LDIMBenchmark:
                         self.evaluation_results_dir,
                     )
 
+        results = results.reset_index("_folder")
         results = results.set_index(["method", "method_version", "dataset_id"])
         results = results.sort_values(by=["F1"])
         # Display in console
-        results = results.drop(
+        console_display = results.drop(
             columns=[
                 "_folder",
                 "matched_leaks_list",
@@ -877,12 +897,13 @@ class LDIMBenchmark:
             "FNR",
             "F1",
         ]
-        results.columns = columns
+        console_display.columns = columns
         if print_results:
-            print(tabulate(results, headers="keys"))
+            print(tabulate(console_display, headers="keys"))
         return results
 
     def evaluate_run(self, run_id: str, boundary_timespan_overwrite=None):
+        logging.info(f"Evaluating run {run_id}")
         result_folder = os.path.join(self.runner_results_dir, run_id)
         result = load_result(result_folder)
 
@@ -904,9 +925,10 @@ class LDIMBenchmark:
         fig, ax = plt.subplots(figsize=(10, 10))
         ax.set_axisbelow(True)
         ax.grid(visible=True, axis="x")
-        fig.gca().xaxis.set_major_formatter(mdates.DateFormatter("%Y-%m-%d"))
-        fig.gca().xaxis.set_major_locator(mdates.DayLocator(interval=14))
+        # fig.gca().xaxis.set_major_formatter(mdates.DateFormatter("%Y-%m-%d"))
+        # fig.gca().xaxis.set_major_locator(mdates.DayLocator(interval=14))
 
+        labels = [None] * len(result["matched_leaks_list"])
         for index, (expected_leak, detected_leak) in enumerate(
             result["matched_leaks_list"]
         ):
@@ -919,12 +941,11 @@ class LDIMBenchmark:
                     length = 2
                 ax.barh(
                     [num],
-                    # [2],
                     [length],
                     left=[mdates.date2num(expected_leak["leak_time_start"])],
-                    # height=[100000],
                     label="expected",
                     color="yellow",
+                    alpha=0.5,
                 )
 
             # print(detected_leak)
@@ -938,17 +959,29 @@ class LDIMBenchmark:
                     [num],
                     [length],
                     left=[mdates.date2num(detected_leak["leak_time_start"])],
-                    # height=[100000],
                     label="detected",
                     color="green",
+                    alpha=0.5,
                 )
+            leak_pair_type = get_leak_pair_type(expected_leak, detected_leak)
+            labels[num - 1] = str(num) + (
+                "" if leak_pair_type == "" else f" ({leak_pair_type})"
+            )
+
         ax.set_yticks(range(1, len(result["matched_leaks_list"]) + 1))
+        ax.set_yticklabels(labels)
         # ax.xaxis_date()
-        ax.set_title("leak time spans overview")
-        ax.set_ylabel("Leaks")
-        ax.set_xlabel("Time")
-        yellow_patch = patches.Patch(color="yellow", label="Expected Leaks")
-        green_patch = patches.Patch(color="green", label="Detected Leaks")
+        ax.set_title("Overview of expected and detected leaks")
+        ax.set_ylabel("leaks")
+        ax.set_xlabel("time")
+        ax.set_xlim(
+            loaded_datasets[result["dataset_id"]].info["dataset"]["evaluation"][
+                "start"
+            ],
+            loaded_datasets[result["dataset_id"]].info["dataset"]["evaluation"]["end"],
+        )
+        yellow_patch = patches.Patch(color="yellow", label="expected leaks")
+        green_patch = patches.Patch(color="green", label="detected leaks")
         plt.legend(handles=[yellow_patch, green_patch])
         plt.gcf().autofmt_xdate()
         fig.savefig(os.path.join(graph_dir, "leaks_overview.png"))
