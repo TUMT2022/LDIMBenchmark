@@ -1,5 +1,4 @@
 import re
-from importlib_resources import path
 import pytest
 from ldimbenchmark.datasets.classes import (
     Dataset,
