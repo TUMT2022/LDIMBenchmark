@@ -27,7 +27,6 @@ def evaluate_leakages(expected_leaks: pd.DataFrame, detected_leaks: pd.DataFrame
     right_leak_detected = 0
     non_existing_leak_detected = 0
     existing_leak_not_detected = 0
-    time_to_detection = ""
     wrong_pipe_detected = 0
 
     # Make sure dates are the same
@@ -160,9 +159,10 @@ def evaluate_leakages(expected_leaks: pd.DataFrame, detected_leaks: pd.DataFrame
             "false_positives": non_existing_leak_detected,
             "true_negatives": None,  # Not applicable, we dont have information about non-leaks
             "false_negatives": existing_leak_not_detected,
-            "time_to_detection": None
+            "time_to_detection_avg": None
             if len(time_to_detection) == 0
-            else np.sum(time_to_detection),
+            else np.average(time_to_detection),
+            "times_to_detection": time_to_detection,
             "wrong_pipe": wrong_pipe_detected,
         },
         matched_list,

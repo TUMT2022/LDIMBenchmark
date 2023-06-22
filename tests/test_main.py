@@ -19,8 +19,6 @@ from pandas.testing import assert_frame_equal
 
 
 def test_benchmark(mocked_dataset1: Dataset):
-    # dataset = Dataset(TEST_DATA_FOLDER_BATTLEDIM)
-
     local_methods = [MNF(), LILA(), DUALMethod()]
 
     hyperparameters = {
@@ -54,6 +52,40 @@ def test_benchmark(mocked_dataset1: Dataset):
     )
 
     benchmark.evaluate()
+    # benchmark.evaluate(
+    #     generate_plots=True,
+    # )
+
+
+def test_benchmark_grid_search(mocked_dataset1: Dataset):
+    local_methods = [MNF()]
+
+    hyperparameters = {
+        "mnf": {
+            "window": [10, 12],
+            "gamma": [0.1],
+        },
+    }
+
+    benchmark = LDIMBenchmark(
+        hyperparameters=hyperparameters,
+        datasets=mocked_dataset1,
+        results_dir="./benchmark-results",
+        multi_parameters=True,
+        debug=True,
+    )
+    benchmark.add_local_methods(local_methods)
+
+    # execute benchmark
+    benchmark.run_benchmark(
+        evaluation_mode="evaluation",
+        # parallel=True,
+    )
+
+    benchmark.evaluate(write_results="db")
+
+    benchmark.evaluate(write_results="csv")
+    benchmark.evaluate(write_results="tex")
     # benchmark.evaluate(
     #     generate_plots=True,
     # )

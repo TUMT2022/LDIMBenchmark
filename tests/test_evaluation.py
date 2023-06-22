@@ -53,7 +53,8 @@ class MyTestCase(unittest.TestCase):
             "false_positives": 0,
             "true_negatives": None,
             "false_negatives": 1,
-            "time_to_detection": 0.0,
+            "time_to_detection_avg": 0.0,
+            "times_to_detection": [0.0],
             "wrong_pipe": 0,
         }
 
@@ -103,7 +104,8 @@ class MyTestCase(unittest.TestCase):
             "false_positives": 1,
             "true_negatives": None,
             "false_negatives": 0,
-            "time_to_detection": 0.0,
+            "time_to_detection_avg": 0.0,
+            "times_to_detection": [0.0],
             "wrong_pipe": 0,
         }
 
@@ -173,7 +175,8 @@ class MyTestCase(unittest.TestCase):
             "false_positives": 1,
             "true_negatives": None,
             "false_negatives": 0,
-            "time_to_detection": 600.0,
+            "time_to_detection_avg": 300.0,
+            "times_to_detection": [300.0, 300.0],
             "wrong_pipe": 0,
         }
 
@@ -243,7 +246,8 @@ class MyTestCase(unittest.TestCase):
             "false_positives": 0,
             "true_negatives": None,
             "false_negatives": 1,
-            "time_to_detection": 600.0,
+            "time_to_detection_avg": 300.0,
+            "times_to_detection": [300.0, 300.0],
             "wrong_pipe": 0,
         }
 
@@ -303,7 +307,8 @@ class MyTestCase(unittest.TestCase):
             "false_positives": 2,
             "true_negatives": None,
             "false_negatives": 2,
-            "time_to_detection": None,
+            "time_to_detection_avg": None,
+            "times_to_detection": [],
             "wrong_pipe": 0,
         }
 
@@ -386,11 +391,12 @@ class MyTestCase(unittest.TestCase):
             "false_positives": 1,
             "true_negatives": None,
             "false_negatives": 1,
-            "time_to_detection": 86700.0,
+            "time_to_detection_avg": 86700.0,
+            "times_to_detection": [86700.0],
             "wrong_pipe": 1,
         }
 
-    def test_evaluate_leakages_time_to_detection(self):
+    def test_evaluate_leakages_time_to_detection_avg(self):
         evaluation_results, matched_list = evaluate_leakages(
             pd.DataFrame(
                 [
@@ -446,7 +452,8 @@ class MyTestCase(unittest.TestCase):
             "false_positives": 0,
             "true_negatives": None,
             "false_negatives": 0,
-            "time_to_detection": 1200,
+            "time_to_detection_avg": 600.0,
+            "times_to_detection": [600.0, 600.0],
             "wrong_pipe": 0,
         }
 
@@ -485,7 +492,8 @@ class MyTestCase(unittest.TestCase):
             "false_positives": 0,
             "true_negatives": None,
             "false_negatives": 2,
-            "time_to_detection": None,
+            "time_to_detection_avg": None,
+            "times_to_detection": [],
             "wrong_pipe": 0,
         }
 
@@ -524,7 +532,8 @@ class MyTestCase(unittest.TestCase):
             "false_positives": 2,
             "true_negatives": None,
             "false_negatives": 0,
-            "time_to_detection": None,
+            "time_to_detection_avg": None,
+            "times_to_detection": [],
             "wrong_pipe": 0,
         }
 
@@ -542,6 +551,7 @@ class MyTestCase(unittest.TestCase):
             "false_positives": 0,
             "true_negatives": None,
             "false_negatives": 0,
-            "time_to_detection": None,
+            "time_to_detection_avg": None,
+            "times_to_detection": [],
             "wrong_pipe": 0,
         }

@@ -297,11 +297,11 @@ def create_plots(
                     columns=param_2,  # , "hyperparameters.delta"]
                 )
                 if len(pvt) != 0:
-                    sns.heatmap(pvt, ax=axs[real_row, col], cmap=cmap)
+                    sns.heatmap(pvt, ax=axs[real_row, col], cmap=cmap, vmin=0, vmax=1)
                 axs[real_row, col].set_ylabel(param_1)
                 axs[real_row, col].set_xlabel(param_2)
                 # axs[real_row, col].yaxis.set_major_formatter(FormatStrFormatter("%.2f"))
-                axs[real_row, col].xaxis.set_major_formatter(FormatStrFormatter("%.2f"))
+                # axs[real_row, col].xaxis.set_major_formatter(FormatStrFormatter("%.2f"))
 
             else:
                 if len(hyperparameters) > 2 and (
@@ -362,6 +362,7 @@ class LDIMBenchmark:
         self.experiments: List[MethodRunner] = []
         self.results = {}
         self.cache_dir = cache_dir
+        os.makedirs(self.cache_dir, exist_ok=True)
         self.results_dir = results_dir
         self.runner_results_dir = os.path.join(self.results_dir, "runner_results")
         self.evaluation_results_dir = os.path.join(
@@ -687,7 +688,7 @@ class LDIMBenchmark:
         current_only=True,
         resultFilter: Callable = lambda r: r,
         print_results: bool = True,
-        write_results: Union[None, Literal["csv", "db"]] = None,
+        write_results: List[Union[None, Literal["csv", "db", "tex"]]] = None,
         evaluations: List[Callable] = [
             precision,
             recall,
@@ -704,6 +705,9 @@ class LDIMBenchmark:
         :param write_results: Write the evaluation results to the results directory.
         :param evaluations: The Evaluation Metrics to be run.
         """
+
+        if not isinstance(write_results, list):
+            write_results = [write_results]
 
         # TODO: Groupby datasets (and derivations) or by method
         # How does the method perform on different datasets?
@@ -737,6 +741,18 @@ class LDIMBenchmark:
 
                 result_folders = list(result_folders_frame[0].values)
 
+        pickle_cache_path = os.path.join(self.cache_dir, "results.pkl")
+        if os.path.exists(pickle_cache_path):
+            logging.info("Reading results from Cache")
+            previous_results = pd.read_pickle(pickle_cache_path)
+
+            result_folders_frame = result_folders_frame[
+                ~result_folders_frame["id"].isin(previous_results["_folder"])
+            ]
+            result_folders = list(result_folders_frame[0].values)
+        else:
+            previous_results = pd.DataFrame()
+
         manager = enlighten.get_manager()
         pbar1 = manager.counter(
             total=len(result_folders),
@@ -762,9 +778,9 @@ class LDIMBenchmark:
                 results.append(load_result(experiment_result))
                 pbar1.update()
         pbar1.close()
-        manager.stop()
 
-        results = pd.DataFrame(results)
+        results = pd.concat([previous_results, pd.DataFrame(results)])
+        results.to_pickle(pickle_cache_path)
 
         for function in evaluations:
             results = function(results)
@@ -772,63 +788,32 @@ class LDIMBenchmark:
         results = resultFilter(results)
         # https://towardsdatascience.com/performance-metrics-confusion-matrix-precision-recall-and-f1-score-a8fe076a2262
         results = results.set_index(["_folder"])
+        results["times_to_detection"] = results["times_to_detection"].astype(str)
 
         os.makedirs(self.evaluation_results_dir, exist_ok=True)
 
-        if write_results == "csv":
-            results = results.drop(columns=["matched_leaks_list"])
+        if "csv" in write_results:
+            results = results.drop(
+                columns=["matched_leaks_list", "detected_leaks_frame"]
+            )
             logging.info("Writing results as csv")
             results.to_csv(os.path.join(self.evaluation_results_dir, "results.csv"))
 
-            results.style.format(escape="latex").set_table_styles(
-                [
-                    # {'selector': 'toprule', 'props': ':hline;'},
-                    {"selector": "midrule", "props": ":hline;"},
-                    # {'selector': 'bottomrule', 'props': ':hline;'},
-                ],
-                overwrite=False,
-            ).relabel_index(columns, axis="columns").to_latex(
-                os.path.join(self.evaluation_results_dir, "results.tex"),
-                position_float="centering",
-                clines="all;data",
-                column_format="ll|" + "r" * len(columns),
-                position="H",
-                label="table:benchmark_results",
-                caption="Overview of the benchmark results.",
-            )
-        elif write_results == "db":
+        if "db" in write_results:
             logging.info("Writing results to database")
             result_db = os.path.join(self.evaluation_results_dir, "results.db")
             if os.path.exists(result_db):
                 os.remove(result_db)
             engine = create_engine(f"sqlite:///{result_db}")
-            first_run = True
-            for index, values in results.iterrows():
-                leak_pairs = pd.DataFrame(values["matched_leaks_list"])
-                try:
-                    leak_pairs = pd.concat(
-                        [
-                            pd.json_normalize(leak_pairs[0]).add_prefix("expected."),
-                            (pd.json_normalize(leak_pairs[1]).add_prefix("detected.")),
-                        ],
-                        axis=1,
-                    )
-                    leak_pairs = leak_pairs.drop(
-                        columns=["expected.type", "detected.type"],
-                        errors="ignore",
-                    )
-                    leak_pairs["result_id"] = index
-                    if first_run:
-                        leak_pairs.to_sql("leak_pairs", engine, if_exists="replace")
-                    else:
-                        leak_pairs.to_sql("leak_pairs", engine, if_exists="append")
-                    first_run = False
-                except Exception as e:
-                    logging.warning(e)
-                    logging.warning(
-                        f"Could not write leak pairs to database. For {index}"
-                    )
-            results = results.drop(columns=["matched_leaks_list"])
+            leak_pairs = pd.concat(list(results["detected_leaks_frame"]))
+
+            leak_pairs.to_sql("leak_pairs", engine, if_exists="replace")
+            results = results.drop(
+                columns=[
+                    "matched_leaks_list",
+                    "detected_leaks_frame",
+                ]
+            )
             results.to_sql("results", engine, if_exists="replace")
 
         # Generate Heatmaps if multiple parameters are used
@@ -848,26 +833,37 @@ class LDIMBenchmark:
                 get_method_name_from_docker_image(dmethod)
                 for dmethod in self.methods_docker
             ] + [lmethod.name for lmethod in self.methods_local]
+
+            hyperparameters_map = self._get_hyperparameters_for_methods_and_datasets(
+                hyperparameters=self.hyperparameters,
+                method_ids=methods,
+                dataset_base_ids=[dataset.id for dataset in self.datasets],
+            )
+
             for method in methods:
-                for dataset_name in map(lambda x: x.name, self.datasets):
+                for dataset_id, dataset_name in map(
+                    lambda x: (x.id, x.name), self.datasets
+                ):
                     logging.info(f"Generating Heatmap for {method} {dataset_name}")
                     create_plots(
                         flat_results,
                         method,
                         dataset_name,
-                        self.hyperparameters[method].keys(),
+                        hyperparameters_map[method][dataset_id].keys(),
                         performance_indicator,
                         self.evaluation_results_dir,
                     )
 
         results = results.reset_index("_folder")
         results = results.set_index(["method", "method_version", "dataset_id"])
-        results = results.sort_values(by=["F1"])
+        results = results.sort_values(by=["F1", "true_positives"])
         # Display in console
         console_display = results.drop(
             columns=[
                 "_folder",
                 "matched_leaks_list",
+                "detected_leaks_frame",
+                "times_to_detection",
                 "train_time",
                 "detect_time",
                 "time_initializing",
@@ -897,7 +893,28 @@ class LDIMBenchmark:
             "FNR",
             "F1",
         ]
-        console_display.columns = columns
+
+        if "tex" in write_results:
+            console_display.columns = columns
+            console_display.style.format(escape="latex").set_table_styles(
+                [
+                    # {'selector': 'toprule', 'props': ':hline;'},
+                    {"selector": "midrule", "props": ":hline;"},
+                    # {'selector': 'bottomrule', 'props': ':hline;'},
+                ],
+                overwrite=False,
+                # TODO: Columns does not exist yet
+            ).to_latex(
+                os.path.join(self.evaluation_results_dir, "results.tex"),
+                position_float="centering",
+                clines="all;data",
+                column_format="ll|" + "r" * len(columns),
+                position="H",
+                label="table:benchmark_results",
+                caption="Overview of the benchmark results.",
+            )
+        manager.stop()
+
         if print_results:
             print(tabulate(console_display, headers="keys"))
         return results
@@ -909,6 +926,7 @@ class LDIMBenchmark:
 
         manager = enlighten.get_manager()
         loaded_datasets = {}
+        # TODO: Load datasets from Ids of the to evaluate run...
         for dataset in self.datasets:
             if type(dataset) is str:
                 loaded = Dataset(dataset)

@@ -315,6 +315,10 @@ class DatasetAnalyzer:
             os.path.join(dataset_analysis_out_dir, "network_model_details_fine.csv")
         )
 
+        datasets_table["time_duration"] = (
+            datasets_table["dataset.evaluation.end"]
+            - datasets_table["dataset.training.start"]
+        )
         datasets_table["time_duration_evaluation"] = (
             datasets_table["dataset.evaluation.end"]
             - datasets_table["dataset.evaluation.start"]
@@ -323,6 +327,8 @@ class DatasetAnalyzer:
             datasets_table["dataset.training.end"]
             - datasets_table["dataset.training.start"]
         )
+
+        # TODO include leak free time interval
 
         overview_table = pd.concat(
             [
@@ -405,8 +411,7 @@ class DatasetAnalyzer:
             datasets_table[
                 [
                     "name",
-                    "time_duration_evaluation",
-                    "time_duration_training",
+                    "time_duration",
                     "interval_min",
                     "interval_max",
                     "leaks_number",
@@ -423,8 +428,7 @@ class DatasetAnalyzer:
             .rename_axis("name", axis=1)
             .rename(
                 columns={
-                    "time_duration_evaluation": "Evaluation Timespan",
-                    "time_duration_training": "Training Timespan",
+                    "time_duration": "Timespan",
                     "interval_min": "min internal",
                     "interval_max": "max interval",
                     "leaks_number": "Leaks",
