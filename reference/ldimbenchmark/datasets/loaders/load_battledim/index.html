@@ -1010,6 +1010,59 @@
   
   
   
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+      
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_6_1_8" type="checkbox" id="__nav_6_1_8" >
+      
+      
+      
+      
+        
+        
+        <div class="md-nav__link md-nav__link--index ">
+          <a href="../../../evaluation/">evaluation</a>
+          
+            <label for="__nav_6_1_8">
+              <span class="md-nav__icon md-icon"></span>
+            </label>
+          
+        </div>
+      
+      <nav class="md-nav" aria-label="evaluation" data-md-level="3">
+        <label class="md-nav__title" for="__nav_6_1_8">
+          <span class="md-nav__icon md-icon"></span>
+          evaluation
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../evaluation/sensitivity/" class="md-nav__link">
+        sensitivity
+      </a>
+    </li>
+  
+
+            
+          
+        </ul>
+      </nav>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
     <li class="md-nav__item">
       <a href="../../../evaluation_metrics/" class="md-nav__link">
         evaluation_metrics
@@ -1028,7 +1081,7 @@
     <li class="md-nav__item md-nav__item--nested">
       
       
-        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_6_1_9" type="checkbox" id="__nav_6_1_9" >
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_6_1_10" type="checkbox" id="__nav_6_1_10" >
       
       
       
@@ -1038,14 +1091,14 @@
         <div class="md-nav__link md-nav__link--index ">
           <a href="../../../generator/">generator</a>
           
-            <label for="__nav_6_1_9">
+            <label for="__nav_6_1_10">
               <span class="md-nav__icon md-icon"></span>
             </label>
           
         </div>
       
       <nav class="md-nav" aria-label="generator" data-md-level="3">
-        <label class="md-nav__title" for="__nav_6_1_9">
+        <label class="md-nav__title" for="__nav_6_1_10">
           <span class="md-nav__icon md-icon"></span>
           generator
         </label>
@@ -1095,7 +1148,7 @@
     <li class="md-nav__item md-nav__item--nested">
       
       
-        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_6_1_10" type="checkbox" id="__nav_6_1_10" >
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_6_1_11" type="checkbox" id="__nav_6_1_11" >
       
       
       
@@ -1105,14 +1158,14 @@
         <div class="md-nav__link md-nav__link--index ">
           <a href="../../../methods/">methods</a>
           
-            <label for="__nav_6_1_10">
+            <label for="__nav_6_1_11">
               <span class="md-nav__icon md-icon"></span>
             </label>
           
         </div>
       
       <nav class="md-nav" aria-label="methods" data-md-level="3">
-        <label class="md-nav__title" for="__nav_6_1_10">
+        <label class="md-nav__title" for="__nav_6_1_11">
           <span class="md-nav__icon md-icon"></span>
           methods
         </label>
@@ -1253,7 +1306,7 @@
     <li class="md-nav__item md-nav__item--nested">
       
       
-        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_6_1_10_10" type="checkbox" id="__nav_6_1_10_10" >
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_6_1_11_10" type="checkbox" id="__nav_6_1_11_10" >
       
       
       
@@ -1263,14 +1316,14 @@
         <div class="md-nav__link md-nav__link--index ">
           <a href="../../../methods/utils/">utils</a>
           
-            <label for="__nav_6_1_10_10">
+            <label for="__nav_6_1_11_10">
               <span class="md-nav__icon md-icon"></span>
             </label>
           
         </div>
       
       <nav class="md-nav" aria-label="utils" data-md-level="4">
-        <label class="md-nav__title" for="__nav_6_1_10_10">
+        <label class="md-nav__title" for="__nav_6_1_11_10">
           <span class="md-nav__icon md-icon"></span>
           utils
         </label>
@@ -1427,8 +1480,7 @@
 
       <details class="quote">
         <summary>Source code in <code>ldimbenchmark/datasets/loaders/load_battledim.py</code></summary>
-        <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-0-23">23</a></span>
-<span class="normal"><a href="#__codelineno-0-24">24</a></span>
+        <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-0-24">24</a></span>
 <span class="normal"><a href="#__codelineno-0-25">25</a></span>
 <span class="normal"><a href="#__codelineno-0-26">26</a></span>
 <span class="normal"><a href="#__codelineno-0-27">27</a></span>
@@ -1442,22 +1494,23 @@
 <span class="normal"><a href="#__codelineno-0-35">35</a></span>
 <span class="normal"><a href="#__codelineno-0-36">36</a></span>
 <span class="normal"><a href="#__codelineno-0-37">37</a></span>
-<span class="normal"><a href="#__codelineno-0-38">38</a></span></pre></div></td><td class="code"><div><pre><span></span><code><a id="__codelineno-0-23" name="__codelineno-0-23"></a><span class="k">def</span> <span class="nf">download_file</span><span class="p">(</span><span class="n">args</span><span class="p">):</span>
-<a id="__codelineno-0-24" name="__codelineno-0-24"></a><span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
-<a id="__codelineno-0-25" name="__codelineno-0-25"></a><span class="sd">    Download a file from a URL and save it to a given path</span>
-<a id="__codelineno-0-26" name="__codelineno-0-26"></a><span class="sd">    &quot;&quot;&quot;</span>
-<a id="__codelineno-0-27" name="__codelineno-0-27"></a>    <span class="n">url</span><span class="p">,</span> <span class="n">out_file_path</span> <span class="o">=</span> <span class="n">args</span>
-<a id="__codelineno-0-28" name="__codelineno-0-28"></a>    <span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">out_file_path</span><span class="p">):</span>
-<a id="__codelineno-0-29" name="__codelineno-0-29"></a>        <span class="n">logging</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;File </span><span class="si">{</span><span class="n">out_file_path</span><span class="si">}</span><span class="s2"> already exists.&quot;</span><span class="p">)</span>
-<a id="__codelineno-0-30" name="__codelineno-0-30"></a>        <span class="k">return</span>
-<a id="__codelineno-0-31" name="__codelineno-0-31"></a>    <span class="n">res</span> <span class="o">=</span> <span class="n">requests</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">url</span><span class="p">)</span>
-<a id="__codelineno-0-32" name="__codelineno-0-32"></a>    <span class="n">os</span><span class="o">.</span><span class="n">makedirs</span><span class="p">(</span><span class="n">path</span><span class="o">.</span><span class="n">dirname</span><span class="p">(</span><span class="n">out_file_path</span><span class="p">),</span> <span class="n">exist_ok</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
-<a id="__codelineno-0-33" name="__codelineno-0-33"></a>    <span class="n">logging</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="n">out_file_path</span><span class="p">)</span>
-<a id="__codelineno-0-34" name="__codelineno-0-34"></a>    <span class="k">if</span> <span class="n">res</span><span class="o">.</span><span class="n">status_code</span> <span class="o">==</span> <span class="mi">200</span><span class="p">:</span>  <span class="c1"># http 200 means success</span>
-<a id="__codelineno-0-35" name="__codelineno-0-35"></a>        <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">out_file_path</span><span class="p">,</span> <span class="s2">&quot;wb&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">file_handle</span><span class="p">:</span>  <span class="c1"># wb means Write Binary</span>
-<a id="__codelineno-0-36" name="__codelineno-0-36"></a>            <span class="n">file_handle</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">res</span><span class="o">.</span><span class="n">content</span><span class="p">)</span>
-<a id="__codelineno-0-37" name="__codelineno-0-37"></a>    <span class="k">else</span><span class="p">:</span>
-<a id="__codelineno-0-38" name="__codelineno-0-38"></a>        <span class="n">logging</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="s2">&quot;Failed to download file: &quot;</span> <span class="o">+</span> <span class="n">url</span><span class="p">)</span>
+<span class="normal"><a href="#__codelineno-0-38">38</a></span>
+<span class="normal"><a href="#__codelineno-0-39">39</a></span></pre></div></td><td class="code"><div><pre><span></span><code><a id="__codelineno-0-24" name="__codelineno-0-24"></a><span class="k">def</span> <span class="nf">download_file</span><span class="p">(</span><span class="n">args</span><span class="p">):</span>
+<a id="__codelineno-0-25" name="__codelineno-0-25"></a><span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<a id="__codelineno-0-26" name="__codelineno-0-26"></a><span class="sd">    Download a file from a URL and save it to a given path</span>
+<a id="__codelineno-0-27" name="__codelineno-0-27"></a><span class="sd">    &quot;&quot;&quot;</span>
+<a id="__codelineno-0-28" name="__codelineno-0-28"></a>    <span class="n">url</span><span class="p">,</span> <span class="n">out_file_path</span> <span class="o">=</span> <span class="n">args</span>
+<a id="__codelineno-0-29" name="__codelineno-0-29"></a>    <span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">out_file_path</span><span class="p">):</span>
+<a id="__codelineno-0-30" name="__codelineno-0-30"></a>        <span class="n">logging</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;File </span><span class="si">{</span><span class="n">out_file_path</span><span class="si">}</span><span class="s2"> already exists.&quot;</span><span class="p">)</span>
+<a id="__codelineno-0-31" name="__codelineno-0-31"></a>        <span class="k">return</span>
+<a id="__codelineno-0-32" name="__codelineno-0-32"></a>    <span class="n">res</span> <span class="o">=</span> <span class="n">requests</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">url</span><span class="p">)</span>
+<a id="__codelineno-0-33" name="__codelineno-0-33"></a>    <span class="n">os</span><span class="o">.</span><span class="n">makedirs</span><span class="p">(</span><span class="n">path</span><span class="o">.</span><span class="n">dirname</span><span class="p">(</span><span class="n">out_file_path</span><span class="p">),</span> <span class="n">exist_ok</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<a id="__codelineno-0-34" name="__codelineno-0-34"></a>    <span class="n">logging</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="n">out_file_path</span><span class="p">)</span>
+<a id="__codelineno-0-35" name="__codelineno-0-35"></a>    <span class="k">if</span> <span class="n">res</span><span class="o">.</span><span class="n">status_code</span> <span class="o">==</span> <span class="mi">200</span><span class="p">:</span>  <span class="c1"># http 200 means success</span>
+<a id="__codelineno-0-36" name="__codelineno-0-36"></a>        <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">out_file_path</span><span class="p">,</span> <span class="s2">&quot;wb&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">file_handle</span><span class="p">:</span>  <span class="c1"># wb means Write Binary</span>
+<a id="__codelineno-0-37" name="__codelineno-0-37"></a>            <span class="n">file_handle</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">res</span><span class="o">.</span><span class="n">content</span><span class="p">)</span>
+<a id="__codelineno-0-38" name="__codelineno-0-38"></a>    <span class="k">else</span><span class="p">:</span>
+<a id="__codelineno-0-39" name="__codelineno-0-39"></a>        <span class="n">logging</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="s2">&quot;Failed to download file: &quot;</span> <span class="o">+</span> <span class="n">url</span><span class="p">)</span>
 </code></pre></div></td></tr></table></div>
       </details>
   </div>
