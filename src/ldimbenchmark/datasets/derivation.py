@@ -131,7 +131,7 @@ class DatasetDerivator:
 
             self.cached_derivations = DataFrame(dataset_derivations)
         else:
-            self.cached_derivations = DataFrame()
+            self.cached_derivations = DataFrame(columns=[0, 1])
 
         self.ignore_cache = ignore_cache
 

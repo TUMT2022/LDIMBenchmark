@@ -1,4 +1,4 @@
-from concurrent.futures import ThreadPoolExecutor, as_completed
+from concurrent.futures import ProcessPoolExecutor, ThreadPoolExecutor, as_completed
 import pickle
 import numpy as np
 import pandas as pd
@@ -89,8 +89,9 @@ class _LoadedDatasetPartNew:
         self.leaks: DataFrame = dict["leaks"]
 
 
-def write_to_csv(dataframe, file_path):
-    dataframe.to_csv(file_path, index=True, header=True)
+def write_to_file(dataframe, file_path):
+    # dataframe.to_csv(file_path, index=True, header=True, chunksize=100000)
+    dataframe.to_hdf(file_path, key="df", index=True)
 
 
 def parse_frame_dates(frame):
@@ -117,9 +118,14 @@ def loadDatasetsDirectly(
                 f"Could not find the {data_dir} directory in the dataset directory ({dataset_path})"
             )
         datasets[data_dir] = {}
-        for sensor_readings_file in glob(
-            os.path.join(data_dir_in_dataset_dir + "/" + "*.csv")
-        ):
+
+        csv_sensor_files = glob(os.path.join(data_dir_in_dataset_dir + "/" + "*.csv"))
+        h5_sensor_files = glob(os.path.join(data_dir_in_dataset_dir + "/" + "*.h5"))
+
+        if len(csv_sensor_files) > 0 and len(h5_sensor_files) > 0:
+            raise Exception("Mix of csv and h5 files is not allowed")
+
+        for sensor_readings_file in csv_sensor_files:
             logging.debug(f"Trying to load: {sensor_readings_file}")
             d = pd.read_csv(
                 sensor_readings_file,
@@ -130,6 +136,18 @@ def loadDatasetsDirectly(
                 frames = list(executor.map(parse_frame_dates, d))
 
             sensor_readings = pd.concat(frames)
+
+            datasets[data_dir][
+                os.path.basename(sensor_readings_file)[:-4]
+            ] = sensor_readings
+
+        for sensor_readings_file in h5_sensor_files:
+            logging.debug(f"Trying to load: {sensor_readings_file}")
+            sensor_readings = pd.read_hdf(
+                sensor_readings_file,
+                key="df",
+                index_col="Timestamp",
+            )
 
             datasets[data_dir][
                 os.path.basename(sensor_readings_file)[:-4]
@@ -349,61 +367,61 @@ class Dataset:
 
     @property
     def pressures(self) -> DataFrame:
-        if self.full_dataset_part.pressures is None:
+        if self.full_dataset_part is None or self.full_dataset_part.pressures is None:
             raise Exception("Call `loadData()` before accessing pressure data.")
         return self.full_dataset_part.pressures
 
     @pressures.setter
     def pressures(self, pressures: DataFrame):
-        if self.full_dataset_part.pressures is None:
+        if self.full_dataset_part is None or self.full_dataset_part.pressures is None:
             raise Exception("Call `loadData()` before accessing pressure data.")
         self.full_dataset_part.pressures = pressures
 
     @property
     def demands(self) -> DataFrame:
-        if self.full_dataset_part.demands is None:
+        if self.full_dataset_part is None or self.full_dataset_part.demands is None:
             raise Exception("Call `loadData()` before accessing demand data.")
         return self.full_dataset_part.demands
 
     @demands.setter
     def demands(self, demands: DataFrame):
-        if self.full_dataset_part.demands is None:
+        if self.full_dataset_part is None or self.full_dataset_part.demands is None:
             raise Exception("Call `loadData()` before accessing demand data.")
         self.full_dataset_part.demands = demands
 
     @property
     def flows(self) -> DataFrame:
-        if self.full_dataset_part.flows is None:
+        if self.full_dataset_part is None or self.full_dataset_part.flows is None:
             raise Exception("Call `loadData()` before accessing flow data.")
         return self.full_dataset_part.flows
 
     @flows.setter
     def flows(self, flows: DataFrame):
-        if self.full_dataset_part.flows is None:
+        if self.full_dataset_part is None or self.full_dataset_part.flows is None:
             raise Exception("Call `loadData()` before accessing flow data.")
         self.full_dataset_part.flows = flows
 
     @property
     def levels(self) -> DataFrame:
-        if self.full_dataset_part.levels is None:
+        if self.full_dataset_part is None or self.full_dataset_part.levels is None:
             raise Exception("Call `loadData()` before accessing level data.")
         return self.full_dataset_part.levels
 
     @levels.setter
     def levels(self, levels: DataFrame):
-        if self.full_dataset_part.levels is None:
+        if self.full_dataset_part is None or self.full_dataset_part.levels is None:
             raise Exception("Call `loadData()` before accessing level data.")
         self.full_dataset_part.levels = levels
 
     @property
     def leaks(self) -> DataFrame:
-        if self.full_dataset_part.leaks is None:
+        if self.full_dataset_part is None or self.full_dataset_part.leaks is None:
             raise Exception("Call `loadData()` before accessing leak data.")
         return self.full_dataset_part.leaks
 
     @leaks.setter
     def leaks(self, leaks: DataFrame):
-        if self.full_dataset_part.leaks is None:
+        if self.full_dataset_part is None or self.full_dataset_part.leaks is None:
             raise Exception("Call `loadData()` before accessing leak data.")
         self.full_dataset_part.leaks = leaks
 
@@ -477,21 +495,19 @@ class Dataset:
         for sensor_type in ["pressures", "demands", "flows", "levels"]:
             os.makedirs(os.path.join(folder, sensor_type), exist_ok=True)
             filepaths = [
-                os.path.join(folder, sensor_type, f"{sensor}.csv")
+                os.path.join(folder, sensor_type, f"{sensor}.h5")
                 for sensor in getattr(self, sensor_type).keys()
             ]
+            values = getattr(self, sensor_type).values()
             # logging.debug(filepaths)
-            with ThreadPoolExecutor(max_workers=CPU_COUNT) as executor:
+            with ProcessPoolExecutor(max_workers=CPU_COUNT) as executor:
                 # submit all tasks and get future objects
                 futures = [
-                    executor.submit(write_to_csv, sensor, path)
-                    for sensor, path in zip(
-                        getattr(self, sensor_type).values(), filepaths
-                    )
+                    executor.submit(write_to_file, sensor, path)
+                    for sensor, path in zip(values, filepaths)
                 ]
                 # process results from tasks in order of task completion
                 for future in as_completed(futures):
-                    # logging.info("wrote sensor")
                     future.result()
 
         self.leaks.to_csv(os.path.join(folder, "leaks.csv"))

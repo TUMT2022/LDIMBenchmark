@@ -17,6 +17,7 @@ from tabulate import tabulate
 from ldimbenchmark.benchmark_complexity import run_benchmark_complexity
 import matplotlib.pyplot as plt
 import enlighten
+from ldimbenchmark.evaluation.sensitivity import evaluate_derivations
 from ldimbenchmark.evaluation_metrics import (
     precision,
     recall,
@@ -692,6 +693,16 @@ class LDIMBenchmark:
         bar_experiments.close()
         manager.stop()
 
+    def evaluate_derivations(self):
+        sensitivity_results_folder = os.path.join(
+            self.evaluation_results_dir, "sensitvity"
+        )
+        os.makedirs(sensitivity_results_folder, exist_ok=True)
+        evaluate_derivations(
+            os.path.join(self.evaluation_results_dir, "results.db"),
+            sensitivity_results_folder,
+        )
+
     def evaluate(
         self,
         current_only=True,
@@ -729,8 +740,6 @@ class LDIMBenchmark:
         # if results_dir:
         #     self.results = self.load_results(results_dir)
 
-        # TODO: Evaluate results
-        # TODO: parallelize
         result_folders = glob(os.path.join(self.runner_results_dir, "*"))
         result_folders_frame = pd.DataFrame(result_folders)
         result_folders_frame["id"] = result_folders_frame[0].apply(
