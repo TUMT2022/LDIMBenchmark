@@ -116,7 +116,11 @@ def concatAndInterpolateSensors(
 def simplifyBenchmarkData(
     data: BenchmarkData, resample_frequency="1T", force_same_length=False
 ) -> SimpleBenchmarkData:
-    """Convert multiple timeseries to one timeseries"""
+    """Convert multiple timeseries to one timeseries
+
+    force_same_length - Makes sure that resampled values are of the same length (spanning all sensors)
+
+    """
 
     resampled_pressures = resampleSensors(data.pressures, resample_frequency)
     resampled_demands = resampleSensors(data.demands, resample_frequency)

@@ -48,6 +48,7 @@ class LILA(LDIMMethodBase):
     Version History:
       0.1.0: Initial version from the authors, with performance tweaks
       0.2.0: Refactored and added DMA specific analysis
+      0.2.1: Make sure resampled sensor data can be used by LILA
     """
 
     def __init__(self):
@@ -269,6 +270,7 @@ class LILA(LDIMMethodBase):
             simple_training_data = simplifyBenchmarkData(
                 training_data,
                 resample_frequency=self.hyperparameters["resample_frequency"],
+                force_same_length=True,
             )
 
             start_time = pd.to_datetime(self.hyperparameters["leakfree_time_start"])
@@ -323,6 +325,7 @@ class LILA(LDIMMethodBase):
         simple_evaluation_data = simplifyBenchmarkData(
             evaluation_data,
             resample_frequency=self.hyperparameters["resample_frequency"],
+            force_same_length=True,
         )
 
         dma_specific_data = {}
