@@ -14,6 +14,7 @@ import yaml
 import shutil
 import glob
 import logging
+from ldimbenchmark.datasets.classes import Dataset
 from ldimbenchmark.datasets.loaders.load_dataset_base import _LoadDatasetBase
 import pandas as pd
 from ldimbenchmark.classes import BenchmarkLeakageResult
@@ -145,20 +146,6 @@ class BattledimDatasetLoader(_LoadDatasetBase):
                     }
                 )
 
-        dataset_info = """
-name: battledim
-dataset:
-  evaluation:
-      start: '2019-01-01 00:00:00'
-      end: '2019-12-31 23:59:59'
-  training:
-      start: '2018-01-01 00:00:00'
-      end: '2018-12-31 23:59:59'
-inp_file: L-TOWN.inp
-        """
-        # Convert info to yaml dictionary
-        dataset_info = yaml.safe_load(dataset_info)
-
         pd.DataFrame(
             new_leakages,
             columns=list(BenchmarkLeakageResult.__annotations__.keys()),
@@ -167,10 +154,6 @@ inp_file: L-TOWN.inp
             index=False,
             date_format="%Y-%m-%d %H:%M:%S",
         )
-
-        # Write info to file
-        with open(os.path.join(preparedDatasetPath, f"dataset_info.yaml"), "w") as f:
-            yaml.dump(dataset_info, f)
 
         dmas = {
             "DMA_A": [
@@ -296,3 +279,34 @@ inp_file: L-TOWN.inp
         # Write info to file
         with open(os.path.join(preparedDatasetPath, f"dmas.json"), "w") as f:
             json.dump(dmas, f)
+
+        dataset_info = """
+name: battledim
+dataset:
+  evaluation:
+      start: '2019-01-01 00:00:00'
+      end: '2019-12-31 23:59:59'
+  training:
+      start: '2018-01-01 00:00:00'
+      end: '2018-12-31 23:59:59'
+inp_file: L-TOWN.inp
+        """
+        # Convert info to yaml dictionary
+        dataset_info = yaml.safe_load(dataset_info)
+
+        # Write info to file
+        with open(os.path.join(preparedDatasetPath, f"dataset_info.yaml"), "w") as f:
+            yaml.dump(dataset_info, f)
+
+        dataset = Dataset(preparedDatasetPath)
+        data_hash = dataset._get_data_checksum(preparedDatasetPath)
+
+        with open(os.path.join(preparedDatasetPath, "dataset_info.yaml"), "a") as f:
+            f.writelines([f"checksum: {data_hash}"])
+
+        dataset = Dataset(preparedDatasetPath)
+        dataset.is_valid()
+        dataset.ensure_cached()
+
+        if not dataset.is_valid():
+            raise "Downloaded dataset is somehow invalid!"
