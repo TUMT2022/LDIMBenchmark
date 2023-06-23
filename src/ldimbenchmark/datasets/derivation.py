@@ -1,4 +1,5 @@
 from concurrent.futures import ProcessPoolExecutor, as_completed
+from glob import glob
 import itertools
 import logging
 import os
@@ -7,6 +8,7 @@ import tempfile
 import enlighten
 
 from pandas import DataFrame
+import pandas as pd
 from ldimbenchmark.constants import CPU_COUNT
 
 from ldimbenchmark.datasets import Dataset
@@ -72,6 +74,17 @@ def _apply_derivation_to_DataFrame(
     return (key, dataframe)
 
 
+def try_load_derivation_datasets(folder):
+    try:
+        dataset = Dataset(folder)
+        return (
+            dataset.id,
+            str(dataset.info["derivations"]) if "derivations" in dataset.info else None,
+        )
+    except Exception:
+        return None
+
+
 class DatasetDerivator:
     """
     Chaos Monkey for your Dataset.
@@ -93,6 +106,33 @@ class DatasetDerivator:
             datasets = [datasets]
         self.datasets: List[Dataset] = datasets
         self.out_path = out_path
+
+        if not ignore_cache:
+            derivation_folders = glob(os.path.join(out_path, "*"))
+            dataset_derivations = []
+            parallel = True
+            if parallel == True:
+                with ProcessPoolExecutor() as executor:
+                    # submit all tasks and get future objects
+                    futures = [
+                        executor.submit(try_load_derivation_datasets, folder)
+                        for folder in derivation_folders
+                    ]
+                    # process results from tasks in order of task completion
+                    for future in as_completed(futures):
+                        derivation = future.result()
+                        if derivation is not None:
+                            dataset_derivations.append(derivation)
+            else:
+                for folder in derivation_folders:
+                    derivation = try_load_derivation_datasets(folder)
+                    if derivation is not None:
+                        dataset_derivations.append(derivation)
+
+            self.cached_derivations = DataFrame(dataset_derivations)
+        else:
+            self.cached_derivations = DataFrame()
+
         self.ignore_cache = ignore_cache
 
         self.all_derived_datasets = []
@@ -144,7 +184,18 @@ class DatasetDerivator:
                     )
 
                     newly_generated = False
-                    if not os.path.exists(derivedDatasetPath) or self.ignore_cache:
+                    cache_entry = self.cached_derivations[
+                        (
+                            self.cached_derivations[1]
+                            == str(this_dataset.info["derivations"])
+                        )
+                        & self.cached_derivations[0].str.contains(this_dataset.name)
+                    ]
+                    if len(cache_entry) > 1:
+                        raise Exception(
+                            f"more than one cache entry found: {str(cache_entry[0].values)}"
+                        )
+                    if len(cache_entry) < 1:
                         newly_generated = True
                         loadedDataset = this_dataset.loadData()
 
@@ -245,8 +296,18 @@ class DatasetDerivator:
                     f"Generating Data Derivation for {this_dataset.id} with derivations {str(this_dataset.info['derivations']['data'])}"
                 )
                 newly_generated = False
-                # TODO: Reimplement caching by looking at all datasets in output folder and matching the derivations
-                if True or self.ignore_cache:
+                cache_entry = self.cached_derivations[
+                    (
+                        self.cached_derivations[1]
+                        == str(this_dataset.info["derivations"])
+                    )
+                    & self.cached_derivations[0].str.contains(this_dataset.name)
+                ]
+                if len(cache_entry) > 1:
+                    raise Exception(
+                        f"more than one cache entry found: {str(cache_entry[0].values)}"
+                    )
+                if len(cache_entry) < 1:
                     newly_generated = True
                     loadedDataset = this_dataset.loadData()
 
@@ -294,31 +355,35 @@ class DatasetDerivator:
                     if not abort:
                         setattr(loadedDataset, apply_to, datasets)
 
-                        logging.info(f"Saving derived dataset {loadedDataset.id}")
+                        logging.info(f"Exporting dataset")
                         os.makedirs(
                             os.path.dirname(temporaryDatasetPath), exist_ok=True
                         )
                         loadedDataset.exportTo(temporaryDatasetPath)
 
-                        dataset = Dataset(temporaryDatasetPath)
+                        tmp_dataset = Dataset(temporaryDatasetPath)
+                        logging.info(f"Saved {loadedDataset.id}")
                         logging.info("Populating cache")
-                        dataset.is_valid()
-                        dataset.loadData()
-                        dataset_path = os.path.join(self.out_path, dataset.id + "/")
+                        tmp_dataset.is_valid()
+                        tmp_dataset.loadData()
+                        dataset_path = os.path.join(self.out_path, tmp_dataset.id + "/")
                         shutil.copytree(
                             temporaryDatasetPath, dataset_path, dirs_exist_ok=True
                         )
 
-                        newDatasets.append(dataset)
-                        self.all_derived_datasets.append(dataset)
+                        new_dataset = Dataset(dataset_path)
+
+                        newDatasets.append(new_dataset)
+                        self.all_derived_datasets.append(new_dataset)
 
                     temp_dir.cleanup()
                     manager.stop()
 
                 else:
-                    # TODO: Update Path...
-                    dataset = Dataset(temporaryDatasetPath)
                     # Dataset already generated
+                    dataset = Dataset(
+                        os.path.join(self.out_path, cache_entry.iloc[0][0])
+                    )
                     newDatasets.append(dataset)
                     self.all_derived_datasets.append(dataset)
 
