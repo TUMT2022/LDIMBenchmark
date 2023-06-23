@@ -274,6 +274,9 @@ def create_plots(
 ):
     plot_out_folder = os.path.join(out_folder)  # , method, dataset)
     os.makedirs(plot_out_folder, exist_ok=True)
+    # max_metric = results[performance_metric].max()
+    # min_metric = results[performance_metric].min()
+
     plot_data = results[(results["method"] == method) & (results["dataset"] == dataset)]
     hyperparameters = list(map(lambda x: "hyperparameters." + x, hyperparameters))
 
@@ -294,10 +297,16 @@ def create_plots(
                     plot_data,
                     values=performance_metric,
                     index=param_1,
-                    columns=param_2,  # , "hyperparameters.delta"]
+                    columns=param_2,
                 )
                 if len(pvt) != 0:
-                    sns.heatmap(pvt, ax=axs[real_row, col], cmap=cmap, vmin=0, vmax=1)
+                    sns.heatmap(
+                        pvt,
+                        ax=axs[real_row, col],
+                        cmap=cmap,
+                        # vmin=min_metric,
+                        # vmax=max_metric,
+                    )
                 axs[real_row, col].set_ylabel(param_1)
                 axs[real_row, col].set_xlabel(param_2)
                 # axs[real_row, col].yaxis.set_major_formatter(FormatStrFormatter("%.2f"))
