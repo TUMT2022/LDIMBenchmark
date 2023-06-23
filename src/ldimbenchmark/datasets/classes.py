@@ -150,7 +150,7 @@ def loadDatasetsDirectly(
             )
 
             datasets[data_dir][
-                os.path.basename(sensor_readings_file)[:-4]
+                os.path.basename(sensor_readings_file)[:-3]
             ] = sensor_readings
 
     date_columns = ["leak_time_start", "leak_time_end", "leak_time_peak"]
