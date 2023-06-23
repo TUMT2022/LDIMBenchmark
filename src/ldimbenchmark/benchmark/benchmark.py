@@ -746,19 +746,6 @@ class LDIMBenchmark:
             lambda x: os.path.basename(x)
         )
 
-        if current_only:
-            if not hasattr(self, "initial_experiments"):
-                logging.warning(
-                    "Ignoring current_only switch, since no initial experiments were set. This is probably because 'run_benchmark' was not executed before."
-                )
-            else:
-                experiment_ids = [exp.id for exp in self.initial_experiments]
-                result_folders_frame = result_folders_frame[
-                    result_folders_frame["id"].isin(experiment_ids)
-                ]
-
-                result_folders = list(result_folders_frame[0].values)
-
         pickle_cache_path = os.path.join(self.cache_dir, "results.pkl")
         if os.path.exists(pickle_cache_path):
             logging.info("Reading results from Cache")
@@ -770,6 +757,23 @@ class LDIMBenchmark:
             result_folders = list(result_folders_frame[0].values)
         else:
             previous_results = pd.DataFrame()
+
+        if current_only:
+            if not hasattr(self, "initial_experiments"):
+                logging.warning(
+                    "Ignoring current_only switch, since no initial experiments were set. This is probably because 'run_benchmark' was not executed before."
+                )
+            else:
+                experiment_ids = [exp.id for exp in self.initial_experiments]
+                result_folders_frame = result_folders_frame[
+                    result_folders_frame["id"].isin(experiment_ids)
+                ]
+
+                previous_results = previous_results[
+                    previous_results["_folder"].isin(experiment_ids)
+                ]
+
+                result_folders = list(result_folders_frame[0].values)
 
         manager = enlighten.get_manager()
         pbar1 = manager.counter(
