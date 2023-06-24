@@ -11,7 +11,7 @@ import wntr
 import matplotlib.pyplot as plt
 from typing import Literal, Union, List
 
-from ldimbenchmark.utilities import delta_format
+from ldimbenchmark.utilities import delta_format, read_multiple_dataset_infos
 
 
 class DatasetAnalyzer:
@@ -42,8 +42,14 @@ class DatasetAnalyzer:
 
         datasets_info = pd.concat(datasets_info)
         datasets_info = datasets_info.reset_index(level=1, drop=True)
+        datasets_info[datasets_info["derivations"].isnull()] = "{}"
+        datasets_info = datasets_info.rename(
+            columns={"derivations": "dataset_derivations"}
+        )
 
-        original_dataset_frame = datasets_info[datasets_info["derivations"].isnull()]
+        datasets_info = read_multiple_dataset_infos(datasets_info)
+
+        original_dataset_frame = datasets_info[datasets_info["is_original"] == True]
         if original_dataset_frame.shape[0] == 0:
             raise Exception("No original dataset found")
         if original_dataset_frame.shape[0] > 1:
@@ -58,6 +64,12 @@ class DatasetAnalyzer:
         original_dataset = loaded_datasets[original_dataset_id]
         del loaded_datasets[original_dataset_id]
 
+        derivated_dataset_frame = datasets_info[datasets_info["is_original"] == False]
+        derived_property = derivated_dataset_frame["dataset_derivations.data.to"].iloc[
+            0
+        ]
+
+        derived_type = derivated_dataset_frame["dataset_derivations.data.kind"].iloc[0]
         # # Plot each time series
         # # TODO: Only plot timeseries with difference...
         # for dataset_id, dataset in loaded_datasets.items():
@@ -72,7 +84,8 @@ class DatasetAnalyzer:
                 data[sensor_id],
                 f"Compare '{data_type}' of {original_dataset.name}",
                 os.path.join(
-                    self.analysis_out_dir, f"comparison_{data_type}_{sensor_id}.png"
+                    self.analysis_out_dir,
+                    f"comparison_{original_dataset.name}_{derived_property}_{derived_type}_{sensor_id}.png",
                 ),
                 [
                     getattr(ldata, data_type)[sensor_id]
