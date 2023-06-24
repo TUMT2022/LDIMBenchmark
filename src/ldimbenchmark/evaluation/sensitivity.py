@@ -3,7 +3,7 @@
 # %autoreload 2
 import datetime
 import json
-from typing import List
+from typing import List, Tuple
 import pandas as pd
 from sqlalchemy import create_engine
 import os
@@ -43,8 +43,8 @@ def lighten_color(color, amount=0.5):
 
 def plot_derivation_plot(
     flat_results: pd.DataFrame,
-    derivations: list[tuple[str, str]],
-    applied_to: list[tuple[str, str]],
+    derivations: List[Tuple[str, str]],
+    applied_to: List[Tuple[str, str]],
     out_folder: str,
     performance_indicator: str = "F1",
 ):
