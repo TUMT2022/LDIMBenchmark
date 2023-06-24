@@ -2744,7 +2744,7 @@
 <a id="__codelineno-0-756" name="__codelineno-0-756"></a>            <span class="p">]</span>
 <a id="__codelineno-0-757" name="__codelineno-0-757"></a>            <span class="n">result_folders</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">result_folders_frame</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">values</span><span class="p">)</span>
 <a id="__codelineno-0-758" name="__codelineno-0-758"></a>        <span class="k">else</span><span class="p">:</span>
-<a id="__codelineno-0-759" name="__codelineno-0-759"></a>            <span class="n">previous_results</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">()</span>
+<a id="__codelineno-0-759" name="__codelineno-0-759"></a>            <span class="n">previous_results</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="n">columns</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;_folder&quot;</span><span class="p">])</span>
 <a id="__codelineno-0-760" name="__codelineno-0-760"></a>
 <a id="__codelineno-0-761" name="__codelineno-0-761"></a>        <span class="k">if</span> <span class="n">current_only</span><span class="p">:</span>
 <a id="__codelineno-0-762" name="__codelineno-0-762"></a>            <span class="k">if</span> <span class="ow">not</span> <span class="nb">hasattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="s2">&quot;initial_experiments&quot;</span><span class="p">):</span>
@@ -3621,7 +3621,7 @@ grid_search           A boolean indicating whether the hyperparameters should
 <a id="__codelineno-0-756" name="__codelineno-0-756"></a>        <span class="p">]</span>
 <a id="__codelineno-0-757" name="__codelineno-0-757"></a>        <span class="n">result_folders</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">result_folders_frame</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">values</span><span class="p">)</span>
 <a id="__codelineno-0-758" name="__codelineno-0-758"></a>    <span class="k">else</span><span class="p">:</span>
-<a id="__codelineno-0-759" name="__codelineno-0-759"></a>        <span class="n">previous_results</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">()</span>
+<a id="__codelineno-0-759" name="__codelineno-0-759"></a>        <span class="n">previous_results</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="n">columns</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;_folder&quot;</span><span class="p">])</span>
 <a id="__codelineno-0-760" name="__codelineno-0-760"></a>
 <a id="__codelineno-0-761" name="__codelineno-0-761"></a>    <span class="k">if</span> <span class="n">current_only</span><span class="p">:</span>
 <a id="__codelineno-0-762" name="__codelineno-0-762"></a>        <span class="k">if</span> <span class="ow">not</span> <span class="nb">hasattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="s2">&quot;initial_experiments&quot;</span><span class="p">):</span>
