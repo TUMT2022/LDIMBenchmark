@@ -756,7 +756,7 @@ class LDIMBenchmark:
             ]
             result_folders = list(result_folders_frame[0].values)
         else:
-            previous_results = pd.DataFrame()
+            previous_results = pd.DataFrame(columns=["_folder"])
 
         if current_only:
             if not hasattr(self, "initial_experiments"):

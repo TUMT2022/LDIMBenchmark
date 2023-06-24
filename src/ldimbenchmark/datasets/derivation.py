@@ -52,6 +52,8 @@ def _apply_derivation_to_DataFrame(
     key: str,
 ) -> DataFrame:
     if derivation == "precision":
+        if value >= 1:
+            raise Exception("Precision value must be smaller than 1")
         noise = get_random_norm(value, dataframe.index.shape)
         dataframe = dataframe.mul(1 + noise, axis=0)
     elif derivation == "sensitivity":
@@ -175,15 +177,13 @@ class DatasetDerivator:
                     )
                     this_dataset._update_id()
 
-                    derivedDatasetPath = os.path.join(
-                        self.out_path, this_dataset.id + "/"
-                    )
+                    temp_dir = tempfile.TemporaryDirectory()
+                    temporaryDatasetPath = temp_dir.name
 
                     logging.info(
                         f"Generating Model Derivation for {this_dataset.id} with derivations {str(this_dataset.info['derivations']['model'])}"
                     )
 
-                    newly_generated = False
                     cache_entry = self.cached_derivations[
                         (
                             self.cached_derivations[1]
@@ -196,7 +196,6 @@ class DatasetDerivator:
                             f"more than one cache entry found: {str(cache_entry[0].values)}"
                         )
                     if len(cache_entry) < 1:
-                        newly_generated = True
                         loadedDataset = this_dataset.loadData()
 
                         # Derive
@@ -208,16 +207,33 @@ class DatasetDerivator:
                             ]
 
                         # Save
-                        os.makedirs(os.path.dirname(derivedDatasetPath), exist_ok=True)
-                        loadedDataset.exportTo(derivedDatasetPath)
+                        # os.makedirs(os.path.dirname(temporaryDatasetPath), exist_ok=True)
+                        loadedDataset.exportTo(temporaryDatasetPath)
 
-                    dataset = Dataset(derivedDatasetPath)
-                    dataset.is_valid(True)
-                    if newly_generated:
+                        tmp_dataset = Dataset(temporaryDatasetPath)
+                        logging.info(f"Saved {loadedDataset.id}")
                         logging.info("Populating cache")
-                        dataset.loadData()
-                    newDatasets.append(dataset)
-                    self.all_derived_datasets.append(dataset)
+                        tmp_dataset.is_valid()
+                        tmp_dataset.loadData()
+                        dataset_path = os.path.join(self.out_path, tmp_dataset.id + "/")
+                        shutil.copytree(
+                            temporaryDatasetPath, dataset_path, dirs_exist_ok=True
+                        )
+
+                        new_dataset = Dataset(dataset_path)
+
+                        newDatasets.append(new_dataset)
+                        self.all_derived_datasets.append(new_dataset)
+
+                        temp_dir.cleanup()
+                    else:
+                        # Dataset already generated
+                        cached_dataset = Dataset(
+                            os.path.join(self.out_path, cache_entry.iloc[0][0])
+                        )
+                        newDatasets.append(cached_dataset)
+                        self.all_derived_datasets.append(cached_dataset)
+
                 else:
                     raise Exception(f"No derivation named '{derivation}'")
 
@@ -225,7 +241,10 @@ class DatasetDerivator:
 
     def derive_data(
         self,
-        apply_to: Literal["demands", "levels", "pressures", "flows"],
+        apply_to: Union[
+            Literal["demands", "levels", "pressures", "flows"],
+            List[Literal["demands", "levels", "pressures", "flows"]],
+        ],
         # TODO: Add Chaos Monkey, introducing missing values, skewed values (way out of bound),
         # TODO: Add simple skew (static, or linear)
         derivation: Literal["sensitivity", "precision", "downsample"],
@@ -254,14 +273,19 @@ class DatasetDerivator:
 
         """
 
+        if not isinstance(apply_to, list):
+            apply_to = [apply_to]
+
         newDatasets = []
         for dataset in self.datasets:
             for options in options_list:
                 abort = False
                 # Prepare data for derivation
                 this_dataset = Dataset(dataset.path)
-                this_dataset.info["derivations"] = {}
-                this_dataset.info["derivations"]["data"] = []
+                if "derivations" not in this_dataset.info:
+                    this_dataset.info["derivations"] = {}
+                if "data" not in this_dataset.info["derivations"]:
+                    this_dataset.info["derivations"]["data"] = []
 
                 # Apply derivation
                 value = options
@@ -283,19 +307,14 @@ class DatasetDerivator:
                         shift = value["value"] / 2
 
                 # Save Derivation
-                this_dataset.info["derivations"]["data"].append(
-                    {
-                        "to": apply_to,
-                        "kind": derivation,
-                        "value": value,
-                    }
-                )
-                temp_dir = tempfile.TemporaryDirectory()
-                temporaryDatasetPath = temp_dir.name
-                logging.info(
-                    f"Generating Data Derivation for {this_dataset.id} with derivations {str(this_dataset.info['derivations']['data'])}"
-                )
-                newly_generated = False
+                for application in apply_to:
+                    this_dataset.info["derivations"]["data"].append(
+                        {
+                            "to": application,
+                            "kind": derivation,
+                            "value": value,
+                        }
+                    )
                 cache_entry = self.cached_derivations[
                     (
                         self.cached_derivations[1]
@@ -308,53 +327,60 @@ class DatasetDerivator:
                         f"more than one cache entry found: {str(cache_entry[0].values)}"
                     )
                 if len(cache_entry) < 1:
-                    newly_generated = True
+                    temp_dir = tempfile.TemporaryDirectory()
+                    temporaryDatasetPath = temp_dir.name
+                    logging.info(
+                        f"Generating Data Derivation for {this_dataset.id} with derivations {str(this_dataset.info['derivations']['data'])}"
+                    )
                     loadedDataset = this_dataset.loadData()
 
-                    datasets = getattr(loadedDataset, apply_to)
+                    for application in apply_to:
+                        datasets = getattr(loadedDataset, application)
 
-                    keys = datasets.keys()
-                    transformations = zip(
-                        itertools.repeat(derivation, len(keys)),
-                        itertools.repeat(value, len(keys)),
-                        [datasets[key] for key in keys],
-                        keys,
-                    )
-                    manager = enlighten.get_manager()
-                    bar_derivations = manager.counter(
-                        total=len(keys),
-                        desc=f"Deriving {apply_to}",
-                        unit="sensors",
-                    )
-                    bar_derivations.refresh()
+                        keys = datasets.keys()
+                        transformations = zip(
+                            itertools.repeat(derivation, len(keys)),
+                            itertools.repeat(value, len(keys)),
+                            [datasets[key] for key in keys],
+                            keys,
+                        )
+                        manager = enlighten.get_manager()
+                        bar_derivations = manager.counter(
+                            total=len(keys),
+                            desc=f"Deriving {application}",
+                            unit="sensors",
+                        )
+                        bar_derivations.refresh()
 
-                    # logging.debug(filepaths)
-                    with ProcessPoolExecutor(max_workers=CPU_COUNT) as executor:
-                        # submit all tasks and get future objects
-                        futures = [
-                            executor.submit(
-                                _apply_derivation_to_DataFrame,
-                                derivation,
-                                value,
-                                dataset_key,
-                                key,
-                            )
-                            for derivation, value, dataset_key, key in transformations
-                        ]
-                        # process results from tasks in order of task completion
-                        for future in as_completed(futures):
-                            key, result = future.result()
-                            datasets[key] = result
-                            if len(result) <= 3:
-                                logging.warn(
-                                    "Derived data would only have three data points. That's not a proper dataset anymore. Aborting."
+                        # logging.debug(filepaths)
+                        with ProcessPoolExecutor(max_workers=CPU_COUNT) as executor:
+                            # submit all tasks and get future objects
+                            futures = [
+                                executor.submit(
+                                    _apply_derivation_to_DataFrame,
+                                    derivation,
+                                    value,
+                                    dataset_key,
+                                    key,
                                 )
-                                abort = True
+                                for derivation, value, dataset_key, key in transformations
+                            ]
+                            # process results from tasks in order of task completion
+                            for future in as_completed(futures):
+                                key, result = future.result()
+                                datasets[key] = result
+                                if len(result) <= 3:
+                                    logging.warn(
+                                        "Derived data would only have three data points. That's not a proper dataset anymore. Aborting."
+                                    )
 
-                            bar_derivations.update()
+                                    abort = True
+
+                                bar_derivations.update()
+                        bar_derivations.close()
+                        setattr(loadedDataset, application, datasets)
+
                     if not abort:
-                        setattr(loadedDataset, apply_to, datasets)
-
                         logging.info(f"Exporting dataset")
                         os.makedirs(
                             os.path.dirname(temporaryDatasetPath), exist_ok=True
@@ -381,10 +407,10 @@ class DatasetDerivator:
 
                 else:
                     # Dataset already generated
-                    dataset = Dataset(
+                    cached_dataset = Dataset(
                         os.path.join(self.out_path, cache_entry.iloc[0][0])
                     )
-                    newDatasets.append(dataset)
-                    self.all_derived_datasets.append(dataset)
+                    newDatasets.append(cached_dataset)
+                    self.all_derived_datasets.append(cached_dataset)
 
         return newDatasets

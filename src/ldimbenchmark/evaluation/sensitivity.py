@@ -1,6 +1,7 @@
 # %%
 # %load_ext autoreload
 # %autoreload 2
+import datetime
 import json
 from typing import List
 import pandas as pd
@@ -15,6 +16,8 @@ from matplotlib.ticker import LinearLocator
 import numpy as np
 import ast
 import seaborn as sns
+
+from ldimbenchmark.utilities import delta_format
 
 
 def lighten_color(color, amount=0.5):
@@ -48,6 +51,15 @@ def plot_derivation_plot(
     colors = ["C0", "C1", "C2"]
 
     # TODO add tex output
+    #     table_data = flat_results[
+    #     (
+    #         (
+    #             ((flat_results[col_derivation] == derivation_type))
+    #             & (flat_results[col_modified] == modified_property)
+    #         )
+    #         | (flat_results["is_original"])
+    #     )
+    # ]
     # overview_data = (
     #     flat_results.set_index(["dataset", "method", "dataset_derivations.value"])[
     #         ["F1"]
@@ -60,24 +72,19 @@ def plot_derivation_plot(
 
     for col_modified, modified_property in applied_to:
         for col_derivation, derivation_type in derivations:
-            table_data = flat_results[
-                (
-                    (
-                        ((flat_results[col_derivation] == derivation_type))
-                        & (flat_results[col_modified] == modified_property)
-                    )
-                    | (flat_results["is_original"])
-                )
-            ]
-
             for dataset in flat_results["dataset"].unique():
                 fig, ax = plt.subplots(figsize=(15, 8))
                 ax2 = ax.twinx()
+                ax3 = ax.twinx()
+                ax3.spines.right.set_position(("axes", 1.07))
 
                 for num, method in enumerate(flat_results["method"].unique()):
                     method_data = flat_results[
                         (
-                            (flat_results[col_derivation] == derivation_type)
+                            (
+                                (flat_results[col_derivation] == derivation_type)
+                                & (flat_results[col_modified] == modified_property)
+                            )
                             | (flat_results["is_original"])
                         )
                         & (flat_results["dataset"] == dataset)
@@ -87,26 +94,27 @@ def plot_derivation_plot(
                     spacing = np.array(
                         range(0, len(method_data["dataset_derivations.value"]))
                     )
-                    offset = num * 0.1 - 0.1
-                    ax2.bar(
+                    bar_width = 0.3
+                    offset = num * bar_width - (bar_width / 2)
+                    ax.bar(
                         spacing + offset,
                         method_data["true_positives"],
                         label=f"{method}: TP",
-                        width=0.1,
+                        width=bar_width,
                         alpha=0.5,
                         color=colors[num],
                     )
 
-                    ax2.bar(
+                    ax.bar(
                         spacing + offset,
                         method_data["false_positives"],
                         bottom=method_data["true_positives"],
                         label=f"{method}: FP",
-                        width=0.1,
+                        width=bar_width,
                         alpha=0.5,
                         color=lighten_color(colors[num], 0.2),
                     )
-                    ax.plot(
+                    ax2.plot(
                         spacing,
                         method_data[performance_indicator],
                         label=method,
@@ -114,14 +122,35 @@ def plot_derivation_plot(
                         color=colors[num],
                     )
 
-                ax.set_ylim([0, 1])
+                    ax3.plot(
+                        spacing,
+                        method_data["time_to_detection_avg"],
+                        label=f"{method} TTD",
+                        linestyle="dotted",
+                        # marker="-.",
+                        color=colors[num],
+                    )
+
+                ax2.set_ylim([0, 1])
+                ax2.set_ylabel(f"Performance Indicator: {performance_indicator}")
+
+                ax3.yaxis.set_major_formatter(
+                    lambda x, pos: f"{delta_format(datetime.timedelta(seconds=x))}"
+                )
+
                 ax.set_xticks(ticks=spacing)
-                ax.set_xticklabels(labels=method_data["dataset_derivations.value"])
-                ax.set_ylabel(f"Performance Indicator: {performance_indicator}")
-                ax2.set_ylabel(f"Leak Count")
+                labels = method_data["dataset_derivations.value"]
+                if derivation_type == "downsample":
+                    labels = [
+                        f"{delta_format(datetime.timedelta(seconds=t))} H"
+                        for t in method_data["dataset_derivations.value"]
+                    ]
+                ax.set_xticklabels(labels=labels)
                 ax.set_xlabel(f"{derivation_type} derivations")
-                ax.legend(loc="upper left")
-                ax2.legend(loc="upper right")
+                ax.set_ylabel(f"Leak Count")
+                # ax2.set_ylim(bottom=0, top=100)
+                ax2.legend(loc="upper left")
+                ax.legend(loc="upper right")
                 plt.title(
                     f"Dataset: {dataset}, Property: {modified_property}", fontsize=10
                 )
@@ -159,18 +188,40 @@ def evaluate_derivations(database_path: str, out_folder: str):
     ).add_prefix("dataset_derivations.")
 
     if "dataset_derivations.data" in df_dataset_derivations:
-        derivations_data = pd.json_normalize(
-            df_dataset_derivations["dataset_derivations.data"].explode(
-                "dataset_derivations.data"
-            )
+        derivations_data = (
+            df_dataset_derivations["dataset_derivations.data"]
+            .reset_index()
+            .explode("dataset_derivations.data", ignore_index=True)
+        )
+        json_frame = pd.json_normalize(
+            derivations_data["dataset_derivations.data"]
         ).add_prefix("dataset_derivations.data.")
+        derivations_data = pd.concat([derivations_data, json_frame], axis=1)
+        derivations_data = derivations_data.groupby("index").agg(
+            {
+                "dataset_derivations.data.value": "first",
+                "dataset_derivations.data.value.value": "first",
+                "dataset_derivations.data.value.shift": "first",
+                "dataset_derivations.data.kind": "first",
+                "dataset_derivations.data.to": lambda x: x,
+                "dataset_derivations.data": "first",
+            }
+        )
+        derivations_data["dataset_derivations.data.to"] = derivations_data[
+            "dataset_derivations.data.to"
+        ].astype(str)
+
+        # TODO groupby and concat applied_to
         derivations_data.index = results.index
         flattened_results = pd.concat([results, derivations_data], axis=1)
         flattened_results["dataset_derivations.value"] = flattened_results[
             "dataset_derivations.data.value"
         ].fillna(flattened_results["dataset_derivations.data.value.value"])
         flattened_results = flattened_results.drop(
-            columns=["dataset_derivations.data.value.value"]
+            columns=[
+                "dataset_derivations.data.value.value",
+                "dataset_derivations.data.value",
+            ]
         )
         data_derivation_type = flattened_results[
             flattened_results["dataset_derivations.data.kind"].notna()
@@ -188,11 +239,16 @@ def evaluate_derivations(database_path: str, out_folder: str):
                 "dataset_derivations.model"
             )
         ).add_prefix("dataset_derivations.model.")
-        derivations_model.index = results.index
-        flattened_results = pd.concat([results, derivations_model], axis=1)
-        flattened_results["dataset_derivations.value"] = flattened_results[
-            "dataset_derivations.value"
-        ].fillna(flattened_results["dataset_derivations.model.value"])
+        derivations_model.index = flattened_results.index
+        flattened_results = pd.concat([flattened_results, derivations_model], axis=1)
+        if "dataset_derivations.value" in flattened_results:
+            flattened_results["dataset_derivations.value"] = flattened_results[
+                "dataset_derivations.value"
+            ].fillna(flattened_results["dataset_derivations.model.value"])
+        else:
+            flattened_results["dataset_derivations.value"] = flattened_results[
+                "dataset_derivations.model.value"
+            ]
 
         flattened_results = flattened_results.drop(
             columns=["dataset_derivations.model.value"]
@@ -214,17 +270,26 @@ def evaluate_derivations(database_path: str, out_folder: str):
         "dataset_derivations.value"
     ].fillna(0)
 
+    # Data based derivations
     derivations = [
         ("dataset_derivations.data.kind", derivation_type)
         for derivation_type in data_derivation_type
-    ] + [
+    ]
+
+    applied_to = [("dataset_derivations.data.to", to) for to in data_to]
+    plot_derivation_plot(
+        flattened_results,
+        derivations=derivations,
+        applied_to=applied_to,
+        out_folder=out_folder,
+    )
+
+    # Model based derivations
+    derivations = [
         ("dataset_derivations.model.property", derivation_type)
         for derivation_type in model_derivation_property
     ]
-
-    applied_to = [("dataset_derivations.data.to", to) for to in data_to] + [
-        ("dataset_derivations.model.element", to) for to in model_to
-    ]
+    applied_to = [("dataset_derivations.model.element", to) for to in model_to]
     plot_derivation_plot(
         flattened_results,
         derivations=derivations,

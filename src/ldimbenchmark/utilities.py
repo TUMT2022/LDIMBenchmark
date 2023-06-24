@@ -6,6 +6,8 @@ from ldimbenchmark.classes import BenchmarkData
 from wntr.network import WaterNetworkModel
 import pandas as pd
 
+from ldimbenchmark.constants import CPU_COUNT
+
 
 class SimpleBenchmarkData:
     """
@@ -81,10 +83,10 @@ def concatAndInterpolateSensors(
     for sensor_name, sensor_data in sensors.items():
         if should_have_value_count is not None:
             # Making sure the DataFrame has the amount of values it should have
-            logging.warning(f"SENSOR: {sensor_name}")
-            logging.warning(f"MAX VALUES: {should_have_value_count}")
+            # logging.debug(f"SENSOR: {sensor_name}")
+            # logging.debug(f"MAX VALUES: {should_have_value_count}")
             missing_values_count = should_have_value_count - len(sensor_data)
-            logging.warning(f"MISSING VALUES: {missing_values_count}")
+            # logging.debug(f"MISSING VALUES: {missing_values_count}")
             if missing_values_count > 0:
                 missing_timedelta = (
                     pd.Timedelta(resample_frequency) * missing_values_count
@@ -225,7 +227,7 @@ def dirhash(
             )
 
     if parallel:
-        hashvalues = Parallel(n_jobs=100, prefer="threads")(
+        hashvalues = Parallel(n_jobs=CPU_COUNT, prefer="threads")(
             delayed(_filehash)(f, hash_func) for f in fileslist
         )
     else:
@@ -260,3 +262,9 @@ def _reduce_hash(hashlist, hashfunc):
 
 def get_method_name_from_docker_image(docker_image: str) -> str:
     return docker_image.split(":")[0].split("/")[-1]
+
+
+def delta_format(delta) -> str:
+    hours, remainder = divmod(delta.total_seconds(), 3600)
+    minutes, seconds = divmod(remainder, 60)
+    return "{:02}:{:02}:{:02}".format(int(hours), int(minutes), int(seconds))

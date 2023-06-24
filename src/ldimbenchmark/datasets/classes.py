@@ -298,6 +298,7 @@ class Dataset:
             excluded_files=[
                 self.__dataset_info_file_name,
             ],
+            parallel=True,
         )
 
     def _generate_checksum(self, folder: str):
@@ -511,6 +512,9 @@ class Dataset:
                     future.result()
 
         self.leaks.to_csv(os.path.join(folder, "leaks.csv"))
+        if self.dmas is not None:
+            with open(os.path.join(folder, "dmas.json"), "w") as f:
+                json.dump(self.dmas, f)
         data_hash = self._get_data_checksum(folder)
         self.info["checksum"] = data_hash
 

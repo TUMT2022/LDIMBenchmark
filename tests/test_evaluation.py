@@ -251,6 +251,118 @@ class MyTestCase(unittest.TestCase):
             "wrong_pipe": 0,
         }
 
+    def test_leak_matching_more_expected_tightly_packed(self):
+        expected_leaks = pd.DataFrame(
+            [
+                {
+                    "leak_pipe_id": "P-03",
+                    "leak_time_start": datetime.fromisoformat("2022-01-01 00:00:00"),
+                    "leak_time_end": datetime.fromisoformat("2022-01-06 00:00:00"),
+                    "leak_time_peak": datetime.fromisoformat("2022-01-06 00:00:00"),
+                    "leak_area": 0.005,
+                    "leak_diameter": 0.005,
+                },
+                {
+                    "leak_pipe_id": "P-04",
+                    "leak_time_start": datetime.fromisoformat("2022-01-02 00:00:00"),
+                    "leak_time_end": datetime.fromisoformat("2022-03-06 00:00:00"),
+                    "leak_time_peak": datetime.fromisoformat("2022-03-06 00:00:00"),
+                    "leak_area": 0.005,
+                    "leak_diameter": 0.005,
+                },
+            ]
+        )
+
+        detected_leaks = pd.DataFrame(
+            [
+                {
+                    "leak_pipe_id": "P-04",
+                    "leak_time_start": datetime.fromisoformat("2022-01-03 00:05:00"),
+                    "leak_time_end": datetime.fromisoformat("2022-03-01 00:00:00"),
+                    "leak_time_peak": datetime.fromisoformat("2022-03-01 00:00:00"),
+                    "leak_area": 0.005,
+                    "leak_diameter": 0.005,
+                }
+            ]
+        )
+
+        evaluation_results, matched_list = evaluate_leakages(
+            expected_leaks,
+            detected_leaks,
+        )
+
+        assert evaluation_results == {
+            "true_positives": 1,
+            "false_positives": 0,
+            "true_negatives": None,
+            "false_negatives": 1,
+            "time_to_detection_avg": 86700.0,
+            "times_to_detection": [86700.0],
+            "wrong_pipe": 0,
+        }
+
+    def test_leak_matching_but_false_positive_ending(self):
+        expected_leaks = pd.DataFrame(
+            [
+                {
+                    "leak_pipe_id": "P-04",
+                    "leak_time_start": datetime.fromisoformat("2022-01-02 00:00:00"),
+                    "leak_time_end": datetime.fromisoformat("2022-01-06 00:00:00"),
+                    "leak_time_peak": datetime.fromisoformat("2022-01-06 00:00:00"),
+                    "leak_area": 0.005,
+                    "leak_diameter": 0.005,
+                },
+            ]
+        ).astype(
+            {
+                "leak_time_start": "datetime64[ns, UTC]",
+                "leak_time_end": "datetime64[ns, UTC]",
+            }
+        )
+        expected_leaks["type"] = "expected"
+
+        detected_leaks = pd.DataFrame(
+            [
+                {
+                    "leak_pipe_id": "P-03",
+                    "leak_time_start": datetime.fromisoformat("2022-01-03 00:05:00"),
+                    "leak_time_end": datetime.fromisoformat("2022-03-01 00:00:00"),
+                    "leak_time_peak": datetime.fromisoformat("2022-03-01 00:00:00"),
+                    "leak_area": 0.005,
+                    "leak_diameter": 0.005,
+                }
+            ]
+        ).astype(
+            {
+                "leak_time_start": "datetime64[ns, UTC]",
+                "leak_time_end": "datetime64[ns, UTC]",
+            }
+        )
+        detected_leaks["type"] = "detected"
+
+        evaluation_results, matched_list = evaluate_leakages(
+            expected_leaks,
+            detected_leaks,
+        )
+
+        expected_result = [
+            (
+                expected_leaks.loc[0],
+                detected_leaks.loc[0],
+            ),
+        ]
+        assert_frame_equal(pd.DataFrame(matched_list), pd.DataFrame(expected_result))
+
+        assert evaluation_results == {
+            "true_positives": 0,
+            "false_positives": 0,
+            "true_negatives": None,
+            "false_negatives": 1,
+            "time_to_detection_avg": None,
+            "times_to_detection": [],
+            "wrong_pipe": 0,
+        }
+
     def test_leak_matching_all_detected_earlier_than_expected(self):
         evaluation_results, matched_list = evaluate_leakages(
             pd.DataFrame(

@@ -51,6 +51,7 @@ def evaluate_leakages(expected_leaks: pd.DataFrame, detected_leaks: pd.DataFrame
     detected_leaks_times["type"] = "detected"
 
     list_of_all = pd.concat([expected_leaks_times, detected_leaks_times])
+    # Sort all leaks by start time
     list_of_all = list_of_all.sort_values(by="leak_time_start")
     list_of_all["used"] = 0
     list_of_all["index"] = list_of_all.index
@@ -66,6 +67,7 @@ def evaluate_leakages(expected_leaks: pd.DataFrame, detected_leaks: pd.DataFrame
 
     matched_list = []
     # TODO: Make sure that the table index (int) is used and not the pipe_id
+    # Iterate over all leaks
     for index, leak in list_of_all.iterrows():
         if list_of_all["used"][index] == 1:
             continue
@@ -75,7 +77,8 @@ def evaluate_leakages(expected_leaks: pd.DataFrame, detected_leaks: pd.DataFrame
             # If the type is expected try to find the closest leak from the detected array
             timespan_to_other_leaks = dist_mat.iloc[:, source_array_index]
             # print(timespan_to_other_leaks)
-            # If all detected leaks ar before the expected Leak there is None to match it to.
+
+            # If all detected leaks are before the expected Leak there is None to match it to.
             if all(np.isnat(i.to_numpy()) for i in timespan_to_other_leaks):
                 matched_list.append(
                     (expected_leaks.loc[source_array_index].to_dict(), None)
@@ -87,6 +90,7 @@ def evaluate_leakages(expected_leaks: pd.DataFrame, detected_leaks: pd.DataFrame
             ref = ref[ref["index"] == min_x]
             index_new = ref.index
 
+            # Check that the expected leak is closest to the detected leak (globally)
             if dist_mat.iloc[min_x, :].idxmin(skipna=True) == source_array_index and (
                 # Leak also has to be within the expected leak time
                 expected_leaks.loc[source_array_index].leak_time_end

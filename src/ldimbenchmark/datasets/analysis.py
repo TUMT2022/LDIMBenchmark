@@ -11,11 +11,7 @@ import wntr
 import matplotlib.pyplot as plt
 from typing import Literal, Union, List
 
-
-def delta_format(delta) -> str:
-    hours, remainder = divmod(delta.total_seconds(), 3600)
-    minutes, seconds = divmod(remainder, 60)
-    return "{:02}:{:02}:{:02}".format(int(hours), int(minutes), int(seconds))
+from ldimbenchmark.utilities import delta_format
 
 
 class DatasetAnalyzer:
@@ -31,6 +27,7 @@ class DatasetAnalyzer:
         self,
         datasets: List[Dataset],
         data_type: Literal["demands", "pressures", "flows", "levels"],
+        quick: bool = False,
     ):
         """
         Compare the datasets, e.g. especially helpful when comparing the original dataset with derived ones.
@@ -69,17 +66,21 @@ class DatasetAnalyzer:
         #             data_name = dataset.info["derivations"]["data"][0]["kind"]
 
         data = getattr(original_dataset, data_type)
-        for key in data.keys():
+        for sensor_id in data.keys():
             # data.columns = [f"[Original] {col}" for col in data.columns]
             DatasetAnalyzer._plot_time_series(
-                data[key],
-                data_type,
-                self.analysis_out_dir,
+                data[sensor_id],
+                f"Compare '{data_type}' of {original_dataset.name}",
+                os.path.join(
+                    self.analysis_out_dir, f"comparison_{data_type}_{sensor_id}.png"
+                ),
                 [
-                    getattr(ldata, data_type)[key]
+                    getattr(ldata, data_type)[sensor_id]
                     for i, ldata in loaded_datasets.items()
                 ],
+                quick_detail=quick,
             )
+            break
 
         # original_dataset = pd.read_csv(dataset_source_dir, index_col="Timestamp")
 
@@ -108,29 +109,44 @@ class DatasetAnalyzer:
     def _plot_time_series(
         df: pd.DataFrame,
         title: str,
-        out_dir: str,
+        out_path: str,
         compare_df: List[pd.DataFrame] = None,
+        quick_detail: bool = False,
     ):
-        """Plots the time series data of each sensor and possible data for comparison"""
-        fig, ax = plt.subplots(1, 1, figsize=(20, 10))
+        """
+        Plots the time series data of each sensor and possible data for comparison
+
+        out_path: Path to save the plot (with filename)
+        """
+        fig, ax = plt.subplots(1, 1, figsize=(30, 10))
         ax.set_title(title)
+
+        if quick_detail:
+            max_timestamp = df.index[40]
+        else:
+            max_timestamp = df.shape[0]
+
+        min_timestamp = df.index[0]
 
         if compare_df is not None:
             for compare in compare_df:
-                compare.plot(
+                compare[
+                    (compare.index > min_timestamp) & (compare.index < max_timestamp)
+                ].add_prefix("[Comparison] ").plot(
                     ax=ax,
                     alpha=0.5,
                     marker="o",
                 )
-            df.plot(
-                ax=ax,
-                marker="x",
-            )
-            ax.legend([f"[Original] {label}" for label in df.columns])
-        else:
-            df.plot(ax=ax, style=".-")
+        df[(df.index > min_timestamp) & (df.index < max_timestamp)].add_prefix(
+            "[Original] "
+        ).plot(
+            ax=ax,
+            marker="x",
+        )
+        # ax.legend([f"[Original] {label}" for label in df.columns])
+        ax.legend()
 
-        fig.savefig(os.path.join(out_dir, f"{title}_{df.columns[0]}.png"))
+        fig.savefig(out_path)
         plt.close(fig)
 
     # Plot Overview of timeseries sensors
@@ -201,7 +217,7 @@ class DatasetAnalyzer:
                         # DatasetAnalyzer._plot_time_series(
                         #     sensor_data,
                         #     f"{dataset.id}_{data_name}",
-                        #     dataset_analysis_out_dir,
+                        #     os.path.join(dataset_analysis_out_dir, f"{title}_{df.columns[0]}.png")
                         # )
                         minTime = sensor_data.index.min()
                         maxTime = sensor_data.index.max()
