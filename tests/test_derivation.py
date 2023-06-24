@@ -27,7 +27,9 @@ def test_derivator_model(snapshot, mocked_dataset1: Dataset):
     derivedDatasets = derivator.derive_model(
         "junctions", "elevation", "accuracy", [0.1]
     )
-    snapshot.assert_match(to_dict(derivedDatasets[0].model))
+    model = to_dict(derivedDatasets[0].model)
+    del model["name"]
+    snapshot.assert_match(model)
     assert_frame_equal(
         mocked_dataset1.loadData().demands["J-02"],
         derivedDatasets[0].loadData().demands["J-02"],
