@@ -1,3 +1,4 @@
+import ast
 import logging
 from typing import Dict, List
 import numpy as np
@@ -268,3 +269,103 @@ def delta_format(delta) -> str:
     hours, remainder = divmod(delta.total_seconds(), 3600)
     minutes, seconds = divmod(remainder, 60)
     return "{:02}:{:02}:{:02}".format(int(hours), int(minutes), int(seconds))
+
+
+def read_multiple_dataset_infos(dataset_info_frame: DataFrame):
+    """
+    dataset_info_frame: DataFrame with column "dataset_derivations"
+
+    returns: DataFrame with columns "dataset_derivations.data" and "dataset_derivations.is_original"
+    """
+    dataset_info_frame.dataset_derivations = (
+        dataset_info_frame.dataset_derivations.astype("str")
+    )
+    dataset_info_frame.dataset_derivations
+    dataset_info_frame["is_original"] = dataset_info_frame.dataset_derivations == "{}"
+
+    df_dataset_derivations = pd.json_normalize(
+        dataset_info_frame.dataset_derivations.apply(ast.literal_eval),
+        errors="ignore",
+    ).add_prefix("dataset_derivations.")
+
+    if "dataset_derivations.data" in df_dataset_derivations:
+        derivations_data = (
+            df_dataset_derivations["dataset_derivations.data"]
+            .reset_index()
+            .explode("dataset_derivations.data", ignore_index=True)
+        )
+        json_frame = pd.json_normalize(
+            derivations_data["dataset_derivations.data"]
+        ).add_prefix("dataset_derivations.data.")
+        derivations_data = pd.concat([derivations_data, json_frame], axis=1)
+        aggregations = {
+            "dataset_derivations.data.kind": "first",
+            "dataset_derivations.data.to": lambda x: x,
+            "dataset_derivations.data": "first",
+        }
+        if "dataset_derivations.data.value" in df_dataset_derivations:
+            aggregations["dataset_derivations.data.value"] = "first"
+        if "dataset_derivations.data.value.value" in df_dataset_derivations:
+            aggregations["dataset_derivations.data.value.value"] = "first"
+        if "dataset_derivations.data.value.shift" in df_dataset_derivations:
+            aggregations["dataset_derivations.data.value.shift"] = "first"
+
+        derivations_data = derivations_data.groupby("index").agg(aggregations)
+        derivations_data["dataset_derivations.data.to"] = derivations_data[
+            "dataset_derivations.data.to"
+        ].astype(str)
+
+        derivations_data.index = dataset_info_frame.index
+        flattened_results = pd.concat([dataset_info_frame, derivations_data], axis=1)
+        if "dataset_derivations.data.value" in df_dataset_derivations:
+            if "dataset_derivations.data.value.value" in df_dataset_derivations:
+                flattened_results["dataset_derivations.value"] = flattened_results[
+                    "dataset_derivations.data.value"
+                ].fillna(flattened_results["dataset_derivations.data.value.value"])
+            flattened_results["dataset_derivations.value"] = flattened_results[
+                "dataset_derivations.data.value"
+            ]
+        if "dataset_derivations.data.value.value" in df_dataset_derivations:
+            flattened_results["dataset_derivations.value"] = flattened_results[
+                "dataset_derivations.data.value.value"
+            ]
+        flattened_results = flattened_results.drop(
+            columns=[
+                "dataset_derivations.data.value.value",
+                "dataset_derivations.data.value",
+            ],
+            errors="ignore",
+        )
+
+    if "dataset_derivations.model" in df_dataset_derivations:
+        derivations_model = pd.json_normalize(
+            df_dataset_derivations["dataset_derivations.model"].explode(
+                "dataset_derivations.model"
+            )
+        ).add_prefix("dataset_derivations.model.")
+        derivations_model.index = flattened_results.index
+        flattened_results = pd.concat([flattened_results, derivations_model], axis=1)
+        if "dataset_derivations.value" in flattened_results:
+            flattened_results["dataset_derivations.value"] = flattened_results[
+                "dataset_derivations.value"
+            ].fillna(flattened_results["dataset_derivations.model.value"])
+        else:
+            flattened_results["dataset_derivations.value"] = flattened_results[
+                "dataset_derivations.model.value"
+            ]
+
+        flattened_results = flattened_results.drop(
+            columns=["dataset_derivations.model.value"]
+        )
+
+    flattened_results.loc[
+        ~flattened_results["dataset_derivations.data.kind"].isnull(),
+        "dataset_derivation_type",
+    ] = "data"
+
+    flattened_results.loc[
+        ~flattened_results["dataset_derivations.model.element"].isnull(),
+        "dataset_derivation_type",
+    ] = "model"
+
+    return flattened_results

@@ -17,7 +17,7 @@ import numpy as np
 import ast
 import seaborn as sns
 
-from ldimbenchmark.utilities import delta_format
+from ldimbenchmark.utilities import delta_format, read_multiple_dataset_infos
 
 
 def lighten_color(color, amount=0.5):
@@ -169,60 +169,9 @@ def evaluate_derivations(database_path: str, out_folder: str):
     engine = create_engine(f"sqlite:///{results_db_path}")
     results = pd.read_sql("results", engine, index_col="_folder")
 
-    # results.hyperparameters = results.hyperparameters.astype("str")
-    # df_hyperparameters = pd.json_normalize(
-    #     results.hyperparameters.apply(ast.literal_eval)
-    # ).add_prefix("hyperparameters.")
-    # df_hyperparameters.index = results.index
-    # df_hyperparameters
-    # results = results.drop(columns=["hyperparameters"])
-    # results = pd.concat([results, df_hyperparameters], axis=1)
+    flattened_results = read_multiple_dataset_infos(results)
 
-    results.dataset_derivations = results.dataset_derivations.astype("str")
-    results.dataset_derivations
-    results["is_original"] = results.dataset_derivations == "{}"
-
-    df_dataset_derivations = pd.json_normalize(
-        results.dataset_derivations.apply(ast.literal_eval),
-        errors="ignore",
-    ).add_prefix("dataset_derivations.")
-
-    if "dataset_derivations.data" in df_dataset_derivations:
-        derivations_data = (
-            df_dataset_derivations["dataset_derivations.data"]
-            .reset_index()
-            .explode("dataset_derivations.data", ignore_index=True)
-        )
-        json_frame = pd.json_normalize(
-            derivations_data["dataset_derivations.data"]
-        ).add_prefix("dataset_derivations.data.")
-        derivations_data = pd.concat([derivations_data, json_frame], axis=1)
-        derivations_data = derivations_data.groupby("index").agg(
-            {
-                "dataset_derivations.data.value": "first",
-                "dataset_derivations.data.value.value": "first",
-                "dataset_derivations.data.value.shift": "first",
-                "dataset_derivations.data.kind": "first",
-                "dataset_derivations.data.to": lambda x: x,
-                "dataset_derivations.data": "first",
-            }
-        )
-        derivations_data["dataset_derivations.data.to"] = derivations_data[
-            "dataset_derivations.data.to"
-        ].astype(str)
-
-        # TODO groupby and concat applied_to
-        derivations_data.index = results.index
-        flattened_results = pd.concat([results, derivations_data], axis=1)
-        flattened_results["dataset_derivations.value"] = flattened_results[
-            "dataset_derivations.data.value"
-        ].fillna(flattened_results["dataset_derivations.data.value.value"])
-        flattened_results = flattened_results.drop(
-            columns=[
-                "dataset_derivations.data.value.value",
-                "dataset_derivations.data.value",
-            ]
-        )
+    if (flattened_results["dataset_derivation_type"] == "data").any():
         data_derivation_type = flattened_results[
             flattened_results["dataset_derivations.data.kind"].notna()
         ]["dataset_derivations.data.kind"].unique()
@@ -233,26 +182,7 @@ def evaluate_derivations(database_path: str, out_folder: str):
         data_derivation_type = []
         data_to = []
 
-    if "dataset_derivations.model" in df_dataset_derivations:
-        derivations_model = pd.json_normalize(
-            df_dataset_derivations["dataset_derivations.model"].explode(
-                "dataset_derivations.model"
-            )
-        ).add_prefix("dataset_derivations.model.")
-        derivations_model.index = flattened_results.index
-        flattened_results = pd.concat([flattened_results, derivations_model], axis=1)
-        if "dataset_derivations.value" in flattened_results:
-            flattened_results["dataset_derivations.value"] = flattened_results[
-                "dataset_derivations.value"
-            ].fillna(flattened_results["dataset_derivations.model.value"])
-        else:
-            flattened_results["dataset_derivations.value"] = flattened_results[
-                "dataset_derivations.model.value"
-            ]
-
-        flattened_results = flattened_results.drop(
-            columns=["dataset_derivations.model.value"]
-        )
+    if (flattened_results["dataset_derivation_type"] == "model").any():
         model_derivation_property = flattened_results[
             flattened_results["dataset_derivations.model.property"].notna()
         ]["dataset_derivations.model.property"].unique()
