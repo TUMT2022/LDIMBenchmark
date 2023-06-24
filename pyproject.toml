@@ -33,6 +33,7 @@ more-itertools = "^9.1.0"
 seaborn = "^0.12.2"
 # This is needed because of https://github.com/pberkes/big_O/issues/46
 big-o-latest = "^0.10.3"
+tables = "^3.8.0"
 
 [tool.poetry.group.dev.dependencies]
 tox = "^3.27.1"
