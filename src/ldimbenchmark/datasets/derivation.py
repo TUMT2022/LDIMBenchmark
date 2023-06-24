@@ -59,6 +59,10 @@ def _apply_derivation_to_DataFrame(
     elif derivation == "sensitivity":
         if value["shift"] == "top":
             dataframe = np.ceil(dataframe / value["value"]) * value["value"]
+        if value["shift"] == "middle":
+            dataframe = np.floor(dataframe / value["value"]) * value["value"] + (
+                value["value"] / 2
+            )
         else:
             dataframe = np.floor(dataframe / value["value"]) * value["value"]
 
