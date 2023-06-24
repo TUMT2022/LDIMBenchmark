@@ -303,11 +303,11 @@ def read_multiple_dataset_infos(dataset_info_frame: DataFrame):
             "dataset_derivations.data.to": lambda x: x,
             "dataset_derivations.data": "first",
         }
-        if "dataset_derivations.data.value" in df_dataset_derivations:
+        if "dataset_derivations.data.value" in derivations_data:
             aggregations["dataset_derivations.data.value"] = "first"
-        if "dataset_derivations.data.value.value" in df_dataset_derivations:
+        if "dataset_derivations.data.value.value" in derivations_data:
             aggregations["dataset_derivations.data.value.value"] = "first"
-        if "dataset_derivations.data.value.shift" in df_dataset_derivations:
+        if "dataset_derivations.data.value.shift" in derivations_data:
             aggregations["dataset_derivations.data.value.shift"] = "first"
 
         derivations_data = derivations_data.groupby("index").agg(aggregations)
@@ -317,15 +317,16 @@ def read_multiple_dataset_infos(dataset_info_frame: DataFrame):
 
         derivations_data.index = dataset_info_frame.index
         flattened_results = pd.concat([dataset_info_frame, derivations_data], axis=1)
-        if "dataset_derivations.data.value" in df_dataset_derivations:
-            if "dataset_derivations.data.value.value" in df_dataset_derivations:
+        if "dataset_derivations.data.value" in flattened_results:
+            if "dataset_derivations.data.value.value" in flattened_results:
                 flattened_results["dataset_derivations.value"] = flattened_results[
                     "dataset_derivations.data.value"
                 ].fillna(flattened_results["dataset_derivations.data.value.value"])
-            flattened_results["dataset_derivations.value"] = flattened_results[
-                "dataset_derivations.data.value"
-            ]
-        if "dataset_derivations.data.value.value" in df_dataset_derivations:
+            else:
+                flattened_results["dataset_derivations.value"] = flattened_results[
+                    "dataset_derivations.data.value"
+                ]
+        elif "dataset_derivations.data.value.value" in flattened_results:
             flattened_results["dataset_derivations.value"] = flattened_results[
                 "dataset_derivations.data.value.value"
             ]
@@ -336,10 +337,14 @@ def read_multiple_dataset_infos(dataset_info_frame: DataFrame):
             ],
             errors="ignore",
         )
+        flattened_results.loc[
+            ~flattened_results["dataset_derivations.data.kind"].isnull(),
+            "dataset_derivation_type",
+        ] = "data"
 
-    if "dataset_derivations.model" in df_dataset_derivations:
+    if "dataset_derivations.model" in flattened_results:
         derivations_model = pd.json_normalize(
-            df_dataset_derivations["dataset_derivations.model"].explode(
+            flattened_results["dataset_derivations.model"].explode(
                 "dataset_derivations.model"
             )
         ).add_prefix("dataset_derivations.model.")
@@ -357,15 +362,9 @@ def read_multiple_dataset_infos(dataset_info_frame: DataFrame):
         flattened_results = flattened_results.drop(
             columns=["dataset_derivations.model.value"]
         )
-
-    flattened_results.loc[
-        ~flattened_results["dataset_derivations.data.kind"].isnull(),
-        "dataset_derivation_type",
-    ] = "data"
-
-    flattened_results.loc[
-        ~flattened_results["dataset_derivations.model.element"].isnull(),
-        "dataset_derivation_type",
-    ] = "model"
+        flattened_results.loc[
+            ~flattened_results["dataset_derivations.model.element"].isnull(),
+            "dataset_derivation_type",
+        ] = "model"
 
     return flattened_results

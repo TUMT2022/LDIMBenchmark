@@ -95,11 +95,11 @@ def plot_derivation_plot(
                         range(0, len(method_data["dataset_derivations.value"]))
                     )
                     bar_width = 0.3
-                    offset = num * bar_width - (bar_width / 2)
+                    offset = num * bar_width - bar_width  # - (bar_width / 2)
                     ax.bar(
                         spacing + offset,
                         method_data["true_positives"],
-                        label=f"{method}: TP",
+                        label=f"{method}: True Positives",
                         width=bar_width,
                         alpha=0.5,
                         color=colors[num],
@@ -109,7 +109,7 @@ def plot_derivation_plot(
                         spacing + offset,
                         method_data["false_positives"],
                         bottom=method_data["true_positives"],
-                        label=f"{method}: FP",
+                        label=f"{method}: False Positives",
                         width=bar_width,
                         alpha=0.5,
                         color=lighten_color(colors[num], 0.2),
@@ -145,6 +145,13 @@ def plot_derivation_plot(
                         f"{delta_format(datetime.timedelta(seconds=t))} H"
                         for t in method_data["dataset_derivations.value"]
                     ]
+
+                if derivation_type == "precision":
+                    labels = [
+                        "{:.0%}".format(t)
+                        for t in method_data["dataset_derivations.value"]
+                    ]
+                labels[0] = "Original"
                 ax.set_xticklabels(labels=labels)
                 ax.set_xlabel(f"{derivation_type} derivations")
                 ax.set_ylabel(f"Leak Count")
