@@ -196,7 +196,7 @@ class DatasetDerivator:
                         & self.cached_derivations[0].str.contains(this_dataset.name)
                     ]
                     if len(cache_entry) > 1:
-                        raise Exception(
+                        logging.warning(
                             f"more than one cache entry found: {str(cache_entry[0].values)}"
                         )
                     if len(cache_entry) < 1:
