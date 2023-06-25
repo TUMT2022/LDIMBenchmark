@@ -342,9 +342,9 @@ def read_multiple_dataset_infos(dataset_info_frame: DataFrame):
             "dataset_derivation_type",
         ] = "data"
 
-    if "dataset_derivations.model" in flattened_results:
+    if "dataset_derivations.model" in df_dataset_derivations:
         derivations_model = pd.json_normalize(
-            flattened_results["dataset_derivations.model"].explode(
+            df_dataset_derivations["dataset_derivations.model"].explode(
                 "dataset_derivations.model"
             )
         ).add_prefix("dataset_derivations.model.")
