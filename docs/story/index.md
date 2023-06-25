@@ -1,17 +1,35 @@
 ```mermaid
 graph TD;
-  subgraph Benchmark
-    download[Dataset Download]-->preprocessing[Preprocessing];
-    preprocessing-->dataset[Benchmark Dataset];
+  own_dataset[Own Data]-->preprocessing[Preprocessing];
+
+  subgraph Core Benchmark
     generator[Data Generator]-->dataset;
-    dataset-->dataset_noise[Noisy];
-    dataset_noise-->dataset;
+
+    method[Method] --> benchmark
+    parameters[Parameters] --> benchmark
     dataset-->benchmark[Benchmark];
 
     benchmark-->results[Results];
-    results-->evaluation[Evaluation];
-    evaluation-->plot[Plotting];
   end
-    download-->analysis[Data Analysis];
-    dataset-->analysis;
+
+  subgraph Dataset Preprocessing
+    download[Dataset Library]-->preprocessing[Preprocessing];
+    preprocessing-->dataset[Benchmark Dataset];
+  end
+
+  subgraph Parameter Search
+    benchmark --> grid-search
+    grid-search --> parameters
+  end
+
+  subgraph Derivation Module
+     derivator[Derivator] <--> dataset
+
+  end
+
+  subgraph Analysis
+    dataset --> compare[Compare]
+    dataset --> analysis[Analysis]
+    results-->evaluation[Evaluation];
+  end
 ```
