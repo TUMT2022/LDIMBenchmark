@@ -168,7 +168,7 @@ def plot_derivation_plot(
                         f"sensitivity_{dataset}_{modified_property}_{derivation_type}",
                     )
                 )
-                # plt.close(fig)
+                plt.close(fig)
 
 
 def evaluate_derivations(database_path: str, out_folder: str):
