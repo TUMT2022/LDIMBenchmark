@@ -153,8 +153,8 @@ class DatasetDerivator:
     def derive_model(
         self,
         # TODO: Add Pattern derivation
-        apply_to: Literal["junctions"],  # , "patterns"],
-        change_property: Literal["elevation"],
+        apply_to: Literal["junctions", "pipes"],  # , "patterns"],
+        change_property: Literal["elevation", "diameter", "length", "roughness"],
         derivation: Literal["accuracy"],
         values: list,
     ):
@@ -168,78 +168,111 @@ class DatasetDerivator:
         newDatasets = []
         for dataset in self.datasets:
             for value in values:
-                if derivation == "accuracy":
-                    this_dataset = Dataset(dataset.path)
-                    this_dataset.info["derivations"] = {}
-                    this_dataset.info["derivations"]["model"] = []
-                    this_dataset.info["derivations"]["model"].append(
-                        {
-                            "element": apply_to,
-                            "property": change_property,
-                            "value": value,
-                        }
+                this_dataset = Dataset(dataset.path)
+                this_dataset.info["derivations"] = {}
+                this_dataset.info["derivations"]["model"] = []
+                this_dataset.info["derivations"]["model"].append(
+                    {
+                        "element": apply_to,
+                        "property": change_property,
+                        "value": value,
+                    }
+                )
+                this_dataset._update_id()
+
+                temp_dir = tempfile.TemporaryDirectory()
+                temporaryDatasetPath = temp_dir.name
+
+                logging.info(
+                    f"Generating Model Derivation for {this_dataset.id} with derivations {str(this_dataset.info['derivations']['model'])}"
+                )
+
+                cache_entry = self.cached_derivations[
+                    (
+                        self.cached_derivations[1]
+                        == str(this_dataset.info["derivations"])
                     )
-                    this_dataset._update_id()
-
-                    temp_dir = tempfile.TemporaryDirectory()
-                    temporaryDatasetPath = temp_dir.name
-
-                    logging.info(
-                        f"Generating Model Derivation for {this_dataset.id} with derivations {str(this_dataset.info['derivations']['model'])}"
+                    & self.cached_derivations[0].str.contains(this_dataset.name)
+                ]
+                if len(cache_entry) > 1:
+                    logging.warning(
+                        f"more than one cache entry found: {str(cache_entry[0].values)}"
                     )
+                if len(cache_entry) < 1:
+                    loadedDataset = this_dataset.loadData()
 
-                    cache_entry = self.cached_derivations[
-                        (
-                            self.cached_derivations[1]
-                            == str(this_dataset.info["derivations"])
-                        )
-                        & self.cached_derivations[0].str.contains(this_dataset.name)
-                    ]
-                    if len(cache_entry) > 1:
-                        logging.warning(
-                            f"more than one cache entry found: {str(cache_entry[0].values)}"
-                        )
-                    if len(cache_entry) < 1:
-                        loadedDataset = this_dataset.loadData()
-
-                        # Derive
+                    # Derive
+                    if (
+                        derivation == "accuracy"
+                        and change_property == "elevation"
+                        and apply_to == "junctions"
+                    ):
                         junctions = loadedDataset.model.junction_name_list
                         noise = get_random_norm(value, len(junctions))
                         for index, junction in enumerate(junctions):
                             loadedDataset.model.get_node(junction).elevation += noise[
                                 index
                             ]
+                    elif (
+                        derivation == "accuracy"
+                        and change_property == "roughness"
+                        and apply_to == "pipes"
+                    ):
+                        pipes = loadedDataset.model.pipe_name_list
+                        noise = get_random_norm(value, len(pipes))
+                        for index, pipe in enumerate(pipes):
+                            loadedDataset.model.get_link(pipe).roughness += noise[index]
+                    elif (
+                        derivation == "accuracy"
+                        and change_property == "diameter"
+                        and apply_to == "pipes"
+                    ):
+                        pipes = loadedDataset.model.pipe_name_list
+                        noise = get_random_norm(value, len(pipes))
+                        for index, pipe in enumerate(pipes):
+                            loadedDataset.model.get_link(pipe).diameter += noise[index]
+                    elif (
+                        derivation == "accuracy"
+                        and change_property == "length"
+                        and apply_to == "pipes"
+                    ):
+                        pipes = loadedDataset.model.pipe_name_list
+                        noise = get_random_norm(value, len(pipes))
+                        for index, pipe in enumerate(pipes):
+                            loadedDataset.model.get_link(pipe).length += noise[index]
 
-                        # Save
-                        # os.makedirs(os.path.dirname(temporaryDatasetPath), exist_ok=True)
-                        loadedDataset.exportTo(temporaryDatasetPath)
-
-                        tmp_dataset = Dataset(temporaryDatasetPath)
-                        logging.info(f"Saved {loadedDataset.id}")
-                        logging.info("Populating cache")
-                        tmp_dataset.is_valid()
-                        tmp_dataset.loadData()
-                        dataset_path = os.path.join(self.out_path, tmp_dataset.id + "/")
-                        shutil.copytree(
-                            temporaryDatasetPath, dataset_path, dirs_exist_ok=True
-                        )
-
-                        new_dataset = Dataset(dataset_path)
-
-                        newDatasets.append(new_dataset)
-                        self.all_derived_datasets.append(new_dataset)
-
-                        temp_dir.cleanup()
                     else:
-                        # Dataset already generated
-                        cached_dataset = Dataset(
-                            os.path.join(self.out_path, cache_entry.iloc[0][0])
+                        raise Exception(
+                            f"No derivation '{derivation}' for {apply_to} {change_property} implemented"
                         )
-                        newDatasets.append(cached_dataset)
-                        self.all_derived_datasets.append(cached_dataset)
 
+                    # Save
+                    # os.makedirs(os.path.dirname(temporaryDatasetPath), exist_ok=True)
+                    loadedDataset.exportTo(temporaryDatasetPath)
+
+                    tmp_dataset = Dataset(temporaryDatasetPath)
+                    logging.info(f"Saved {loadedDataset.id}")
+                    logging.info("Populating cache")
+                    tmp_dataset.is_valid()
+                    tmp_dataset.loadData()
+                    dataset_path = os.path.join(self.out_path, tmp_dataset.id + "/")
+                    shutil.copytree(
+                        temporaryDatasetPath, dataset_path, dirs_exist_ok=True
+                    )
+
+                    new_dataset = Dataset(dataset_path)
+
+                    newDatasets.append(new_dataset)
+                    self.all_derived_datasets.append(new_dataset)
+
+                    temp_dir.cleanup()
                 else:
-                    raise Exception(f"No derivation named '{derivation}'")
+                    # Dataset already generated
+                    cached_dataset = Dataset(
+                        os.path.join(self.out_path, cache_entry.iloc[0][0])
+                    )
+                    newDatasets.append(cached_dataset)
+                    self.all_derived_datasets.append(cached_dataset)
 
         return newDatasets
 
