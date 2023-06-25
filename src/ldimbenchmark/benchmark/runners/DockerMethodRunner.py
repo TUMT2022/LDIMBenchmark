@@ -197,7 +197,7 @@ class DockerMethodRunner(MethodRunner):
                     f"Runner {self.id} errored with status code {status['StatusCode']}!"
                 )
                 for line in container.logs().decode().split("\n"):
-                    logging.error(f"Container[{self.image}]: " + line)
+                    logging.error(f"[{self.id}]: " + line)
                 if status["StatusCode"] == 137:
                     logging.error("Process in container was killed.")
                     logging.error(
