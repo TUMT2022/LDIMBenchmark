@@ -20,13 +20,91 @@ from pandas.testing import assert_frame_equal
 import os
 
 
-def test_derivator_model(snapshot, mocked_dataset1: Dataset):
+def test_derivator_model_junction_elevation(snapshot, mocked_dataset1: Dataset):
     derivator = DatasetDerivator(
         [mocked_dataset1], TEST_DATA_FOLDER_DATASETS, ignore_cache=True
     )
     derivedDatasets = derivator.derive_model(
         "junctions", "elevation", "accuracy", [0.1]
     )
+    model = to_dict(derivedDatasets[0].model)
+    del model["name"]
+    snapshot.assert_match(model)
+    assert_frame_equal(
+        mocked_dataset1.loadData().demands["J-02"],
+        derivedDatasets[0].loadData().demands["J-02"],
+    )
+    assert_frame_equal(
+        mocked_dataset1.loadData().flows["J-02"],
+        derivedDatasets[0].loadData().flows["J-02"],
+    )
+    assert_frame_equal(
+        mocked_dataset1.loadData().levels["J-02"],
+        derivedDatasets[0].loadData().levels["J-02"],
+    )
+    assert_frame_equal(
+        mocked_dataset1.loadData().pressures["J-02"],
+        derivedDatasets[0].loadData().pressures["J-02"],
+    )
+
+
+def test_derivator_model_pipe_diameter(snapshot, mocked_dataset1: Dataset):
+    derivator = DatasetDerivator(
+        [mocked_dataset1], TEST_DATA_FOLDER_DATASETS, ignore_cache=True
+    )
+    derivedDatasets = derivator.derive_model("pipes", "diameter", "accuracy", [0.1])
+    model = to_dict(derivedDatasets[0].model)
+    del model["name"]
+    snapshot.assert_match(model)
+    assert_frame_equal(
+        mocked_dataset1.loadData().demands["J-02"],
+        derivedDatasets[0].loadData().demands["J-02"],
+    )
+    assert_frame_equal(
+        mocked_dataset1.loadData().flows["J-02"],
+        derivedDatasets[0].loadData().flows["J-02"],
+    )
+    assert_frame_equal(
+        mocked_dataset1.loadData().levels["J-02"],
+        derivedDatasets[0].loadData().levels["J-02"],
+    )
+    assert_frame_equal(
+        mocked_dataset1.loadData().pressures["J-02"],
+        derivedDatasets[0].loadData().pressures["J-02"],
+    )
+
+
+def test_derivator_model_pipe_roughness(snapshot, mocked_dataset1: Dataset):
+    derivator = DatasetDerivator(
+        [mocked_dataset1], TEST_DATA_FOLDER_DATASETS, ignore_cache=True
+    )
+    derivedDatasets = derivator.derive_model("pipes", "roughness", "accuracy", [0.1])
+    model = to_dict(derivedDatasets[0].model)
+    del model["name"]
+    snapshot.assert_match(model)
+    assert_frame_equal(
+        mocked_dataset1.loadData().demands["J-02"],
+        derivedDatasets[0].loadData().demands["J-02"],
+    )
+    assert_frame_equal(
+        mocked_dataset1.loadData().flows["J-02"],
+        derivedDatasets[0].loadData().flows["J-02"],
+    )
+    assert_frame_equal(
+        mocked_dataset1.loadData().levels["J-02"],
+        derivedDatasets[0].loadData().levels["J-02"],
+    )
+    assert_frame_equal(
+        mocked_dataset1.loadData().pressures["J-02"],
+        derivedDatasets[0].loadData().pressures["J-02"],
+    )
+
+
+def test_derivator_model_pipe_length(snapshot, mocked_dataset1: Dataset):
+    derivator = DatasetDerivator(
+        [mocked_dataset1], TEST_DATA_FOLDER_DATASETS, ignore_cache=True
+    )
+    derivedDatasets = derivator.derive_model("pipes", "length", "accuracy", [0.1])
     model = to_dict(derivedDatasets[0].model)
     del model["name"]
     snapshot.assert_match(model)
