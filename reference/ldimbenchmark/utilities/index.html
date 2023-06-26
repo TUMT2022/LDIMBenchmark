@@ -2420,9 +2420,9 @@ From https://raw.githubusercontent.com/to-mc/checksumdir/0ec7096945e4778c23e16fb
 <a id="__codelineno-0-342" name="__codelineno-0-342"></a>            <span class="s2">&quot;dataset_derivation_type&quot;</span><span class="p">,</span>
 <a id="__codelineno-0-343" name="__codelineno-0-343"></a>        <span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;data&quot;</span>
 <a id="__codelineno-0-344" name="__codelineno-0-344"></a>
-<a id="__codelineno-0-345" name="__codelineno-0-345"></a>    <span class="k">if</span> <span class="s2">&quot;dataset_derivations.model&quot;</span> <span class="ow">in</span> <span class="n">flattened_results</span><span class="p">:</span>
+<a id="__codelineno-0-345" name="__codelineno-0-345"></a>    <span class="k">if</span> <span class="s2">&quot;dataset_derivations.model&quot;</span> <span class="ow">in</span> <span class="n">df_dataset_derivations</span><span class="p">:</span>
 <a id="__codelineno-0-346" name="__codelineno-0-346"></a>        <span class="n">derivations_model</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">json_normalize</span><span class="p">(</span>
-<a id="__codelineno-0-347" name="__codelineno-0-347"></a>            <span class="n">flattened_results</span><span class="p">[</span><span class="s2">&quot;dataset_derivations.model&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">explode</span><span class="p">(</span>
+<a id="__codelineno-0-347" name="__codelineno-0-347"></a>            <span class="n">df_dataset_derivations</span><span class="p">[</span><span class="s2">&quot;dataset_derivations.model&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">explode</span><span class="p">(</span>
 <a id="__codelineno-0-348" name="__codelineno-0-348"></a>                <span class="s2">&quot;dataset_derivations.model&quot;</span>
 <a id="__codelineno-0-349" name="__codelineno-0-349"></a>            <span class="p">)</span>
 <a id="__codelineno-0-350" name="__codelineno-0-350"></a>        <span class="p">)</span><span class="o">.</span><span class="n">add_prefix</span><span class="p">(</span><span class="s2">&quot;dataset_derivations.model.&quot;</span><span class="p">)</span>

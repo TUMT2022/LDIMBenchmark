@@ -1368,27 +1368,45 @@
   <h1>Story</h1>
 
 <pre class="mermaid"><code>graph TD;
-  subgraph Benchmark
-    download[Dataset Download]--&gt;preprocessing[Preprocessing];
-    preprocessing--&gt;dataset[Benchmark Dataset];
+  own_dataset[Own Data]--&gt;preprocessing[Preprocessing];
+
+  subgraph Core Benchmark
     generator[Data Generator]--&gt;dataset;
-    dataset--&gt;dataset_noise[Noisy];
-    dataset_noise--&gt;dataset;
+
+    method[Method] --&gt; benchmark
+    parameters[Parameters] --&gt; benchmark
     dataset--&gt;benchmark[Benchmark];
 
     benchmark--&gt;results[Results];
-    results--&gt;evaluation[Evaluation];
-    evaluation--&gt;plot[Plotting];
   end
-    download--&gt;analysis[Data Analysis];
-    dataset--&gt;analysis;</code></pre>
+
+  subgraph Dataset Preprocessing
+    download[Dataset Library]--&gt;preprocessing[Preprocessing];
+    preprocessing--&gt;dataset[Benchmark Dataset];
+  end
+
+  subgraph Parameter Search
+    benchmark --&gt; grid-search
+    grid-search --&gt; parameters
+  end
+
+  subgraph Derivation Module
+     derivator[Derivator] &lt;--&gt; dataset
+
+  end
+
+  subgraph Analysis
+    dataset --&gt; compare[Compare]
+    dataset --&gt; analysis[Analysis]
+    results--&gt;evaluation[Evaluation];
+  end</code></pre>
 
   <hr>
 <div class="md-source-file">
   <small>
     
       Last update:
-      <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date">December 13, 2022</span>
+      <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date">June 25, 2023</span>
       
         <br>
         Created:
