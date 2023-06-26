@@ -40,11 +40,11 @@ class DUALMethod(LDIMMethodBase):
             metadata=MethodMetadata(
                 data_needed=MethodMetadataDataNeeded(
                     pressures="necessary",
-                    flows="necessary",
+                    flows="optional",
                     levels="optional",
-                    model="ignored",
+                    model="necessary",
                     demands="ignored",
-                    structure="necessary",
+                    structure="ignored",
                 ),
                 hyperparameters=[
                     Hyperparameter(

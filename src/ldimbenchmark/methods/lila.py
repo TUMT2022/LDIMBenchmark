@@ -1,5 +1,10 @@
 import logging
-from ldimbenchmark.classes import LDIMMethodBase, MethodMetadata, Hyperparameter
+from ldimbenchmark.classes import (
+    LDIMMethodBase,
+    MethodMetadata,
+    Hyperparameter,
+    MethodMetadataDataNeeded,
+)
 from ldimbenchmark import (
     BenchmarkData,
     BenchmarkLeakageResult,
@@ -56,7 +61,14 @@ class LILA(LDIMMethodBase):
             name="lila",
             version="0.2.0",
             metadata=MethodMetadata(
-                data_needed=["pressures", "flows"],
+                data_needed=MethodMetadataDataNeeded(
+                    pressures="necessary",
+                    flows="necessary",
+                    levels="ignored",
+                    model="ignored",
+                    demands="ignored",
+                    structure="optional",
+                ),
                 hyperparameters=[
                     Hyperparameter(
                         name="leakfree_time_start",
@@ -73,14 +85,6 @@ class LILA(LDIMMethodBase):
                         description="Time frequency for resampling the data. e.g. '1T' for 1 minute, '1H' for 1 hour, '1D' for 1 day.",
                         value_type=str,
                         default="5T",
-                    ),
-                    Hyperparameter(
-                        name="est_length",
-                        description="Length of the estimation period in hours",
-                        default=72,  # 3 days
-                        value_type=int,
-                        max=8760,  # 1 year
-                        min=1,
                     ),
                     Hyperparameter(
                         name="est_length",

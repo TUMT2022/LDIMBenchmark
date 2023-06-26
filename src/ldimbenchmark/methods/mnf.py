@@ -4,7 +4,7 @@ from ldimbenchmark import (
     MethodMetadata,
     Hyperparameter,
 )
-from ldimbenchmark.classes import BenchmarkData
+from ldimbenchmark.classes import BenchmarkData, MethodMetadataDataNeeded
 
 from datetime import timedelta
 from sklearn.linear_model import LinearRegression
@@ -34,7 +34,14 @@ class MNF(LDIMMethodBase):
             name="mnf",
             version="1.2.0",
             metadata=MethodMetadata(
-                data_needed=["flow"],
+                data_needed=MethodMetadataDataNeeded(
+                    pressures="ignored",
+                    flows="necessary",
+                    levels="ignored",
+                    model="ignored",
+                    demands="ignored",
+                    structure="ignored",
+                ),
                 hyperparameters=[
                     Hyperparameter(
                         name="resample_frequency",
@@ -61,7 +68,6 @@ class MNF(LDIMMethodBase):
                 ],
                 # TODO: more attributes?
                 mimum_dataset_size=365,  # in days to match datasets?
-                can_resample=False,  # Whether the method can resample the data itself or if it should be resampled before?
             ),
         )
 
