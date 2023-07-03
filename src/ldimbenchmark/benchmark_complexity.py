@@ -64,6 +64,11 @@ def run_benchmark_complexity(
 
     if not os.path.exists(out_folder):
         os.mkdir(out_folder)
+
+    if n_max < 1:
+        raise ValueError("n_max must be at least 1")
+    if n_measures < 1:
+        raise ValueError("n_measures must be at least 1")
     logging.info("Complexity Analysis:")
     logging.info(" > Generating Datasets")
     if style == "time":
@@ -110,7 +115,7 @@ def run_benchmark_complexity(
         os.kill(os.getpid(), 9)
     bar_loading_data.close()
 
-    results = {"time": {}, "ram": {}}
+    results = {"time": {}, "ram": {}, "time_avg": {}, "ram_avg": {}}
     result_measures = []
 
     bar_running_analysis = manager.counter(
@@ -147,8 +152,10 @@ def run_benchmark_complexity(
                     resultsFolder=complexity_benchmark_result_folder_run,
                     debug=additionalOutput,
                     capture_docker_stats=True,
+                    cpu_count=1,
+                    mem_limit="20g",
                 )
-                result = runner.run(cpu_count=1, mem_limit="20g")
+                result = runner.run()
                 if result is None:
                     if failing:
                         # if we failed twice in a row, we assume that the method is not working
@@ -225,16 +232,19 @@ def run_benchmark_complexity(
         classes = pd.DataFrame({"class": rest.keys(), "residual": rest.values()})
         classes.to_csv(os.path.join(out_folder, f"complexities_ram_{method_name}.csv"))
 
-        results["time"][method] = best_cpu
-        results["ram"][method] = best_ram
+        results["time"][method_name] = best_cpu
+        results["ram"][method_name] = best_ram
+        results["time_avg"][method_name] = np.average(value_matrix_time)
+        results["ram_avg"][method_name] = np.average(value_matrix_ram)
 
         dataseries = {
             f"time_overall_{method_name}": np.average(value_matrix_time, axis=1),
             f"ram_overall_{method_name}": np.average(value_matrix_ram, axis=1),
         }
         for n in range(n_repeats):
-            dataseries[f"time_run_{n}_{method_name}"] = value_matrix_time.T[n].tolist()
-            dataseries[f"ram_run_{n}_{method_name}"] = value_matrix_ram.T[n].tolist()
+            # Use underscores to hide hide the labels in the plot
+            dataseries[f"_time_run_{n}_{method_name}"] = value_matrix_time.T[n].tolist()
+            dataseries[f"_ram_run_{n}_{method_name}"] = value_matrix_ram.T[n].tolist()
         measures = pd.DataFrame(
             dataseries,
             index=sorted_results["number"].to_list(),
@@ -254,15 +264,51 @@ def run_benchmark_complexity(
     logging.info(f"Exporting results to {out_folder}")
     results = pd.DataFrame(
         {
-            "Leakage Detection Method": results["time"].keys(),
-            "Time Complexity": results["time"].values(),
-            "RAM Complexity": results["ram"].values(),
+            "Method": results["time"].keys(),
+            "time": results["time"].values(),
+            "ram": results["ram"].values(),
+            "time_avg": results["time_avg"].values(),
+            "ram_avg": results["ram_avg"].values(),
         }
     )
-    results.to_csv(os.path.join(out_folder, "results.csv"), index=False)
+    results["time"] = results["time"].map(lambda x: str(x).split(":")[0].lower())
+    results["ram"] = results["ram"].map(lambda x: str(x).split(":")[0].lower())
+    results["time_avg"] = results["time_avg"].map(
+        lambda x: "\SI{" + "{:.2}".format(x) + "}{\second}"
+    )
+    results["ram_avg"] = results["ram_avg"].map(
+        lambda x: "\SI{" + "{:,.0f}".format(x / 1024 / 1024) + "}{\mega\\byte}"
+    )
+    results = results.set_index("Method")
 
-    # TODO: Escape complexity formula into math mode
-    results.style.hide(axis="index").to_latex(os.path.join(out_folder, "results.tex"))
+    results.columns = pd.MultiIndex.from_arrays(
+        [
+            [
+                "Time",
+                "Time",
+                "Memory",
+                "Memory",
+            ],
+            ["complexity", "average", "complexity", "average"],
+        ]
+    )
+
+    results.to_csv(os.path.join(out_folder, "results.csv"))
+
+    results.style.set_table_styles(
+        [
+            # {'selector': 'toprule', 'props': ':hline;'},
+            {"selector": "midrule", "props": ":hline;"},
+            # {'selector': 'bottomrule', 'props': ':hline;'},
+        ],
+        overwrite=False,
+    ).to_latex(
+        os.path.join(out_folder, "results.tex"),
+        label=f"table:complexity:{style}",
+        caption=f"Complexities of the different methods depending on the amount of {style}.",
+        column_format="l|" + str("l" * (len(results.columns))),
+        position="H",
+    )
 
     result_measures = pd.concat(result_measures, axis=1)
     result_measures.to_csv(os.path.join(out_folder, "measures.csv"))
@@ -272,8 +318,8 @@ def run_benchmark_complexity(
     overall_measures = result_measures[
         [col for col in result_measures.columns if "overall" in col]
     ]
-    plot = (overall_measures / overall_measures.max()).plot()
-    plot.set_title(f"Complexity Analysis (scaled): {style}")
+    ax = (overall_measures / overall_measures.max()).plot()
+    ax.set_title(f"Complexity Analysis")
 
     ### Add complexities in background
 
@@ -293,44 +339,56 @@ def run_benchmark_complexity(
     values["expo"] = values["expo"].astype(object)
     values["expo"] = 2 ** values["expo"]
 
-    plot = (values["const"] / values["const"].max()).plot(alpha=0.2, color="black")
+    ax = (values["const"] / values["const"].max()).plot(alpha=0.2, color="black")
     (values["log"] / values["log"].max()).plot(alpha=0.2, color="black")
     (values["linear"] / values["linear"].max()).plot(alpha=0.2, color="black")
     (values["poly"] / values["poly"].max()).plot(alpha=0.2, color="black")
     (values["expo"] / values["expo"].max()).plot(alpha=0.2, color="black")
 
-    fig = plot.get_figure()
+    if style == "junctions":
+        ax.set_xlabel("junction number")
+    elif style == "time":
+        ax.set_xlabel("time (days)")
+
+    ax.set_ylabel("scale")
+    fig = ax.get_figure()
     fig.savefig(os.path.join(out_folder, "measures.png"))
     plt.close(fig)
 
     # Raw Time Values
-    plot = result_measures[
+    ax = result_measures[
         [
             col
             for col in result_measures.columns
             if ("time" in col and not "overall" in col)
         ]
-    ].plot(alpha=0.2, color="black")
+    ].plot(alpha=0.2, color="black", label="_nolegend")
     overall_measures[[col for col in overall_measures.columns if "time" in col]].plot(
-        ax=plot
+        ax=ax
     )
-    plot.set_title(f"{style}: Time Values")
-    fig = plot.get_figure()
+    ax.set_title(f"Complexity Analysis for different {style} inputs")
+    ax.set_xlabel("time (days)")
+    ax.set_ylabel("time (seconds)")
+    ax.xaxis.set_major_formatter((":.0f"))
+    fig = ax.get_figure()
     fig.savefig(os.path.join(out_folder, "time.png"))
     plt.close(fig)
 
-    plot = result_measures[
+    ax = result_measures[
         [
             col
             for col in result_measures.columns
             if ("ram" in col and not "overall" in col)
         ]
-    ].plot(alpha=0.2, color="black")
+    ].plot(alpha=0.2, color="black", label="_nolegend")
     overall_measures[[col for col in overall_measures.columns if "ram" in col]].plot(
-        ax=plot
+        ax=ax
     )
-    plot.set_title(f"{style}: RAM Values")
-    fig = plot.get_figure()
+    ax.set_title(f"Complexity Analysis for different {style} inputs")
+    ax.set_xlabel("junction number")
+    ax.set_ylabel("memory (MB)")
+    ax.xaxis.set_major_formatter((":.0f"))
+    fig = ax.get_figure()
     fig.savefig(os.path.join(out_folder, "ram.png"))
     plt.close(fig)
     return results

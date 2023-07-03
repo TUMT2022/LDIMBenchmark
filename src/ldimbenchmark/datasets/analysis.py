@@ -248,7 +248,7 @@ class DatasetAnalyzer:
             leaks_analysis["duration"] = (
                 dataset.leaks["leak_time_end"] - dataset.leaks["leak_time_start"]
             )
-            mean_duration = leaks_analysis["duration"].mean()
+            mean_duration = leaks_analysis["duration"].mean().round("1s")
             leaks_analysis["smaller"] = leaks_analysis["duration"] < mean_duration
             leaks_analysis["longer"] = leaks_analysis["duration"] >= mean_duration
             common_table["leaks_number"] = len(dataset.leaks)
@@ -418,8 +418,6 @@ class DatasetAnalyzer:
                 # {'selector': 'bottomrule', 'props': ':hline;'},
             ],
             overwrite=False,
-        ).hide(
-            axis="index"
         ).to_latex(
             os.path.join(self.analysis_out_dir, "network_model_overview.tex"),
             position_float="centering",
@@ -457,7 +455,7 @@ class DatasetAnalyzer:
             .rename_axis("name", axis=1)
             .rename(
                 columns={
-                    "time_duration": "Timespan",
+                    "time_duration": "timespan",
                     "interval_min": "min internal",
                     "interval_max": "max interval",
                     "leaks_number": "Leaks",
@@ -470,6 +468,16 @@ class DatasetAnalyzer:
 
         datasets_table.style.format(
             formatter={
+                "timespan": lambda v: "\\begin{tabular}{@{}c@{}}"
+                + str(v)[: str(v).find("days") + 4]
+                + "\\\\"
+                + str(v)[str(v).find("days") + 4 :]
+                + "\\end{tabular}",
+                "Leak Duration": lambda v: "\\begin{tabular}{@{}c@{}}"
+                + str(v)[: str(v).find("days") + 4]
+                + "\\\\"
+                + str(v)[str(v).find("days") + 4 :]
+                + "\\end{tabular}",
                 "min internal": lambda v: delta_format(v),
                 "max interval": lambda v: delta_format(v),
             },

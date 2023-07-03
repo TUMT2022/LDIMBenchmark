@@ -275,7 +275,9 @@ def read_multiple_dataset_infos(dataset_info_frame: DataFrame):
     """
     dataset_info_frame: DataFrame with column "dataset_derivations"
 
-    returns: DataFrame with columns "dataset_derivations.data" and "dataset_derivations.is_original"
+    returns: DataFrame
+
+    DataFrame with columns "dataset_derivations.data" and "dataset_derivations.is_original"
     """
     dataset_info_frame.dataset_derivations = (
         dataset_info_frame.dataset_derivations.astype("str")
