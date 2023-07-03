@@ -329,23 +329,23 @@ def run_benchmark_complexity(
 
     values = pd.DataFrame(
         {
-            "const": 1,
-            "log": np.log(x),
-            "linear": x,
-            "poly": x**4,
+            "_const": 1,
+            "_log": np.log(x),
+            "_linear": x,
+            "_poly": x**4,
         },
         index=x,
     )
 
-    values["expo"] = x
-    values["expo"] = values["expo"].astype(object)
-    values["expo"] = 2 ** values["expo"]
+    values["_expo"] = x
+    values["_expo"] = values["_expo"].astype(object)
+    values["_expo"] = 2 ** values["_expo"]
 
-    ax = (values["const"] / values["const"].max()).plot(alpha=0.2, color="black")
-    (values["log"] / values["log"].max()).plot(alpha=0.2, color="black")
-    (values["linear"] / values["linear"].max()).plot(alpha=0.2, color="black")
-    (values["poly"] / values["poly"].max()).plot(alpha=0.2, color="black")
-    (values["expo"] / values["expo"].max()).plot(alpha=0.2, color="black")
+    ax = (values["_const"] / values["_const"].max()).plot(alpha=0.2, color="black")
+    (values["_log"] / values["_log"].max()).plot(alpha=0.2, color="black")
+    (values["_linear"] / values["_linear"].max()).plot(alpha=0.2, color="black")
+    (values["_poly"] / values["_poly"].max()).plot(alpha=0.2, color="black")
+    (values["_expo"] / values["_expo"].max()).plot(alpha=0.2, color="black")
 
     if style == "junctions":
         ax.set_xlabel("junction number")
@@ -353,7 +353,9 @@ def run_benchmark_complexity(
         ax.set_xlabel("time (days)")
 
     ax.set_ylabel("scale")
+    ax.legend(loc="lower right")
     fig = ax.get_figure()
+
     fig.savefig(os.path.join(out_folder, "measures.png"))
     plt.close(fig)
 
@@ -371,6 +373,8 @@ def run_benchmark_complexity(
     ax.set_title(f"Complexity Analysis for different {style} inputs")
     ax.set_xlabel("time (days)")
     ax.set_ylabel("time (seconds)")
+    ax.legend(loc="lower right")
+
     # ax.xaxis.set_major_formatter(FormatStrFormatter("%.0f"))
     fig = ax.get_figure()
     fig.savefig(os.path.join(out_folder, "time.png"))
@@ -389,6 +393,8 @@ def run_benchmark_complexity(
     ax.set_title(f"Complexity Analysis for different {style} inputs")
     ax.set_xlabel("junction number")
     ax.set_ylabel("memory (bytes)")
+    ax.legend(loc="lower right")
+
     # ax.xaxis.set_major_formatter(FormatStrFormatter("%.0f"))
     fig = ax.get_figure()
     fig.savefig(os.path.join(out_folder, "ram.png"))
