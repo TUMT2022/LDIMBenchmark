@@ -10,6 +10,7 @@ import docker
 
 import enlighten
 from matplotlib import pyplot as plt
+from matplotlib.ticker import FormatStrFormatter
 from ldimbenchmark.benchmark.results import load_result
 from ldimbenchmark.benchmark.runners import DockerMethodRunner
 from ldimbenchmark.constants import LDIM_BENCHMARK_CACHE_DIR
@@ -308,6 +309,7 @@ def run_benchmark_complexity(
         caption=f"Complexities of the different methods depending on the amount of {style}.",
         column_format="l|" + str("l" * (len(results.columns))),
         position="H",
+        multicol_align="l",
     )
 
     result_measures = pd.concat(result_measures, axis=1)
@@ -319,7 +321,7 @@ def run_benchmark_complexity(
         [col for col in result_measures.columns if "overall" in col]
     ]
     ax = (overall_measures / overall_measures.max()).plot()
-    ax.set_title(f"Complexity Analysis")
+    ax.set_title(f"Complexity Analysis for different {style} inputs")
 
     ### Add complexities in background
 
@@ -369,7 +371,7 @@ def run_benchmark_complexity(
     ax.set_title(f"Complexity Analysis for different {style} inputs")
     ax.set_xlabel("time (days)")
     ax.set_ylabel("time (seconds)")
-    ax.xaxis.set_major_formatter((":.0f"))
+    # ax.xaxis.set_major_formatter(FormatStrFormatter("%.0f"))
     fig = ax.get_figure()
     fig.savefig(os.path.join(out_folder, "time.png"))
     plt.close(fig)
@@ -386,8 +388,8 @@ def run_benchmark_complexity(
     )
     ax.set_title(f"Complexity Analysis for different {style} inputs")
     ax.set_xlabel("junction number")
-    ax.set_ylabel("memory (MB)")
-    ax.xaxis.set_major_formatter((":.0f"))
+    ax.set_ylabel("memory (bytes)")
+    # ax.xaxis.set_major_formatter(FormatStrFormatter("%.0f"))
     fig = ax.get_figure()
     fig.savefig(os.path.join(out_folder, "ram.png"))
     plt.close(fig)
