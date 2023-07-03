@@ -1995,7 +1995,15 @@
 <span class="normal"><a href="#__codelineno-0-491">491</a></span>
 <span class="normal"><a href="#__codelineno-0-492">492</a></span>
 <span class="normal"><a href="#__codelineno-0-493">493</a></span>
-<span class="normal"><a href="#__codelineno-0-494">494</a></span></pre></div></td><td class="code"><div><pre><span></span><code><a id="__codelineno-0-17" name="__codelineno-0-17"></a><span class="k">class</span> <span class="nc">DatasetAnalyzer</span><span class="p">:</span>
+<span class="normal"><a href="#__codelineno-0-494">494</a></span>
+<span class="normal"><a href="#__codelineno-0-495">495</a></span>
+<span class="normal"><a href="#__codelineno-0-496">496</a></span>
+<span class="normal"><a href="#__codelineno-0-497">497</a></span>
+<span class="normal"><a href="#__codelineno-0-498">498</a></span>
+<span class="normal"><a href="#__codelineno-0-499">499</a></span>
+<span class="normal"><a href="#__codelineno-0-500">500</a></span>
+<span class="normal"><a href="#__codelineno-0-501">501</a></span>
+<span class="normal"><a href="#__codelineno-0-502">502</a></span></pre></div></td><td class="code"><div><pre><span></span><code><a id="__codelineno-0-17" name="__codelineno-0-17"></a><span class="k">class</span> <span class="nc">DatasetAnalyzer</span><span class="p">:</span>
 <a id="__codelineno-0-18" name="__codelineno-0-18"></a><span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <a id="__codelineno-0-19" name="__codelineno-0-19"></a><span class="sd">    Analyze a dataset</span>
 <a id="__codelineno-0-20" name="__codelineno-0-20"></a><span class="sd">    &quot;&quot;&quot;</span>
@@ -2229,7 +2237,7 @@
 <a id="__codelineno-0-248" name="__codelineno-0-248"></a>            <span class="n">leaks_analysis</span><span class="p">[</span><span class="s2">&quot;duration&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span>
 <a id="__codelineno-0-249" name="__codelineno-0-249"></a>                <span class="n">dataset</span><span class="o">.</span><span class="n">leaks</span><span class="p">[</span><span class="s2">&quot;leak_time_end&quot;</span><span class="p">]</span> <span class="o">-</span> <span class="n">dataset</span><span class="o">.</span><span class="n">leaks</span><span class="p">[</span><span class="s2">&quot;leak_time_start&quot;</span><span class="p">]</span>
 <a id="__codelineno-0-250" name="__codelineno-0-250"></a>            <span class="p">)</span>
-<a id="__codelineno-0-251" name="__codelineno-0-251"></a>            <span class="n">mean_duration</span> <span class="o">=</span> <span class="n">leaks_analysis</span><span class="p">[</span><span class="s2">&quot;duration&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">mean</span><span class="p">()</span>
+<a id="__codelineno-0-251" name="__codelineno-0-251"></a>            <span class="n">mean_duration</span> <span class="o">=</span> <span class="n">leaks_analysis</span><span class="p">[</span><span class="s2">&quot;duration&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">mean</span><span class="p">()</span><span class="o">.</span><span class="n">round</span><span class="p">(</span><span class="s2">&quot;1s&quot;</span><span class="p">)</span>
 <a id="__codelineno-0-252" name="__codelineno-0-252"></a>            <span class="n">leaks_analysis</span><span class="p">[</span><span class="s2">&quot;smaller&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">leaks_analysis</span><span class="p">[</span><span class="s2">&quot;duration&quot;</span><span class="p">]</span> <span class="o">&lt;</span> <span class="n">mean_duration</span>
 <a id="__codelineno-0-253" name="__codelineno-0-253"></a>            <span class="n">leaks_analysis</span><span class="p">[</span><span class="s2">&quot;longer&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">leaks_analysis</span><span class="p">[</span><span class="s2">&quot;duration&quot;</span><span class="p">]</span> <span class="o">&gt;=</span> <span class="n">mean_duration</span>
 <a id="__codelineno-0-254" name="__codelineno-0-254"></a>            <span class="n">common_table</span><span class="p">[</span><span class="s2">&quot;leaks_number&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">dataset</span><span class="o">.</span><span class="n">leaks</span><span class="p">)</span>
@@ -2399,80 +2407,88 @@
 <a id="__codelineno-0-418" name="__codelineno-0-418"></a>                <span class="c1"># {&#39;selector&#39;: &#39;bottomrule&#39;, &#39;props&#39;: &#39;:hline;&#39;},</span>
 <a id="__codelineno-0-419" name="__codelineno-0-419"></a>            <span class="p">],</span>
 <a id="__codelineno-0-420" name="__codelineno-0-420"></a>            <span class="n">overwrite</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
-<a id="__codelineno-0-421" name="__codelineno-0-421"></a>        <span class="p">)</span><span class="o">.</span><span class="n">hide</span><span class="p">(</span>
-<a id="__codelineno-0-422" name="__codelineno-0-422"></a>            <span class="n">axis</span><span class="o">=</span><span class="s2">&quot;index&quot;</span>
-<a id="__codelineno-0-423" name="__codelineno-0-423"></a>        <span class="p">)</span><span class="o">.</span><span class="n">to_latex</span><span class="p">(</span>
-<a id="__codelineno-0-424" name="__codelineno-0-424"></a>            <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">analysis_out_dir</span><span class="p">,</span> <span class="s2">&quot;network_model_overview.tex&quot;</span><span class="p">),</span>
-<a id="__codelineno-0-425" name="__codelineno-0-425"></a>            <span class="n">position_float</span><span class="o">=</span><span class="s2">&quot;centering&quot;</span><span class="p">,</span>
-<a id="__codelineno-0-426" name="__codelineno-0-426"></a>            <span class="n">clines</span><span class="o">=</span><span class="s2">&quot;all;data&quot;</span><span class="p">,</span>
-<a id="__codelineno-0-427" name="__codelineno-0-427"></a>            <span class="n">column_format</span><span class="o">=</span><span class="s2">&quot;l|rrrrrrrr&quot;</span><span class="p">,</span>
-<a id="__codelineno-0-428" name="__codelineno-0-428"></a>            <span class="n">position</span><span class="o">=</span><span class="s2">&quot;H&quot;</span><span class="p">,</span>
-<a id="__codelineno-0-429" name="__codelineno-0-429"></a>            <span class="n">label</span><span class="o">=</span><span class="s2">&quot;table:networks_overview&quot;</span><span class="p">,</span>
-<a id="__codelineno-0-430" name="__codelineno-0-430"></a>            <span class="n">caption</span><span class="o">=</span><span class="s2">&quot;Overview of the water networks.&quot;</span><span class="p">,</span>
-<a id="__codelineno-0-431" name="__codelineno-0-431"></a>        <span class="p">)</span>
+<a id="__codelineno-0-421" name="__codelineno-0-421"></a>        <span class="p">)</span><span class="o">.</span><span class="n">to_latex</span><span class="p">(</span>
+<a id="__codelineno-0-422" name="__codelineno-0-422"></a>            <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">analysis_out_dir</span><span class="p">,</span> <span class="s2">&quot;network_model_overview.tex&quot;</span><span class="p">),</span>
+<a id="__codelineno-0-423" name="__codelineno-0-423"></a>            <span class="n">position_float</span><span class="o">=</span><span class="s2">&quot;centering&quot;</span><span class="p">,</span>
+<a id="__codelineno-0-424" name="__codelineno-0-424"></a>            <span class="n">clines</span><span class="o">=</span><span class="s2">&quot;all;data&quot;</span><span class="p">,</span>
+<a id="__codelineno-0-425" name="__codelineno-0-425"></a>            <span class="n">column_format</span><span class="o">=</span><span class="s2">&quot;l|rrrrrrrr&quot;</span><span class="p">,</span>
+<a id="__codelineno-0-426" name="__codelineno-0-426"></a>            <span class="n">position</span><span class="o">=</span><span class="s2">&quot;H&quot;</span><span class="p">,</span>
+<a id="__codelineno-0-427" name="__codelineno-0-427"></a>            <span class="n">label</span><span class="o">=</span><span class="s2">&quot;table:networks_overview&quot;</span><span class="p">,</span>
+<a id="__codelineno-0-428" name="__codelineno-0-428"></a>            <span class="n">caption</span><span class="o">=</span><span class="s2">&quot;Overview of the water networks.&quot;</span><span class="p">,</span>
+<a id="__codelineno-0-429" name="__codelineno-0-429"></a>        <span class="p">)</span>
+<a id="__codelineno-0-430" name="__codelineno-0-430"></a>
+<a id="__codelineno-0-431" name="__codelineno-0-431"></a>        <span class="c1"># time span between datapoints,</span>
 <a id="__codelineno-0-432" name="__codelineno-0-432"></a>
-<a id="__codelineno-0-433" name="__codelineno-0-433"></a>        <span class="c1"># time span between datapoints,</span>
-<a id="__codelineno-0-434" name="__codelineno-0-434"></a>
-<a id="__codelineno-0-435" name="__codelineno-0-435"></a>        <span class="n">datasets_table</span><span class="o">.</span><span class="n">to_csv</span><span class="p">(</span>
-<a id="__codelineno-0-436" name="__codelineno-0-436"></a>            <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">analysis_out_dir</span><span class="p">,</span> <span class="s2">&quot;datasets_overview.csv&quot;</span><span class="p">)</span>
-<a id="__codelineno-0-437" name="__codelineno-0-437"></a>        <span class="p">)</span>
-<a id="__codelineno-0-438" name="__codelineno-0-438"></a>
-<a id="__codelineno-0-439" name="__codelineno-0-439"></a>        <span class="n">datasets_table</span> <span class="o">=</span> <span class="p">(</span>
-<a id="__codelineno-0-440" name="__codelineno-0-440"></a>            <span class="n">datasets_table</span><span class="p">[</span>
-<a id="__codelineno-0-441" name="__codelineno-0-441"></a>                <span class="p">[</span>
-<a id="__codelineno-0-442" name="__codelineno-0-442"></a>                    <span class="s2">&quot;name&quot;</span><span class="p">,</span>
-<a id="__codelineno-0-443" name="__codelineno-0-443"></a>                    <span class="s2">&quot;time_duration&quot;</span><span class="p">,</span>
-<a id="__codelineno-0-444" name="__codelineno-0-444"></a>                    <span class="s2">&quot;interval_min&quot;</span><span class="p">,</span>
-<a id="__codelineno-0-445" name="__codelineno-0-445"></a>                    <span class="s2">&quot;interval_max&quot;</span><span class="p">,</span>
-<a id="__codelineno-0-446" name="__codelineno-0-446"></a>                    <span class="s2">&quot;leaks_number&quot;</span><span class="p">,</span>
-<a id="__codelineno-0-447" name="__codelineno-0-447"></a>                    <span class="s2">&quot;leaks_duration_mean&quot;</span><span class="p">,</span>
-<a id="__codelineno-0-448" name="__codelineno-0-448"></a>                    <span class="s2">&quot;leaks_shorter_then_mean&quot;</span><span class="p">,</span>
-<a id="__codelineno-0-449" name="__codelineno-0-449"></a>                    <span class="s2">&quot;leaks_longer_then_mean&quot;</span><span class="p">,</span>
-<a id="__codelineno-0-450" name="__codelineno-0-450"></a>                <span class="p">]</span>
-<a id="__codelineno-0-451" name="__codelineno-0-451"></a>            <span class="p">]</span>
-<a id="__codelineno-0-452" name="__codelineno-0-452"></a>            <span class="c1"># Fix index column</span>
-<a id="__codelineno-0-453" name="__codelineno-0-453"></a>            <span class="c1"># https://stackoverflow.com/questions/46797598/how-to-remove-extra-row-after-set-index-without-losing-index-name</span>
-<a id="__codelineno-0-454" name="__codelineno-0-454"></a>            <span class="o">.</span><span class="n">reset_index</span><span class="p">(</span><span class="n">drop</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
-<a id="__codelineno-0-455" name="__codelineno-0-455"></a>            <span class="o">.</span><span class="n">set_index</span><span class="p">(</span><span class="s2">&quot;name&quot;</span><span class="p">)</span>
-<a id="__codelineno-0-456" name="__codelineno-0-456"></a>            <span class="o">.</span><span class="n">rename_axis</span><span class="p">(</span><span class="kc">None</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
-<a id="__codelineno-0-457" name="__codelineno-0-457"></a>            <span class="o">.</span><span class="n">rename_axis</span><span class="p">(</span><span class="s2">&quot;name&quot;</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
-<a id="__codelineno-0-458" name="__codelineno-0-458"></a>            <span class="o">.</span><span class="n">rename</span><span class="p">(</span>
-<a id="__codelineno-0-459" name="__codelineno-0-459"></a>                <span class="n">columns</span><span class="o">=</span><span class="p">{</span>
-<a id="__codelineno-0-460" name="__codelineno-0-460"></a>                    <span class="s2">&quot;time_duration&quot;</span><span class="p">:</span> <span class="s2">&quot;Timespan&quot;</span><span class="p">,</span>
-<a id="__codelineno-0-461" name="__codelineno-0-461"></a>                    <span class="s2">&quot;interval_min&quot;</span><span class="p">:</span> <span class="s2">&quot;min internal&quot;</span><span class="p">,</span>
-<a id="__codelineno-0-462" name="__codelineno-0-462"></a>                    <span class="s2">&quot;interval_max&quot;</span><span class="p">:</span> <span class="s2">&quot;max interval&quot;</span><span class="p">,</span>
-<a id="__codelineno-0-463" name="__codelineno-0-463"></a>                    <span class="s2">&quot;leaks_number&quot;</span><span class="p">:</span> <span class="s2">&quot;Leaks&quot;</span><span class="p">,</span>
-<a id="__codelineno-0-464" name="__codelineno-0-464"></a>                    <span class="s2">&quot;leaks_duration_mean&quot;</span><span class="p">:</span> <span class="s2">&quot;Leak Duration&quot;</span><span class="p">,</span>
-<a id="__codelineno-0-465" name="__codelineno-0-465"></a>                    <span class="s2">&quot;leaks_shorter_then_mean&quot;</span><span class="p">:</span> <span class="s2">&quot;shorter Leaks&quot;</span><span class="p">,</span>
-<a id="__codelineno-0-466" name="__codelineno-0-466"></a>                    <span class="s2">&quot;leaks_longer_then_mean&quot;</span><span class="p">:</span> <span class="s2">&quot;longer Leaks&quot;</span><span class="p">,</span>
-<a id="__codelineno-0-467" name="__codelineno-0-467"></a>                <span class="p">}</span>
-<a id="__codelineno-0-468" name="__codelineno-0-468"></a>            <span class="p">)</span>
-<a id="__codelineno-0-469" name="__codelineno-0-469"></a>        <span class="p">)</span>
-<a id="__codelineno-0-470" name="__codelineno-0-470"></a>
-<a id="__codelineno-0-471" name="__codelineno-0-471"></a>        <span class="n">datasets_table</span><span class="o">.</span><span class="n">style</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
-<a id="__codelineno-0-472" name="__codelineno-0-472"></a>            <span class="n">formatter</span><span class="o">=</span><span class="p">{</span>
-<a id="__codelineno-0-473" name="__codelineno-0-473"></a>                <span class="s2">&quot;min internal&quot;</span><span class="p">:</span> <span class="k">lambda</span> <span class="n">v</span><span class="p">:</span> <span class="n">delta_format</span><span class="p">(</span><span class="n">v</span><span class="p">),</span>
-<a id="__codelineno-0-474" name="__codelineno-0-474"></a>                <span class="s2">&quot;max interval&quot;</span><span class="p">:</span> <span class="k">lambda</span> <span class="n">v</span><span class="p">:</span> <span class="n">delta_format</span><span class="p">(</span><span class="n">v</span><span class="p">),</span>
-<a id="__codelineno-0-475" name="__codelineno-0-475"></a>            <span class="p">},</span>
-<a id="__codelineno-0-476" name="__codelineno-0-476"></a>            <span class="n">escape</span><span class="o">=</span><span class="s2">&quot;latex&quot;</span><span class="p">,</span>
-<a id="__codelineno-0-477" name="__codelineno-0-477"></a>        <span class="p">)</span><span class="o">.</span><span class="n">format_index</span><span class="p">(</span>
-<a id="__codelineno-0-478" name="__codelineno-0-478"></a>            <span class="n">formatter</span><span class="o">=</span><span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="s2">&quot;</span><span class="se">\\</span><span class="s2">rotatebox</span><span class="si">{45}</span><span class="s2">{&quot;</span> <span class="o">+</span> <span class="n">x</span> <span class="o">+</span> <span class="s2">&quot;}&quot;</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="s2">&quot;columns&quot;</span>
-<a id="__codelineno-0-479" name="__codelineno-0-479"></a>        <span class="p">)</span><span class="o">.</span><span class="n">set_table_styles</span><span class="p">(</span>
-<a id="__codelineno-0-480" name="__codelineno-0-480"></a>            <span class="p">[</span>
-<a id="__codelineno-0-481" name="__codelineno-0-481"></a>                <span class="c1"># {&#39;selector&#39;: &#39;toprule&#39;, &#39;props&#39;: &#39;:hline;&#39;},</span>
-<a id="__codelineno-0-482" name="__codelineno-0-482"></a>                <span class="p">{</span><span class="s2">&quot;selector&quot;</span><span class="p">:</span> <span class="s2">&quot;midrule&quot;</span><span class="p">,</span> <span class="s2">&quot;props&quot;</span><span class="p">:</span> <span class="s2">&quot;:hline;&quot;</span><span class="p">},</span>
-<a id="__codelineno-0-483" name="__codelineno-0-483"></a>                <span class="c1"># {&#39;selector&#39;: &#39;bottomrule&#39;, &#39;props&#39;: &#39;:hline;&#39;},</span>
-<a id="__codelineno-0-484" name="__codelineno-0-484"></a>            <span class="p">],</span>
-<a id="__codelineno-0-485" name="__codelineno-0-485"></a>            <span class="n">overwrite</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
-<a id="__codelineno-0-486" name="__codelineno-0-486"></a>        <span class="p">)</span><span class="o">.</span><span class="n">to_latex</span><span class="p">(</span>
-<a id="__codelineno-0-487" name="__codelineno-0-487"></a>            <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">analysis_out_dir</span><span class="p">,</span> <span class="s2">&quot;datasets_overview.tex&quot;</span><span class="p">),</span>
-<a id="__codelineno-0-488" name="__codelineno-0-488"></a>            <span class="n">position_float</span><span class="o">=</span><span class="s2">&quot;centering&quot;</span><span class="p">,</span>
-<a id="__codelineno-0-489" name="__codelineno-0-489"></a>            <span class="n">clines</span><span class="o">=</span><span class="s2">&quot;all;data&quot;</span><span class="p">,</span>
-<a id="__codelineno-0-490" name="__codelineno-0-490"></a>            <span class="n">column_format</span><span class="o">=</span><span class="s2">&quot;l|rrrrrrrr&quot;</span><span class="p">,</span>
-<a id="__codelineno-0-491" name="__codelineno-0-491"></a>            <span class="n">position</span><span class="o">=</span><span class="s2">&quot;H&quot;</span><span class="p">,</span>
-<a id="__codelineno-0-492" name="__codelineno-0-492"></a>            <span class="n">label</span><span class="o">=</span><span class="s2">&quot;table:datasets_overview&quot;</span><span class="p">,</span>
-<a id="__codelineno-0-493" name="__codelineno-0-493"></a>            <span class="n">caption</span><span class="o">=</span><span class="s2">&quot;Overview of the water networks.&quot;</span><span class="p">,</span>
-<a id="__codelineno-0-494" name="__codelineno-0-494"></a>        <span class="p">)</span>
+<a id="__codelineno-0-433" name="__codelineno-0-433"></a>        <span class="n">datasets_table</span><span class="o">.</span><span class="n">to_csv</span><span class="p">(</span>
+<a id="__codelineno-0-434" name="__codelineno-0-434"></a>            <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">analysis_out_dir</span><span class="p">,</span> <span class="s2">&quot;datasets_overview.csv&quot;</span><span class="p">)</span>
+<a id="__codelineno-0-435" name="__codelineno-0-435"></a>        <span class="p">)</span>
+<a id="__codelineno-0-436" name="__codelineno-0-436"></a>
+<a id="__codelineno-0-437" name="__codelineno-0-437"></a>        <span class="n">datasets_table</span> <span class="o">=</span> <span class="p">(</span>
+<a id="__codelineno-0-438" name="__codelineno-0-438"></a>            <span class="n">datasets_table</span><span class="p">[</span>
+<a id="__codelineno-0-439" name="__codelineno-0-439"></a>                <span class="p">[</span>
+<a id="__codelineno-0-440" name="__codelineno-0-440"></a>                    <span class="s2">&quot;name&quot;</span><span class="p">,</span>
+<a id="__codelineno-0-441" name="__codelineno-0-441"></a>                    <span class="s2">&quot;time_duration&quot;</span><span class="p">,</span>
+<a id="__codelineno-0-442" name="__codelineno-0-442"></a>                    <span class="s2">&quot;interval_min&quot;</span><span class="p">,</span>
+<a id="__codelineno-0-443" name="__codelineno-0-443"></a>                    <span class="s2">&quot;interval_max&quot;</span><span class="p">,</span>
+<a id="__codelineno-0-444" name="__codelineno-0-444"></a>                    <span class="s2">&quot;leaks_number&quot;</span><span class="p">,</span>
+<a id="__codelineno-0-445" name="__codelineno-0-445"></a>                    <span class="s2">&quot;leaks_duration_mean&quot;</span><span class="p">,</span>
+<a id="__codelineno-0-446" name="__codelineno-0-446"></a>                    <span class="s2">&quot;leaks_shorter_then_mean&quot;</span><span class="p">,</span>
+<a id="__codelineno-0-447" name="__codelineno-0-447"></a>                    <span class="s2">&quot;leaks_longer_then_mean&quot;</span><span class="p">,</span>
+<a id="__codelineno-0-448" name="__codelineno-0-448"></a>                <span class="p">]</span>
+<a id="__codelineno-0-449" name="__codelineno-0-449"></a>            <span class="p">]</span>
+<a id="__codelineno-0-450" name="__codelineno-0-450"></a>            <span class="c1"># Fix index column</span>
+<a id="__codelineno-0-451" name="__codelineno-0-451"></a>            <span class="c1"># https://stackoverflow.com/questions/46797598/how-to-remove-extra-row-after-set-index-without-losing-index-name</span>
+<a id="__codelineno-0-452" name="__codelineno-0-452"></a>            <span class="o">.</span><span class="n">reset_index</span><span class="p">(</span><span class="n">drop</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<a id="__codelineno-0-453" name="__codelineno-0-453"></a>            <span class="o">.</span><span class="n">set_index</span><span class="p">(</span><span class="s2">&quot;name&quot;</span><span class="p">)</span>
+<a id="__codelineno-0-454" name="__codelineno-0-454"></a>            <span class="o">.</span><span class="n">rename_axis</span><span class="p">(</span><span class="kc">None</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+<a id="__codelineno-0-455" name="__codelineno-0-455"></a>            <span class="o">.</span><span class="n">rename_axis</span><span class="p">(</span><span class="s2">&quot;name&quot;</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+<a id="__codelineno-0-456" name="__codelineno-0-456"></a>            <span class="o">.</span><span class="n">rename</span><span class="p">(</span>
+<a id="__codelineno-0-457" name="__codelineno-0-457"></a>                <span class="n">columns</span><span class="o">=</span><span class="p">{</span>
+<a id="__codelineno-0-458" name="__codelineno-0-458"></a>                    <span class="s2">&quot;time_duration&quot;</span><span class="p">:</span> <span class="s2">&quot;timespan&quot;</span><span class="p">,</span>
+<a id="__codelineno-0-459" name="__codelineno-0-459"></a>                    <span class="s2">&quot;interval_min&quot;</span><span class="p">:</span> <span class="s2">&quot;min internal&quot;</span><span class="p">,</span>
+<a id="__codelineno-0-460" name="__codelineno-0-460"></a>                    <span class="s2">&quot;interval_max&quot;</span><span class="p">:</span> <span class="s2">&quot;max interval&quot;</span><span class="p">,</span>
+<a id="__codelineno-0-461" name="__codelineno-0-461"></a>                    <span class="s2">&quot;leaks_number&quot;</span><span class="p">:</span> <span class="s2">&quot;Leaks&quot;</span><span class="p">,</span>
+<a id="__codelineno-0-462" name="__codelineno-0-462"></a>                    <span class="s2">&quot;leaks_duration_mean&quot;</span><span class="p">:</span> <span class="s2">&quot;Leak Duration&quot;</span><span class="p">,</span>
+<a id="__codelineno-0-463" name="__codelineno-0-463"></a>                    <span class="s2">&quot;leaks_shorter_then_mean&quot;</span><span class="p">:</span> <span class="s2">&quot;shorter Leaks&quot;</span><span class="p">,</span>
+<a id="__codelineno-0-464" name="__codelineno-0-464"></a>                    <span class="s2">&quot;leaks_longer_then_mean&quot;</span><span class="p">:</span> <span class="s2">&quot;longer Leaks&quot;</span><span class="p">,</span>
+<a id="__codelineno-0-465" name="__codelineno-0-465"></a>                <span class="p">}</span>
+<a id="__codelineno-0-466" name="__codelineno-0-466"></a>            <span class="p">)</span>
+<a id="__codelineno-0-467" name="__codelineno-0-467"></a>        <span class="p">)</span>
+<a id="__codelineno-0-468" name="__codelineno-0-468"></a>
+<a id="__codelineno-0-469" name="__codelineno-0-469"></a>        <span class="n">datasets_table</span><span class="o">.</span><span class="n">style</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
+<a id="__codelineno-0-470" name="__codelineno-0-470"></a>            <span class="n">formatter</span><span class="o">=</span><span class="p">{</span>
+<a id="__codelineno-0-471" name="__codelineno-0-471"></a>                <span class="s2">&quot;timespan&quot;</span><span class="p">:</span> <span class="k">lambda</span> <span class="n">v</span><span class="p">:</span> <span class="s2">&quot;</span><span class="se">\\</span><span class="s2">begin</span><span class="si">{tabular}</span><span class="s2">{@</span><span class="si">{}</span><span class="s2">c@</span><span class="si">{}</span><span class="s2">}&quot;</span>
+<a id="__codelineno-0-472" name="__codelineno-0-472"></a>                <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">v</span><span class="p">)[:</span> <span class="nb">str</span><span class="p">(</span><span class="n">v</span><span class="p">)</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="s2">&quot;days&quot;</span><span class="p">)</span> <span class="o">+</span> <span class="mi">4</span><span class="p">]</span>
+<a id="__codelineno-0-473" name="__codelineno-0-473"></a>                <span class="o">+</span> <span class="s2">&quot;</span><span class="se">\\\\</span><span class="s2">&quot;</span>
+<a id="__codelineno-0-474" name="__codelineno-0-474"></a>                <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">v</span><span class="p">)[</span><span class="nb">str</span><span class="p">(</span><span class="n">v</span><span class="p">)</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="s2">&quot;days&quot;</span><span class="p">)</span> <span class="o">+</span> <span class="mi">4</span> <span class="p">:]</span>
+<a id="__codelineno-0-475" name="__codelineno-0-475"></a>                <span class="o">+</span> <span class="s2">&quot;</span><span class="se">\\</span><span class="s2">end</span><span class="si">{tabular}</span><span class="s2">&quot;</span><span class="p">,</span>
+<a id="__codelineno-0-476" name="__codelineno-0-476"></a>                <span class="s2">&quot;Leak Duration&quot;</span><span class="p">:</span> <span class="k">lambda</span> <span class="n">v</span><span class="p">:</span> <span class="s2">&quot;</span><span class="se">\\</span><span class="s2">begin</span><span class="si">{tabular}</span><span class="s2">{@</span><span class="si">{}</span><span class="s2">c@</span><span class="si">{}</span><span class="s2">}&quot;</span>
+<a id="__codelineno-0-477" name="__codelineno-0-477"></a>                <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">v</span><span class="p">)[:</span> <span class="nb">str</span><span class="p">(</span><span class="n">v</span><span class="p">)</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="s2">&quot;days&quot;</span><span class="p">)</span> <span class="o">+</span> <span class="mi">4</span><span class="p">]</span>
+<a id="__codelineno-0-478" name="__codelineno-0-478"></a>                <span class="o">+</span> <span class="s2">&quot;</span><span class="se">\\\\</span><span class="s2">&quot;</span>
+<a id="__codelineno-0-479" name="__codelineno-0-479"></a>                <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">v</span><span class="p">)[</span><span class="nb">str</span><span class="p">(</span><span class="n">v</span><span class="p">)</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="s2">&quot;days&quot;</span><span class="p">)</span> <span class="o">+</span> <span class="mi">4</span> <span class="p">:]</span>
+<a id="__codelineno-0-480" name="__codelineno-0-480"></a>                <span class="o">+</span> <span class="s2">&quot;</span><span class="se">\\</span><span class="s2">end</span><span class="si">{tabular}</span><span class="s2">&quot;</span><span class="p">,</span>
+<a id="__codelineno-0-481" name="__codelineno-0-481"></a>                <span class="s2">&quot;min internal&quot;</span><span class="p">:</span> <span class="k">lambda</span> <span class="n">v</span><span class="p">:</span> <span class="n">delta_format</span><span class="p">(</span><span class="n">v</span><span class="p">),</span>
+<a id="__codelineno-0-482" name="__codelineno-0-482"></a>                <span class="s2">&quot;max interval&quot;</span><span class="p">:</span> <span class="k">lambda</span> <span class="n">v</span><span class="p">:</span> <span class="n">delta_format</span><span class="p">(</span><span class="n">v</span><span class="p">),</span>
+<a id="__codelineno-0-483" name="__codelineno-0-483"></a>            <span class="p">},</span>
+<a id="__codelineno-0-484" name="__codelineno-0-484"></a>            <span class="n">escape</span><span class="o">=</span><span class="s2">&quot;latex&quot;</span><span class="p">,</span>
+<a id="__codelineno-0-485" name="__codelineno-0-485"></a>        <span class="p">)</span><span class="o">.</span><span class="n">format_index</span><span class="p">(</span>
+<a id="__codelineno-0-486" name="__codelineno-0-486"></a>            <span class="n">formatter</span><span class="o">=</span><span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="s2">&quot;</span><span class="se">\\</span><span class="s2">rotatebox</span><span class="si">{45}</span><span class="s2">{&quot;</span> <span class="o">+</span> <span class="n">x</span> <span class="o">+</span> <span class="s2">&quot;}&quot;</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="s2">&quot;columns&quot;</span>
+<a id="__codelineno-0-487" name="__codelineno-0-487"></a>        <span class="p">)</span><span class="o">.</span><span class="n">set_table_styles</span><span class="p">(</span>
+<a id="__codelineno-0-488" name="__codelineno-0-488"></a>            <span class="p">[</span>
+<a id="__codelineno-0-489" name="__codelineno-0-489"></a>                <span class="c1"># {&#39;selector&#39;: &#39;toprule&#39;, &#39;props&#39;: &#39;:hline;&#39;},</span>
+<a id="__codelineno-0-490" name="__codelineno-0-490"></a>                <span class="p">{</span><span class="s2">&quot;selector&quot;</span><span class="p">:</span> <span class="s2">&quot;midrule&quot;</span><span class="p">,</span> <span class="s2">&quot;props&quot;</span><span class="p">:</span> <span class="s2">&quot;:hline;&quot;</span><span class="p">},</span>
+<a id="__codelineno-0-491" name="__codelineno-0-491"></a>                <span class="c1"># {&#39;selector&#39;: &#39;bottomrule&#39;, &#39;props&#39;: &#39;:hline;&#39;},</span>
+<a id="__codelineno-0-492" name="__codelineno-0-492"></a>            <span class="p">],</span>
+<a id="__codelineno-0-493" name="__codelineno-0-493"></a>            <span class="n">overwrite</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+<a id="__codelineno-0-494" name="__codelineno-0-494"></a>        <span class="p">)</span><span class="o">.</span><span class="n">to_latex</span><span class="p">(</span>
+<a id="__codelineno-0-495" name="__codelineno-0-495"></a>            <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">analysis_out_dir</span><span class="p">,</span> <span class="s2">&quot;datasets_overview.tex&quot;</span><span class="p">),</span>
+<a id="__codelineno-0-496" name="__codelineno-0-496"></a>            <span class="n">position_float</span><span class="o">=</span><span class="s2">&quot;centering&quot;</span><span class="p">,</span>
+<a id="__codelineno-0-497" name="__codelineno-0-497"></a>            <span class="n">clines</span><span class="o">=</span><span class="s2">&quot;all;data&quot;</span><span class="p">,</span>
+<a id="__codelineno-0-498" name="__codelineno-0-498"></a>            <span class="n">column_format</span><span class="o">=</span><span class="s2">&quot;l|rrrrrrrr&quot;</span><span class="p">,</span>
+<a id="__codelineno-0-499" name="__codelineno-0-499"></a>            <span class="n">position</span><span class="o">=</span><span class="s2">&quot;H&quot;</span><span class="p">,</span>
+<a id="__codelineno-0-500" name="__codelineno-0-500"></a>            <span class="n">label</span><span class="o">=</span><span class="s2">&quot;table:datasets_overview&quot;</span><span class="p">,</span>
+<a id="__codelineno-0-501" name="__codelineno-0-501"></a>            <span class="n">caption</span><span class="o">=</span><span class="s2">&quot;Overview of the water networks.&quot;</span><span class="p">,</span>
+<a id="__codelineno-0-502" name="__codelineno-0-502"></a>        <span class="p">)</span>
 </code></pre></div></td></tr></table></div>
         </details>
 
@@ -2816,7 +2832,15 @@
 <span class="normal"><a href="#__codelineno-0-491">491</a></span>
 <span class="normal"><a href="#__codelineno-0-492">492</a></span>
 <span class="normal"><a href="#__codelineno-0-493">493</a></span>
-<span class="normal"><a href="#__codelineno-0-494">494</a></span></pre></div></td><td class="code"><div><pre><span></span><code><a id="__codelineno-0-182" name="__codelineno-0-182"></a><span class="k">def</span> <span class="nf">analyze</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">datasets</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">Dataset</span><span class="p">,</span> <span class="n">List</span><span class="p">[</span><span class="n">Dataset</span><span class="p">]]):</span>
+<span class="normal"><a href="#__codelineno-0-494">494</a></span>
+<span class="normal"><a href="#__codelineno-0-495">495</a></span>
+<span class="normal"><a href="#__codelineno-0-496">496</a></span>
+<span class="normal"><a href="#__codelineno-0-497">497</a></span>
+<span class="normal"><a href="#__codelineno-0-498">498</a></span>
+<span class="normal"><a href="#__codelineno-0-499">499</a></span>
+<span class="normal"><a href="#__codelineno-0-500">500</a></span>
+<span class="normal"><a href="#__codelineno-0-501">501</a></span>
+<span class="normal"><a href="#__codelineno-0-502">502</a></span></pre></div></td><td class="code"><div><pre><span></span><code><a id="__codelineno-0-182" name="__codelineno-0-182"></a><span class="k">def</span> <span class="nf">analyze</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">datasets</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">Dataset</span><span class="p">,</span> <span class="n">List</span><span class="p">[</span><span class="n">Dataset</span><span class="p">]]):</span>
 <a id="__codelineno-0-183" name="__codelineno-0-183"></a><span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <a id="__codelineno-0-184" name="__codelineno-0-184"></a><span class="sd">    Analyze the dataset</span>
 <a id="__codelineno-0-185" name="__codelineno-0-185"></a><span class="sd">    &quot;&quot;&quot;</span>
@@ -2885,7 +2909,7 @@
 <a id="__codelineno-0-248" name="__codelineno-0-248"></a>        <span class="n">leaks_analysis</span><span class="p">[</span><span class="s2">&quot;duration&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span>
 <a id="__codelineno-0-249" name="__codelineno-0-249"></a>            <span class="n">dataset</span><span class="o">.</span><span class="n">leaks</span><span class="p">[</span><span class="s2">&quot;leak_time_end&quot;</span><span class="p">]</span> <span class="o">-</span> <span class="n">dataset</span><span class="o">.</span><span class="n">leaks</span><span class="p">[</span><span class="s2">&quot;leak_time_start&quot;</span><span class="p">]</span>
 <a id="__codelineno-0-250" name="__codelineno-0-250"></a>        <span class="p">)</span>
-<a id="__codelineno-0-251" name="__codelineno-0-251"></a>        <span class="n">mean_duration</span> <span class="o">=</span> <span class="n">leaks_analysis</span><span class="p">[</span><span class="s2">&quot;duration&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">mean</span><span class="p">()</span>
+<a id="__codelineno-0-251" name="__codelineno-0-251"></a>        <span class="n">mean_duration</span> <span class="o">=</span> <span class="n">leaks_analysis</span><span class="p">[</span><span class="s2">&quot;duration&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">mean</span><span class="p">()</span><span class="o">.</span><span class="n">round</span><span class="p">(</span><span class="s2">&quot;1s&quot;</span><span class="p">)</span>
 <a id="__codelineno-0-252" name="__codelineno-0-252"></a>        <span class="n">leaks_analysis</span><span class="p">[</span><span class="s2">&quot;smaller&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">leaks_analysis</span><span class="p">[</span><span class="s2">&quot;duration&quot;</span><span class="p">]</span> <span class="o">&lt;</span> <span class="n">mean_duration</span>
 <a id="__codelineno-0-253" name="__codelineno-0-253"></a>        <span class="n">leaks_analysis</span><span class="p">[</span><span class="s2">&quot;longer&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">leaks_analysis</span><span class="p">[</span><span class="s2">&quot;duration&quot;</span><span class="p">]</span> <span class="o">&gt;=</span> <span class="n">mean_duration</span>
 <a id="__codelineno-0-254" name="__codelineno-0-254"></a>        <span class="n">common_table</span><span class="p">[</span><span class="s2">&quot;leaks_number&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">dataset</span><span class="o">.</span><span class="n">leaks</span><span class="p">)</span>
@@ -3055,80 +3079,88 @@
 <a id="__codelineno-0-418" name="__codelineno-0-418"></a>            <span class="c1"># {&#39;selector&#39;: &#39;bottomrule&#39;, &#39;props&#39;: &#39;:hline;&#39;},</span>
 <a id="__codelineno-0-419" name="__codelineno-0-419"></a>        <span class="p">],</span>
 <a id="__codelineno-0-420" name="__codelineno-0-420"></a>        <span class="n">overwrite</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
-<a id="__codelineno-0-421" name="__codelineno-0-421"></a>    <span class="p">)</span><span class="o">.</span><span class="n">hide</span><span class="p">(</span>
-<a id="__codelineno-0-422" name="__codelineno-0-422"></a>        <span class="n">axis</span><span class="o">=</span><span class="s2">&quot;index&quot;</span>
-<a id="__codelineno-0-423" name="__codelineno-0-423"></a>    <span class="p">)</span><span class="o">.</span><span class="n">to_latex</span><span class="p">(</span>
-<a id="__codelineno-0-424" name="__codelineno-0-424"></a>        <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">analysis_out_dir</span><span class="p">,</span> <span class="s2">&quot;network_model_overview.tex&quot;</span><span class="p">),</span>
-<a id="__codelineno-0-425" name="__codelineno-0-425"></a>        <span class="n">position_float</span><span class="o">=</span><span class="s2">&quot;centering&quot;</span><span class="p">,</span>
-<a id="__codelineno-0-426" name="__codelineno-0-426"></a>        <span class="n">clines</span><span class="o">=</span><span class="s2">&quot;all;data&quot;</span><span class="p">,</span>
-<a id="__codelineno-0-427" name="__codelineno-0-427"></a>        <span class="n">column_format</span><span class="o">=</span><span class="s2">&quot;l|rrrrrrrr&quot;</span><span class="p">,</span>
-<a id="__codelineno-0-428" name="__codelineno-0-428"></a>        <span class="n">position</span><span class="o">=</span><span class="s2">&quot;H&quot;</span><span class="p">,</span>
-<a id="__codelineno-0-429" name="__codelineno-0-429"></a>        <span class="n">label</span><span class="o">=</span><span class="s2">&quot;table:networks_overview&quot;</span><span class="p">,</span>
-<a id="__codelineno-0-430" name="__codelineno-0-430"></a>        <span class="n">caption</span><span class="o">=</span><span class="s2">&quot;Overview of the water networks.&quot;</span><span class="p">,</span>
-<a id="__codelineno-0-431" name="__codelineno-0-431"></a>    <span class="p">)</span>
+<a id="__codelineno-0-421" name="__codelineno-0-421"></a>    <span class="p">)</span><span class="o">.</span><span class="n">to_latex</span><span class="p">(</span>
+<a id="__codelineno-0-422" name="__codelineno-0-422"></a>        <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">analysis_out_dir</span><span class="p">,</span> <span class="s2">&quot;network_model_overview.tex&quot;</span><span class="p">),</span>
+<a id="__codelineno-0-423" name="__codelineno-0-423"></a>        <span class="n">position_float</span><span class="o">=</span><span class="s2">&quot;centering&quot;</span><span class="p">,</span>
+<a id="__codelineno-0-424" name="__codelineno-0-424"></a>        <span class="n">clines</span><span class="o">=</span><span class="s2">&quot;all;data&quot;</span><span class="p">,</span>
+<a id="__codelineno-0-425" name="__codelineno-0-425"></a>        <span class="n">column_format</span><span class="o">=</span><span class="s2">&quot;l|rrrrrrrr&quot;</span><span class="p">,</span>
+<a id="__codelineno-0-426" name="__codelineno-0-426"></a>        <span class="n">position</span><span class="o">=</span><span class="s2">&quot;H&quot;</span><span class="p">,</span>
+<a id="__codelineno-0-427" name="__codelineno-0-427"></a>        <span class="n">label</span><span class="o">=</span><span class="s2">&quot;table:networks_overview&quot;</span><span class="p">,</span>
+<a id="__codelineno-0-428" name="__codelineno-0-428"></a>        <span class="n">caption</span><span class="o">=</span><span class="s2">&quot;Overview of the water networks.&quot;</span><span class="p">,</span>
+<a id="__codelineno-0-429" name="__codelineno-0-429"></a>    <span class="p">)</span>
+<a id="__codelineno-0-430" name="__codelineno-0-430"></a>
+<a id="__codelineno-0-431" name="__codelineno-0-431"></a>    <span class="c1"># time span between datapoints,</span>
 <a id="__codelineno-0-432" name="__codelineno-0-432"></a>
-<a id="__codelineno-0-433" name="__codelineno-0-433"></a>    <span class="c1"># time span between datapoints,</span>
-<a id="__codelineno-0-434" name="__codelineno-0-434"></a>
-<a id="__codelineno-0-435" name="__codelineno-0-435"></a>    <span class="n">datasets_table</span><span class="o">.</span><span class="n">to_csv</span><span class="p">(</span>
-<a id="__codelineno-0-436" name="__codelineno-0-436"></a>        <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">analysis_out_dir</span><span class="p">,</span> <span class="s2">&quot;datasets_overview.csv&quot;</span><span class="p">)</span>
-<a id="__codelineno-0-437" name="__codelineno-0-437"></a>    <span class="p">)</span>
-<a id="__codelineno-0-438" name="__codelineno-0-438"></a>
-<a id="__codelineno-0-439" name="__codelineno-0-439"></a>    <span class="n">datasets_table</span> <span class="o">=</span> <span class="p">(</span>
-<a id="__codelineno-0-440" name="__codelineno-0-440"></a>        <span class="n">datasets_table</span><span class="p">[</span>
-<a id="__codelineno-0-441" name="__codelineno-0-441"></a>            <span class="p">[</span>
-<a id="__codelineno-0-442" name="__codelineno-0-442"></a>                <span class="s2">&quot;name&quot;</span><span class="p">,</span>
-<a id="__codelineno-0-443" name="__codelineno-0-443"></a>                <span class="s2">&quot;time_duration&quot;</span><span class="p">,</span>
-<a id="__codelineno-0-444" name="__codelineno-0-444"></a>                <span class="s2">&quot;interval_min&quot;</span><span class="p">,</span>
-<a id="__codelineno-0-445" name="__codelineno-0-445"></a>                <span class="s2">&quot;interval_max&quot;</span><span class="p">,</span>
-<a id="__codelineno-0-446" name="__codelineno-0-446"></a>                <span class="s2">&quot;leaks_number&quot;</span><span class="p">,</span>
-<a id="__codelineno-0-447" name="__codelineno-0-447"></a>                <span class="s2">&quot;leaks_duration_mean&quot;</span><span class="p">,</span>
-<a id="__codelineno-0-448" name="__codelineno-0-448"></a>                <span class="s2">&quot;leaks_shorter_then_mean&quot;</span><span class="p">,</span>
-<a id="__codelineno-0-449" name="__codelineno-0-449"></a>                <span class="s2">&quot;leaks_longer_then_mean&quot;</span><span class="p">,</span>
-<a id="__codelineno-0-450" name="__codelineno-0-450"></a>            <span class="p">]</span>
-<a id="__codelineno-0-451" name="__codelineno-0-451"></a>        <span class="p">]</span>
-<a id="__codelineno-0-452" name="__codelineno-0-452"></a>        <span class="c1"># Fix index column</span>
-<a id="__codelineno-0-453" name="__codelineno-0-453"></a>        <span class="c1"># https://stackoverflow.com/questions/46797598/how-to-remove-extra-row-after-set-index-without-losing-index-name</span>
-<a id="__codelineno-0-454" name="__codelineno-0-454"></a>        <span class="o">.</span><span class="n">reset_index</span><span class="p">(</span><span class="n">drop</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
-<a id="__codelineno-0-455" name="__codelineno-0-455"></a>        <span class="o">.</span><span class="n">set_index</span><span class="p">(</span><span class="s2">&quot;name&quot;</span><span class="p">)</span>
-<a id="__codelineno-0-456" name="__codelineno-0-456"></a>        <span class="o">.</span><span class="n">rename_axis</span><span class="p">(</span><span class="kc">None</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
-<a id="__codelineno-0-457" name="__codelineno-0-457"></a>        <span class="o">.</span><span class="n">rename_axis</span><span class="p">(</span><span class="s2">&quot;name&quot;</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
-<a id="__codelineno-0-458" name="__codelineno-0-458"></a>        <span class="o">.</span><span class="n">rename</span><span class="p">(</span>
-<a id="__codelineno-0-459" name="__codelineno-0-459"></a>            <span class="n">columns</span><span class="o">=</span><span class="p">{</span>
-<a id="__codelineno-0-460" name="__codelineno-0-460"></a>                <span class="s2">&quot;time_duration&quot;</span><span class="p">:</span> <span class="s2">&quot;Timespan&quot;</span><span class="p">,</span>
-<a id="__codelineno-0-461" name="__codelineno-0-461"></a>                <span class="s2">&quot;interval_min&quot;</span><span class="p">:</span> <span class="s2">&quot;min internal&quot;</span><span class="p">,</span>
-<a id="__codelineno-0-462" name="__codelineno-0-462"></a>                <span class="s2">&quot;interval_max&quot;</span><span class="p">:</span> <span class="s2">&quot;max interval&quot;</span><span class="p">,</span>
-<a id="__codelineno-0-463" name="__codelineno-0-463"></a>                <span class="s2">&quot;leaks_number&quot;</span><span class="p">:</span> <span class="s2">&quot;Leaks&quot;</span><span class="p">,</span>
-<a id="__codelineno-0-464" name="__codelineno-0-464"></a>                <span class="s2">&quot;leaks_duration_mean&quot;</span><span class="p">:</span> <span class="s2">&quot;Leak Duration&quot;</span><span class="p">,</span>
-<a id="__codelineno-0-465" name="__codelineno-0-465"></a>                <span class="s2">&quot;leaks_shorter_then_mean&quot;</span><span class="p">:</span> <span class="s2">&quot;shorter Leaks&quot;</span><span class="p">,</span>
-<a id="__codelineno-0-466" name="__codelineno-0-466"></a>                <span class="s2">&quot;leaks_longer_then_mean&quot;</span><span class="p">:</span> <span class="s2">&quot;longer Leaks&quot;</span><span class="p">,</span>
-<a id="__codelineno-0-467" name="__codelineno-0-467"></a>            <span class="p">}</span>
-<a id="__codelineno-0-468" name="__codelineno-0-468"></a>        <span class="p">)</span>
-<a id="__codelineno-0-469" name="__codelineno-0-469"></a>    <span class="p">)</span>
-<a id="__codelineno-0-470" name="__codelineno-0-470"></a>
-<a id="__codelineno-0-471" name="__codelineno-0-471"></a>    <span class="n">datasets_table</span><span class="o">.</span><span class="n">style</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
-<a id="__codelineno-0-472" name="__codelineno-0-472"></a>        <span class="n">formatter</span><span class="o">=</span><span class="p">{</span>
-<a id="__codelineno-0-473" name="__codelineno-0-473"></a>            <span class="s2">&quot;min internal&quot;</span><span class="p">:</span> <span class="k">lambda</span> <span class="n">v</span><span class="p">:</span> <span class="n">delta_format</span><span class="p">(</span><span class="n">v</span><span class="p">),</span>
-<a id="__codelineno-0-474" name="__codelineno-0-474"></a>            <span class="s2">&quot;max interval&quot;</span><span class="p">:</span> <span class="k">lambda</span> <span class="n">v</span><span class="p">:</span> <span class="n">delta_format</span><span class="p">(</span><span class="n">v</span><span class="p">),</span>
-<a id="__codelineno-0-475" name="__codelineno-0-475"></a>        <span class="p">},</span>
-<a id="__codelineno-0-476" name="__codelineno-0-476"></a>        <span class="n">escape</span><span class="o">=</span><span class="s2">&quot;latex&quot;</span><span class="p">,</span>
-<a id="__codelineno-0-477" name="__codelineno-0-477"></a>    <span class="p">)</span><span class="o">.</span><span class="n">format_index</span><span class="p">(</span>
-<a id="__codelineno-0-478" name="__codelineno-0-478"></a>        <span class="n">formatter</span><span class="o">=</span><span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="s2">&quot;</span><span class="se">\\</span><span class="s2">rotatebox</span><span class="si">{45}</span><span class="s2">{&quot;</span> <span class="o">+</span> <span class="n">x</span> <span class="o">+</span> <span class="s2">&quot;}&quot;</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="s2">&quot;columns&quot;</span>
-<a id="__codelineno-0-479" name="__codelineno-0-479"></a>    <span class="p">)</span><span class="o">.</span><span class="n">set_table_styles</span><span class="p">(</span>
-<a id="__codelineno-0-480" name="__codelineno-0-480"></a>        <span class="p">[</span>
-<a id="__codelineno-0-481" name="__codelineno-0-481"></a>            <span class="c1"># {&#39;selector&#39;: &#39;toprule&#39;, &#39;props&#39;: &#39;:hline;&#39;},</span>
-<a id="__codelineno-0-482" name="__codelineno-0-482"></a>            <span class="p">{</span><span class="s2">&quot;selector&quot;</span><span class="p">:</span> <span class="s2">&quot;midrule&quot;</span><span class="p">,</span> <span class="s2">&quot;props&quot;</span><span class="p">:</span> <span class="s2">&quot;:hline;&quot;</span><span class="p">},</span>
-<a id="__codelineno-0-483" name="__codelineno-0-483"></a>            <span class="c1"># {&#39;selector&#39;: &#39;bottomrule&#39;, &#39;props&#39;: &#39;:hline;&#39;},</span>
-<a id="__codelineno-0-484" name="__codelineno-0-484"></a>        <span class="p">],</span>
-<a id="__codelineno-0-485" name="__codelineno-0-485"></a>        <span class="n">overwrite</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
-<a id="__codelineno-0-486" name="__codelineno-0-486"></a>    <span class="p">)</span><span class="o">.</span><span class="n">to_latex</span><span class="p">(</span>
-<a id="__codelineno-0-487" name="__codelineno-0-487"></a>        <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">analysis_out_dir</span><span class="p">,</span> <span class="s2">&quot;datasets_overview.tex&quot;</span><span class="p">),</span>
-<a id="__codelineno-0-488" name="__codelineno-0-488"></a>        <span class="n">position_float</span><span class="o">=</span><span class="s2">&quot;centering&quot;</span><span class="p">,</span>
-<a id="__codelineno-0-489" name="__codelineno-0-489"></a>        <span class="n">clines</span><span class="o">=</span><span class="s2">&quot;all;data&quot;</span><span class="p">,</span>
-<a id="__codelineno-0-490" name="__codelineno-0-490"></a>        <span class="n">column_format</span><span class="o">=</span><span class="s2">&quot;l|rrrrrrrr&quot;</span><span class="p">,</span>
-<a id="__codelineno-0-491" name="__codelineno-0-491"></a>        <span class="n">position</span><span class="o">=</span><span class="s2">&quot;H&quot;</span><span class="p">,</span>
-<a id="__codelineno-0-492" name="__codelineno-0-492"></a>        <span class="n">label</span><span class="o">=</span><span class="s2">&quot;table:datasets_overview&quot;</span><span class="p">,</span>
-<a id="__codelineno-0-493" name="__codelineno-0-493"></a>        <span class="n">caption</span><span class="o">=</span><span class="s2">&quot;Overview of the water networks.&quot;</span><span class="p">,</span>
-<a id="__codelineno-0-494" name="__codelineno-0-494"></a>    <span class="p">)</span>
+<a id="__codelineno-0-433" name="__codelineno-0-433"></a>    <span class="n">datasets_table</span><span class="o">.</span><span class="n">to_csv</span><span class="p">(</span>
+<a id="__codelineno-0-434" name="__codelineno-0-434"></a>        <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">analysis_out_dir</span><span class="p">,</span> <span class="s2">&quot;datasets_overview.csv&quot;</span><span class="p">)</span>
+<a id="__codelineno-0-435" name="__codelineno-0-435"></a>    <span class="p">)</span>
+<a id="__codelineno-0-436" name="__codelineno-0-436"></a>
+<a id="__codelineno-0-437" name="__codelineno-0-437"></a>    <span class="n">datasets_table</span> <span class="o">=</span> <span class="p">(</span>
+<a id="__codelineno-0-438" name="__codelineno-0-438"></a>        <span class="n">datasets_table</span><span class="p">[</span>
+<a id="__codelineno-0-439" name="__codelineno-0-439"></a>            <span class="p">[</span>
+<a id="__codelineno-0-440" name="__codelineno-0-440"></a>                <span class="s2">&quot;name&quot;</span><span class="p">,</span>
+<a id="__codelineno-0-441" name="__codelineno-0-441"></a>                <span class="s2">&quot;time_duration&quot;</span><span class="p">,</span>
+<a id="__codelineno-0-442" name="__codelineno-0-442"></a>                <span class="s2">&quot;interval_min&quot;</span><span class="p">,</span>
+<a id="__codelineno-0-443" name="__codelineno-0-443"></a>                <span class="s2">&quot;interval_max&quot;</span><span class="p">,</span>
+<a id="__codelineno-0-444" name="__codelineno-0-444"></a>                <span class="s2">&quot;leaks_number&quot;</span><span class="p">,</span>
+<a id="__codelineno-0-445" name="__codelineno-0-445"></a>                <span class="s2">&quot;leaks_duration_mean&quot;</span><span class="p">,</span>
+<a id="__codelineno-0-446" name="__codelineno-0-446"></a>                <span class="s2">&quot;leaks_shorter_then_mean&quot;</span><span class="p">,</span>
+<a id="__codelineno-0-447" name="__codelineno-0-447"></a>                <span class="s2">&quot;leaks_longer_then_mean&quot;</span><span class="p">,</span>
+<a id="__codelineno-0-448" name="__codelineno-0-448"></a>            <span class="p">]</span>
+<a id="__codelineno-0-449" name="__codelineno-0-449"></a>        <span class="p">]</span>
+<a id="__codelineno-0-450" name="__codelineno-0-450"></a>        <span class="c1"># Fix index column</span>
+<a id="__codelineno-0-451" name="__codelineno-0-451"></a>        <span class="c1"># https://stackoverflow.com/questions/46797598/how-to-remove-extra-row-after-set-index-without-losing-index-name</span>
+<a id="__codelineno-0-452" name="__codelineno-0-452"></a>        <span class="o">.</span><span class="n">reset_index</span><span class="p">(</span><span class="n">drop</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<a id="__codelineno-0-453" name="__codelineno-0-453"></a>        <span class="o">.</span><span class="n">set_index</span><span class="p">(</span><span class="s2">&quot;name&quot;</span><span class="p">)</span>
+<a id="__codelineno-0-454" name="__codelineno-0-454"></a>        <span class="o">.</span><span class="n">rename_axis</span><span class="p">(</span><span class="kc">None</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+<a id="__codelineno-0-455" name="__codelineno-0-455"></a>        <span class="o">.</span><span class="n">rename_axis</span><span class="p">(</span><span class="s2">&quot;name&quot;</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+<a id="__codelineno-0-456" name="__codelineno-0-456"></a>        <span class="o">.</span><span class="n">rename</span><span class="p">(</span>
+<a id="__codelineno-0-457" name="__codelineno-0-457"></a>            <span class="n">columns</span><span class="o">=</span><span class="p">{</span>
+<a id="__codelineno-0-458" name="__codelineno-0-458"></a>                <span class="s2">&quot;time_duration&quot;</span><span class="p">:</span> <span class="s2">&quot;timespan&quot;</span><span class="p">,</span>
+<a id="__codelineno-0-459" name="__codelineno-0-459"></a>                <span class="s2">&quot;interval_min&quot;</span><span class="p">:</span> <span class="s2">&quot;min internal&quot;</span><span class="p">,</span>
+<a id="__codelineno-0-460" name="__codelineno-0-460"></a>                <span class="s2">&quot;interval_max&quot;</span><span class="p">:</span> <span class="s2">&quot;max interval&quot;</span><span class="p">,</span>
+<a id="__codelineno-0-461" name="__codelineno-0-461"></a>                <span class="s2">&quot;leaks_number&quot;</span><span class="p">:</span> <span class="s2">&quot;Leaks&quot;</span><span class="p">,</span>
+<a id="__codelineno-0-462" name="__codelineno-0-462"></a>                <span class="s2">&quot;leaks_duration_mean&quot;</span><span class="p">:</span> <span class="s2">&quot;Leak Duration&quot;</span><span class="p">,</span>
+<a id="__codelineno-0-463" name="__codelineno-0-463"></a>                <span class="s2">&quot;leaks_shorter_then_mean&quot;</span><span class="p">:</span> <span class="s2">&quot;shorter Leaks&quot;</span><span class="p">,</span>
+<a id="__codelineno-0-464" name="__codelineno-0-464"></a>                <span class="s2">&quot;leaks_longer_then_mean&quot;</span><span class="p">:</span> <span class="s2">&quot;longer Leaks&quot;</span><span class="p">,</span>
+<a id="__codelineno-0-465" name="__codelineno-0-465"></a>            <span class="p">}</span>
+<a id="__codelineno-0-466" name="__codelineno-0-466"></a>        <span class="p">)</span>
+<a id="__codelineno-0-467" name="__codelineno-0-467"></a>    <span class="p">)</span>
+<a id="__codelineno-0-468" name="__codelineno-0-468"></a>
+<a id="__codelineno-0-469" name="__codelineno-0-469"></a>    <span class="n">datasets_table</span><span class="o">.</span><span class="n">style</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
+<a id="__codelineno-0-470" name="__codelineno-0-470"></a>        <span class="n">formatter</span><span class="o">=</span><span class="p">{</span>
+<a id="__codelineno-0-471" name="__codelineno-0-471"></a>            <span class="s2">&quot;timespan&quot;</span><span class="p">:</span> <span class="k">lambda</span> <span class="n">v</span><span class="p">:</span> <span class="s2">&quot;</span><span class="se">\\</span><span class="s2">begin</span><span class="si">{tabular}</span><span class="s2">{@</span><span class="si">{}</span><span class="s2">c@</span><span class="si">{}</span><span class="s2">}&quot;</span>
+<a id="__codelineno-0-472" name="__codelineno-0-472"></a>            <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">v</span><span class="p">)[:</span> <span class="nb">str</span><span class="p">(</span><span class="n">v</span><span class="p">)</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="s2">&quot;days&quot;</span><span class="p">)</span> <span class="o">+</span> <span class="mi">4</span><span class="p">]</span>
+<a id="__codelineno-0-473" name="__codelineno-0-473"></a>            <span class="o">+</span> <span class="s2">&quot;</span><span class="se">\\\\</span><span class="s2">&quot;</span>
+<a id="__codelineno-0-474" name="__codelineno-0-474"></a>            <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">v</span><span class="p">)[</span><span class="nb">str</span><span class="p">(</span><span class="n">v</span><span class="p">)</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="s2">&quot;days&quot;</span><span class="p">)</span> <span class="o">+</span> <span class="mi">4</span> <span class="p">:]</span>
+<a id="__codelineno-0-475" name="__codelineno-0-475"></a>            <span class="o">+</span> <span class="s2">&quot;</span><span class="se">\\</span><span class="s2">end</span><span class="si">{tabular}</span><span class="s2">&quot;</span><span class="p">,</span>
+<a id="__codelineno-0-476" name="__codelineno-0-476"></a>            <span class="s2">&quot;Leak Duration&quot;</span><span class="p">:</span> <span class="k">lambda</span> <span class="n">v</span><span class="p">:</span> <span class="s2">&quot;</span><span class="se">\\</span><span class="s2">begin</span><span class="si">{tabular}</span><span class="s2">{@</span><span class="si">{}</span><span class="s2">c@</span><span class="si">{}</span><span class="s2">}&quot;</span>
+<a id="__codelineno-0-477" name="__codelineno-0-477"></a>            <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">v</span><span class="p">)[:</span> <span class="nb">str</span><span class="p">(</span><span class="n">v</span><span class="p">)</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="s2">&quot;days&quot;</span><span class="p">)</span> <span class="o">+</span> <span class="mi">4</span><span class="p">]</span>
+<a id="__codelineno-0-478" name="__codelineno-0-478"></a>            <span class="o">+</span> <span class="s2">&quot;</span><span class="se">\\\\</span><span class="s2">&quot;</span>
+<a id="__codelineno-0-479" name="__codelineno-0-479"></a>            <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">v</span><span class="p">)[</span><span class="nb">str</span><span class="p">(</span><span class="n">v</span><span class="p">)</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="s2">&quot;days&quot;</span><span class="p">)</span> <span class="o">+</span> <span class="mi">4</span> <span class="p">:]</span>
+<a id="__codelineno-0-480" name="__codelineno-0-480"></a>            <span class="o">+</span> <span class="s2">&quot;</span><span class="se">\\</span><span class="s2">end</span><span class="si">{tabular}</span><span class="s2">&quot;</span><span class="p">,</span>
+<a id="__codelineno-0-481" name="__codelineno-0-481"></a>            <span class="s2">&quot;min internal&quot;</span><span class="p">:</span> <span class="k">lambda</span> <span class="n">v</span><span class="p">:</span> <span class="n">delta_format</span><span class="p">(</span><span class="n">v</span><span class="p">),</span>
+<a id="__codelineno-0-482" name="__codelineno-0-482"></a>            <span class="s2">&quot;max interval&quot;</span><span class="p">:</span> <span class="k">lambda</span> <span class="n">v</span><span class="p">:</span> <span class="n">delta_format</span><span class="p">(</span><span class="n">v</span><span class="p">),</span>
+<a id="__codelineno-0-483" name="__codelineno-0-483"></a>        <span class="p">},</span>
+<a id="__codelineno-0-484" name="__codelineno-0-484"></a>        <span class="n">escape</span><span class="o">=</span><span class="s2">&quot;latex&quot;</span><span class="p">,</span>
+<a id="__codelineno-0-485" name="__codelineno-0-485"></a>    <span class="p">)</span><span class="o">.</span><span class="n">format_index</span><span class="p">(</span>
+<a id="__codelineno-0-486" name="__codelineno-0-486"></a>        <span class="n">formatter</span><span class="o">=</span><span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="s2">&quot;</span><span class="se">\\</span><span class="s2">rotatebox</span><span class="si">{45}</span><span class="s2">{&quot;</span> <span class="o">+</span> <span class="n">x</span> <span class="o">+</span> <span class="s2">&quot;}&quot;</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="s2">&quot;columns&quot;</span>
+<a id="__codelineno-0-487" name="__codelineno-0-487"></a>    <span class="p">)</span><span class="o">.</span><span class="n">set_table_styles</span><span class="p">(</span>
+<a id="__codelineno-0-488" name="__codelineno-0-488"></a>        <span class="p">[</span>
+<a id="__codelineno-0-489" name="__codelineno-0-489"></a>            <span class="c1"># {&#39;selector&#39;: &#39;toprule&#39;, &#39;props&#39;: &#39;:hline;&#39;},</span>
+<a id="__codelineno-0-490" name="__codelineno-0-490"></a>            <span class="p">{</span><span class="s2">&quot;selector&quot;</span><span class="p">:</span> <span class="s2">&quot;midrule&quot;</span><span class="p">,</span> <span class="s2">&quot;props&quot;</span><span class="p">:</span> <span class="s2">&quot;:hline;&quot;</span><span class="p">},</span>
+<a id="__codelineno-0-491" name="__codelineno-0-491"></a>            <span class="c1"># {&#39;selector&#39;: &#39;bottomrule&#39;, &#39;props&#39;: &#39;:hline;&#39;},</span>
+<a id="__codelineno-0-492" name="__codelineno-0-492"></a>        <span class="p">],</span>
+<a id="__codelineno-0-493" name="__codelineno-0-493"></a>        <span class="n">overwrite</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+<a id="__codelineno-0-494" name="__codelineno-0-494"></a>    <span class="p">)</span><span class="o">.</span><span class="n">to_latex</span><span class="p">(</span>
+<a id="__codelineno-0-495" name="__codelineno-0-495"></a>        <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">analysis_out_dir</span><span class="p">,</span> <span class="s2">&quot;datasets_overview.tex&quot;</span><span class="p">),</span>
+<a id="__codelineno-0-496" name="__codelineno-0-496"></a>        <span class="n">position_float</span><span class="o">=</span><span class="s2">&quot;centering&quot;</span><span class="p">,</span>
+<a id="__codelineno-0-497" name="__codelineno-0-497"></a>        <span class="n">clines</span><span class="o">=</span><span class="s2">&quot;all;data&quot;</span><span class="p">,</span>
+<a id="__codelineno-0-498" name="__codelineno-0-498"></a>        <span class="n">column_format</span><span class="o">=</span><span class="s2">&quot;l|rrrrrrrr&quot;</span><span class="p">,</span>
+<a id="__codelineno-0-499" name="__codelineno-0-499"></a>        <span class="n">position</span><span class="o">=</span><span class="s2">&quot;H&quot;</span><span class="p">,</span>
+<a id="__codelineno-0-500" name="__codelineno-0-500"></a>        <span class="n">label</span><span class="o">=</span><span class="s2">&quot;table:datasets_overview&quot;</span><span class="p">,</span>
+<a id="__codelineno-0-501" name="__codelineno-0-501"></a>        <span class="n">caption</span><span class="o">=</span><span class="s2">&quot;Overview of the water networks.&quot;</span><span class="p">,</span>
+<a id="__codelineno-0-502" name="__codelineno-0-502"></a>    <span class="p">)</span>
 </code></pre></div></td></tr></table></div>
       </details>
   </div>
