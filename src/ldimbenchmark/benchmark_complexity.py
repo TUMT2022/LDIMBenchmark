@@ -310,6 +310,7 @@ def run_benchmark_complexity(
         column_format="l|" + str("l" * (len(results.columns))),
         position="H",
         multicol_align="l",
+        position_float="centering",
     )
 
     result_measures = pd.concat(result_measures, axis=1)
