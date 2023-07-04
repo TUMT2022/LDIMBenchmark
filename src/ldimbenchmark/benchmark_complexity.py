@@ -267,8 +267,8 @@ def run_benchmark_complexity(
         {
             "Method": results["time"].keys(),
             "time": results["time"].values(),
-            "ram": results["ram"].values(),
             "time_avg": results["time_avg"].values(),
+            "ram": results["ram"].values(),
             "ram_avg": results["ram_avg"].values(),
         }
     )
