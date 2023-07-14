@@ -1491,9 +1491,11 @@ It is designed to make it easy to implement the interface in any environment (do
 <a id="__codelineno-0-7" name="__codelineno-0-7" href="#__codelineno-0-7"></a> |     | -- &lt;sensorname&gt;.csv
 <a id="__codelineno-0-8" name="__codelineno-0-8" href="#__codelineno-0-8"></a> | -- levels/
 <a id="__codelineno-0-9" name="__codelineno-0-9" href="#__codelineno-0-9"></a> |     | -- &lt;sensorname&gt;.csv
-<a id="__codelineno-0-10" name="__codelineno-0-10" href="#__codelineno-0-10"></a> | -- model.inp            # The water network model
-<a id="__codelineno-0-11" name="__codelineno-0-11" href="#__codelineno-0-11"></a> | -- dma.json             # Layout of the district metering zones it contains all nodes and pipes in the an area, enabling methods to be specific to each area.
-<a id="__codelineno-0-12" name="__codelineno-0-12" href="#__codelineno-0-12"></a> | -- options.yml # Options for the algorithm (e.g. training and evaluation data timestampy, stage of the algorithm [training, detection_offline, detection_online] and goal (detection, localization), hyperparameters, etc.)
+<a id="__codelineno-0-10" name="__codelineno-0-10" href="#__codelineno-0-10"></a> | -- model.inp  # The water network model
+<a id="__codelineno-0-11" name="__codelineno-0-11" href="#__codelineno-0-11"></a> | -- dma.json   # Layout of the district metering zones it contains all nodes and pipes in the an area, enabling methods to be specific to each area.
+<a id="__codelineno-0-12" name="__codelineno-0-12" href="#__codelineno-0-12"></a> | -- leaks.csv  # Leaks with start and end time.
+<a id="__codelineno-0-13" name="__codelineno-0-13" href="#__codelineno-0-13"></a> | -- leaks/
+<a id="__codelineno-0-14" name="__codelineno-0-14" href="#__codelineno-0-14"></a> |     | -- &lt;leak_id&gt;.csv # Timestamp data for leak outflows
 </code></pre></div>
 <blockquote>
 <p>We trust the implementation of the Leakage detection method to use the correct implementation for each stage (e.g. doing online detection if told to instead of offline detection)</p>
@@ -1514,7 +1516,7 @@ It is designed to make it easy to implement the interface in any environment (do
 </ul>
 <h4 id="arguments">Arguments</h4>
 <div class="highlight"><pre><span></span><code><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a>./args
-<a id="__codelineno-1-2" name="__codelineno-1-2" href="#__codelineno-1-2"></a> | -- options.yml   # Options for running the Method Runner.
+<a id="__codelineno-1-2" name="__codelineno-1-2" href="#__codelineno-1-2"></a> | -- options.yml   # Options for running the Method Runner (e.g. training and evaluation data timestamps, stage of the algorithm [training, detection_offline, detection_online] and goal (detection, localization), hyperparameters, etc.)
 </code></pre></div>
 <h4 id="output">Output:</h4>
 <div class="highlight"><pre><span></span><code><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a>./output
@@ -1530,7 +1532,7 @@ It is designed to make it easy to implement the interface in any environment (do
   <small>
     
       Last update:
-      <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date">February 24, 2023</span>
+      <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date">July 14, 2023</span>
       
         <br>
         Created:
