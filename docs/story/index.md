@@ -31,6 +31,7 @@ graph TD;
     dataset --> compare
     dataset --> analysis
     results-->evaluation[Evaluation];
+    results-->complexity[Complexity Analysis];
     %% benchmark --> evaluation
 
   end
