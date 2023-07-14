@@ -1396,17 +1396,22 @@
   end
 
   subgraph Analysis
-    dataset --&gt; compare[Compare]
-    dataset --&gt; analysis[Analysis]
+    dataset --&gt; compare
+    dataset --&gt; analysis
     results--&gt;evaluation[Evaluation];
-  end</code></pre>
+    %% benchmark --&gt; evaluation
+
+  end
+style own_dataset fill:green
+style method fill:green
+style parameters fill:green</code></pre>
 
   <hr>
 <div class="md-source-file">
   <small>
     
       Last update:
-      <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date">June 25, 2023</span>
+      <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date">July 14, 2023</span>
       
         <br>
         Created:
