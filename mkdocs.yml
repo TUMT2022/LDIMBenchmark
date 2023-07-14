@@ -1,5 +1,6 @@
 site_name: LDIMBenchmark
 repo_url: https://github.com/ldimbenchmark/LDIMBenchmark
+edit_uri: 'blob/main/docs/'
 theme:
   name: material
   icon:
