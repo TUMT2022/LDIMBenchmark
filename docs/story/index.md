@@ -1,7 +1,7 @@
 ```mermaid
 graph TD;
   own_dataset[Own Data]-->preprocessing[Preprocessing];
-
+  
   subgraph Core Benchmark
     generator[Data Generator]-->dataset;
 
@@ -28,8 +28,14 @@ graph TD;
   end
 
   subgraph Analysis
-    dataset --> compare[Compare]
-    dataset --> analysis[Analysis]
+    dataset --> compare
+    dataset --> analysis
     results-->evaluation[Evaluation];
+    results-->complexity[Complexity Analysis];
+    %% benchmark --> evaluation
+
   end
+style own_dataset fill:green
+style method fill:green
+style parameters fill:green
 ```

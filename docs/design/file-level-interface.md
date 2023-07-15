@@ -15,9 +15,11 @@ It is designed to make it easy to implement the interface in any environment (do
  |     | -- <sensorname>.csv
  | -- levels/
  |     | -- <sensorname>.csv
- | -- model.inp            # The water network model
- | -- dma.json             # Layout of the district metering zones it contains all nodes and pipes in the an area, enabling methods to be specific to each area.
- | -- options.yml # Options for the algorithm (e.g. training and evaluation data timestampy, stage of the algorithm [training, detection_offline, detection_online] and goal (detection, localization), hyperparameters, etc.)
+ | -- model.inp  # The water network model
+ | -- dma.json   # Layout of the district metering zones it contains all nodes and pipes in the an area, enabling methods to be specific to each area.
+ | -- leaks.csv  # Leaks with start and end time.
+ | -- leaks/
+ |     | -- <leak_id>.csv # Timestamp data for leak outflows
 ```
 
 > We trust the implementation of the Leakage detection method to use the correct implementation for each stage (e.g. doing online detection if told to instead of offline detection)
@@ -40,7 +42,7 @@ The following assumptions are not made:
 
 ```
 ./args
- | -- options.yml   # Options for running the Method Runner.
+ | -- options.yml   # Options for running the Method Runner (e.g. training and evaluation data timestamps, stage of the algorithm [training, detection_offline, detection_online] and goal (detection, localization), hyperparameters, etc.)
 
 ```
 
