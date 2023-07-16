@@ -708,7 +708,7 @@ class LDIMBenchmark:
         current_only=True,
         resultFilter: Callable = lambda r: r,
         print_results: bool = True,
-        write_results: List[Union[None, Literal["csv", "db", "tex"]]] = None,
+        write_results: List[Union[None, Literal["csv", "db", "tex", "png"]]] = None,
         evaluations: List[Callable] = [
             precision,
             recall,
@@ -839,7 +839,7 @@ class LDIMBenchmark:
             results.to_sql("results", engine, if_exists="replace")
 
         # Generate Heatmaps if multiple parameters are used
-        if self.multi_parameters:
+        if self.multi_parameters and "png" in write_results:
             results.hyperparameters = results.hyperparameters.astype("str")
             df_hyperparameters = pd.json_normalize(
                 results.hyperparameters.apply(ast.literal_eval)
@@ -878,7 +878,10 @@ class LDIMBenchmark:
 
         results = results.reset_index("_folder")
         results = results.set_index(["method", "method_version", "dataset_id"])
-        results = results.sort_values(by=["F1", "true_positives"])
+        results = results.sort_values(
+            by=["F1", "true_positives", "time_to_detection_avg"],
+            ascending=[False, False, True],
+        )
         # Display in console
         console_display = results.drop(
             columns=[
