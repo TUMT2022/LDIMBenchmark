@@ -78,6 +78,17 @@ class DatasetAnalyzer:
         #             data_name = dataset.info["derivations"]["data"][0]["kind"]
 
         data = getattr(original_dataset, data_type)
+
+        unit = None
+        if data_type == "demands":
+            unit = "Demand [m3/s]"
+        elif data_type == "pressures":
+            unit = "Pressure [m]"
+        elif data_type == "flows":
+            unit = "Flow [l/s]"
+        elif data_type == "levels":
+            unit = "Level [m]"
+
         for sensor_id in data.keys():
             # data.columns = [f"[Original] {col}" for col in data.columns]
             DatasetAnalyzer._plot_time_series(
@@ -92,6 +103,7 @@ class DatasetAnalyzer:
                     for i, ldata in loaded_datasets.items()
                 ],
                 quick_detail=quick,
+                unit=unit,
             )
             break
 
@@ -125,19 +137,26 @@ class DatasetAnalyzer:
         out_path: str,
         compare_df: List[pd.DataFrame] = None,
         quick_detail: bool = False,
+        unit: str = None,
     ):
         """
         Plots the time series data of each sensor and possible data for comparison
 
         out_path: Path to save the plot (with filename)
+        compare_df: List of dataframes to compare with
+        quick_detail: If true, only plot the first 40 timestamps
         """
-        fig, ax = plt.subplots(1, 1, figsize=(30, 10))
-        ax.set_title(title)
+
+        max_timestamp = df.index[-1]
+        # default figsize
+        figsize = (8, 6)
 
         if quick_detail:
             max_timestamp = df.index[40]
-        else:
-            max_timestamp = df.shape[0]
+            figsize = (30, 10)
+
+        fig, ax = plt.subplots(1, 1, figsize=figsize)
+        ax.set_title(title)
 
         min_timestamp = df.index[0]
 
@@ -156,7 +175,8 @@ class DatasetAnalyzer:
             ax=ax,
             marker="x",
         )
-        # ax.legend([f"[Original] {label}" for label in df.columns])
+
+        ax.set_ylabel(unit)
         ax.legend()
 
         fig.savefig(out_path)
