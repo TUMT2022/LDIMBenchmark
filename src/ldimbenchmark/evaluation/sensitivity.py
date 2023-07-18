@@ -166,7 +166,8 @@ def plot_derivation_plot(
                     os.path.join(
                         out_folder,
                         f"sensitivity_{dataset}_{modified_property}_{derivation_type}",
-                    )
+                    ),
+                    bbox_inches="tight",
                 )
                 plt.close(fig)
 
