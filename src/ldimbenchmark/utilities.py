@@ -370,3 +370,15 @@ def read_multiple_dataset_infos(dataset_info_frame: DataFrame):
         ] = "model"
 
     return flattened_results
+
+
+def get_unit_for_property(property: str) -> str:
+    if property == "demands":
+        return "[m3/s]"
+    elif property == "pressures":
+        return "[m]"
+    elif property == "flows":
+        return "[l/s]"
+    elif property == "levels":
+        return "[m]"
+    return None

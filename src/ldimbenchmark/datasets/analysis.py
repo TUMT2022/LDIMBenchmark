@@ -11,7 +11,11 @@ import wntr
 import matplotlib.pyplot as plt
 from typing import Literal, Union, List
 
-from ldimbenchmark.utilities import delta_format, read_multiple_dataset_infos
+from ldimbenchmark.utilities import (
+    delta_format,
+    get_unit_for_property,
+    read_multiple_dataset_infos,
+)
 
 
 class DatasetAnalyzer:
@@ -79,15 +83,7 @@ class DatasetAnalyzer:
 
         data = getattr(original_dataset, data_type)
 
-        unit = None
-        if data_type == "demands":
-            unit = "Demand [m3/s]"
-        elif data_type == "pressures":
-            unit = "Pressure [m]"
-        elif data_type == "flows":
-            unit = "Flow [l/s]"
-        elif data_type == "levels":
-            unit = "Level [m]"
+        unit = data_type[:-1] + " " + get_unit_for_property(data_type)
 
         for sensor_id in data.keys():
             # data.columns = [f"[Original] {col}" for col in data.columns]
