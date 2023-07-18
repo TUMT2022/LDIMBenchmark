@@ -137,6 +137,7 @@ def plot_derivation_plot(
                 ax3.yaxis.set_major_formatter(
                     lambda x, pos: f"{delta_format(datetime.timedelta(seconds=x))}"
                 )
+                ax3.set_ylabel(f"Time to Detection [h]")
 
                 ax.set_xticks(ticks=spacing)
                 labels = method_data["dataset_derivations.value"]
