@@ -7,11 +7,6 @@ from ldimbenchmark import (
 from ldimbenchmark.classes import BenchmarkData, MethodMetadataDataNeeded
 
 from datetime import timedelta
-from sklearn.linear_model import LinearRegression
-import sklearn
-import pickle
-import math
-from pandas import Timestamp
 
 
 import numpy as np
@@ -27,6 +22,12 @@ class MNF(LDIMMethodBase):
     Method from KIOS Research Team
 
     Link: https://github.com/KIOS-Research/LeakDB/tree/master/CCWI-WDSA2018/Detection%20Algorithms/MNF
+
+    Changelog:
+    1.0.0 - Version from KIOS Research Team
+    1.1.0 - Add option for resample_frequency
+    1.2.0 - Run MNF for each sensor
+    1.3.0 - Add option for sensor_treatment
     """
 
     def __init__(self):
@@ -64,6 +65,13 @@ class MNF(LDIMMethodBase):
                         default=0.1,
                         min=0.0,
                         max=1.0,
+                    ),
+                    Hyperparameter(
+                        name="sensor_treatment",
+                        description="How to treat multiple flow sensors. 'each' for applying the method on each sensor individually, 'first' for using the first sensor, 'sum' for applying the method on the sum of all sensors",
+                        value_type=str,
+                        default="each",
+                        options=["each", "first", "sum"],
                     ),
                 ],
                 # TODO: more attributes?
@@ -168,7 +176,7 @@ class MNF(LDIMMethodBase):
         # TODO: For now lets say it starts at noon
         hour_24_end = start_date + timedelta(days=1)
 
-        # better:
+        # better: all_flows.groupby(all_flows.index.date).size()
         entries_per_day = (
             (all_flows.index > start_date) & (all_flows.index <= hour_24_end)
         ).sum()
@@ -177,6 +185,11 @@ class MNF(LDIMMethodBase):
 
         results = []
         # all_flows = pd.DataFrame(all_flows.sum(axis=1))
+        if self.hyperparameters["sensor_treatment"] == "first":
+            all_flows = all_flows[all_flows.columns[0:1]]
+        elif self.hyperparameters["sensor_treatment"] == "sum":
+            all_flows = pd.DataFrame(all_flows.sum(axis=1))
+
         for sensor in all_flows.columns:
             flows_array = all_flows[sensor].to_numpy()
 
