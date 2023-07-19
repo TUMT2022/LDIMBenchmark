@@ -280,6 +280,8 @@ def create_plots(
 
     plot_data = results[(results["method"] == method) & (results["dataset"] == dataset)]
     hyperparameters = list(map(lambda x: "hyperparameters." + x, hyperparameters))
+    # Do not plot hyperparameters with only one value
+    hyperparameters = [x for x in hyperparameters if len(plot_data[x].unique()) > 1]
 
     hyperparameter_combination = list(itertools.combinations(hyperparameters, 2))
 
