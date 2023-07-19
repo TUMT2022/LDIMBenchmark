@@ -273,12 +273,12 @@ def create_plots(
     performance_metric: str,
     out_folder,
 ):
-    plot_out_folder = os.path.join(out_folder)  # , method, dataset)
+    plot_out_folder = os.path.join(out_folder)
     os.makedirs(plot_out_folder, exist_ok=True)
-    # max_metric = results[performance_metric].max()
-    # min_metric = results[performance_metric].min()
 
     plot_data = results[(results["method"] == method) & (results["dataset"] == dataset)]
+    max_metric = plot_data[performance_metric].max()
+    min_metric = plot_data[performance_metric].min()
     hyperparameters = list(map(lambda x: "hyperparameters." + x, hyperparameters))
     # Do not plot hyperparameters with only one value
     hyperparameters = [x for x in hyperparameters if len(plot_data[x].unique()) > 1]
@@ -301,17 +301,22 @@ def create_plots(
                     values=performance_metric,
                     index=param_1,
                     columns=param_2,
+                    aggfunc=np.max,
                 )
                 if len(pvt) != 0:
                     sns.heatmap(
                         pvt,
                         ax=axs[real_row, col],
                         cmap=cmap,
-                        # vmin=min_metric,
-                        # vmax=max_metric,
+                        vmin=min_metric,
+                        vmax=max_metric,
                     )
                 axs[real_row, col].set_ylabel(param_1)
                 axs[real_row, col].set_xlabel(param_2)
+
+                x_pos_max, y_pos_max = np.unravel_index(np.nanargmax(pvt, axis=None), pvt.shape)
+
+                axs[real_row, col].add_patch(patches.Rectangle((y_pos_max, x_pos_max),1,1, fill=False, edgecolor='blue', lw=3))
                 # axs[real_row, col].yaxis.set_major_formatter(FormatStrFormatter("%.2f"))
                 # axs[real_row, col].xaxis.set_major_formatter(FormatStrFormatter("%.2f"))
 
