@@ -395,10 +395,10 @@ class DatasetDerivator:
                     for application in apply_to:
                         datasets = getattr(loadedDataset, application)
                         keys = list(datasets.keys())
-                        # Value is supplied as percentile, we need to convert it
-                        value = value / 100
 
                         if derivation == "count":
+                            # Value is supplied as percentile, we need to convert it
+                            value = value / 100
                             # For count derivation we do not need to make changes fo the data, just remove some sensors
                             current_sensor_ratio = len(keys) / len(
                                 this_dataset.model.pipe_name_list
