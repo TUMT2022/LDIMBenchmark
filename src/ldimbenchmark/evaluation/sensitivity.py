@@ -17,7 +17,11 @@ import numpy as np
 import ast
 import seaborn as sns
 
-from ldimbenchmark.utilities import delta_format, read_multiple_dataset_infos
+from ldimbenchmark.utilities import (
+    delta_format,
+    get_unit_for_property,
+    read_multiple_dataset_infos,
+)
 
 
 def lighten_color(color, amount=0.5):
@@ -89,7 +93,10 @@ def plot_derivation_plot(
                         )
                         & (flat_results["dataset"] == dataset)
                         & (flat_results["method"] == method)
-                    ].sort_values(by="dataset_derivations.value")
+                    ].sort_values(
+                        by="dataset_derivations.value",
+                        ascending=derivation_type != "count",
+                    )
                     method_data
                     spacing = np.array(
                         range(0, len(method_data["dataset_derivations.value"]))
