@@ -429,3 +429,78 @@ def test_derivator_data_sampling(snapshot, mocked_dataset_time: Dataset):
         mocked_dataset_time.loadData().pressures["J-02"],
         derivedDatasets[0].loadData().pressures["J-02"],
     )
+
+
+def test_derivator_data_count_none(snapshot, mocked_dataset_time: Dataset):
+    """Testing Derivation for data: flow (and no others)"""
+    derivator = DatasetDerivator(
+        [mocked_dataset_time], TEST_DATA_FOLDER_DATASETS, ignore_cache=True
+    )
+    derivedDatasets = derivator.derive_data("flows", "count", [0])
+    snapshot.assert_match(
+        Dataset(os.path.join(TEST_DATA_FOLDER_DATASETS, derivedDatasets[0].id))
+        .loadData()
+        .flows.keys()
+    )
+    assert (
+        mocked_dataset_time.loadData().demands.keys()
+        == derivedDatasets[0].loadData().demands.keys()
+    )
+    assert (
+        mocked_dataset_time.loadData().pressures.keys()
+        == derivedDatasets[0].loadData().pressures.keys()
+    )
+    assert (
+        mocked_dataset_time.loadData().levels.keys()
+        == derivedDatasets[0].loadData().levels.keys()
+    )
+
+
+def test_derivator_data_count_half(snapshot, mocked_dataset_time: Dataset):
+    """Testing Derivation for data: flow (and no others)"""
+    derivator = DatasetDerivator(
+        [mocked_dataset_time], TEST_DATA_FOLDER_DATASETS, ignore_cache=True
+    )
+    derivedDatasets = derivator.derive_data("flows", "count", [2])
+    snapshot.assert_match(
+        Dataset(os.path.join(TEST_DATA_FOLDER_DATASETS, derivedDatasets[0].id))
+        .loadData()
+        .flows.keys()
+    )
+    assert (
+        mocked_dataset_time.loadData().demands.keys()
+        == derivedDatasets[0].loadData().demands.keys()
+    )
+    assert (
+        mocked_dataset_time.loadData().pressures.keys()
+        == derivedDatasets[0].loadData().pressures.keys()
+    )
+    assert (
+        mocked_dataset_time.loadData().levels.keys()
+        == derivedDatasets[0].loadData().levels.keys()
+    )
+
+
+def test_derivator_data_count_all(snapshot, mocked_dataset_time: Dataset):
+    """Testing Derivation for data: flow (and no others)"""
+    derivator = DatasetDerivator(
+        [mocked_dataset_time], TEST_DATA_FOLDER_DATASETS, ignore_cache=True
+    )
+    derivedDatasets = derivator.derive_data("flows", "count", [4])
+    snapshot.assert_match(
+        Dataset(os.path.join(TEST_DATA_FOLDER_DATASETS, derivedDatasets[0].id))
+        .loadData()
+        .flows.keys()
+    )
+    assert (
+        mocked_dataset_time.loadData().demands.keys()
+        == derivedDatasets[0].loadData().demands.keys()
+    )
+    assert (
+        mocked_dataset_time.loadData().pressures.keys()
+        == derivedDatasets[0].loadData().pressures.keys()
+    )
+    assert (
+        mocked_dataset_time.loadData().levels.keys()
+        == derivedDatasets[0].loadData().levels.keys()
+    )

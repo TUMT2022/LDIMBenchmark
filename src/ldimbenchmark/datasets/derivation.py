@@ -2,7 +2,9 @@ from concurrent.futures import ProcessPoolExecutor, as_completed
 from glob import glob
 import itertools
 import logging
+import math
 import os
+import random
 import shutil
 import tempfile
 import enlighten
@@ -45,6 +47,16 @@ def get_random_norm(
     )
 
 
+def get_random_selection(
+    size: int, selection: int, seed: int = 27565124760782368551060429849508057759
+):
+    """
+    Generate a random normal distribution with a given noise level
+    """
+    random.seed(seed)
+    return random.sample(range(size), selection)
+
+
 def _apply_derivation_to_DataFrame(
     derivation: Literal["precision", "sensitivity", "downsample"],
     value: float,
@@ -74,6 +86,9 @@ def _apply_derivation_to_DataFrame(
             group_keys=True,
         ).first()
         dataframe = dataframe.set_index("Timestamp")
+
+    elif derivation == "count":
+        pass
     else:
         raise ValueError(f"Derivation {derivation} not implemented")
 
@@ -284,7 +299,7 @@ class DatasetDerivator:
         ],
         # TODO: Add Chaos Monkey, introducing missing values, skewed values (way out of bound),
         # TODO: Add simple skew (static, or linear)
-        derivation: Literal["sensitivity", "precision", "downsample"],
+        derivation: Literal["sensitivity", "precision", "downsample", "count"],
         options_list: Union[List[dict], List[float]],
     ):
         """
@@ -307,6 +322,11 @@ class DatasetDerivator:
         ``derivation="downsample"``
             Simulates a sensor with less readings per timeframe.
             Values must be given in seconds.
+
+        ``derivation="count"``
+            Simulates less number of sensors. The sensors are chosen randomly (but deterministic).
+            ``value`` determines the percentage of sensors in relation to the pipe count.
+
 
         """
 
@@ -371,50 +391,79 @@ class DatasetDerivator:
                     )
                     loadedDataset = this_dataset.loadData()
 
+                    manager = enlighten.get_manager()
                     for application in apply_to:
                         datasets = getattr(loadedDataset, application)
+                        keys = list(datasets.keys())
+                        # Value is supplied as percentile, we need to convert it
+                        value = value / 100
 
-                        keys = datasets.keys()
-                        transformations = zip(
-                            itertools.repeat(derivation, len(keys)),
-                            itertools.repeat(value, len(keys)),
-                            [datasets[key] for key in keys],
-                            keys,
-                        )
-                        manager = enlighten.get_manager()
-                        bar_derivations = manager.counter(
-                            total=len(keys),
-                            desc=f"Deriving {application}",
-                            unit="sensors",
-                        )
-                        bar_derivations.refresh()
-
-                        # logging.debug(filepaths)
-                        with ProcessPoolExecutor(max_workers=CPU_COUNT) as executor:
-                            # submit all tasks and get future objects
-                            futures = [
-                                executor.submit(
-                                    _apply_derivation_to_DataFrame,
-                                    derivation,
-                                    value,
-                                    dataset_key,
-                                    key,
+                        if derivation == "count":
+                            # For count derivation we do not need to make changes fo the data, just remove some sensors
+                            current_sensor_ratio = len(keys) / len(
+                                this_dataset.model.pipe_name_list
+                            )
+                            logging.debug(
+                                f"Current Sensor Ratio: {current_sensor_ratio}"
+                            )
+                            if value > current_sensor_ratio:
+                                logging.warning(
+                                    f"Value {value} is larger than the current sensor ratio {current_sensor_ratio}. Aborting derivation."
                                 )
-                                for derivation, value, dataset_key, key in transformations
-                            ]
-                            # process results from tasks in order of task completion
-                            for future in as_completed(futures):
-                                key, result = future.result()
-                                datasets[key] = result
-                                if len(result) <= 3:
-                                    logging.warn(
-                                        "Derived data would only have three data points. That's not a proper dataset anymore. Aborting."
+                                abort = True
+                                break
+
+                            mask = get_random_selection(
+                                len(keys),
+                                len(keys)
+                                - round(len(keys) * (value / current_sensor_ratio)),
+                            )
+                            logging.debug(f"Removed {len(mask)} sensors")
+                            for i in mask:
+                                del datasets[keys[i]]
+                            keys = list(datasets.keys())
+
+                        else:
+                            # For all other derivations we need to apply the derivation to the data
+                            transformations = zip(
+                                itertools.repeat(derivation, len(keys)),
+                                itertools.repeat(value, len(keys)),
+                                [datasets[key] for key in keys],
+                                keys,
+                            )
+                            bar_derivations = manager.counter(
+                                total=len(keys),
+                                desc=f"Deriving {application}",
+                                unit="sensors",
+                            )
+                            bar_derivations.refresh()
+
+                            # logging.debug(filepaths)
+                            with ProcessPoolExecutor(max_workers=CPU_COUNT) as executor:
+                                # submit all tasks and get future objects
+                                futures = [
+                                    executor.submit(
+                                        _apply_derivation_to_DataFrame,
+                                        derivation,
+                                        value,
+                                        dataset_key,
+                                        key,
                                     )
+                                    for derivation, value, dataset_key, key in transformations
+                                ]
+                                # process results from tasks in order of task completion
+                                for future in as_completed(futures):
+                                    key, result = future.result()
+                                    datasets[key] = result
+                                    if len(result) <= 3:
+                                        logging.warn(
+                                            "Derived data would only have three data points. That's not a proper dataset anymore. Aborting."
+                                        )
 
-                                    abort = True
+                                        abort = True
 
-                                bar_derivations.update()
-                        bar_derivations.close()
+                                    bar_derivations.update()
+                            bar_derivations.close()
                         setattr(loadedDataset, application, datasets)
 
                     if not abort:

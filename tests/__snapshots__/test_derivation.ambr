@@ -1,3 +1,12 @@
+# name: test_derivator_data_count_all
+  dict_keys(['J-02', 'J-03'])
+# ---
+# name: test_derivator_data_count_half
+  dict_keys(['J-02'])
+# ---
+# name: test_derivator_data_count_none
+  dict_keys([])
+# ---
 # name: test_derivator_data_precision_demands
   '''
   Timestamp,J-02
