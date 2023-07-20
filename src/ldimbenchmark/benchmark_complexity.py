@@ -28,7 +28,7 @@ import big_o
 import matplotlib as mpl
 from typing import List
 
-from ldimbenchmark.utilities import get_method_name_from_docker_image
+from ldimbenchmark.utilities import convert_byte_size, get_method_name_from_docker_image
 
 
 def loadDataset_local(dataset_path):
@@ -235,8 +235,12 @@ def run_benchmark_complexity(
 
         results["time"][method_name] = best_cpu
         results["ram"][method_name] = best_ram
-        results["time_avg"][method_name] = np.average(value_matrix_time)
-        results["ram_avg"][method_name] = np.average(value_matrix_ram)
+        results["time_avg"][method_name] = np.average(
+            value_matrix_time[~np.isnan(value_matrix_time)],
+        )
+        results["ram_avg"][method_name] = np.average(
+            value_matrix_ram[~np.isnan(value_matrix_ram)]
+        )
 
         dataseries = {
             f"time_overall_{method_name}": np.average(value_matrix_time, axis=1),
@@ -351,13 +355,16 @@ def run_benchmark_complexity(
     if style == "junctions":
         ax.set_xlabel("junction number")
     elif style == "time":
-        ax.set_xlabel("time (days)")
+        ax.set_xlabel("time [d]")
 
     ax.set_ylabel("scale")
     ax.legend(loc="lower right")
     fig = ax.get_figure()
 
-    fig.savefig(os.path.join(out_folder, "measures.png"))
+    fig.savefig(
+        os.path.join(out_folder, "measures.png"),
+        bbox_inches="tight",
+    )
     plt.close(fig)
 
     # Raw Time Values
@@ -372,13 +379,16 @@ def run_benchmark_complexity(
         ax=ax
     )
     ax.set_title(f"Complexity Analysis for different {style} inputs")
-    ax.set_xlabel("time (days)")
-    ax.set_ylabel("time (seconds)")
+    ax.set_xlabel("time [d]")
+    ax.set_ylabel("time [s]")
     ax.legend(loc="lower right")
 
     # ax.xaxis.set_major_formatter(FormatStrFormatter("%.0f"))
     fig = ax.get_figure()
-    fig.savefig(os.path.join(out_folder, "time.png"))
+    fig.savefig(
+        os.path.join(out_folder, "time.png"),
+        bbox_inches="tight",
+    )
     plt.close(fig)
 
     ax = result_measures[
@@ -393,11 +403,16 @@ def run_benchmark_complexity(
     )
     ax.set_title(f"Complexity Analysis for different {style} inputs")
     ax.set_xlabel("junction number")
-    ax.set_ylabel("memory (bytes)")
+    ax.set_ylabel("memory [B]")
     ax.legend(loc="lower right")
+    # convert labels to byte units
+    ax.set_yticklabels([convert_byte_size(x) for x in ax.get_yticks()])
 
     # ax.xaxis.set_major_formatter(FormatStrFormatter("%.0f"))
     fig = ax.get_figure()
-    fig.savefig(os.path.join(out_folder, "ram.png"))
+    fig.savefig(
+        os.path.join(out_folder, "ram.png"),
+        bbox_inches="tight",
+    )
     plt.close(fig)
     return results
