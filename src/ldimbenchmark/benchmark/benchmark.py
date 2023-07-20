@@ -268,7 +268,7 @@ def plot_leak(
 def create_plots(
     results: pd.DataFrame,
     method: str,
-    dataset: str,
+    dataset_name: str,
     hyperparameters: List[str],
     performance_metric: str,
     out_folder,
@@ -276,7 +276,7 @@ def create_plots(
     plot_out_folder = os.path.join(out_folder)
     os.makedirs(plot_out_folder, exist_ok=True)
 
-    plot_data = results[(results["method"] == method) & (results["dataset"] == dataset)]
+    plot_data = results[(results["method"] == method) & (results["dataset"] == dataset_name)]
     max_metric = plot_data[performance_metric].max()
     min_metric = plot_data[performance_metric].min()
     hyperparameters = list(map(lambda x: "hyperparameters." + x, hyperparameters))
@@ -285,51 +285,64 @@ def create_plots(
 
     hyperparameter_combination = list(itertools.combinations(hyperparameters, 2))
 
-    cmap = sns.cm.rocket_r
-    fig, axs = plt.subplots(
-        ncols=len(hyperparameters) - 1,
-        nrows=len(hyperparameters) - 1,
-        figsize=(len(hyperparameters) * 4, len(hyperparameters) * 4),
-        squeeze=False,
-    )
-    for row, param_1 in enumerate(hyperparameters):
-        for col, param_2 in enumerate(hyperparameters):
-            if (param_2, param_1) in hyperparameter_combination:
-                real_row = row - 1
-                pvt = pd.pivot_table(
-                    plot_data,
-                    values=performance_metric,
-                    index=param_1,
-                    columns=param_2,
-                    aggfunc=np.max,
-                )
-                if len(pvt) != 0:
-                    sns.heatmap(
-                        pvt,
-                        ax=axs[real_row, col],
-                        cmap=cmap,
-                        vmin=min_metric,
-                        vmax=max_metric,
+    if len(hyperparameters) > 1:
+        logging.info(f"Generating Heatmap for {method} {dataset_name}")
+        cmap = sns.cm.rocket_r
+        fig, axs = plt.subplots(
+            ncols=len(hyperparameters) - 1,
+            nrows=len(hyperparameters) - 1,
+            figsize=(len(hyperparameters) * 4, len(hyperparameters) * 4),
+            squeeze=False,
+        )
+        for row, param_1 in enumerate(hyperparameters):
+            for col, param_2 in enumerate(hyperparameters):
+                if (param_2, param_1) in hyperparameter_combination:
+                    real_row = row - 1
+                    pvt = pd.pivot_table(
+                        plot_data,
+                        values=performance_metric,
+                        index=param_1,
+                        columns=param_2,
+                        aggfunc=np.max,
                     )
-                axs[real_row, col].set_ylabel(param_1)
-                axs[real_row, col].set_xlabel(param_2)
+                    if len(pvt) != 0:
+                        sns.heatmap(
+                            pvt,
+                            ax=axs[real_row, col],
+                            cmap=cmap,
+                            vmin=min_metric,
+                            vmax=max_metric,
+                        )
+                    axs[real_row, col].set_ylabel(param_1)
+                    axs[real_row, col].set_xlabel(param_2)
 
-                x_pos_max, y_pos_max = np.unravel_index(np.nanargmax(pvt, axis=None), pvt.shape)
+                    x_pos_max, y_pos_max = np.unravel_index(
+                        np.nanargmax(pvt, axis=None), pvt.shape
+                    )
 
-                axs[real_row, col].add_patch(patches.Rectangle((y_pos_max, x_pos_max),1,1, fill=False, edgecolor='blue', lw=3))
-                # axs[real_row, col].yaxis.set_major_formatter(FormatStrFormatter("%.2f"))
-                # axs[real_row, col].xaxis.set_major_formatter(FormatStrFormatter("%.2f"))
+                    axs[real_row, col].add_patch(
+                        patches.Rectangle(
+                            (y_pos_max, x_pos_max),
+                            1,
+                            1,
+                            fill=False,
+                            edgecolor="blue",
+                            lw=3,
+                        )
+                    )
+                    # axs[real_row, col].yaxis.set_major_formatter(FormatStrFormatter("%.2f"))
+                    # axs[real_row, col].xaxis.set_major_formatter(FormatStrFormatter("%.2f"))
 
-            else:
-                if len(hyperparameters) > 2 and (
-                    row + (len(hyperparameters) - col) < (len(hyperparameters) - 1)
-                ):
-                    axs[row, col - 1].set_axis_off()
-    fig.suptitle(f"Heatmaps for {method}-{dataset}", fontsize=16)
-    fig.tight_layout()
-    fig.subplots_adjust(top=0.88)
-    fig.savefig(os.path.join(plot_out_folder, f"heatmap_{method}_{dataset}.png"))
-    plt.close(fig)
+                else:
+                    if len(hyperparameters) > 2 and (
+                        row + (len(hyperparameters) - col) < (len(hyperparameters) - 1)
+                    ):
+                        axs[row, col - 1].set_axis_off()
+        fig.suptitle(f"Heatmaps for {method}-{dataset_name}", fontsize=16)
+        fig.tight_layout()
+        fig.subplots_adjust(top=0.88)
+        fig.savefig(os.path.join(plot_out_folder, f"heatmap_{method}_{dataset_name}.png"))
+        plt.close(fig)
 
 
 # TODO: Draw plots with leaks and detected leaks
@@ -873,7 +886,6 @@ class LDIMBenchmark:
                 for dataset_id, dataset_name in map(
                     lambda x: (x.id, x.name), self.datasets
                 ):
-                    logging.info(f"Generating Heatmap for {method} {dataset_name}")
                     create_plots(
                         flat_results,
                         method,
