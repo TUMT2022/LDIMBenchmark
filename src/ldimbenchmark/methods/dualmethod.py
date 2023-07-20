@@ -31,6 +31,7 @@ class DUALMethod(LDIMMethodBase):
 
     Version History:
       0.1.0: Initial version from the authors
+      0.1.1: Add Hyperparameter and option to incorporate pressure sensors at pipes
     """
 
     def __init__(self):
@@ -40,8 +41,8 @@ class DUALMethod(LDIMMethodBase):
             metadata=MethodMetadata(
                 data_needed=MethodMetadataDataNeeded(
                     pressures="necessary",
-                    flows="optional",
-                    levels="optional",
+                    flows="ignored",
+                    levels="ignored",
                     model="necessary",
                     demands="ignored",
                     structure="ignored",
@@ -51,7 +52,7 @@ class DUALMethod(LDIMMethodBase):
                         name="resample_frequency",
                         description="Time frequency for resampling the data. e.g. '1T' for 1 minute, '1H' for 1 hour, '1D' for 1 day.",
                         value_type=str,
-                        default="5T",
+                        default="60T",
                     ),
                     Hyperparameter(
                         name="est_length",
@@ -76,6 +77,12 @@ class DUALMethod(LDIMMethodBase):
                         default=0.3,
                         max=10.0,
                         min=0.0,
+                    ),
+                    Hyperparameter(
+                        name="split_pipes_for_pressure_sensor",
+                        description="Inserts nodes, when a pressure sensor is located at a pipe. This is necessary for the DUAL method.",
+                        value_type=bool,
+                        default=True,
                     ),
                 ],
             ),
@@ -172,19 +179,22 @@ class DUALMethod(LDIMMethodBase):
             try:
                 node = self.wn.get_node(sensor)
             except KeyError as e:
-                logging.warning(
-                    f"Sensor {sensor} is a pipe, splitting it in order to apply the dual model"
-                )
-                # Adding a Junction Node with the name of the sensor to enable making the dual model modifications (which only work on nodes)
-                link = self.wn.get_link(sensor)
-                link.link_name = sensor + "_split_pipe_0"
-                self.wn = split_pipe(
-                    wn=self.wn,
-                    pipe_name_to_split=link,
-                    new_pipe_name=sensor + "_split_pipe_1",
-                    new_junction_name=sensor,
-                )
-                node = self.wn.get_node(sensor)
+                if self.hyperparameters["split_pipes_for_pressure_sensor"]:
+                    logging.warning(
+                        f"Sensor {sensor} is a pipe, splitting it in order to apply the dual model"
+                    )
+                    # Adding a Junction Node with the name of the sensor to enable making the dual model modifications (which only work on nodes)
+                    link = self.wn.get_link(sensor)
+                    link.link_name = sensor + "_split_pipe_0"
+                    self.wn = split_pipe(
+                        wn=self.wn,
+                        pipe_name_to_split=link,
+                        new_pipe_name=sensor + "_split_pipe_1",
+                        new_junction_name=sensor,
+                    )
+                    node = self.wn.get_node(sensor)
+                else:
+                    pass
 
             dualmodel_nodes.append("dualmodel_" + sensor)
             elevation = node.elevation
