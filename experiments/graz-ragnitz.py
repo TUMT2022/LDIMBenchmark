@@ -34,16 +34,18 @@ param_grid = {
         # Best
         # "leakfree_time_start": None,
         # "leakfree_time_stop": None,
-        "resample_frequency": "1T",
+        "resample_frequency": "15s",
         "est_length": 0.19999999999999998,
         "C_threshold": 5.25,
         "delta": -1.0,
+        "default_flow_sensor": "wNode_1",
     },
     "mnf": {
-        "gamma": np.arange(0, 0.5, 0.05).tolist(),
-        "window": [1, 5, 10],
-        # "gamma": 0.15,
-        # "window": 5,
+        "resample_frequency": ["5s", "10s", "15s"],
+        "night_flow_interval": "1T",
+        "night_flow_start": "2023-01-01 01:45:00",
+        "gamma": np.arange(0, 1.5, 0.1).tolist(),
+        "window": [1, 5, 10, 14],
     },
     "dualmethod": {
         # "est_length": np.arange(0.02, 0.5, 0.02).tolist(),
@@ -51,42 +53,54 @@ param_grid = {
         # "delta": np.arange(-2, 10, 0.5).tolist(),
         # "resample_frequency": ["1T"],
         # Best
-        "resample_frequency": "1T",
+        "resample_frequency": "15s",
         "est_length": 0.12000000000000001,
         "C_threshold": 1.8,
         "delta": -2.0,
     },
 }
 
+graz = Dataset("test_data/datasets/graz-ragnitz")
+# graz._generate_checksum(graz.path)
+print(graz.is_valid())
 
-# datasets = DatasetLibrary("test_data/datasets").download(DATASETS.BATTLEDIM)
-datasets = [Dataset("test_data/datasets/graz-ragnitz")]
+datasets = DatasetLibrary("test_data/datasets").download(DATASETS.BATTLEDIM)
+datasets = [graz]
 
 
 benchmark = LDIMBenchmark(
     hyperparameters=param_grid,
     datasets=datasets,
-    results_dir="./grid-search",
-    # debug=True,
+    results_dir="./graz-ragnitz-test",
+    debug=True,
     # multi_parameters=True,
 )
 # benchmark.add_docker_methods(
 #     [
-#         "ghcr.io/ldimbenchmark/lila:0.1.39",
-#         # "ghcr.io/ldimbenchmark/mnf:0.1.38",
-#         "ghcr.io/ldimbenchmark/dualmethod:0.1.39",
+#         "ghcr.io/ldimbenchmark/lila:0.2.0",
+#         # "ghcr.io/ldimbenchmark/mnf:1.4.0",
+#         "ghcr.io/ldimbenchmark/dualmethod:0.1.0",
 #     ]
 # )
-# benchmark.add_local_methods([LILA()])
-# benchmark.add_local_methods([DUALMethod()])
+benchmark.add_local_methods([LILA()])
+benchmark.add_local_methods([DUALMethod()])
 
-# benchmark.run_benchmark(
-#     evaluation_mode="evaluation", parallel=True, parallel_max_workers=10
-# )
+benchmark.run_benchmark(
+    evaluation_mode="evaluation",
+    parallel=False,
+    parallel_max_workers=10,
+    use_cached=False,
+)
 
-benchmark.evaluate(
+results = benchmark.evaluate(
     current_only=True,
     # resultFilter=lambda results: results[results["F1"].notna()],
     write_results="db",
     # generate_plots=True,
 )
+
+
+# benchmark.evaluate_run(
+#     "lila_0.2.0_graz-ragnitz-3c1b5681b7428b322c00316272585a51_evaluation_ecbedbab1883c9f5c2609afec75d4652"
+# )
+benchmark.evaluate_run(results.iloc[0]["_folder"])

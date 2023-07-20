@@ -13,6 +13,7 @@ import numpy as np
 import pandas as pd
 
 from ldimbenchmark.utilities import simplifyBenchmarkData
+import math
 
 
 class MNF(LDIMMethodBase):
@@ -28,12 +29,13 @@ class MNF(LDIMMethodBase):
     1.1.0 - Add option for resample_frequency
     1.2.0 - Run MNF for each sensor
     1.3.0 - Add option for sensor_treatment
+    1.4.0 - Add option to set "night flow" interval and start time
     """
 
     def __init__(self):
         super().__init__(
             name="mnf",
-            version="1.2.0",
+            version="1.4.0",
             metadata=MethodMetadata(
                 data_needed=MethodMetadataDataNeeded(
                     pressures="ignored",
@@ -52,7 +54,7 @@ class MNF(LDIMMethodBase):
                     ),
                     Hyperparameter(
                         name="window",
-                        description="Window size for the sliding window in days",
+                        description="Window size for the sliding window in days (or units of 'night_flow_interval')",
                         value_type=int,
                         default=10,
                         min=1,
@@ -73,6 +75,18 @@ class MNF(LDIMMethodBase):
                         default="each",
                         options=["each", "first", "sum"],
                     ),
+                    Hyperparameter(
+                        name="night_flow_interval",
+                        description="Interval for the night flow. e.g. 60T for 1 hour, 1440T for 1 day",
+                        value_type=str,
+                        default="1440T",
+                    ),
+                    Hyperparameter(
+                        name="night_flow_start",
+                        description="Start time for the night flow interval. e.g. '2023-07-20 20:53:46.954726', the date is ignored",
+                        value_type=str,
+                        default="2023-01-01 12:00:00",
+                    ),
                 ],
                 # TODO: more attributes?
                 mimum_dataset_size=365,  # in days to match datasets?
@@ -90,7 +104,9 @@ class MNF(LDIMMethodBase):
             self.simple_train_data = None
 
     def detect_offline(self, evaluation_data: BenchmarkData):
-        window = pd.Timedelta(days=self.hyperparameters["window"])
+        night_flow_interval = pd.Timedelta(self.hyperparameters["night_flow_interval"])
+        window_steps = self.hyperparameters["window"]
+        window = night_flow_interval * window_steps
         gamma: float = self.hyperparameters["gamma"]
 
         simple_evaluation_data = simplifyBenchmarkData(
@@ -106,82 +122,68 @@ class MNF(LDIMMethodBase):
         ):
             return []
 
-        day_counts = simple_evaluation_data.flows.groupby(
-            simple_evaluation_data.flows.index.date
-        ).size()
-
-        if day_counts[day_counts.index[0]] != day_counts[day_counts.index[1]]:
-            first_full_day = day_counts.index[1]
-        else:
-            first_full_day = day_counts.index[0]
-
-        start_date = pd.to_datetime(first_full_day, utc=True).replace(
-            hour=12, minute=0, second=0, microsecond=0, nanosecond=0
+        interval_start = pd.to_datetime(
+            np.datetime64(self.hyperparameters["night_flow_start"])
         )
+        start_time = simple_evaluation_data.flows[
+            (simple_evaluation_data.flows.index.hour == interval_start.hour)
+            & (simple_evaluation_data.flows.index.minute == interval_start.minute)
+            & (simple_evaluation_data.flows.index.second == interval_start.second)
+        ].index[0]
 
-        if day_counts[day_counts.index[-1]] != day_counts[day_counts.index[-2]]:
-            last_full_day = day_counts.index[-2]
-        else:
-            last_full_day = day_counts.index[-1]
+        end_time = simple_evaluation_data.flows[
+            (simple_evaluation_data.flows.index.hour == interval_start.hour)
+            & (simple_evaluation_data.flows.index.minute == interval_start.minute)
+            & (simple_evaluation_data.flows.index.second == interval_start.second)
+        ].index[-1]
 
-        end_date = pd.to_datetime(last_full_day, utc=True).replace(
-            hour=12, minute=0, second=0, microsecond=0, nanosecond=0
+        end_time = start_time + (
+            night_flow_interval
+            * math.floor(
+                (simple_evaluation_data.flows.index[-1] - start_time)
+                / night_flow_interval
+            )
         )
 
         all_flows = simple_evaluation_data.flows.loc[
-            (simple_evaluation_data.flows.index >= start_date)
-            & (simple_evaluation_data.flows.index < end_date)
+            (simple_evaluation_data.flows.index >= start_time)
+            & (simple_evaluation_data.flows.index < end_time)
         ]
 
         if self.simple_train_data:
             # Use training data to set up the window, so we can start with the evaluation data
             previous_data = self.simple_train_data.flows
-            previous_data_day_counts = previous_data.groupby(
-                previous_data.index.date
-            ).size()
+            previous_start_time = simple_evaluation_data.flows[
+                (simple_evaluation_data.flows.index.hour == interval_start.hour)
+                & (simple_evaluation_data.flows.index.minute == interval_start.minute)
+                & (simple_evaluation_data.flows.index.second == interval_start.second)
+            ].index[0]
 
-            if (
-                previous_data_day_counts[previous_data_day_counts.index[-1]]
-                != previous_data_day_counts[previous_data_day_counts.index[-2]]
-            ):
-                last_full_day = previous_data_day_counts.index[-2]
-            else:
-                last_full_day = previous_data_day_counts.index[-1]
-
-            previous_end_date = pd.to_datetime(last_full_day, utc=True).replace(
-                hour=12, minute=0, second=0, microsecond=0, nanosecond=0
-            )
-            if previous_data.index[-1] - previous_data.index[0] < 3 * window:
-                if (
-                    previous_data_day_counts[previous_data_day_counts.index[0]]
-                    != previous_data_day_counts[previous_data_day_counts.index[1]]
-                ):
-                    first_full_day = previous_data_day_counts.index[1]
-                else:
-                    first_full_day = previous_data_day_counts.index[0]
-
-                previous_start_date = pd.to_datetime(first_full_day, utc=True).replace(
-                    hour=12, minute=0, second=0, microsecond=0, nanosecond=0
+            previous_end_time = previous_start_time + (
+                night_flow_interval
+                * math.floor(
+                    (simple_evaluation_data.flows.index[-1] - previous_start_time)
+                    / night_flow_interval
                 )
-            else:
-                previous_start_date = previous_end_date - window
+            )
 
-            mask = (previous_data.index >= previous_start_date) & (
-                previous_data.index < previous_end_date
+            mask = (previous_data.index >= previous_start_time) & (
+                previous_data.index < previous_end_time
             )
             previous_data = self.simple_train_data.flows.loc[mask]
 
             all_flows = pd.concat([previous_data, all_flows], axis=0)
 
         # TODO: For now lets say it starts at noon
-        hour_24_end = start_date + timedelta(days=1)
+        night_flow_interval_end = start_time + night_flow_interval
 
         # better: all_flows.groupby(all_flows.index.date).size()
-        entries_per_day = (
-            (all_flows.index > start_date) & (all_flows.index <= hour_24_end)
+        entries_per_interval = (
+            (all_flows.index > start_time)
+            & (all_flows.index <= night_flow_interval_end)
         ).sum()
 
-        days = int(all_flows.shape[0] / entries_per_day)
+        days = int(all_flows.shape[0] / entries_per_interval)
 
         results = []
         # all_flows = pd.DataFrame(all_flows.sum(axis=1))
@@ -195,26 +197,28 @@ class MNF(LDIMMethodBase):
 
             # Error here
             # array of size 58175 into shape (201, 288)
-            reshaped = np.reshape(flows_array, (days, entries_per_day))
+            reshaped = np.reshape(flows_array, (days, entries_per_interval))
 
             min_flows = reshaped.min(axis=1)
 
             labels = np.zeros(days)
             # start the search for leaks at time window + first day
-            current_analysis_day = window.days + 1
-            while current_analysis_day < days:
+            current_analysis_frame = window_steps + 1
+            while current_analysis_frame < days:
                 min_window = min(
-                    min_flows[current_analysis_day - window.days : current_analysis_day]
+                    min_flows[
+                        current_analysis_frame - window_steps : current_analysis_frame
+                    ]
                 )
-                residual = min_flows[current_analysis_day] - min_window
+                residual = min_flows[current_analysis_frame] - min_window
 
                 # If residual is greater than gamma times the minimum window flow
                 if residual > min_window * gamma:
-                    labels[current_analysis_day] = 1
+                    labels[current_analysis_frame] = 1
 
-                current_analysis_day += 1
+                current_analysis_frame += 1
 
-            full_labels = np.repeat(labels, entries_per_day)
+            full_labels = np.repeat(labels, entries_per_interval)
 
             # Pattern search for change in labels
             searchval = [0, 1]

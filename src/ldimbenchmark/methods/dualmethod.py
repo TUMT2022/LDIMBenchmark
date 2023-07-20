@@ -37,7 +37,7 @@ class DUALMethod(LDIMMethodBase):
     def __init__(self):
         super().__init__(
             name="dualmethod",
-            version="0.1.0",
+            version="0.1.1",
             metadata=MethodMetadata(
                 data_needed=MethodMetadataDataNeeded(
                     pressures="necessary",

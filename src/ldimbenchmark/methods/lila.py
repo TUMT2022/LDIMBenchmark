@@ -59,7 +59,7 @@ class LILA(LDIMMethodBase):
     def __init__(self):
         super().__init__(
             name="lila",
-            version="0.2.0",
+            version="0.2.1",
             metadata=MethodMetadata(
                 data_needed=MethodMetadataDataNeeded(
                     pressures="necessary",
