@@ -198,10 +198,6 @@ class DatasetDerivator:
                 temp_dir = tempfile.TemporaryDirectory()
                 temporaryDatasetPath = temp_dir.name
 
-                logging.info(
-                    f"Generating Model Derivation for {this_dataset.id} with derivations {str(this_dataset.info['derivations']['model'])}"
-                )
-
                 cache_entry = self.cached_derivations[
                     (
                         self.cached_derivations[1]
@@ -214,6 +210,9 @@ class DatasetDerivator:
                         f"more than one cache entry found: {str(cache_entry[0].values)}"
                     )
                 if len(cache_entry) < 1:
+                    logging.info(
+                        f"Generating Model Derivation for {this_dataset.id} with derivations {str(this_dataset.info['derivations']['model'])}"
+                    )
                     loadedDataset = this_dataset.loadData()
 
                     # Derive
