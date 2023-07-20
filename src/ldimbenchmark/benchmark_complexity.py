@@ -244,12 +244,14 @@ def run_benchmark_complexity(
 
         dataseries = {
             f"time_overall_{method_name}": np.average(value_matrix_time, axis=1),
-            f"ram_overall_{method_name}": np.average(value_matrix_ram, axis=1),
+            f"memory_overall_{method_name}": np.average(value_matrix_ram, axis=1),
         }
         for n in range(n_repeats):
             # Use underscores to hide hide the labels in the plot
             dataseries[f"_time_run_{n}_{method_name}"] = value_matrix_time.T[n].tolist()
-            dataseries[f"_ram_run_{n}_{method_name}"] = value_matrix_ram.T[n].tolist()
+            dataseries[f"_memory_run_{n}_{method_name}"] = value_matrix_ram.T[
+                n
+            ].tolist()
         measures = pd.DataFrame(
             dataseries,
             index=sorted_results["number"].to_list(),
@@ -325,6 +327,11 @@ def run_benchmark_complexity(
     overall_measures = result_measures[
         [col for col in result_measures.columns if "overall" in col]
     ]
+    overall_measures_labels = [
+        col.replace("_overall", "")
+        for col in result_measures.columns
+        if "overall" in col
+    ]
     ax = (overall_measures / overall_measures.max()).plot()
     ax.set_title(f"Complexity Analysis for different {style} inputs")
 
@@ -358,7 +365,7 @@ def run_benchmark_complexity(
         ax.set_xlabel("time [d]")
 
     ax.set_ylabel("scale")
-    ax.legend(loc="lower right")
+    ax.legend(overall_measures_labels, loc="lower right")
     fig = ax.get_figure()
 
     fig.savefig(
@@ -381,7 +388,7 @@ def run_benchmark_complexity(
     ax.set_title(f"Complexity Analysis for different {style} inputs")
     ax.set_xlabel("time [d]")
     ax.set_ylabel("time [s]")
-    ax.legend(loc="lower right")
+    ax.legend(overall_measures_labels, loc="lower right")
 
     # ax.xaxis.set_major_formatter(FormatStrFormatter("%.0f"))
     fig = ax.get_figure()
@@ -395,23 +402,23 @@ def run_benchmark_complexity(
         [
             col
             for col in result_measures.columns
-            if ("ram" in col and not "overall" in col)
+            if ("memory" in col and not "overall" in col)
         ]
     ].plot(alpha=0.2, color="black", label="_nolegend")
-    overall_measures[[col for col in overall_measures.columns if "ram" in col]].plot(
+    overall_measures[[col for col in overall_measures.columns if "memory" in col]].plot(
         ax=ax
     )
     ax.set_title(f"Complexity Analysis for different {style} inputs")
     ax.set_xlabel("junction number")
     ax.set_ylabel("memory [B]")
-    ax.legend(loc="lower right")
+    ax.legend(overall_measures_labels, loc="lower right")
     # convert labels to byte units
     ax.set_yticklabels([convert_byte_size(x) for x in ax.get_yticks()])
 
     # ax.xaxis.set_major_formatter(FormatStrFormatter("%.0f"))
     fig = ax.get_figure()
     fig.savefig(
-        os.path.join(out_folder, "ram.png"),
+        os.path.join(out_folder, "memory.png"),
         bbox_inches="tight",
     )
     plt.close(fig)

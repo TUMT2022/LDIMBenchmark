@@ -11,7 +11,7 @@ import numpy as np
 from typing import Dict, Literal, TypedDict, Union, List, Callable
 import os
 import logging
-from ldimbenchmark.constants import CPU_COUNT, LDIM_BENCHMARK_CACHE_DIR, PLOT_PGF
+from ldimbenchmark.constants import CPU_COUNT, LDIM_BENCHMARK_CACHE_DIR
 from glob import glob
 from tabulate import tabulate
 from ldimbenchmark.benchmark_complexity import run_benchmark_complexity
@@ -346,12 +346,6 @@ def create_plots(
         fig.savefig(
             os.path.join(plot_out_folder, f"heatmap_{method}_{dataset_name}.png")
         )
-        if PLOT_PGF:
-            fig.savefig(
-                os.path.join(plot_out_folder, f"heatmap_{method}_{dataset_name}.pgf"),
-                dpi=300,
-                format="pgf",
-            )
         plt.close(fig)
 
 
