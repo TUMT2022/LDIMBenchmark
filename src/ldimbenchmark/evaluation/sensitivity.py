@@ -94,8 +94,10 @@ def plot_derivation_plot(
                         & (flat_results["dataset"] == dataset)
                         & (flat_results["method"] == method)
                     ].sort_values(
-                        by="dataset_derivations.value",
+                        # Make sure original dataset comes first
+                        by=["dataset_derivations_type", "dataset_derivations.value"],
                         ascending=derivation_type != "count",
+                        na_position="first",
                     )
                     method_data
                     spacing = np.array(
@@ -162,7 +164,7 @@ def plot_derivation_plot(
                 labels[0] = "Original"
                 ax.set_xticklabels(labels=labels)
                 ax.set_xlabel(f"{derivation_type} derivations")
-                ax.set_ylabel(f"Leak Count")
+                ax.set_ylabel(f"Detected leak count")
                 # ax2.set_ylim(bottom=0, top=100)
                 ax2.legend(loc="upper left")
                 ax.legend(loc="upper right")
