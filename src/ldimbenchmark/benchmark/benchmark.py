@@ -11,7 +11,7 @@ import numpy as np
 from typing import Dict, Literal, TypedDict, Union, List, Callable
 import os
 import logging
-from ldimbenchmark.constants import CPU_COUNT, LDIM_BENCHMARK_CACHE_DIR
+from ldimbenchmark.constants import CPU_COUNT, LDIM_BENCHMARK_CACHE_DIR, PLOT_PGF
 from glob import glob
 from tabulate import tabulate
 from ldimbenchmark.benchmark_complexity import run_benchmark_complexity
@@ -276,7 +276,9 @@ def create_plots(
     plot_out_folder = os.path.join(out_folder)
     os.makedirs(plot_out_folder, exist_ok=True)
 
-    plot_data = results[(results["method"] == method) & (results["dataset"] == dataset_name)]
+    plot_data = results[
+        (results["method"] == method) & (results["dataset"] == dataset_name)
+    ]
     max_metric = plot_data[performance_metric].max()
     min_metric = plot_data[performance_metric].min()
     hyperparameters = list(map(lambda x: "hyperparameters." + x, hyperparameters))
@@ -341,7 +343,15 @@ def create_plots(
         fig.suptitle(f"Heatmaps for {method}-{dataset_name}", fontsize=16)
         fig.tight_layout()
         fig.subplots_adjust(top=0.88)
-        fig.savefig(os.path.join(plot_out_folder, f"heatmap_{method}_{dataset_name}.png"))
+        fig.savefig(
+            os.path.join(plot_out_folder, f"heatmap_{method}_{dataset_name}.png")
+        )
+        if PLOT_PGF:
+            fig.savefig(
+                os.path.join(plot_out_folder, f"heatmap_{method}_{dataset_name}.pgf"),
+                dpi=300,
+                format="pgf",
+            )
         plt.close(fig)
 
 
