@@ -82,6 +82,10 @@ def plot_derivation_plot(
                 ax3 = ax.twinx()
                 ax3.spines.right.set_position(("axes", 1.07))
 
+                maxrows = flat_results.groupby("method").count()["dataset_derivations.value"].max()
+
+                overall_spacing = []
+
                 for num, method in enumerate(flat_results["method"].unique()):
                     method_data = flat_results[
                         (
@@ -95,14 +99,20 @@ def plot_derivation_plot(
                         & (flat_results["method"] == method)
                     ].sort_values(
                         # Make sure original dataset comes first
-                        by=["dataset_derivations_type", "dataset_derivations.value"],
+                        by=["dataset_derivation_type", "dataset_derivations.value"],
                         ascending=derivation_type != "count",
                         na_position="first",
                     )
-                    method_data
+                    method_data = method_data.reindex(method_data.index.append(pd.Index(range(maxrows-len(method_data)), name="_folder")))
+                    method_data["true_positives"] = method_data["true_positives"].fillna(0)
+                    method_data["false_positives"] = method_data["false_positives"].fillna(0)
                     spacing = np.array(
                         range(0, len(method_data["dataset_derivations.value"]))
                     )
+                    if len(spacing) > len(overall_spacing):
+                        overall_spacing = spacing
+                        labels = method_data["dataset_derivations.value"]
+
                     bar_width = 0.3
                     offset = num * bar_width - bar_width  # - (bar_width / 2)
                     ax.bar(
@@ -148,8 +158,7 @@ def plot_derivation_plot(
                 )
                 ax3.set_ylabel(f"Time to Detection [h]")
 
-                ax.set_xticks(ticks=spacing)
-                labels = method_data["dataset_derivations.value"]
+                ax.set_xticks(ticks=overall_spacing)
                 if derivation_type == "downsample":
                     labels = [
                         f"{delta_format(datetime.timedelta(seconds=t))} H"
