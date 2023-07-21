@@ -37,6 +37,15 @@ from matplotlib.ticker import FormatStrFormatter
 
 from ldimbenchmark.utilities import get_method_name_from_docker_image
 
+import re
+
+
+def _human_key(key):
+    parts = re.split("(\d*\.\d+|\d+)", key)
+    return tuple(
+        (e.swapcase() if i % 2 == 0 else float(e)) for i, e in enumerate(parts)
+    )
+
 
 def execute_experiment(experiment: MethodRunner):
     """
@@ -307,6 +316,12 @@ def create_plots(
                         columns=param_2,
                         aggfunc=np.max,
                     )
+                    # Fix Column order for alphanumeric columns
+                    if pvt.columns.dtype == object:
+                        pvt = pvt.reindex(sorted(pvt.columns, key=_human_key), axis=1)
+                    if pvt.index.dtype == object:
+                        pvt = pvt.reindex(sorted(pvt.index, key=_human_key), axis=0)
+
                     if len(pvt) != 0:
                         sns.heatmap(
                             pvt,
