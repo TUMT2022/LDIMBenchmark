@@ -42,7 +42,7 @@ param_grid = {
     # },
     "mnf": {
         "resample_frequency": ["1s", "2s", "4s", "5s", "10s", "15s"],
-        "night_flow_interval": ["1T"],
+        "night_flow_interval": ["1T", "2T", "3T", "4T", "5T"],
         "night_flow_start": ["2023-01-01 01:45:00"],
         "gamma": np.around(np.linspace(0, 2.6, 25), 1).tolist(),
         "window": [1, 2, 3, 4, 5, 8, 10, 12, 14, 15],
