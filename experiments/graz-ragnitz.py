@@ -26,38 +26,38 @@ logging.getLogger().setLevel(numeric_level)
 
 
 param_grid = {
-    "lila": {
-        # "est_length": np.arange(0.02, 0.25, 0.02).tolist(),
-        # "C_threshold": np.arange(0, 10, 0.25).tolist(),
-        # "delta": np.arange(-2, 10, 0.5).tolist(),
-        # "resample_frequency": ["1T"],
-        # Best
-        # "leakfree_time_start": None,
-        # "leakfree_time_stop": None,
-        "resample_frequency": "15s",
-        "est_length": 0.19999999999999998,
-        "C_threshold": 5.25,
-        "delta": -1.0,
-        "default_flow_sensor": "wNode_1",
-    },
+    # "lila": {
+    #     # "est_length": np.arange(0.02, 0.25, 0.02).tolist(),
+    #     # "C_threshold": np.arange(0, 10, 0.25).tolist(),
+    #     # "delta": np.arange(-2, 10, 0.5).tolist(),
+    #     # "resample_frequency": ["1T"],
+    #     # Best
+    #     # "leakfree_time_start": None,
+    #     # "leakfree_time_stop": None,
+    #     "resample_frequency": "15s",
+    #     "est_length": 0.19999999999999998,
+    #     "C_threshold": 5.25,
+    #     "delta": -1.0,
+    #     "default_flow_sensor": "wNode_1",
+    # },
     "mnf": {
-        "resample_frequency": ["5s", "10s", "15s"],
-        "night_flow_interval": "1T",
-        "night_flow_start": "2023-01-01 01:45:00",
-        "gamma": np.arange(0, 1.5, 0.1).tolist(),
-        "window": [1, 5, 10, 14],
+        "resample_frequency": ["1s", "2s", "4s", "5s", "10s", "15s"],
+        "night_flow_interval": ["1T"],
+        "night_flow_start": ["2023-01-01 01:45:00"],
+        "gamma": np.around(np.linspace(0, 2.6, 25), 1).tolist(),
+        "window": [1, 2, 3, 4, 5, 8, 10, 12, 14, 15],
     },
-    "dualmethod": {
-        # "est_length": np.arange(0.02, 0.5, 0.02).tolist(),
-        # "C_threshold": np.arange(0, 10, 0.2).tolist(),
-        # "delta": np.arange(-2, 10, 0.5).tolist(),
-        # "resample_frequency": ["1T"],
-        # Best
-        "resample_frequency": "15s",
-        "est_length": 0.12000000000000001,
-        "C_threshold": 1.8,
-        "delta": -2.0,
-    },
+    # "dualmethod": {
+    #     # "est_length": np.arange(0.02, 0.5, 0.02).tolist(),
+    #     # "C_threshold": np.arange(0, 10, 0.2).tolist(),
+    #     # "delta": np.arange(-2, 10, 0.5).tolist(),
+    #     # "resample_frequency": ["1T"],
+    #     # Best
+    #     "resample_frequency": "15s",
+    #     "est_length": 0.12000000000000001,
+    #     "C_threshold": 1.8,
+    #     "delta": -2.0,
+    # },
 }
 
 graz = Dataset("test_data/datasets/graz-ragnitz")
@@ -73,7 +73,7 @@ benchmark = LDIMBenchmark(
     datasets=datasets,
     results_dir="./graz-ragnitz-test",
     debug=True,
-    # multi_parameters=True,
+    multi_parameters=True,
 )
 # benchmark.add_docker_methods(
 #     [
@@ -82,25 +82,28 @@ benchmark = LDIMBenchmark(
 #         "ghcr.io/ldimbenchmark/dualmethod:0.1.0",
 #     ]
 # )
-benchmark.add_local_methods([LILA()])
-benchmark.add_local_methods([DUALMethod()])
+# benchmark.add_local_methods([LILA()])
+# benchmark.add_local_methods([DUALMethod()])
+benchmark.add_local_methods([MNF()])
 
 benchmark.run_benchmark(
     evaluation_mode="evaluation",
-    parallel=False,
-    parallel_max_workers=10,
-    use_cached=False,
+    parallel=True,
+    parallel_max_workers=12,
+    use_cached=True,
 )
+
 
 results = benchmark.evaluate(
     current_only=True,
     # resultFilter=lambda results: results[results["F1"].notna()],
-    write_results="db",
+    write_results=["db", "png"],
     # generate_plots=True,
+    print_results=False,
 )
 
 
 # benchmark.evaluate_run(
 #     "lila_0.2.0_graz-ragnitz-3c1b5681b7428b322c00316272585a51_evaluation_ecbedbab1883c9f5c2609afec75d4652"
 # )
-benchmark.evaluate_run(results.iloc[0]["_folder"])
+# benchmark.evaluate_run(results.iloc[0]["_folder"])

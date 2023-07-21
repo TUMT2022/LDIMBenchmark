@@ -27,6 +27,13 @@ logging.getLogger().setLevel(numeric_level)
 
 
 param_grid = {
+    "lila": {
+        "resample_frequency": "5T",
+        "est_length": 192,
+        "C_threshold": 14,
+        "delta": 5,
+        "default_flow_sensor": "PUMP_1",
+    }
     # "lila": {
     #     # "est_length": np.arange(24, 24 * 2, 24).tolist(),
     #     # "C_threshold": np.arange(0.5, 1.5, 0.25).tolist(),
@@ -70,7 +77,13 @@ benchmark.add_local_methods([LILA()])
 benchmark.run_benchmark(
     evaluation_mode="evaluation",
     parallel=False,  # parallel_max_workers=4,
-    use_cached=False,
+    use_cached=True,
+)
+
+benchmark.run_benchmark(
+    evaluation_mode="training",
+    parallel=False,  # parallel_max_workers=4,
+    use_cached=True,
 )
 
 benchmark.evaluate(
@@ -79,3 +92,5 @@ benchmark.evaluate(
     write_results=True,
     # generate_plots=True,
 )
+
+# %%
