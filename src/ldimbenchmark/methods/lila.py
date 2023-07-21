@@ -284,19 +284,16 @@ class LILA(LDIMMethodBase):
                     dma_specific_training_data = getDmaSpecificData(
                         simple_training_data, training_data.dmas[dma]
                     )
-                    if len(dma_specific_training_data[dma].flows.columns) == 0:
-                        dma_specific_training_data[dma].flows[
+                    if len(dma_specific_training_data.flows.columns) == 0:
+                        dma_specific_training_data.flows[
                             "PUMP_1"
                         ] = simple_training_data.flows[
                             self.hyperparameters["default_flow_sensor"]
                         ]
                     else:
-                        dma_specific_training_data[dma].flows[
+                        dma_specific_training_data.flows[
                             "PUMP_1"
-                        ] = dma_specific_training_data[dma].flows.sum(axis=1)
-                    # dma_specific_training_data.flows[
-                    #     "PUMP_1"
-                    # ] = dma_specific_training_data.flows.sum(axis=1)
+                        ] = dma_specific_training_data.flows.sum(axis=1)
 
                     self._train(
                         dma_specific_training_data, start_time, end_time, dma=dma
