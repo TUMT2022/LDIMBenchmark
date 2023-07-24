@@ -224,9 +224,14 @@ class DatasetDerivator:
                         junctions = loadedDataset.model.junction_name_list
                         noise = get_random_norm(value, len(junctions))
                         for index, junction in enumerate(junctions):
-                            loadedDataset.model.get_node(junction).elevation += noise[
-                                index
-                            ]
+                            model_node = loadedDataset.model.get_node(junction)
+                            if model_node.length + noise[index] > 0:
+                                model_node.elevation += noise[index]
+                            else:
+                                logging.warning(
+                                    f"Junction {model_node.name} would have a negative elevation. Skipping alteration."
+                                )
+
                     elif (
                         derivation == "accuracy"
                         and change_property == "roughness"
@@ -235,7 +240,13 @@ class DatasetDerivator:
                         pipes = loadedDataset.model.pipe_name_list
                         noise = get_random_norm(value, len(pipes))
                         for index, pipe in enumerate(pipes):
-                            loadedDataset.model.get_link(pipe).roughness += noise[index]
+                            model_pipe = loadedDataset.model.get_link(pipe)
+                            if model_pipe.length + noise[index] > 0:
+                                model_pipe.roughness += noise[index]
+                            else:
+                                logging.warning(
+                                    f"Pipe {model_pipe.name} would have a negative roughness. Skipping alteration."
+                                )
                     elif (
                         derivation == "accuracy"
                         and change_property == "diameter"
@@ -244,7 +255,13 @@ class DatasetDerivator:
                         pipes = loadedDataset.model.pipe_name_list
                         noise = get_random_norm(value, len(pipes))
                         for index, pipe in enumerate(pipes):
-                            loadedDataset.model.get_link(pipe).diameter += noise[index]
+                            model_pipe = loadedDataset.model.get_link(pipe)
+                            if model_pipe.length + noise[index] > 0:
+                                model_pipe.diameter += noise[index]
+                            else:
+                                logging.warning(
+                                    f"Pipe {model_pipe.name} would have a negative diameter. Skipping alteration."
+                                )
                     elif (
                         derivation == "accuracy"
                         and change_property == "length"
@@ -253,12 +270,22 @@ class DatasetDerivator:
                         pipes = loadedDataset.model.pipe_name_list
                         noise = get_random_norm(value, len(pipes))
                         for index, pipe in enumerate(pipes):
-                            loadedDataset.model.get_link(pipe).length += noise[index]
+                            # TODO: If length is to short, we would get negative values so we need to skip the alteration
+                            model_pipe = loadedDataset.model.get_link(pipe)
+                            if model_pipe.length + noise[index] > 0:
+                                model_pipe.length += noise[index]
+                            else:
+                                logging.warning(
+                                    f"Pipe {model_pipe.name} would have a negative length. Skipping alteration."
+                                )
 
                     else:
                         raise Exception(
                             f"No derivation '{derivation}' for {apply_to} {change_property} implemented"
                         )
+
+                    # TODO: Make sanity checks for data:
+                    # - No negative values
 
                     # Save
                     # os.makedirs(os.path.dirname(temporaryDatasetPath), exist_ok=True)
@@ -353,7 +380,7 @@ class DatasetDerivator:
                     if not isinstance(value, dict):
                         value = {
                             "value": value,
-                            "shift": "top",
+                            "shift": "middle",
                         }
 
                     shift = value["value"]
@@ -361,6 +388,7 @@ class DatasetDerivator:
                         shift = 0
                     if value["shift"] == "middle":
                         shift = value["value"] / 2
+                    # value["value"] = shift
 
                 # Save Derivation
                 for application in apply_to:
