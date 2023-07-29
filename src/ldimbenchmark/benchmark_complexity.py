@@ -333,7 +333,7 @@ def run_benchmark_complexity(
         if "overall" in col
     ]
     ax = (overall_measures / overall_measures.max()).plot()
-    ax.set_title(f"Complexity Analysis for different {style} inputs")
+    # ax.set_title(f"Complexity Analysis for different {style} inputs")
 
     ### Add complexities in background
 
@@ -385,7 +385,7 @@ def run_benchmark_complexity(
     overall_measures[[col for col in overall_measures.columns if "time" in col]].plot(
         ax=ax
     )
-    ax.set_title(f"Complexity Analysis for different {style} inputs")
+    # ax.set_title(f"Complexity Analysis for different {style} inputs")
     ax.set_xlabel("time [d]")
     ax.set_ylabel("time [s]")
     ax.legend(overall_measures_labels, loc="lower right")
@@ -408,7 +408,7 @@ def run_benchmark_complexity(
     overall_measures[[col for col in overall_measures.columns if "memory" in col]].plot(
         ax=ax
     )
-    ax.set_title(f"Complexity Analysis for different {style} inputs")
+    # ax.set_title(f"Complexity Analysis for different {style} inputs")
     ax.set_xlabel("junction number")
     ax.set_ylabel("memory [B]")
     ax.legend(overall_measures_labels, loc="lower right")
