@@ -47,10 +47,13 @@ class DUALMethod(LDIMMethodBase):
                     demands="ignored",
                     structure="ignored",
                 ),
+                capability="detect",
+                paradigm="offline",
+                extra_benefits="can identify and localize in a more elaborate version",
                 hyperparameters=[
                     Hyperparameter(
                         name="resample_frequency",
-                        description="Time frequency for resampling the data. e.g. '1T' for 1 minute, '1H' for 1 hour, '1D' for 1 day.",
+                        description="Time-frequency for resampling the data. e.g. '1T' for one minute, '1H' for one hour, '1D' for one day.",
                         value_type=str,
                         default="60T",
                     ),
@@ -167,6 +170,8 @@ class DUALMethod(LDIMMethodBase):
             simple_evaluation_data.pressures.index[1]
             - simple_evaluation_data.pressures.index[0]
         )
+        # TODO: Fix wrong pattern length of existing patterns
+        # if a different resample frequency is used
 
         ###
         # 1. Step: Build the Dual model

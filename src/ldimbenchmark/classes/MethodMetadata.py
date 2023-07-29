@@ -125,3 +125,5 @@ class MethodMetadataDataNeeded(TypedDict):
 class MethodMetadata(TypedDict):
     data_needed: MethodMetadataDataNeeded
     hyperparameters: List[Hyperparameter]
+    capability: Literal["asses", "detect", "identify", "localize", "control"]
+    paradigm: Literal["online", "offline"]

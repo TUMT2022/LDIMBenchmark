@@ -45,16 +45,19 @@ class MNF(LDIMMethodBase):
                     demands="ignored",
                     structure="ignored",
                 ),
+                capability="detect",
+                paradigm="offline",
+                extra_benefits="none",
                 hyperparameters=[
                     Hyperparameter(
                         name="resample_frequency",
-                        description="Time frequency for resampling the data. e.g. '1T' for 1 minute, '1H' for 1 hour, '1D' for 1 day.",
+                        description="Time-frequency for resampling the data. e.g. '1T' for one minute, '1H' for one hour, '1D' for one day.",
                         value_type=str,
                         default="5T",
                     ),
                     Hyperparameter(
                         name="window",
-                        description="Window size for the sliding window in days (or units of 'night_flow_interval')",
+                        description="Window size for the sliding window in units of 'night_flow_interval'",
                         value_type=int,
                         default=10,
                         min=1,
@@ -62,7 +65,7 @@ class MNF(LDIMMethodBase):
                     ),
                     Hyperparameter(
                         name="gamma",
-                        description="Threshold to raise an alert",
+                        description="Threshold to raise a leak event",
                         value_type=float,
                         default=0.1,
                         min=0.0,
@@ -70,26 +73,24 @@ class MNF(LDIMMethodBase):
                     ),
                     Hyperparameter(
                         name="sensor_treatment",
-                        description="How to treat multiple flow sensors. 'each' for applying the method on each sensor individually, 'first' for using the first sensor, 'sum' for applying the method on the sum of all sensors",
+                        description="How to treat multiple flow sensors. 'each' for applying the method on each sensor individually, 'first' for using only the first sensor, 'sum' for applying the method on the sum of all sensors",
                         value_type=str,
                         default="each",
                         options=["each", "first", "sum"],
                     ),
                     Hyperparameter(
                         name="night_flow_interval",
-                        description="Interval for the night flow. e.g. 60T for 1 hour, 1440T for 1 day",
+                        description="Interval for the night flow span, normally 1440T for one day, but could also be 60T for one hour",
                         value_type=str,
                         default="1440T",
                     ),
                     Hyperparameter(
                         name="night_flow_start",
-                        description="Start time for the night flow interval. e.g. '2023-07-20 20:53:46.954726', the date is ignored",
+                        description="Start time for the night flow interval. Normally mid of the day, but could also be '2023-07-20 20:53:46.954726'. Only the Time section is considered.",
                         value_type=str,
                         default="2023-01-01 12:00:00",
                     ),
                 ],
-                # TODO: more attributes?
-                mimum_dataset_size=365,  # in days to match datasets?
             ),
         )
 

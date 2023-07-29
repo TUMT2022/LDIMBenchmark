@@ -69,6 +69,9 @@ class LILA(LDIMMethodBase):
                     demands="ignored",
                     structure="optional",
                 ),
+                capability="detect",
+                paradigm="offline",
+                extra_benefits="can identify and localize in a more elaborate version",
                 hyperparameters=[
                     Hyperparameter(
                         name="leakfree_time_start",
@@ -82,7 +85,7 @@ class LILA(LDIMMethodBase):
                     ),
                     Hyperparameter(
                         name="resample_frequency",
-                        description="Time frequency for resampling the data. e.g. '1T' for 1 minute, '1H' for 1 hour, '1D' for 1 day.",
+                        description="Time-frequency for resampling the data. e.g. '1T' for one minute, '1H' for one hour, '1D' for one day.",
                         value_type=str,
                         default="5T",
                     ),
