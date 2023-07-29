@@ -382,13 +382,16 @@ def run_benchmark_complexity(
             if ("time" in col and not "overall" in col)
         ]
     ].plot(alpha=0.2, color="black", label="_nolegend")
-    overall_measures[[col for col in overall_measures.columns if "time" in col]].plot(
-        ax=ax
-    )
+    for col in overall_measures.columns:
+        if "time" in col:
+            overall_measures[col].plot(
+                ax=ax,
+                label=col.replace("_overall", ""),
+            )
     # ax.set_title(f"Complexity Analysis for different {style} inputs")
     ax.set_xlabel("time [d]")
     ax.set_ylabel("time [s]")
-    ax.legend(overall_measures_labels, loc="lower right")
+    ax.legend(loc="lower right")
 
     # ax.xaxis.set_major_formatter(FormatStrFormatter("%.0f"))
     fig = ax.get_figure()
@@ -405,13 +408,16 @@ def run_benchmark_complexity(
             if ("memory" in col and not "overall" in col)
         ]
     ].plot(alpha=0.2, color="black", label="_nolegend")
-    overall_measures[[col for col in overall_measures.columns if "memory" in col]].plot(
-        ax=ax
-    )
+    for col in overall_measures.columns:
+        if "memory" in col:
+            overall_measures[col].plot(
+                ax=ax,
+                label=col.replace("_overall", ""),
+            )
     # ax.set_title(f"Complexity Analysis for different {style} inputs")
     ax.set_xlabel("junction number")
     ax.set_ylabel("memory [B]")
-    ax.legend(overall_measures_labels, loc="lower right")
+    ax.legend(loc="lower right")
     # convert labels to byte units
     ax.set_yticklabels([convert_byte_size(x) for x in ax.get_yticks()])
 
