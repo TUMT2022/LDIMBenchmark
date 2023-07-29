@@ -90,12 +90,12 @@ class DatasetAnalyzer:
             # data.columns = [f"[Original] {col}" for col in data.columns]
             DatasetAnalyzer._plot_time_series(
                 data[sensor_id],
-                f"Compare '{data_type}' of {original_dataset.name}",
                 os.path.join(
                     self.analysis_out_dir,
-                    f"comparison_{original_dataset.name}_{derived_property}_{derived_type}_{sensor_id}.png",
+                    f"comparison_{original_dataset.name}_{derived_property}_{derived_type}_{sensor_id}{'_quick' if quick else ''}.png",
                 ),
-                [
+                # title=f"Compare '{data_type}' of {original_dataset.name}",
+                compare_df=[
                     getattr(ldata, data_type)[sensor_id]
                     for i, ldata in loaded_datasets.items()
                 ],
@@ -130,8 +130,8 @@ class DatasetAnalyzer:
 
     def _plot_time_series(
         df: pd.DataFrame,
-        title: str,
         out_path: str,
+        title: str = None,
         compare_df: List[pd.DataFrame] = None,
         quick_detail: bool = False,
         unit: str = None,
@@ -150,7 +150,7 @@ class DatasetAnalyzer:
 
         if quick_detail:
             max_timestamp = df.index[40]
-            figsize = (30, 10)
+            figsize = (15, 5)
 
         fig, ax = plt.subplots(1, 1, figsize=figsize)
         ax.set_title(title)
@@ -174,9 +174,8 @@ class DatasetAnalyzer:
         )
 
         ax.set_ylabel(unit)
-        ax.legend()
-
-        fig.savefig(out_path)
+        ax.legend(loc="upper left")
+        fig.savefig(out_path, bbox_inches="tight")
         plt.close(fig)
 
     # Plot Overview of timeseries sensors
@@ -246,8 +245,8 @@ class DatasetAnalyzer:
                     if sensor_data.shape[1] > 0:
                         # DatasetAnalyzer._plot_time_series(
                         #     sensor_data,
-                        #     f"{dataset.id}_{data_name}",
                         #     os.path.join(dataset_analysis_out_dir, f"{title}_{df.columns[0]}.png")
+                        #     f"{dataset.id}_{data_name}",
                         # )
                         minTime = sensor_data.index.min()
                         maxTime = sensor_data.index.max()
@@ -321,7 +320,11 @@ class DatasetAnalyzer:
             )
             fig.tight_layout()
             fig.savefig(
-                os.path.join(dataset_analysis_out_dir, f"network_{dataset.id}.png")
+                os.path.join(
+                    dataset_analysis_out_dir,
+                    f"network_{dataset.id}.png",
+                ),
+                bbox_inches="tight",
             )
             plt.close(fig)
 

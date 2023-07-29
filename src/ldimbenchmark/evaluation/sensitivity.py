@@ -82,7 +82,8 @@ def plot_derivation_plot(
                 ax3 = ax.twinx()
                 ax3.spines.right.set_position(("axes", 1.07))
 
-                maxrows = flat_results[
+                maxrows = (
+                    flat_results[
                         (
                             (
                                 (flat_results[col_derivation] == derivation_type)
@@ -90,7 +91,12 @@ def plot_derivation_plot(
                             )
                             | (flat_results["is_original"])
                         )
-                        & (flat_results["dataset"] == dataset)].groupby("method").count()["dataset_derivations.value"].max()
+                        & (flat_results["dataset"] == dataset)
+                    ]
+                    .groupby("method")
+                    .count()["dataset_derivations.value"]
+                    .max()
+                )
 
                 for num, method in enumerate(flat_results["method"].unique()):
                     method_data = flat_results[
@@ -109,11 +115,19 @@ def plot_derivation_plot(
                         ascending=derivation_type != "count",
                         na_position="first",
                     )
-                    method_data = method_data.reindex(method_data.index.append(pd.Index(range(maxrows-len(method_data)), name="_folder")))
+                    method_data = method_data.reindex(
+                        method_data.index.append(
+                            pd.Index(range(maxrows - len(method_data)), name="_folder")
+                        )
+                    )
                     if method_data["dataset_derivations.value"].notna().all():
                         labels = method_data["dataset_derivations.value"]
-                    method_data["true_positives"] = method_data["true_positives"].fillna(0)
-                    method_data["false_positives"] = method_data["false_positives"].fillna(0)
+                    method_data["true_positives"] = method_data[
+                        "true_positives"
+                    ].fillna(0)
+                    method_data["false_positives"] = method_data[
+                        "false_positives"
+                    ].fillna(0)
                     spacing = np.array(
                         range(0, len(method_data["dataset_derivations.value"]))
                     )
@@ -129,6 +143,7 @@ def plot_derivation_plot(
                         color=colors[num],
                     )
 
+                    # TODO: Explore negative grahpical display of false positives
                     ax.bar(
                         spacing + offset,
                         method_data["false_positives"],
@@ -175,8 +190,12 @@ def plot_derivation_plot(
                         "{:.0%}".format(t)
                         for t in method_data["dataset_derivations.value"]
                     ]
+                # TODO: add unit conversion
+                # if accuracy and diameter convert to mm
+
                 labels[0] = "Original"
                 ax.set_xticklabels(labels=labels)
+                # TODO: add units
                 ax.set_xlabel(f"{derivation_type} derivations")
                 ax.set_ylabel(f"Detected leak count")
                 # ax2.set_ylim(bottom=0, top=100)
