@@ -154,16 +154,16 @@ class MNF(LDIMMethodBase):
         if self.simple_train_data:
             # Use training data to set up the window, so we can start with the evaluation data
             previous_data = self.simple_train_data.flows
-            previous_start_time = simple_evaluation_data.flows[
-                (simple_evaluation_data.flows.index.hour == interval_start.hour)
-                & (simple_evaluation_data.flows.index.minute == interval_start.minute)
-                & (simple_evaluation_data.flows.index.second == interval_start.second)
+            previous_start_time = previous_data[
+                (previous_data.index.hour == interval_start.hour)
+                & (previous_data.index.minute == interval_start.minute)
+                & (previous_data.index.second == interval_start.second)
             ].index[0]
 
             previous_end_time = previous_start_time + (
                 night_flow_interval
                 * math.floor(
-                    (simple_evaluation_data.flows.index[-1] - previous_start_time)
+                    (previous_data.index[-1] - previous_start_time)
                     / night_flow_interval
                 )
             )
@@ -171,7 +171,7 @@ class MNF(LDIMMethodBase):
             mask = (previous_data.index >= previous_start_time) & (
                 previous_data.index < previous_end_time
             )
-            previous_data = self.simple_train_data.flows.loc[mask]
+            previous_data = previous_data.loc[mask]
 
             all_flows = pd.concat([previous_data, all_flows], axis=0)
 
