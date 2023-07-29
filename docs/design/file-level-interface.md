@@ -17,7 +17,7 @@ It is designed to make it easy to implement the interface in any environment (do
  |     | -- <sensorname>.csv
  | -- model.inp  # The water network model
  | -- dma.json   # Layout of the district metering zones it contains all nodes and pipes in the an area, enabling methods to be specific to each area.
- | -- leaks.csv  # Leaks with start and end time.
+ | -- leaks.csv  # Leaks with start and end time, as well as additional data.
  | -- leaks/
  |     | -- <leak_id>.csv # Timestamp data for leak outflows
 ```
@@ -29,14 +29,17 @@ The following assumptions are made about the input data:
 - the model is the leading datasource (meaning any sensor names in the other files must be present in the model)
   - The name of the csv files is corresponding to the name of the sensor in the inp file.
 - the model is a valid EPANET model
-
-Maybe:
+  Maybe:
 
 - the model might contain existing patterns
 
 The following assumptions are not made:
 
 - Timestamps are not required to be the same for all input files, to make it possible for the methods to do their own resample and interpolation of the data
+
+Units for measurements are the same as in EPANET: https://epanet22.readthedocs.io/en/latest/back_matter.html#
+
+|
 
 #### Arguments
 

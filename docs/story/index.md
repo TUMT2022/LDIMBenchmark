@@ -1,9 +1,11 @@
+[index](../index.md)
+
 ```mermaid
 graph TD;
   own_dataset[Own Data]-->preprocessing[Preprocessing];
-  
+
   subgraph Core Benchmark
-    generator[Data Generator]-->dataset;
+    generator[Dataset Generator "[index](../index.md)"<a href='https://google.com'>link</a>]-->dataset;
 
     method[Method] --> benchmark
     parameters[Parameters] --> benchmark
@@ -18,7 +20,7 @@ graph TD;
   end
 
   subgraph Parameter Search
-    benchmark --> grid-search
+    benchmark --> grid-search[Grid-Search]
     grid-search --> parameters
   end
 
@@ -28,11 +30,9 @@ graph TD;
   end
 
   subgraph Analysis
-    dataset --> compare
-    dataset --> analysis
+    dataset --> compare[Comparison]
+    dataset --> analysis[Analysis]
     results-->evaluation[Evaluation];
-    results-->complexity[Complexity Analysis];
-    %% benchmark --> evaluation
 
   end
 style own_dataset fill:green
