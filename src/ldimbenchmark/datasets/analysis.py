@@ -1,6 +1,7 @@
 from asyncio import as_completed
 from concurrent.futures import ProcessPoolExecutor
 from math import nan
+import math
 from ldimbenchmark.benchmark.benchmark import plot_leak
 from ldimbenchmark.constants import CPU_COUNT
 from ldimbenchmark.datasets.classes import Dataset
@@ -269,26 +270,60 @@ class DatasetAnalyzer:
             leaks_analysis["longer"] = leaks_analysis["duration"] >= mean_duration
             common_table["leaks_number"] = len(dataset.leaks)
             common_table["leaks_duration_mean"] = mean_duration
+            common_table["leaks_duration_shortest"] = (
+                leaks_analysis["duration"].min().round("1s")
+            )
+            common_table["leaks_duration_longest"] = (
+                leaks_analysis["duration"].max().round("1s")
+            )
             common_table["leaks_shorter_then_mean"] = leaks_analysis["smaller"].sum()
             common_table["leaks_longer_then_mean"] = leaks_analysis["longer"].sum()
             common_table["leaks_no_duration"] = leaks_analysis["duration"].isna().sum()
 
+            common_table["sensor_count_demands"] = len(dataset.demands)
+            common_table["sensor_count_pressures"] = len(dataset.pressures)
+            common_table["sensor_count_flows"] = len(dataset.flows)
+            common_table["sensor_count_levels"] = len(dataset.levels)
+
+            common_table["sensor_count_demands_ratio"] = (
+                (common_table["sensor_count_demands"] / dataset.model.num_nodes)
+                if common_table["sensor_count_demands"] > 0
+                else 0
+            )
+            common_table["sensor_count_pressures_ratio"] = (
+                (common_table["sensor_count_pressures"] / dataset.model.num_pipes)
+                if common_table["sensor_count_pressures"] > 0
+                else 0
+            )
+            common_table["sensor_count_flows_ratio"] = (
+                (common_table["sensor_count_flows"] / dataset.model.num_pipes)
+                if common_table["sensor_count_flows"] > 0
+                else 0
+            )
+            common_table["sensor_count_levels_ratio"] = (
+                (common_table["sensor_count_levels"] / dataset.model.num_tanks)
+                if common_table["sensor_count_levels"] > 0
+                else 0
+            )
+
             datasets_table_common[dataset.id] = common_table
 
             # Plot Network
-            # fig, ax = plt.subplots(1, 1, figsize=(60, 40))
-            # ax = wntr.graphics.plot_network(
-            #     dataset.model,
-            #     ax=ax,
-            #     node_size=10,
-            #     title=f"{dataset} Network",
-            #     node_labels=True,
-            #     link_labels=True,
-            # )
-            # fig.savefig(
-            #     os.path.join(dataset_analysis_out_dir, f"network_{dataset.id}.png")
-            # )
-            # plt.close(fig)
+            size = math.log(len(dataset.model.link_name_list)) * 2
+            fig, ax = plt.subplots(1, 1, figsize=(size * 1.33, size))
+            ax = wntr.graphics.plot_network(
+                dataset.model,
+                ax=ax,
+                node_size=10,
+                # title=f"{dataset.name} Network",
+                # node_labels=True,
+                # link_labels=True,
+            )
+            fig.tight_layout()
+            fig.savefig(
+                os.path.join(dataset_analysis_out_dir, f"network_{dataset.id}.png")
+            )
+            plt.close(fig)
 
             # PLot leaks
             # parallel = False
@@ -345,6 +380,7 @@ class DatasetAnalyzer:
 
         datasets_table = pd.concat(datasets_table)
         datasets_table = pd.concat([datasets_table, datasets_table_common], axis=1)
+
         overview = pd.concat(network_model_details)
         overview_medium = pd.concat(network_model_details_medium)
         overview_fine = pd.concat(network_model_details_fine)
@@ -372,32 +408,72 @@ class DatasetAnalyzer:
             datasets_table["dataset.training.end"]
             - datasets_table["dataset.training.start"]
         )
-
         # TODO include leak free time interval
 
-        overview_table = pd.concat(
-            [
-                datasets_table[["name"]],
-                overview[["Controls"]],
-                overview_medium[
-                    [
-                        "Nodes.Junctions",
-                        "Nodes.Tanks",
-                        "Nodes.Reservoirs",
-                        "Links.Pipes",
-                        "Links.Pumps",
-                        "Links.Valves",
-                        "overall_length",
-                    ]
-                ],
-            ],
-            axis=1,
+        datasets_table = pd.concat(
+            [datasets_table, overview, overview_medium, overview_fine], axis=1
         )
+        # Remove duplicate columns
+        datasets_table = datasets_table.loc[
+            :, ~datasets_table.columns.duplicated()
+        ].copy()
+
+        datasets_table.to_csv(
+            os.path.join(self.analysis_out_dir, "overview_all_data.csv")
+        )
+
+        # TODO: Merge tables
+        overview_table = datasets_table[
+            [
+                "name",
+                "Controls",
+                "Nodes.Junctions",
+                "Nodes.Tanks",
+                "Nodes.Reservoirs",
+                "Links.Pipes",
+                "Links.Pumps",
+                "Links.Valves",
+                "overall_length",
+                "time_duration",
+                "interval_min",
+                "interval_max",
+                "sensor_count_demands",
+                "sensor_count_pressures",
+                "sensor_count_flows",
+                "sensor_count_levels",
+                "leaks_number",
+                "leaks_duration_mean",
+                "leaks_shorter_then_mean",
+                "leaks_longer_then_mean",
+            ]
+        ]
+
+        formatters = {
+            "overall_length": "\\SI{{{:,.0f}}}{{\\meter}}",
+            "time_duration": lambda v: "\\begin{tabular}{@{}c@{}}"
+            + str(v)[: str(v).find("days") + 4]
+            + "\\\\"
+            + str(v)[str(v).find("days") + 4 :]
+            + "\\end{tabular}",
+            "leaks_duration_mean": lambda v: "\\begin{tabular}{@{}c@{}}"
+            + str(v)[: str(v).find("days") + 4]
+            + "\\\\"
+            + str(v)[str(v).find("days") + 4 :]
+            + "\\end{tabular}",
+            "interval_min": lambda v: delta_format(v),
+            "interval_max": lambda v: delta_format(v),
+        }
+        for key, value in formatters.items():
+            # if function apply function
+            if callable(value):
+                overview_table[key] = overview_table[key].apply(value)
+            else:
+                overview_table[key] = overview_table[key].apply(value.format)
 
         overview_table = (
             overview_table
-            # Fix index column
-            # https://stackoverflow.com/questions/46797598/how-to-remove-extra-row-after-set-index-without-losing-index-name
+            # # Fix index column
+            # # https://stackoverflow.com/questions/46797598/how-to-remove-extra-row-after-set-index-without-losing-index-name
             .reset_index(drop=True)
             .set_index("name")
             .rename_axis(None, axis=0)
@@ -411,22 +487,42 @@ class DatasetAnalyzer:
                     "Links.Pipes": "Pipes",
                     "Links.Pumps": "Pumps",
                     "Links.Valves": "Valves",
-                    "overall_length": "Length",
+                    "overall_length": "Network Length",
+                    "time_duration": "timespan",
+                    "interval_min": "min internal",
+                    "interval_max": "max interval",
+                    "leaks_number": "Leaks",
+                    "leaks_duration_mean": "Leak Duration",
+                    "leaks_shorter_then_mean": "shorter Leaks",
+                    "leaks_longer_then_mean": "longer Leaks",
+                    "sensor_count_demands": "Demand Sensors",
+                    "sensor_count_pressures": "Pressure Sensors",
+                    "sensor_count_flows": "Flow Sensors",
+                    "sensor_count_levels": "Level Sensors",
                 }
             )
-        )
+        ).T
 
-        overview_table.to_csv(
-            os.path.join(self.analysis_out_dir, "network_model_details.csv")
+        overview_table.index = overview_table.index.rename("property")
+        overview_table["class"] = np.concatenate(
+            [
+                np.repeat("model", 8),
+                np.repeat("data", 7),
+                np.repeat("leaks", len(overview_table) - 15),
+            ]
         )
+        overview_table = overview_table.reset_index().set_index(["class", "property"])
 
-        overview_table.style.format(
-            formatter={
-                "Length": "\\SI{{{:,.0f}}}{{\\meter}}",
-            },
-            escape="latex",
+        overview_table.style.format_index(
+            # formatter=lambda x: "\\rotatebox{45}{" + x + "}", axis="columns"
+            formatter=lambda x: x,
+            axis="columns",
         ).format_index(
-            formatter=lambda x: "\\rotatebox{45}{" + x + "}", axis="columns"
+            formatter=lambda x: "\\rotatebox[origin=c]{-90}{" + x + "}"
+            if x == "model" or x == "data" or x == "leaks"
+            else x,
+            # formatter=lambda x: x,
+            axis="index",
         ).set_table_styles(
             [
                 # {'selector': 'toprule', 'props': ':hline;'},
@@ -437,83 +533,11 @@ class DatasetAnalyzer:
         ).to_latex(
             os.path.join(self.analysis_out_dir, "network_model_overview.tex"),
             position_float="centering",
-            clines="all;data",
-            column_format="l|rrrrrrrr",
+            column_format="ll|rrrr",
             position="H",
+            clines="skip-last;data",
+            multirow_align="c",
             label="table:networks_overview",
-            caption="Overview of the water networks.",
-        )
-
-        # time span between datapoints,
-
-        datasets_table.to_csv(
-            os.path.join(self.analysis_out_dir, "datasets_overview.csv")
-        )
-
-        datasets_table = (
-            datasets_table[
-                [
-                    "name",
-                    "time_duration",
-                    "interval_min",
-                    "interval_max",
-                    "leaks_number",
-                    "leaks_duration_mean",
-                    "leaks_shorter_then_mean",
-                    "leaks_longer_then_mean",
-                ]
-            ]
-            # Fix index column
-            # https://stackoverflow.com/questions/46797598/how-to-remove-extra-row-after-set-index-without-losing-index-name
-            .reset_index(drop=True)
-            .set_index("name")
-            .rename_axis(None, axis=0)
-            .rename_axis("name", axis=1)
-            .rename(
-                columns={
-                    "time_duration": "timespan",
-                    "interval_min": "min internal",
-                    "interval_max": "max interval",
-                    "leaks_number": "Leaks",
-                    "leaks_duration_mean": "Leak Duration",
-                    "leaks_shorter_then_mean": "shorter Leaks",
-                    "leaks_longer_then_mean": "longer Leaks",
-                }
-            )
-        )
-
-        datasets_table.style.format(
-            formatter={
-                "timespan": lambda v: "\\begin{tabular}{@{}c@{}}"
-                + str(v)[: str(v).find("days") + 4]
-                + "\\\\"
-                + str(v)[str(v).find("days") + 4 :]
-                + "\\end{tabular}",
-                "Leak Duration": lambda v: "\\begin{tabular}{@{}c@{}}"
-                + str(v)[: str(v).find("days") + 4]
-                + "\\\\"
-                + str(v)[str(v).find("days") + 4 :]
-                + "\\end{tabular}",
-                "min internal": lambda v: delta_format(v),
-                "max interval": lambda v: delta_format(v),
-            },
-            escape="latex",
-        ).format_index(
-            formatter=lambda x: "\\rotatebox{45}{" + x + "}", axis="columns"
-        ).set_table_styles(
-            [
-                # {'selector': 'toprule', 'props': ':hline;'},
-                {"selector": "midrule", "props": ":hline;"},
-                # {'selector': 'bottomrule', 'props': ':hline;'},
-            ],
-            overwrite=False,
-        ).to_latex(
-            os.path.join(self.analysis_out_dir, "datasets_overview.tex"),
-            position_float="centering",
-            clines="all;data",
-            column_format="l|rrrrrrrr",
-            position="H",
-            label="table:datasets_overview",
             caption="Overview of the water networks.",
         )
 
