@@ -346,6 +346,10 @@ def read_multiple_dataset_infos(dataset_info_frame: DataFrame):
         ] = "data"
 
     if "dataset_derivations.model" in df_dataset_derivations:
+        # check if flattened_results exists
+        if "flattened_results" not in locals():
+            flattened_results = dataset_info_frame
+
         derivations_model = pd.json_normalize(
             df_dataset_derivations["dataset_derivations.model"].explode(
                 "dataset_derivations.model"
