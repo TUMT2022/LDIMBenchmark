@@ -562,7 +562,7 @@ class LDIMBenchmark:
     def run_complexity_analysis(
         self,
         methods,
-        style: Literal["time", "junctions"],
+        style: Literal["periods", "junctions"],
         n_repeats=3,
         n_measures=10,
         n_max=91,
@@ -708,6 +708,7 @@ class LDIMBenchmark:
             if parallel_max_workers > 0:
                 worker_num = parallel_max_workers
             try:
+                # TODO Implement Staggering to alivate pressure on RAM through execution at the same time, instead spread them out
                 with ProcessPoolExecutor(max_workers=worker_num) as executor:
                     # submit all tasks and get future objects
                     futures = [

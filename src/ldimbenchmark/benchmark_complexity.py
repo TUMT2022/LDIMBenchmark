@@ -72,7 +72,7 @@ def run_benchmark_complexity(
         raise ValueError("n_measures must be at least 1")
     logging.info("Complexity Analysis:")
     logging.info(" > Generating Datasets")
-    if style == "time":
+    if style == "periods":
         datasets_dir = os.path.join(cache_dir, "synthetic-days")
         generateDatasetsForTimespan(1, n_max, datasets_dir)
     if style == "junctions":
@@ -361,8 +361,8 @@ def run_benchmark_complexity(
 
     if style == "junctions":
         ax.set_xlabel("junction number")
-    elif style == "time":
-        ax.set_xlabel("time [d]")
+    elif style == "periods":
+        ax.set_xlabel("time period [d]")
 
     ax.set_ylabel("scale")
     ax.legend(overall_measures_labels, loc="lower right")
@@ -389,7 +389,7 @@ def run_benchmark_complexity(
                 label=col.replace("_overall", ""),
             )
     # ax.set_title(f"Complexity Analysis for different {style} inputs")
-    ax.set_xlabel("time [d]")
+    ax.set_xlabel("time period [d]")
     ax.set_ylabel("time [s]")
     ax.legend(loc="lower right")
 
