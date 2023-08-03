@@ -5,9 +5,9 @@
 
 Leakage Detection and Isolation Methods Benchmark
 
-> Instead of collecting all the different dataset to benchmark different methods on. We wanted to create a Benchmarking Tool which makes it easy to reproduce the results of the different methods locally on your own dataset.
+> Instead of collecting all the different datasets to benchmark different methods we wanted to create a Benchmarking Framework which makes it easy to reproduce the results of the different methods locally on your own dataset.
 
-It provides a close to real-world conditions environment and forces researchers to provide a reproducible method implementation, which is supposed to run automated on any input dataset, thus hindering custom solutions which work well in one specific case.
+It provides a close-to real-world conditions environment and forces researchers to provide a reproducible method implementation, which must run automated on any input dataset, thus hindering custom solutions that work well in only one specific case.
 
 ## Usage
 
@@ -20,51 +20,68 @@ pip install ldimbenchmark
 ### Python
 
 ```python
+from typing import List
 from ldimbenchmark.datasets import DatasetLibrary, DATASETS
 from ldimbenchmark import (
     LDIMBenchmark,
-    BenchmarkData,
+    LDIMMethodBase,
     BenchmarkLeakageResult,
+    MethodMetadata,
+    BenchmarkData,
+    MethodMetadataDataNeeded
 )
-from ldimbenchmark.classes import LDIMMethodBase
-from typing import List
+
+import pandas as pd
 
 class YourCustomLDIMMethod(LDIMMethodBase):
     def __init__(self):
         super().__init__(
-            name="YourCustomLDIMMethod",
-            version="0.1.0"
+            name="yourcustomnethod",
+            version="1.0.0",
+             metadata=MethodMetadata(
+                data_needed=MethodMetadataDataNeeded(
+                    pressures="ignored",
+                    flows="necessary",
+                    levels="ignored",
+                    model="ignored",
+                    demands="ignored",
+                    structure="ignored",
+                ),
+                capability="detect",
+                paradigm="offline",
+                extra_benefits="freetext",
+                hyperparameters=[],
+            ),
         )
 
-    def train(self, data: BenchmarkData):
+    def prepare(self, training_data: BenchmarkData = None):
         pass
 
-    def detect(self, data: BenchmarkData) -> List[BenchmarkLeakageResult]:
+    def detect_offline(self, data: BenchmarkData) -> List[BenchmarkLeakageResult]:
         return [
-            {
-                "leak_start": "2020-01-01",
-                "leak_end": "2020-01-02",
-                "leak_area": 0.2,
-                "pipe_id": "test",
-            }
+            BenchmarkLeakageResult(
+                leak_pipe_id="x",
+                leak_time_start=pd.to_datetime("2020-01-01"),
+                leak_time_end=pd.to_datetime("2020-01-02"),
+                leak_time_peak=pd.to_datetime("2020-01-02"),
+                leak_area=0.0,
+                leak_diameter=0.0,
+                leak_max_flow=0.0,
+            )
         ]
 
-    def detect_datapoint(self, evaluation_data) -> BenchmarkLeakageResult:
+    def detect_online(self, evaluation_data) -> BenchmarkLeakageResult:
         return {}
 
 
-datasets = DatasetLibrary("datasets").download(DATASETS.BATTLEDIM)
-
-local_methods = [YourCustomLDIMMethod()]
-
-hyperparameters = {}
-
 benchmark = LDIMBenchmark(
-    hyperparameters, datasets, results_dir="./benchmark-results"
+    hyperparameters = {},
+    datasets=DatasetLibrary("datasets").download(DATASETS.BATTLEDIM),
+      results_dir="./benchmark-results"
 )
-benchmark.add_local_methods(local_methods)
+benchmark.add_local_methods(YourCustomLDIMMethod())
 
-benchmark.run_benchmark()
+benchmark.run_benchmark("evaluation")
 
 benchmark.evaluate()
 ```
@@ -75,16 +92,17 @@ benchmark.evaluate()
 ldimbenchmark --help
 ```
 
+For more information visit the [documentation site](https://ldimbenchmark.github.io/LDIMBenchmark/).
+
 ## Roadmap
 
 - v1: Just Leakage Detection
 - v2: Provides Benchmark of Isolation Methods
 
-https://mathspp.com/blog/how-to-create-a-python-package-in-2022
-
 ## Development
 
-https://python-poetry.org/docs/basic-usage/
+We use [Poetry](https://python-poetry.org/docs/basic-usage/) for building the pip package.
+For the CLI we use [click](https://click.palletsprojects.com/en/8.1.x/)
 
 ```bash
 # python 3.10
@@ -124,18 +142,9 @@ poetry config pypi-token.pypi pypi-your-token-here
 
 ### Documentation
 
-https://squidfunk.github.io/mkdocs-material/
-https://click.palletsprojects.com/en/8.1.x/
+For documentation we use [mkdocs-material](https://squidfunk.github.io/mkdocs-material/). 
 
 ```
 poetry shell
 mkdocs serve
 ```
-
-# TODO
-
-LDIMBenchmark:
-Data Cleansing before working with them
-
-- per sensor type, e.g. waterflow (cut of at 0)
-- removing datapoints which are clearly a malfunction
