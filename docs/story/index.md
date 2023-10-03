@@ -31,7 +31,7 @@ graph TD;
 
   subgraph Analysis
     dataset --> compare[Comparison]
-    dataset --> analysis[Analysis]
+    dataset --> analysis[Complexity Analysis]
     results-->evaluation[Evaluation];
 
   end
