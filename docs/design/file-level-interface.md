@@ -17,6 +17,7 @@ It is designed to make it easy to implement the interface in any environment (do
  |     | -- <sensorname>.[csv|h5]
  | -- model.inp  # The water network model
  | -- dma.json   # Layout of the district metering zones it contains all nodes and pipes in the an area, enabling methods to be specific to each area.
+ | -- dataset_info.yaml # Metadata File
  | -- leaks.csv  # Leaks with start and end time, as well as additional data.
  | -- leaks/
  |     | -- <leak_id>.csv # Timestamp data for leak outflows
