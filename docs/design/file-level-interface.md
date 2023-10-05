@@ -8,13 +8,13 @@ It is designed to make it easy to implement the interface in any environment (do
 ```
 ./input
  | -- demands/
- |     | -- <sensorname>.csv
+ |     | -- <sensorname>.[csv|h5]
  | -- pressures/
- |     | -- <sensorname>.csv
+ |     | -- <sensorname>.[csv|h5]
  | -- flows/
- |     | -- <sensorname>.csv
+ |     | -- <sensorname>.[csv|h5]
  | -- levels/
- |     | -- <sensorname>.csv
+ |     | -- <sensorname>.[csv|h5]
  | -- model.inp  # The water network model
  | -- dma.json   # Layout of the district metering zones it contains all nodes and pipes in the an area, enabling methods to be specific to each area.
  | -- leaks.csv  # Leaks with start and end time, as well as additional data.
