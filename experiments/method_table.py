@@ -38,7 +38,7 @@ for method in methods:
 
 
 frame = pd.DataFrame(method_meta).T
-frame = frame.drop(columns=["mimum_dataset_size"])
+# frame = frame.drop(columns=["mimum_dataset_size"])
 
 
 frame.data_needed = frame.data_needed.astype(str)
@@ -55,9 +55,42 @@ frame = frame.drop(columns=["data_needed"])
 #     lambda x: ("\n".join(param.name for param in x))
 # )
 
+# TODO: sum in one column
+# TODO add capability and extra benefits
+# TODO add online/offline capabilities
 
-frame[["pressures", "flows", "levels", "model", "demands", "structure"]].style.format(
+overview_frame = frame[
+    [
+        "demands",
+        "pressures",
+        "flows",
+        "levels",
+        "model",
+        "structure",
+        "capability",
+        "paradigm",
+        "extra_benefits",
+    ]
+].T
+
+overview_frame.index = overview_frame.index.rename("property")
+overview_frame["class"] = np.concatenate(
+    [
+        np.repeat("data usage", 6),
+        np.repeat("attributes", len(overview_frame) - 6),
+    ]
+)
+overview_frame = overview_frame.reset_index().set_index(["class", "property"])
+
+
+overview_frame.style.format(
     escape="latex",
+).format_index(
+    formatter=lambda x: "\\rotatebox[origin=c]{-90}{" + x + "}"
+    if x == "data usage" or x == "attributes"
+    else x,
+    # formatter=lambda x: x,
+    axis="index",
 ).set_table_styles(
     [
         # {'selector': 'toprule', 'props': ':hline;'},
@@ -67,8 +100,12 @@ frame[["pressures", "flows", "levels", "model", "demands", "structure"]].style.f
     overwrite=False,
 ).to_latex(
     os.path.join(out_dir, "methods_needed_data.tex"),
+    position_float="centering",
     label="table:methods_needed_data",
-    caption="Data used by each method",
+    caption="Data used and attributes by each method",
+    clines="skip-last;data",
+    multirow_align="c",
+    column_format="ll|" + str("c" * (len(overview_frame.columns))),
     position="H",
 )
 
@@ -92,6 +129,10 @@ with pd.option_context("max_colwidth", 1000):
         ).hide(axis="index").to_latex(
             os.path.join(out_dir, f"methods_{method}_hyperparameters.tex"),
             label=f"table:methods_hyperparameters_{method}",
-            caption=f"Hyperparameters of {method}",
+            caption=f"Hyperparameters of \gls{{method}} method.",
+            column_format="l|llp{0.5\\textwidth}",
             position="H",
+            position_float="centering",
         )
+
+# %%

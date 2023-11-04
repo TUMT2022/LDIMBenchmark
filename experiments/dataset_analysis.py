@@ -16,15 +16,29 @@ test_data_folder = "test_data"
 
 test_data_folder_datasets = os.path.join("test_data", "datasets")
 
-#%%
-
-# generated_dataset_path = os.path.join(test_data_folder_datasets, "graz-ragnitz")
-# generated_dataset_path = os.path.join(test_data_folder_datasets, "battledim")
-generated_dataset_path = os.path.join(test_data_folder_datasets, "gjovik")
-dataset = Dataset(generated_dataset_path)
+dataset = Dataset(os.path.join(test_data_folder_datasets, "graz-ragnitz"))
 
 
-dataset.loadData()
+
+
+
+# %%
+
+datasets = [
+    Dataset(os.path.join(test_data_folder_datasets, "synthetic-days-90")),
+    Dataset(os.path.join(test_data_folder_datasets, "graz-ragnitz")),
+    Dataset(os.path.join(test_data_folder_datasets, "gjovik")),
+    Dataset(os.path.join(test_data_folder_datasets, "battledim")),
+] 
+
+
+
+analysis = DatasetAnalyzer(os.path.join(test_data_folder, "out-new"))
+
+analysis.analyze(datasets)
+
+
+# %% 
 
 # Plot Overview of timeseries sensors
 
@@ -89,9 +103,3 @@ df['Group_id'] = (
 )
 df
 
-#%%
-
-
-analysis = DatasetAnalyzer(os.path.join(test_data_folder, "out"))
-
-analysis.analyze(dataset)

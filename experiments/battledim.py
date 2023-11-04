@@ -33,6 +33,7 @@ param_grid = {
         "C_threshold": 14,
         "delta": 5,
         "default_flow_sensor": "PUMP_1",
+        "dma_specific": True,
     }
     # "lila": {
     #     # "est_length": np.arange(24, 24 * 2, 24).tolist(),
@@ -80,11 +81,11 @@ benchmark.run_benchmark(
     use_cached=True,
 )
 
-benchmark.run_benchmark(
-    evaluation_mode="training",
-    parallel=False,  # parallel_max_workers=4,
-    use_cached=True,
-)
+# benchmark.run_benchmark(
+#     evaluation_mode="training",
+#     parallel=False,  # parallel_max_workers=4,
+#     use_cached=True,
+# )
 
 benchmark.evaluate(
     current_only=True,

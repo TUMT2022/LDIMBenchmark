@@ -1,44 +1,45 @@
 site_name: LDIMBenchmark
-repo_url: https://github.com/ldimbenchmark/LDIMBenchmark
-edit_uri: 'blob/main/docs/'
+repo_url: https://github.com/TUMT2022/LDIMBench.git
 theme:
   name: material
   icon:
     logo: fontawesome/solid/gauge-high
 
 watch:
- - docs/
- - src/
+  - docs/
+  - src/
 
 nav:
-- Index: index.md
-- Story: 
-  - story/index.md
-  - Testing: story/testing.ipynb
-- Design: 
-  - design/index.md
-  - Dataset: design/datasets.md
-  - File Level API: design/file-level-interface.md
-  - Programming Interface: design/programming-interface.md
-- Guides:
-  - Benchmark: user-guides/benchmark.md
-  - Own Dataset: user-guides/run-on-your-dataset.ipynb
-  - user-guides/run-your-method.ipynb
-  - user-guides/run-complexity-analysis.ipynb
-  - user-guides/run-sensitivity-analysis.ipynb
-  - user-guides/docker.md
-- Roadmap: roadmap.md
-- Code Reference: reference/
+  - Index: index.md
+  - Story:
+      - story/index.md
+      # - Testing: story/testing.ipynb
+  - Design:
+      - design/index.md
+      - Dataset: design/base-datasets.md
+      - File Level API: design/file-level-interface.md
+      - Programming Interface: design/programming-interface.md
+      - Method: design/method.md
+  - Guides:
+      - Benchmark: user-guides/benchmark.md
+      # - Own Dataset: user-guides/run-on-your-dataset.ipynb
+      # - user-guides/run-your-method.ipynb
+      # - user-guides/run-complexity-analysis.ipynb
+      # - user-guides/run-sensitivity-analysis.ipynb
+      - user-guides/docker.md
+  - Roadmap: roadmap.md
+  - Troubleshooting: troubleshooting.md
+  - Code Reference: reference/
 
 plugins:
   - search
-  - mkdocs-jupyter:
-      # execute: True
-      allow_errors: false
-      kernel_name: python3
+  # - mkdocs-jupyter:
+  #     # execute: True
+  #     allow_errors: false
+  #     kernel_name: python3
   - gen-files:
       scripts:
-      - docs/gen_ref_pages.py
+        - docs/gen_ref_pages.py
   - literate-nav:
       nav_file: SUMMARY.md
   - section-index
@@ -47,7 +48,7 @@ plugins:
   - git-revision-date-localized:
       enable_creation_date: true
       exclude:
-          - reference/*
+        - reference/*
 
 markdown_extensions:
   - pymdownx.highlight:
@@ -65,7 +66,7 @@ markdown_extensions:
         - includes/abbreviations.md
 
 extra_css:
- - _extra/jupyter.css
+  - _extra/jupyter.css
 
 extra_javascript:
- - _extra/jupyter.js
+  - _extra/jupyter.js

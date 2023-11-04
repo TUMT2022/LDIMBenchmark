@@ -252,6 +252,7 @@ class DatasetAnalyzer:
                         maxTime = sensor_data.index.max()
                         timeLength = maxTime - minTime
                         datapoint_count = len(sensor_data.index)
+                        # TODO: Fix showing 0 for 1 second interval
                         interval_median = timeLength / datapoint_count
                         intervals.append(interval_median)
 
@@ -285,22 +286,22 @@ class DatasetAnalyzer:
             common_table["sensor_count_levels"] = len(dataset.levels)
 
             common_table["sensor_count_demands_ratio"] = (
-                (common_table["sensor_count_demands"] / dataset.model.num_nodes)
+                (common_table["sensor_count_demands"] / dataset.model.num_pipes) * 100
                 if common_table["sensor_count_demands"] > 0
                 else 0
             )
             common_table["sensor_count_pressures_ratio"] = (
-                (common_table["sensor_count_pressures"] / dataset.model.num_pipes)
+                (common_table["sensor_count_pressures"] / dataset.model.num_pipes) * 100
                 if common_table["sensor_count_pressures"] > 0
                 else 0
             )
             common_table["sensor_count_flows_ratio"] = (
-                (common_table["sensor_count_flows"] / dataset.model.num_pipes)
+                (common_table["sensor_count_flows"] / dataset.model.num_pipes) * 100
                 if common_table["sensor_count_flows"] > 0
                 else 0
             )
             common_table["sensor_count_levels_ratio"] = (
-                (common_table["sensor_count_levels"] / dataset.model.num_tanks)
+                (common_table["sensor_count_levels"] / dataset.model.num_tanks) * 100
                 if common_table["sensor_count_levels"] > 0
                 else 0
             )
@@ -425,7 +426,9 @@ class DatasetAnalyzer:
             os.path.join(self.analysis_out_dir, "overview_all_data.csv")
         )
 
-        # TODO: Merge tables
+        # TODO: Leaks Evaluation/Training
+        # TODO: sensor ratio
+        # TODO: add time unit
         overview_table = datasets_table[
             [
                 "name",
@@ -440,10 +443,14 @@ class DatasetAnalyzer:
                 "time_duration",
                 "interval_min",
                 "interval_max",
-                "sensor_count_demands",
-                "sensor_count_pressures",
-                "sensor_count_flows",
-                "sensor_count_levels",
+                # "sensor_count_demands",
+                # "sensor_count_pressures",
+                # "sensor_count_flows",
+                # "sensor_count_levels",
+                "sensor_count_demands_ratio",
+                "sensor_count_pressures_ratio",
+                "sensor_count_flows_ratio",
+                "sensor_count_levels_ratio",
                 "leaks_number",
                 "leaks_duration_mean",
                 "leaks_shorter_then_mean",
@@ -465,6 +472,10 @@ class DatasetAnalyzer:
             + "\\end{tabular}",
             "interval_min": lambda v: delta_format(v),
             "interval_max": lambda v: delta_format(v),
+            "sensor_count_demands_ratio": "{:.2f}",
+            "sensor_count_pressures_ratio": "{:.2f}",
+            "sensor_count_flows_ratio": "{:.2f}",
+            "sensor_count_levels_ratio": "{:.2f}",
         }
         for key, value in formatters.items():
             # if function apply function
@@ -495,13 +506,17 @@ class DatasetAnalyzer:
                     "interval_min": "min internal",
                     "interval_max": "max interval",
                     "leaks_number": "Leaks",
-                    "leaks_duration_mean": "Leak Duration",
+                    "leaks_duration_mean": "Mean Leak Duration",
                     "leaks_shorter_then_mean": "shorter Leaks",
                     "leaks_longer_then_mean": "longer Leaks",
-                    "sensor_count_demands": "Demand Sensors",
-                    "sensor_count_pressures": "Pressure Sensors",
-                    "sensor_count_flows": "Flow Sensors",
-                    "sensor_count_levels": "Level Sensors",
+                    # "sensor_count_demands": "Demand Sensors",
+                    # "sensor_count_pressures": "Pressure Sensors",
+                    # "sensor_count_flows": "Flow Sensors",
+                    # "sensor_count_levels": "Level Sensors",
+                    "sensor_count_demands_ratio": "Demand Sensor Ratio",
+                    "sensor_count_pressures_ratio": "Pressure Sensor Ratio",
+                    "sensor_count_flows_ratio": "Flow Sensor Ratio",
+                    "sensor_count_levels_ratio": "Level Sensor Ratio",
                 }
             )
         ).T
@@ -536,7 +551,7 @@ class DatasetAnalyzer:
         ).to_latex(
             os.path.join(self.analysis_out_dir, "network_model_overview.tex"),
             position_float="centering",
-            column_format="ll|rrrr",
+            column_format="ll|llll",
             position="H",
             clines="skip-last;data",
             multirow_align="c",

@@ -63,6 +63,13 @@ def _apply_derivation_to_DataFrame(
     dataframe: DataFrame,
     key: str,
 ) -> DataFrame:
+    if derivation == "accuracy":
+        if value["type"] == "static":
+            dataframe = dataframe + value["value"]
+        else:
+            # TODO: Implement drift
+            dataframe
+        # TODO: skewnorm
     if derivation == "precision":
         if value >= 1:
             raise Exception("Precision value must be smaller than 1")
@@ -334,6 +341,12 @@ class DatasetDerivator:
         :param derivation: Name of derivation that should be applied
         :param options_list: List of options for the derivation
 
+        ``derivation="accuracy"``
+            Skew the data by the value.
+            ``value```is the unitless value that is added to the data.
+            ``type`` determines the type of skew. ``"static"`` adds the value to all data points.
+                    ``"drift"`` adds or substracts the value to the datapoint depending on the direction (previousValue-currentValue).
+
         ``derivation="precision"``
             Adds noise to the data. The noise is normally distributed with a mean of 0 and a standard deviation of ``value``.
 
@@ -382,13 +395,12 @@ class DatasetDerivator:
                             "value": value,
                             "shift": "middle",
                         }
-
-                    shift = value["value"]
-                    if value["shift"] == "bottom":
-                        shift = 0
-                    if value["shift"] == "middle":
-                        shift = value["value"] / 2
-                    # value["value"] = shift
+                if derivation == "accuracy":
+                    if not isinstance(value, dict):
+                        value = {
+                            "value": value,
+                            "shift": "static",
+                        }
 
                 # Save Derivation
                 for application in apply_to:

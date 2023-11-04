@@ -16,13 +16,59 @@ test_data_folder = "test_data"
 test_data_folder_datasets = os.path.join("test_data", "datasets")
 
 # %%
+datasets = [
+    Dataset(os.path.join(test_data_folder_datasets, "graz-ragnitz")),
+]
+analyzer = DatasetAnalyzer("sensitivity-analysis")
+derivator = DatasetDerivator(
+    datasets,
+    os.path.join(test_data_folder_datasets),  # ignore_cache=True
+)
+
+derivator.derive_data("pressures", "precision", [0.1])
+
+derivator.derive_data("pressures", "downsample", [5])
+
+derivator.derive_data("pressures", "sensitivity", [
+    {"value": 0.1, "shift": "middle"},
+])
+
+derivator.derive_data("flows", "precision", [0.1])
+derivator.derive_data("flows", "downsample", [5])
+derivator.derive_data("flows", "sensitivity", [
+    {"value": 0.1, "shift": "middle"},
+])
+
+allDerivedDatasets = derivator.get_dervived_datasets()
+
+# # Precision
+analyzer.compare([datasets[0], allDerivedDatasets[0]], "pressures", True)
+# # Downsample
+analyzer.compare([datasets[0], allDerivedDatasets[1]], "pressures", True)
+# Sensitivity
+analyzer.compare([datasets[0], allDerivedDatasets[2]], "pressures", True)
+
+analyzer.compare([datasets[0], allDerivedDatasets[3]], "flows", True)
+analyzer.compare([datasets[0], allDerivedDatasets[4]], "flows", True)
+analyzer.compare([datasets[0], allDerivedDatasets[5]], "flows", True)
+
+
+# %%
+
+dataset = Dataset(os.path.join(test_data_folder_datasets, "graz-ragnitz"))
+derivator = DatasetDerivator([dataset], os.path.join(test_data_folder_datasets))
+
+datasets = derivator.derive_model("pipes", "length", "accuracy", [0.01])
+datasets[0].id
+
+# %%
 
 # Download
 battledim_dataset = DatasetLibrary(test_data_folder_datasets).download(DATASETS.BATTLEDIM)
 
 #%%
 
-generated_dataset_path = os.path.join(test_data_folder_datasets, "synthetic-days-9")
+generated_dataset_path = os.path.join(test_data_folder_datasets, "synthetic-days-90")
 generateDatasetForTimeSpanDays(90, generated_dataset_path)
 dataset = Dataset(generated_dataset_path)
 
@@ -39,7 +85,7 @@ derivedDatasets.append(dataset)
 
 analysis = DatasetAnalyzer(os.path.join(test_data_folder, "out"))
 
-analysis.compare(derivedDatasets, "pressures")
+analysis.compare(derivedDatasets, "pressures", quick=True)
 
 #%%
 
@@ -49,7 +95,7 @@ derivedDatasets.append(dataset)
 
 analysis = DatasetAnalyzer(os.path.join(test_data_folder, "out"))
 
-analysis.compare(derivedDatasets, "pressures")
+analysis.compare(derivedDatasets, "pressures", quick=True)
 
 #%%
 

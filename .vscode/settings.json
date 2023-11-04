@@ -1,10 +1,13 @@
 {
-  "python.formatting.provider": "black",
+  "python.formatting.provider": "none",
   "python.formatting.blackPath": "${workspaceFolder}/.venv/bin/black",
   "python.testing.pytestArgs": ["tests"],
   "python.testing.unittestEnabled": false,
   "python.testing.pytestEnabled": true,
   "python.defaultInterpreterPath": "${workspaceFolder}/.venv/bin/python3",
-  "cSpell.words": ["battledim", "hyperparameters", "LDIM", "ldimbenchmark", "SCADA", "timeframe", "wntr"]
+  "cSpell.words": ["battledim", "hyperparameters", "LDIM", "ldimbenchmark", "matplotlib", "SCADA", "timeframe", "wntr"],
+  "[python]": {
+    "editor.defaultFormatter": "ms-python.black-formatter"
+  }
   // "python.analysis.useLibraryCodeForTypes": false
 }
